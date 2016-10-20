@@ -1,5 +1,7 @@
 #!/usr/bin/python
-
+# coding=utf-8
+#
+#
 #import imp
 #imp.load_module("mydummyname")
 
@@ -13,6 +15,32 @@ print CleanMdashesExtension().cleanup("Hello, World")
 
 
 print "--------------"
+
+
+
+class Language(object):
+  def Detect(self, input, currentlanguage):
+    # 207 most common words in germen + hallo = 208
+    words_DE = ["die", "der", "und", "in", "zu", "den", "das", "nicht", "von", "sie", "ist", "des", "sich", "mit", "dem", "dass", "er", "es", "ein", "ich", "auf", "so", "eine", "auch", "als", "an", "nach", "wie", "im", "für", "man", "aber", "aus", "durch", "wenn", "nur", "war", "noch", "werden", "bei", "hat", "wir", "was", "wird", "sein", "einen", "welche", "sind", "oder", "zur", "um", "haben", "einer", "mir", "über", "ihm", "diese", "einem", "ihr", "uns", "da", "zum", "kann", "doch", "vor", "dieser", "mich", "ihn", "du", "hatte", "seine", "mehr", "am", "denn", "nun", "unter", "sehr", "selbst", "schon", "hier", "bis", "habe", "ihre", "dann", "ihnen", "seiner", "alle", "wieder", "meine", "Zeit", "gegen", "vom", "ganz", "einzelnen", "wo", "muss", "ohne", "eines", "können", "sei", "ja", "wurde", "jetzt", "immer", "seinen", "wohl", "dieses", "ihren", "würde", "diesen", "sondern", "weil", "welcher", "nichts", "diesem", "alles", "waren", "will", "Herr", "viel", "mein", "also", "soll", "worden", "lassen", "dies", "machen", "ihrer", "weiter", "Leben", "recht", "etwas", "keine", "seinem", "ob", "dir", "allen", "großen", "Jahre", "Weise", "müssen", "welches", "wäre", "erst", "einmal", "Mann", "hätte", "zwei", "dich", "allein", "Herren", "während", "guten", "anders", "Liebe", "kein", "damit", "gar", "Hand", "Herrn", "euch", "sollte", "konnte", "ersten", "deren", "zwischen", "wollen", "denen", "dessen", "sagen", "bin", "Menschen", "gut", "darauf", "wurden", "weiß", "gewesen", "Seite", "bald", "weit", "große", "solche", "hatten", "eben", "andern", "beiden", "macht", "sehen", "ganze", "anderen", "lange", "wer", "ihrem", "zwar", "gemacht", "dort", "kommen", "Welt", "heute", "Frau", "werde", "derselben", "ganzen", "deutschen", "lässt", "vielleicht", "meiner", "hallo"]
+
+    # 207 most common words in english + hello = 208
+    words_EN = ["the", "of", "and", "a", "to", "in", "is", "be", "that", "was", "he", "for", "it", "with", "as", "his", "I", "on", "have", "at", "by", "not", "they", "this", "had", "are", "but", "from", "or", "she", "an", "which", "you", "one", "we", "all", "were", "her", "would", "there", "their", "will", "when", "who", "him", "been", "has", "more", "if", "no", "out", "do", "so", "can", "what", "up", "said", "about", "other", "into", "than", "its", "time", "only", "could", "new", "them", "man", "some", "these", "then", "two", "first", "May", "any", "like", "now", "my", "such", "make", "over", "our", "even", "most", "me", "state", "after", "also", "made", "many", "did", "must", "before", "back", "see", "through", "way", "where", "get", "much", "go", "well", "your", "know", "should", "down", "work", "year", "because", "come", "people", "just", "say", "each", "those", "take", "day", "good", "how", "long", "Mr", "own", "too", "little", "use", "US", "very", "great", "still", "men", "here", "life", "both", "between", "old", "under", "last", "never", "place", "same", "another", "think", "house", "while", "high", "right", "might", "came", "off", "find", "states", "since", "used", "give", "against", "three", "himself", "look", "few", "general", "hand", "school", "part", "small", "American", "home", "during", "number", "again", "Mrs", "around", "thought", "went", "without", "however", "govern", "dont", "does", "got", "public", "United", "point", "end", "become", "head", "once", "course", "fact", "upon", "need", "system", "set", "every", "war", "put", "form", "water", "took", "program", "present", "government", "thing", "told", "possible", "group", "large", "until", "hello"]
+
+    sum_DE = 0
+    for testword in words_DE:
+      sum_DE += input.count(testword)
+
+    print sum_DE
+
+    #print [sum(c in words_DE)]
+
+    #print [sum(c in words_DE for c in input)]
+
+    return [i for i, x in enumerate(words_DE) if x == input]
+
+
+print Language().Detect("Hallo, dies ist ein Test!", "")
+
 
 
 class MyClass(object):
