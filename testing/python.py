@@ -45,6 +45,24 @@ print Language().Detect("Hello my old friend!")
 
 
 
+
+# Language Detection
+# Sentence + Word Segmentation
+# Word Tagging + Synonym detection
+# Phrase Detection
+
+# strip stoppwords
+
+# Pattern Detection
+# Context Pipeline
+# Answer Pipeline
+  # Answer selection
+  # ELIZA fallback
+# Customize Answer
+# Train Conversation
+
+
+
 class MyClass(object):
 
     staticvar = 999
