@@ -120,6 +120,40 @@ finally:
 
 print "--------------"
 
+import json
+
+
+class BaseObject(object):
+    def toJSON(self):
+        return json.dumps(self, default=lambda o: o.__dict__, 
+            sort_keys=True, indent=4)
+
+
+class InputData(BaseObject):
+    def __init__(self, input):
+      self.Input = input
+      
+      self.Language = None
+      self.WordList = None
+      self.WordlistClean = None
+      self.SynonymList = None
+      
+      self.Context = None
+      self.User = None
+
+      self.Answer = None
+      self.AnswerFound = False
+
+      self.Pattern = None
+      self.PatternFound = False
+
+      self.Error = None
+
+
+ip = InputData("Test")
+print ip.toJSON()
+
+
 
 # Language Detection
 # Sentence + Word Segmentation
