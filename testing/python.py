@@ -128,7 +128,7 @@ class BaseObject(object):
             sort_keys=True, indent=4)
 
 
-class InputData(BaseObject):
+class PipelineData(BaseObject):
     def __init__(self, input):
       self.Input = input
       
@@ -148,8 +148,16 @@ class InputData(BaseObject):
 
       self.Error = None
 
+class Word(BaseObject):
+  def __init__(self, input):
+    self.Word = input
+    self.Ranking = None
+    self.IsStopWord = False
 
-ip = InputData("Test")
+    self.SynonymList = None
+
+
+ip = PipelineData("Test")
 print ip.toJSON()
 
 
@@ -210,6 +218,7 @@ class Animal():
 
 
 print Animal.ant
+print Animal.dog == Animal.cat
 
 
 # Language Detection
