@@ -1,6 +1,5 @@
 #!/usr/bin/python
-# coding=utf-8
-
+# -*- coding: utf-8 -*-
 
 #import imp
 #imp.load_module("mydummyname")
@@ -54,12 +53,12 @@ class SimpleNLP(object):
 
 
 
-detect_DE = SimpleNLP().DetectLanguage("Hallo, dies ist ein Test!")
+detect_DE = SimpleNLP().DetectLanguage("Hallo, dies ist ein nötiger Test!")
 print detect_DE
 detect_EN = SimpleNLP().DetectLanguage("Hello my old friend!")
 print detect_EN
 
-list_DE = SimpleNLP().WordSegmentation("Hallo, dies ist ein Test!")
+list_DE = SimpleNLP().WordSegmentation("Hallo, dies ist ein nötiger Test!")
 print list_DE
 list_EN = SimpleNLP().WordSegmentation("Hello my old friend!")
 print list_EN
@@ -153,6 +152,64 @@ class InputData(BaseObject):
 ip = InputData("Test")
 print ip.toJSON()
 
+
+
+print "--------------"
+
+import mysql.connector
+
+#try:
+cnx = mysql.connector.connect(user='root', password='',
+                              host='127.0.0.1',
+                              database='thesaurus')
+#except mysql.connector.Error as err:
+#  if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+#    print("Something is wrong with your user name or password")
+#  elif err.errno == errorcode.ER_BAD_DB_ERROR:
+#    print("Database does not exist")
+#  else:
+#    print(err)
+
+cursor = cnx.cursor()
+
+cursor.execute('SELECT * FROM term, synset, term term2 WHERE synset.is_visible = 1 AND synset.id = term.synset_id AND term.synset_id AND term2.synset_id = synset.id AND term2.word = "Bank"')
+
+for row in cursor:
+    print row
+
+
+cnx.close()
+
+
+
+
+import ConfigParser
+config = ConfigParser.ConfigParser()
+config.read(os.path.dirname(__file__) + "config.ini")
+
+
+print config.sections()
+print config.get("Server", "Username")
+print config.get("Server", "Password")
+
+print config.getint("Server", "Testvalue")
+print config.getboolean("Server", "Debug")
+
+# .get(section, option)
+# .getint(section, option)
+# .getfloat(section, option)
+# .getboolean(section, option)
+
+
+
+class Animal():
+    ant = 1
+    bee = 2
+    cat = 3
+    dog = 4
+
+
+print Animal.ant
 
 
 # Language Detection
