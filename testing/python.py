@@ -199,7 +199,7 @@ cnx.close()
 
 import ConfigParser
 config = ConfigParser.ConfigParser()
-config.read(Global.Path + "config.ini")
+config.read(Global.Path + "base.conf")
 
 
 print config.sections()
@@ -227,24 +227,49 @@ print Animal.ant
 print Animal.dog == Animal.cat
 
 
+"""
+import logging
+logging.basicConfig(filename='example.log',format='%(asctime)s %(levelname)s: %(message)s', level=logging.DEBUG ) # DEBUG INFO WARNING ERROR
+logging.debug('This message should go to the log file')
+logging.info('So should this')
+logging.warning('And this, too')
+"""
+
+
+
+import logging
+import logging.config
+
+logging.config.fileConfig(Global.Path + "logging.conf")
+
+logger = logging.getLogger('ExampleLogger')
+
+logger.debug('debug message')
+logger.info('info message')
+logger.warn('warn message')
+logger.error('error message')
+logger.critical('critical message')
 
 
 
 
-# Language Detection
-# Sentence + Word Segmentation
-# Word Tagging + Synonym detection
-# Phrase Detection
+# Input Processing
+  # Language Detection
+  # Sentence + Word Segmentation
+  # Word Tagging + Synonym detection
+  # strip stoppwords
 
-# strip stoppwords
+# Input Analyzer
+  # Phrase Detection
+  # Pattern Detection
+  # Context Pipeline
 
-# Pattern Detection
-# Context Pipeline
-# Answer Pipeline
-  # Answer selection
-  # ELIZA fallback
-# Customize Answer
-# Train Conversation
+# Response Processing
+  # Answer Pipeline
+    # Answer selection
+    # ELIZA fallback
+  # Customize Answer
+  # Train Conversation
 
 
 

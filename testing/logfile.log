@@ -1,0 +1,30 @@
+2016-10-24 12:10:29,422 - ExampleLogger - DEBUG - debug message
+2016-10-24 12:10:29,423 - ExampleLogger - INFO - info message
+2016-10-24 12:10:29,423 - ExampleLogger - WARNING - warn message
+2016-10-24 12:10:29,423 - ExampleLogger - ERROR - error message
+2016-10-24 12:10:29,423 - ExampleLogger - CRITICAL - critical message
+2016-10-24 12:10:32,999 - ExampleLogger - DEBUG - debug message
+2016-10-24 12:10:32,999 - ExampleLogger - INFO - info message
+2016-10-24 12:10:32,999 - ExampleLogger - WARNING - warn message
+2016-10-24 12:10:32,999 - ExampleLogger - ERROR - error message
+2016-10-24 12:10:32,999 - ExampleLogger - CRITICAL - critical message
+2016-10-24 12:19:03 - ExampleLogger - DEBUG: debug message
+2016-10-24 12:19:04 - ExampleLogger - INFO: info message
+2016-10-24 12:19:04 - ExampleLogger - WARNING: warn message
+2016-10-24 12:19:04 - ExampleLogger - ERROR: error message
+2016-10-24 12:19:04 - ExampleLogger - CRITICAL: critical message
+2016-10-24 12:19:47 ExampleLogger - DEBUG: debug message
+2016-10-24 12:19:47 ExampleLogger - INFO: info message
+2016-10-24 12:19:47 ExampleLogger - WARNING: warn message
+2016-10-24 12:19:47 ExampleLogger - ERROR: error message
+2016-10-24 12:19:47 ExampleLogger - CRITICAL: critical message
+2016-10-24 12:20:22 DEBUG - ExampleLogger: debug message
+2016-10-24 12:20:22 INFO - ExampleLogger: info message
+2016-10-24 12:20:22 WARNING - ExampleLogger: warn message
+2016-10-24 12:20:22 ERROR - ExampleLogger: error message
+2016-10-24 12:20:22 CRITICAL - ExampleLogger: critical message
+2016-10-24 12:20:23 DEBUG - ExampleLogger: debug message
+2016-10-24 12:20:23 INFO - ExampleLogger: info message
+2016-10-24 12:20:23 WARNING - ExampleLogger: warn message
+2016-10-24 12:20:23 ERROR - ExampleLogger: error message
+2016-10-24 12:20:23 CRITICAL - ExampleLogger: critical message
