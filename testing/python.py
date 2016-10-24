@@ -10,6 +10,14 @@ from mydummyname.CleanMdashesExtension import CleanMdashesExtension
 import re   # Regex
 import os   # I/O
 
+print os.path.dirname(__file__)
+print os.path.basename(__file__)
+print os.path.dirname(os.path.abspath(__file__))
+
+class Global(object):
+    Path = os.path.dirname(os.path.abspath(__file__)).rstrip("/") + "/"
+
+
 print mydummyname.cleanup("Hello, World!")
 
 print CleanMdashesExtension().cleanup("Hello, World")
@@ -47,7 +55,7 @@ class SimpleNLP(object):
     return [x for x in wordlist if x not in stopwords]
 
   def ReadFile(self, foldername, filename):
-    script_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
+    script_dir = os.path.dirname(os.path.abspath(__file__)) #<-- absolute dir the script is in
 
     return [line.rstrip('\n').rstrip('\r') for line in open(os.path.join(script_dir, foldername, filename))]
 
@@ -82,7 +90,7 @@ import sys
 con = None
 
 try:
-    script_dir = os.path.dirname(__file__)
+    script_dir = Global.Path
 
     con = lite.connect(script_dir + 'data/' + 'thesaurus_DE.sqlite')
     con.text_factory = str
@@ -106,14 +114,12 @@ try:
 except lite.Error, e:
     
     print "Error %s:" % e.args[0]
-    sys.exit(1)
+    #sys.exit(1)
     
 finally:
     print "Close DB Connection"
     if con:
         con.close()
-
-
 
 
 
@@ -193,7 +199,7 @@ cnx.close()
 
 import ConfigParser
 config = ConfigParser.ConfigParser()
-config.read(os.path.dirname(__file__) + "config.ini")
+config.read(Global.Path + "config.ini")
 
 
 print config.sections()
@@ -219,6 +225,10 @@ class Animal():
 
 print Animal.ant
 print Animal.dog == Animal.cat
+
+
+
+
 
 
 # Language Detection
