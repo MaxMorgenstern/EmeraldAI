@@ -47,7 +47,7 @@ class SimpleNLP(object):
     return "de"
 
   def WordSegmentation(self, input):
-    segmentationRegex = re.compile("[A-Z]{2,}(?![a-z])|[A-Z][a-z]+(?=[A-Z])|[\'\w\-]+", flags=re.IGNORECASE)
+    segmentationRegex = re.compile("[A-Z]{2,}(?![a-z])|[A-Z][a-z]+(?=[A-Z])|[\'\wÄÖÜäöüß\-]+", flags=re.IGNORECASE)
     return segmentationRegex.findall(input)
 
   def RemoveStopwords(self, wordlist, language):
@@ -60,6 +60,7 @@ class SimpleNLP(object):
     return [line.rstrip('\n').rstrip('\r') for line in open(os.path.join(script_dir, foldername, filename))]
 
 
+print "Hallo, dies ist ein nötiger Test!"
 
 detect_DE = SimpleNLP().DetectLanguage("Hallo, dies ist ein nötiger Test!")
 print detect_DE
@@ -233,6 +234,10 @@ print Animal.ant
 print Animal.dog == Animal.cat
 
 
+
+print "--------------"
+
+
 """
 import logging
 logging.basicConfig(filename='example.log',format='%(asctime)s %(levelname)s: %(message)s', level=logging.DEBUG ) # DEBUG INFO WARNING ERROR
@@ -240,8 +245,6 @@ logging.debug('This message should go to the log file')
 logging.info('So should this')
 logging.warning('And this, too')
 """
-
-
 
 import logging
 import logging.config
@@ -256,6 +259,9 @@ logger.warn('warn message')
 logger.error('error message')
 logger.critical('critical message')
 
+
+
+print "--------------"
 
 
 
