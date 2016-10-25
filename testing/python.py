@@ -94,14 +94,14 @@ try:
 
     con = lite.connect(script_dir + 'data/' + 'thesaurus_DE.sqlite')
     con.text_factory = str
-    
-    cur = con.cursor()    
+
+    cur = con.cursor()
     cur.execute('SELECT SQLITE_VERSION()')
-    
+
     data = cur.fetchone()
-    
-    print "SQLite version: %s" % data                
-    
+
+    print "SQLite version: %s" % data
+
     cur.execute('SELECT * FROM synset WHERE synset.id = 1')
     #cur.execute('SELECT * FROM term, synset, term term2 WHERE synset.is_visible = 1 AND synset.id = term.synset_id AND term.synset_id AND term2.synset_id = synset.id AND term2.word = "Bank"')
 
@@ -112,10 +112,10 @@ try:
 
 
 except lite.Error, e:
-    
+
     print "Error %s:" % e.args[0]
     #sys.exit(1)
-    
+
 finally:
     print "Close DB Connection"
     if con:
@@ -130,19 +130,19 @@ import json
 
 class BaseObject(object):
     def toJSON(self):
-        return json.dumps(self, default=lambda o: o.__dict__, 
+        return json.dumps(self, default=lambda o: o.__dict__,
             sort_keys=True, indent=4)
 
 
 class PipelineData(BaseObject):
     def __init__(self, input):
       self.Input = input
-      
+
       self.Language = None
       self.WordList = None
       self.WordlistClean = None
       self.SynonymList = None
-      
+
       self.Context = None
       self.User = None
 
@@ -170,29 +170,35 @@ print ip.toJSON()
 
 print "--------------"
 
-import mysql.connector
 
-#try:
-cnx = mysql.connector.connect(user='root', password='',
-                              host='127.0.0.1',
-                              database='thesaurus')
-#except mysql.connector.Error as err:
-#  if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-#    print("Something is wrong with your user name or password")
-#  elif err.errno == errorcode.ER_BAD_DB_ERROR:
-#    print("Database does not exist")
-#  else:
-#    print(err)
+cnx = None
+try:
+  import mysql.connector
 
-cursor = cnx.cursor()
+  cnx = mysql.connector.connect(user='root', password='',
+                                host='127.0.0.1',
+                                database='thesaurus')
+  #except mysql.connector.Error as err:
+  #  if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+  #    print("Something is wrong with your user name or password")
+  #  elif err.errno == errorcode.ER_BAD_DB_ERROR:
+  #    print("Database does not exist")
+  #  else:
+  #    print(err)
 
-cursor.execute('SELECT * FROM term, synset, term term2 WHERE synset.is_visible = 1 AND synset.id = term.synset_id AND term.synset_id AND term2.synset_id = synset.id AND term2.word = "Bank"')
+  cursor = cnx.cursor()
 
-for row in cursor:
-    print row
+  cursor.execute('SELECT * FROM term, synset, term term2 WHERE synset.is_visible = 1 AND synset.id = term.synset_id AND term.synset_id AND term2.synset_id = synset.id AND term2.word = "Bank"')
 
+  for row in cursor:
+      print row
 
-cnx.close()
+except:
+  print "Mysql error"
+
+finally:
+  if(cnx):
+    cnx.close()
 
 
 
