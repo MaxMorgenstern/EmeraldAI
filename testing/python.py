@@ -122,7 +122,7 @@ finally:
     if con:
         con.close()
 
-sys.exit(0)
+#sys.exit(0)
 
 print "--------------"
 
