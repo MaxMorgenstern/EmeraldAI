@@ -47,7 +47,7 @@ class SimpleNLP(object):
     return "de"
 
   def WordSegmentation(self, input):
-    segmentationRegex = re.compile("[A-Z]{2,}(?![a-z])|[A-Z][a-z]+(?=[A-Z])|[\'\w\-]+", flags=re.IGNORECASE)
+    segmentationRegex = re.compile("[A-Z]{2,}(?![a-z])|[A-Z][a-z]+(?=[A-Z])|[\'\wÄÖÜäöüß\-]+", flags=re.IGNORECASE)
     return segmentationRegex.findall(input)
 
   def RemoveStopwords(self, wordlist, language):
@@ -60,6 +60,7 @@ class SimpleNLP(object):
     return [line.rstrip('\n').rstrip('\r') for line in open(os.path.join(script_dir, foldername, filename))]
 
 
+print "Hallo, dies ist ein nötiger Test!"
 
 detect_DE = SimpleNLP().DetectLanguage("Hallo, dies ist ein nötiger Test!")
 print detect_DE
@@ -94,16 +95,16 @@ try:
 
     con = lite.connect(script_dir + 'data/' + 'thesaurus_DE.sqlite')
     con.text_factory = str
-    
-    cur = con.cursor()    
+
+    cur = con.cursor()
     cur.execute('SELECT SQLITE_VERSION()')
-    
+
     data = cur.fetchone()
-    
-    print "SQLite version: %s" % data                
-    
-    cur.execute('SELECT * FROM synset WHERE synset.id = 1')
-    #cur.execute('SELECT * FROM term, synset, term term2 WHERE synset.is_visible = 1 AND synset.id = term.synset_id AND term.synset_id AND term2.synset_id = synset.id AND term2.word = "Bank"')
+
+    print "SQLite version: %s" % data
+
+    #cur.execute('SELECT * FROM synset WHERE synset.id = 1')
+    cur.execute('SELECT * FROM term, synset, term term2 WHERE synset.is_visible = 1 AND synset.id = term.synset_id AND term.synset_id AND term2.synset_id = synset.id AND term2.word = "Bank"')
 
     rows = cur.fetchall()
 
@@ -112,16 +113,16 @@ try:
 
 
 except lite.Error, e:
-    
+
     print "Error %s:" % e.args[0]
     #sys.exit(1)
-    
+
 finally:
     print "Close DB Connection"
     if con:
         con.close()
 
-
+#sys.exit(0)
 
 print "--------------"
 
@@ -130,19 +131,19 @@ import json
 
 class BaseObject(object):
     def toJSON(self):
-        return json.dumps(self, default=lambda o: o.__dict__, 
+        return json.dumps(self, default=lambda o: o.__dict__,
             sort_keys=True, indent=4)
 
 
 class PipelineData(BaseObject):
     def __init__(self, input):
       self.Input = input
-      
+
       self.Language = None
       self.WordList = None
       self.WordlistClean = None
       self.SynonymList = None
-      
+
       self.Context = None
       self.User = None
 
@@ -170,36 +171,42 @@ print ip.toJSON()
 
 print "--------------"
 
-import mysql.connector
 
-#try:
-cnx = mysql.connector.connect(user='root', password='',
-                              host='127.0.0.1',
-                              database='thesaurus')
-#except mysql.connector.Error as err:
-#  if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-#    print("Something is wrong with your user name or password")
-#  elif err.errno == errorcode.ER_BAD_DB_ERROR:
-#    print("Database does not exist")
-#  else:
-#    print(err)
+cnx = None
+try:
+  import mysql.connector
 
-cursor = cnx.cursor()
+  cnx = mysql.connector.connect(user='root', password='',
+                                host='127.0.0.1',
+                                database='thesaurus')
+  #except mysql.connector.Error as err:
+  #  if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+  #    print("Something is wrong with your user name or password")
+  #  elif err.errno == errorcode.ER_BAD_DB_ERROR:
+  #    print("Database does not exist")
+  #  else:
+  #    print(err)
 
-cursor.execute('SELECT * FROM term, synset, term term2 WHERE synset.is_visible = 1 AND synset.id = term.synset_id AND term.synset_id AND term2.synset_id = synset.id AND term2.word = "Bank"')
+  cursor = cnx.cursor()
 
-for row in cursor:
-    print row
+  cursor.execute('SELECT * FROM term, synset, term term2 WHERE synset.is_visible = 1 AND synset.id = term.synset_id AND term.synset_id AND term2.synset_id = synset.id AND term2.word = "Bank"')
 
+  for row in cursor:
+      print row
 
-cnx.close()
+except:
+  print "Mysql error"
+
+finally:
+  if(cnx):
+    cnx.close()
 
 
 
 
 import ConfigParser
 config = ConfigParser.ConfigParser()
-config.read(Global.Path + "config.ini")
+config.read(Global.Path + "base.conf")
 
 
 print config.sections()
@@ -228,24 +235,118 @@ print Animal.dog == Animal.cat
 
 
 
+print "--------------"
+
+
+"""
+import logging
+logging.basicConfig(filename='example.log',format='%(asctime)s %(levelname)s: %(message)s', level=logging.DEBUG ) # DEBUG INFO WARNING ERROR
+logging.debug('This message should go to the log file')
+logging.info('So should this')
+logging.warning('And this, too')
+"""
+
+import logging
+import logging.config
+
+logging.config.fileConfig(Global.Path + "logging.conf")
+
+logger = logging.getLogger('ExampleLogger')
+
+logger.debug('debug message')
+logger.info('info message')
+logger.warn('warn message')
+logger.error('error message')
+logger.critical('critical message')
 
 
 
-# Language Detection
-# Sentence + Word Segmentation
-# Word Tagging + Synonym detection
-# Phrase Detection
+print "--------------"
 
-# strip stoppwords
 
-# Pattern Detection
-# Context Pipeline
-# Answer Pipeline
-  # Answer selection
-  # ELIZA fallback
-# Customize Answer
-# Train Conversation
+print os.path.abspath(os.path.join('..'))
+print os.path.abspath(os.path.join('..', 'EmeraldAI'))
 
+sys.path.append(os.path.abspath(os.path.join('..')))
+from EmeraldAI.Entities.Word import *
+
+x = Word("hi")
+
+print x.toJSON()
+
+
+
+# Input Processing
+  # Language Detection
+  # Sentence + Word Segmentation
+  # Word Tagging + Synonym detection
+  # strip stoppwords
+
+# Input Analyzer
+  # Phrase Detection
+  # Pattern Detection
+  # Context Pipeline
+
+# Response Processing
+  # Answer Pipeline
+    # Answer selection
+    # ELIZA fallback
+  # Customize Answer
+  # Train Conversation
+
+
+rules = {
+    r"(.*)hey (.*)": [
+        "Hey! I'm Ellie.",
+        ],
+    r"(.*)hi (.*)": [
+        "Hi! I'm Ellie.",
+        ],
+    r"(.*)hello (.*)": [
+        "Hello there. I'm Ellie.",
+        ],
+    r"(.*)drink (.*)": [
+        "Bottoms up!",
+        "Cheers!",
+        ]
+    }
+
+default_responses = [
+    "Very interesting",
+    "I am not sure I understand you fully",
+    "What does that suggest to you?",
+    "Please continue",
+    "Go on",
+    "Do you feel strongly about that?",
+    "Tell me more?",
+    "Yes .. and?",
+    "mmmm.",
+    "And then what?",
+    "Mmkay.",
+    "What makes you say that?",
+    "Aaaaah.",
+    "Sure.",
+    ]
+
+
+import random
+
+def respond(data):
+
+    for pattern, responses in rules.items():
+        compiledRegex = re.compile(pattern, flags=re.IGNORECASE)
+        match = compiledRegex.match(data)
+        if match:
+          return random.choice(responses)
+
+
+ # https://github.com/christinac/ellie-slack/blob/master/plugins/ellie/ellie.py
+ # https://www.smallsurething.com/implementing-the-famous-eliza-chatbot-in-python/
+
+ # https://github.com/christinac/ellie-slack/blob/master/plugins/ellie/eliza.py
+
+print respond("Hey There!")
+print respond("I like to drink regulary")
 
 
 
