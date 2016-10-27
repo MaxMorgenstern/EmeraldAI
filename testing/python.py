@@ -264,6 +264,17 @@ logger.critical('critical message')
 print "--------------"
 
 
+print os.path.abspath(os.path.join('..'))
+print os.path.abspath(os.path.join('..', 'EmeraldAI'))
+
+sys.path.append(os.path.abspath(os.path.join('..')))
+from EmeraldAI.Entities.Word import *
+
+x = Word("hi")
+
+print x.toJSON()
+
+
 
 # Input Processing
   # Language Detection
