@@ -295,6 +295,59 @@ print x.toJSON()
   # Train Conversation
 
 
+rules = {
+    r"(.*)hey (.*)": [
+        "Hey! I'm Ellie.",
+        ],
+    r"(.*)hi (.*)": [
+        "Hi! I'm Ellie.",
+        ],
+    r"(.*)hello (.*)": [
+        "Hello there. I'm Ellie.",
+        ],
+    r"(.*)drink (.*)": [
+        "Bottoms up!",
+        "Cheers!",
+        ]
+    }
+
+default_responses = [
+    "Very interesting",
+    "I am not sure I understand you fully",
+    "What does that suggest to you?",
+    "Please continue",
+    "Go on",
+    "Do you feel strongly about that?",
+    "Tell me more?",
+    "Yes .. and?",
+    "mmmm.",
+    "And then what?",
+    "Mmkay.",
+    "What makes you say that?",
+    "Aaaaah.",
+    "Sure.",
+    ]
+
+
+import random
+
+def respond(data):
+
+    for pattern, responses in rules.items():
+        compiledRegex = re.compile(pattern, flags=re.IGNORECASE)
+        match = compiledRegex.match(data)
+        if match:
+          return random.choice(responses)
+
+
+ # https://github.com/christinac/ellie-slack/blob/master/plugins/ellie/ellie.py
+ # https://www.smallsurething.com/implementing-the-famous-eliza-chatbot-in-python/
+
+ # https://github.com/christinac/ellie-slack/blob/master/plugins/ellie/eliza.py
+
+print respond("Hey There!")
+print respond("I like to drink regulary")
+
 
 
 """
