@@ -338,6 +338,7 @@ def respond(data):
         match = compiledRegex.match(data)
         if match:
           return random.choice(responses)
+    return random.choice(default_responses)
 
 
  # https://github.com/christinac/ellie-slack/blob/master/plugins/ellie/ellie.py
@@ -347,6 +348,42 @@ def respond(data):
 
 print respond("Hey There!")
 print respond("I like to drink regulary")
+print respond("This is the end of the world")
+
+
+
+
+
+
+import aiml
+
+sessionId = 12345
+
+
+# Create the kernel and learn AIML files
+kernel = aiml.Kernel()
+
+if os.path.isfile("German-standalone.brn"):
+    kernel.bootstrap(brainFile = "German-standalone.brn")
+else:
+    kernel.bootstrap(learnFiles = "German-standalone.aiml", commands = "load aiml b")
+    kernel.saveBrain("German-standalone.brn")
+
+kernel.setPredicate("name", "Brandy", sessionId)
+
+kernel.setBotPredicate("name", "Hugo")
+
+
+while True:
+    message = raw_input("Enter your message to the bot: ")
+    if message == "quit" or message == "exit":
+        exit()
+    elif message == "save":
+        kernel.saveBrain("German-standalone.brn")
+    else:
+        bot_response = kernel.respond(message, sessionId)
+        # Do something with bot_response
+        print bot_response
 
 
 
