@@ -355,35 +355,46 @@ print respond("This is the end of the world")
 
 
 
-import aiml
+# todo: add package check
 
-sessionId = 12345
-
-
-# Create the kernel and learn AIML files
-kernel = aiml.Kernel()
-
-if os.path.isfile("German-standalone.brn"):
-    kernel.bootstrap(brainFile = "German-standalone.brn")
-else:
-    kernel.bootstrap(learnFiles = "German-standalone.aiml", commands = "load aiml b")
-    kernel.saveBrain("German-standalone.brn")
-
-kernel.setPredicate("name", "Brandy", sessionId)
-
-kernel.setBotPredicate("name", "Hugo")
+import imp
+try:
+    imp.find_module('aiml')
+    found = True
+except ImportError:
+    found = False
 
 
-while True:
-    message = raw_input("Enter your message to the bot: ")
-    if message == "quit" or message == "exit":
-        exit()
-    elif message == "save":
-        kernel.saveBrain("German-standalone.brn")
+if(found):
+    import aiml
+
+    sessionId = 12345
+
+
+    # Create the kernel and learn AIML files
+    kernel = aiml.Kernel()
+
+    if os.path.isfile("German-standalone.brn"):
+        kernel.bootstrap(brainFile = "German-standalone.brn")
     else:
-        bot_response = kernel.respond(message, sessionId)
-        # Do something with bot_response
-        print bot_response
+        kernel.bootstrap(learnFiles = "German-standalone.aiml", commands = "load aiml b")
+        kernel.saveBrain("German-standalone.brn")
+
+    kernel.setPredicate("name", "Brandy", sessionId)
+
+    kernel.setBotPredicate("name", "Hugo")
+
+
+    while True:
+        message = raw_input("Enter your message to the bot: ")
+        if message == "quit" or message == "exit":
+            exit()
+        elif message == "save":
+            kernel.saveBrain("German-standalone.brn")
+        else:
+            bot_response = kernel.respond(message, sessionId)
+            # Do something with bot_response
+            print bot_response
 
 
 
