@@ -351,8 +351,7 @@ print respond("I like to drink regulary")
 print respond("This is the end of the world")
 
 
-
-
+print "--------------"
 
 
 # todo: add package check
@@ -384,11 +383,11 @@ if(found):
 
     kernel.setBotPredicate("name", "Hugo")
 
-
-    while True:
+    run = True
+    while run:
         message = raw_input("Enter your message to the bot: ")
         if message == "quit" or message == "exit":
-            exit()
+            run = False
         elif message == "save":
             kernel.saveBrain("German-standalone.brn")
         else:
@@ -396,6 +395,20 @@ if(found):
             # Do something with bot_response
             print bot_response
 
+
+print "--------------"
+print "--------------"
+print "--------------"
+
+import pip
+
+def install(package):
+    pip.main(['install', package])
+
+print __name__
+# Example
+if __name__ == '__main__':
+    install('aiml')
 
 
 """
