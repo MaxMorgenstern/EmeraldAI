@@ -463,3 +463,8 @@
 2016-10-30 08:36:28 WARNING - ExampleLogger: warn message
 2016-10-30 08:36:28 ERROR - ExampleLogger: error message
 2016-10-30 08:36:28 CRITICAL - ExampleLogger: critical message
+2016-10-30 15:13:16 DEBUG - ExampleLogger: debug message
+2016-10-30 15:13:16 INFO - ExampleLogger: info message
+2016-10-30 15:13:16 WARNING - ExampleLogger: warn message
+2016-10-30 15:13:16 ERROR - ExampleLogger: error message
+2016-10-30 15:13:16 CRITICAL - ExampleLogger: critical message
