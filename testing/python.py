@@ -365,7 +365,7 @@ except ImportError:
 
 
 
-currentLanguage = 'DE'
+currentLanguage = 'EN'
 currentPath = Global.Path + "data/AIML/" + currentLanguage + "/"
 
 
@@ -381,15 +381,16 @@ if(found):
     if os.path.isfile(currentPath + "brain.brn"):
         kernel.bootstrap(brainFile = currentPath + "brain.brn")
     else:
-      for root, dirs, filenames in os.walk(currentPath):
-          for f in filenames:
-              if(not f.startswith('.') or not f.endswith('.brn')):
-                  kernel.bootstrap(learnFiles = currentPath + f, commands = "load aiml b")
-      kernel.saveBrain(currentPath + "brain.brn")
+        for root, dirs, filenames in os.walk(currentPath):
+            for f in filenames:
+                if(not f.startswith('.') and f.endswith('.aiml')):
+                    kernel.bootstrap(learnFiles = currentPath + f)
+    kernel.saveBrain(currentPath + "brain.brn")
 
     kernel.setPredicate("name", "Brandy", sessionId)
 
     kernel.setBotPredicate("name", "Hugo")
+
 
     run = True
     while run:

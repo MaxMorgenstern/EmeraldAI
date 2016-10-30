@@ -95,13 +95,6 @@
 <template> <srai>WHAT IS SIRI</srai></template>
 </category>
 
- 
-
-<category>
-<pattern>WHAT IS YOUR *</pattern>
-
-
-</category>
 
  
 
@@ -136,12 +129,6 @@
 </category>
 
  
-
-<category>
-<pattern>I AM MARRIED TO *</pattern>
-
-
-</category>
 
  
 

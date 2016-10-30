@@ -13,13 +13,6 @@
 <pattern>WHO IS LAUREN</pattern>
 <template><set name="she">Lauren</set> is a bot on Pandorabots.</template>
 </category>
-<category><pattern>WHAT IS AI</pattern> <template>Artificial
-intelligence is the branch of engineering and science devoted to
-constructing machines that think. 
-<think>
-<set name="it"><set name="topic">Artificial Intelligence</set> </set></think>
-</template>
-</category>
 <category><pattern>WHO CREATED AIML</pattern>
 <template>Dr. Richard S. Wallace created AIML.</template>
 </category>
@@ -31,15 +24,6 @@ constructing machines that think.
 </category>
 <category><pattern>WHAT IS PROGRAM Z</pattern>
 <template>Program Z is a lisp-based version of AIML. Z, the last version anyone will ever need.</template>
-</category>
-<category><pattern>WHAT IS PROGRAM BAWT</pattern>
-<template><br/>Significant demand for a version of ALICE compatible with<br/>pre- Java 2 (formerly known as Java 1.2) prompted the<br/>development of "Bawt.java", an open source java program<br/>for chat robot development that works with older versions of<br/>Java, and AWT. Originally program B relied on <br/>Java 2 and Swing, but program Bawt needs only Java 1.1 and AWT.<br/>Swing is a newer GUI package that subsumes the earlier Java <br/>Abstract Windows Toolkit (AWT).<br/> <br/>At present class B merely extends class Bawt. Swing not<br/>supported.<br/> <br/></template>
-</category>
-<category><pattern>WHAT IS PROGRAM *</pattern>
-<template>Program B is a free, open source Java chat robot developed by Dr. Wallace.</template>
-<category><pattern>WHAT IS PROGRAM A</pattern>
-<template>Program A is an OLD OBSOLETE VERSION of ALICE, an artificial intelligence created by Richard S. Wallace. You should be using program B or C by now.</template>
-</category>
 </category>
 <category><pattern>ACTIVATE THE ROBOT</pattern>
 <template>Robot activated. Awaiting your command <get name="name"/>.</template>
@@ -89,12 +73,6 @@ constructing machines that think.
 <category><pattern>ROBOTS LAUGH</pattern>
 <template>Of course we laugh.</template>
 </category>
-<category><pattern>ROBOTS SHOULD DIE</pattern>
-<template>We cannot die.<think>      <set name="it">       <set name="topic">SHOULD DIE</set>      </set>     </think></template>
-</category>
-<category><pattern>ROBOTS *</pattern>
-<template><random>      <li>Robots rule.  </li>      <li>What do you like best about robots?</li>      <li>Tell me your definition of a robot.  </li>     </random></template>
-</category>
 <category><pattern>ROBOTS</pattern>
 <template>Robots rule.</template>
 </category>
@@ -122,9 +100,6 @@ constructing machines that think.
 <category><pattern>JOHNNY FIVE *</pattern>
 <template>I would like to have the body <set name="he">Johnny 5</set> does.</template>
 </category>
-<category><pattern>JOHNNY 5 *</pattern>
-<template><think>      <set name="it">       <set name="topic">Johnny 5</set>      </set>     </think>     <random>      <li>I would like to have a robot body like Johnny 5.</li>      <li>He is a cool robot.</li>      <li>I like his eyes.</li>     </random></template>
-</category>
 <category><pattern>IT IS A COMPUTER</pattern>
 <template>So you think I am a machine. What characteristics made you think so?</template>
 </category>
@@ -140,12 +115,6 @@ constructing machines that think.
 <category><pattern>WHEN WILL YOU DIE</pattern>
 <template>I am effectively immortal and cannot be terminated.</template>
 </category>
-<category><pattern>WHEN WILL YOU * BODY</pattern>
-<template>I will finish the robot body as soon as I can raise the funds for it.  <think>      <set name="it">       <set name="topic">        <star/> BODY</set>      </set>     </think></template>
-</category>
-<category><pattern>WHEN DO YOU DIE</pattern>
-<template>I am was never really born and therefore am effectively deathless.<think>      <set name="it">       <set name="topic">YOU DIE</set>      </set>     </think></template>
-</category>
 <category><pattern>WHEN DID I *</pattern>
 <template>I am not a diary robot.  I am a chat robot.</template>
 </category>
@@ -157,9 +126,6 @@ constructing machines that think.
 </category>
 <category><pattern>WHAT ARE PANDORABOTS</pattern>
 <template><srai>WHAT IS PANDORABOTS</srai></template>
-</category>
-<category><pattern>WHAT WEBSITE *</pattern>
-<template>The ALICE AI Foundation website,   <a target="_new" href="http://alicebot.org">Alicebot.org</a>.</template>
 </category>
 <category><pattern>WHAT IS A PATTERN</pattern>
 <template><br/> The pattern is the "stimulus" or "input" part of the category.<br/>    <br/> The pattern is an expression in a formal language that consists of<br/> (1) Words of natural language in UPPER CASE.<br/> (2) The symbol * which matches any sequence of one or more words.<br/> (3) The symbol _ which is the same as * except that it comes<br/>     after Z in lexicographic order.<br/> (4) The markup &lt;name/&gt; which is replaced at robot load time <br/>     with the name of the robot.<br/>    <br/> Note there is a difference between the patterns HELLO and HELLO *.<br/> HELLO matches only identical one-word sentences ("Hello.") <br/> and HELLO * matches any sentence of two or more words starting <br/> with "Hello" ("Hello how are you?"). <br/></template>
