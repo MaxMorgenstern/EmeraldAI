@@ -364,20 +364,28 @@ except ImportError:
     found = False
 
 
+
+currentLanguage = 'DE'
+currentPath = Global.Path + "data/AIML/" + currentLanguage + "/"
+
+
+
 if(found):
     import aiml
 
     sessionId = 12345
 
-
     # Create the kernel and learn AIML files
     kernel = aiml.Kernel()
 
-    if os.path.isfile("German-standalone.brn"):
-        kernel.bootstrap(brainFile = "German-standalone.brn")
+    if os.path.isfile(currentPath + "brain.brn"):
+        kernel.bootstrap(brainFile = currentPath + "brain.brn")
     else:
-        kernel.bootstrap(learnFiles = "German-standalone.aiml", commands = "load aiml b")
-        kernel.saveBrain("German-standalone.brn")
+      for root, dirs, filenames in os.walk(currentPath):
+          for f in filenames:
+              if(not f.startswith('.') or not f.endswith('.brn')):
+                  kernel.bootstrap(learnFiles = currentPath + f, commands = "load aiml b")
+      kernel.saveBrain(currentPath + "brain.brn")
 
     kernel.setPredicate("name", "Brandy", sessionId)
 
@@ -389,7 +397,7 @@ if(found):
         if message == "quit" or message == "exit":
             run = False
         elif message == "save":
-            kernel.saveBrain("German-standalone.brn")
+            kernel.saveBrain(currentPath + "brain.brn")
         else:
             bot_response = kernel.respond(message, sessionId)
             # Do something with bot_response
@@ -409,6 +417,7 @@ print __name__
 # Example
 if __name__ == '__main__':
     install('aiml')
+
 
 
 """
