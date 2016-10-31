@@ -27,6 +27,8 @@ print CleanMdashesExtension().cleanup("Hello, World")
 
 print "--------------"
 
+import string 
+
 class SimpleNLP(object):
   def DetectLanguage(self, input):
     #TODO - split word_DE and word_EN out in file
@@ -61,6 +63,15 @@ class SimpleNLP(object):
     script_dir = os.path.dirname(os.path.abspath(__file__)) #<-- absolute dir the script is in
 
     return [line.rstrip('\n').rstrip('\r') for line in open(os.path.join(script_dir, foldername, filename))]
+
+  def Normalize(self, input, language):
+    normalizedInput = input.lower()
+    if(language .lower() == "de"):
+      normalizedInput = normalizedInput.replace('ä', 'ae')
+      normalizedInput = normalizedInput.replace('ü', 'ue')
+      normalizedInput = normalizedInput.replace('ö', 'oe')
+      normalizedInput = normalizedInput.replace('ß', 'ss')
+    return normalizedInput
 
 
 print "Hallo, dies ist ein nötiger Test!"
@@ -366,7 +377,7 @@ except ImportError:
 
 
 
-currentLanguage = 'EN'
+currentLanguage = 'DE'
 currentPath = Global.Path + "data/AIML/" + currentLanguage + "/"
 
 
@@ -379,7 +390,7 @@ if(found):
     # Create the kernel and learn AIML files
     kernel = aiml.Kernel()
 
-    if os.path.isfile(currentPath + "brain.brn"):
+    if os.path.isfile(currentPath + "brainooooooooooo.brn"):
         kernel.bootstrap(brainFile = currentPath + "brain.brn")
     else:
         for root, dirs, filenames in os.walk(currentPath):
@@ -395,7 +406,8 @@ if(found):
 
     run = True
     while run:
-        message = raw_input("Enter your message to the bot: ")
+        message = SimpleNLP().Normalize(raw_input("Enter your message to the bot: "), currentLanguage)
+        print message
         if message == "quit" or message == "exit":
             run = False
         elif message == "save":
