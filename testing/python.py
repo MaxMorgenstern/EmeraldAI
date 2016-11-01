@@ -27,7 +27,7 @@ print CleanMdashesExtension().cleanup("Hello, World")
 
 print "--------------"
 
-import string 
+import string
 
 class SimpleNLP(object):
   def DetectLanguage(self, input):
@@ -390,7 +390,7 @@ if(found):
     # Create the kernel and learn AIML files
     kernel = aiml.Kernel()
 
-    if os.path.isfile(currentPath + "brainooooooooooo.brn"):
+    if os.path.isfile(currentPath + "brain.brn"):
         kernel.bootstrap(brainFile = currentPath + "brain.brn")
     else:
         for root, dirs, filenames in os.walk(currentPath):
