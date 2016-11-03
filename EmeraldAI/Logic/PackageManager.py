@@ -3,7 +3,7 @@
 import pip
 import imp
 
-class Package(object):
+class PackageManager(object):
 	def Install(package):
 		try:
 			pip.main(['install', package])
