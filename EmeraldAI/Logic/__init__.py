@@ -1,1 +1,1 @@
-__all__ = ["Global", "NLP", "PackageManager"]
+__all__ = ["Global", "Logger", "NLP", "PackageManager"]

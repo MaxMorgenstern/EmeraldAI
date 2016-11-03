@@ -29,10 +29,6 @@ class NLP(object):
     stopwords = self.ReadFile("Stopwords", "{0}.txt".format(language.upper()))
     return [x for x in wordlist if x not in stopwords]
 
-  def ReadFile(self, foldername, filename):
-    script_dir = Global().EmeraldPath + "Data/{0}/{1}".format(foldername, filename)
-    return [line.rstrip('\n').rstrip('\r') for line in open(script_dir)]
-
   def Normalize(self, input, language):
     normalizedInput = input.lower()
     if(language .lower() == "de"):
@@ -41,3 +37,7 @@ class NLP(object):
       normalizedInput = normalizedInput.replace('ö', 'oe')
       normalizedInput = normalizedInput.replace('ß', 'ss')
     return normalizedInput
+
+  def ReadFile(self, foldername, filename):
+    script_dir = Global().EmeraldPath + "Data/{0}/{1}".format(foldername, filename)
+    return [line.rstrip('\n').rstrip('\r') for line in open(script_dir)]
