@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-
+"""
 from EmeraldAI.Entities.Word import *
 from EmeraldAI.Logic.Global import *
 from EmeraldAI.Logic.NLP import *
@@ -33,4 +33,12 @@ LogTwo.Info("Hallo, Welt!")
 LogTwo.Debug("Hallo, Welt!")
 LogTwo.Error("Hallo, Welt!")
 LogTwo.Critical("Hallo, Welt!")
+"""
+
+from EmeraldAI.Logic.AliceBot import *
+
+
+ab = AliceBot("DE")
+
+
 
