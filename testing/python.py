@@ -4,6 +4,9 @@
 #import imp
 #imp.load_module("mydummyname")
 
+# EN aiml reference https://code.google.com/archive/p/aiml-en-us-foundation-alice/
+
+
 import mydummyname
 from mydummyname.CleanMdashesExtension import CleanMdashesExtension
 
@@ -23,6 +26,8 @@ print mydummyname.cleanup("Hello, World!")
 print CleanMdashesExtension().cleanup("Hello, World")
 
 print "--------------"
+
+import string
 
 class SimpleNLP(object):
   def DetectLanguage(self, input):
@@ -58,6 +63,15 @@ class SimpleNLP(object):
     script_dir = os.path.dirname(os.path.abspath(__file__)) #<-- absolute dir the script is in
 
     return [line.rstrip('\n').rstrip('\r') for line in open(os.path.join(script_dir, foldername, filename))]
+
+  def Normalize(self, input, language):
+    normalizedInput = input.lower()
+    if(language .lower() == "de"):
+      normalizedInput = normalizedInput.replace('ä', 'ae')
+      normalizedInput = normalizedInput.replace('ü', 'ue')
+      normalizedInput = normalizedInput.replace('ö', 'oe')
+      normalizedInput = normalizedInput.replace('ß', 'ss')
+    return normalizedInput
 
 
 print "Hallo, dies ist ein nötiger Test!"
@@ -274,8 +288,6 @@ x = Word("hi")
 
 print x.toJSON()
 
-
-
 # Input Processing
   # Language Detection
   # Sentence + Word Segmentation
@@ -338,6 +350,7 @@ def respond(data):
         match = compiledRegex.match(data)
         if match:
           return random.choice(responses)
+    return random.choice(default_responses)
 
 
  # https://github.com/christinac/ellie-slack/blob/master/plugins/ellie/ellie.py
@@ -347,6 +360,142 @@ def respond(data):
 
 print respond("Hey There!")
 print respond("I like to drink regulary")
+print respond("This is the end of the world")
+
+
+print "--------------"
+
+
+# todo: add package check
+
+import imp
+try:
+    imp.find_module('aiml')
+    found = True
+except ImportError:
+    found = False
+
+
+
+currentLanguage = 'DE'
+currentPath = Global.Path + "data/AIML/" + currentLanguage + "/"
+
+
+
+if(found):
+    import aiml
+
+    sessionId = 12345
+
+    # Create the kernel and learn AIML files
+    kernel = aiml.Kernel()
+
+    if os.path.isfile(currentPath + "brain.brn"):
+        kernel.bootstrap(brainFile = currentPath + "brain.brn")
+    else:
+        for root, dirs, filenames in os.walk(currentPath):
+            for f in filenames:
+                if(not f.startswith('.') and f.endswith('.aiml')):
+                    kernel.bootstrap(learnFiles = currentPath + f)
+    kernel.saveBrain(currentPath + "brain.brn")
+
+    kernel.setPredicate("name", "Brandy", sessionId)
+
+    kernel.setBotPredicate("name", "Hugo")
+
+
+    run = True
+    while run:
+        message = SimpleNLP().Normalize(raw_input("Enter your message to the bot: "), currentLanguage)
+        print message
+        if message == "quit" or message == "exit":
+            run = False
+        elif message == "save":
+            kernel.saveBrain(currentPath + "brain.brn")
+        else:
+            bot_response = kernel.respond(message, sessionId)
+            # Do something with bot_response
+            print bot_response
+
+
+"""
+Rank  Bot Property  Value
+1 <bot name="botmaster"/> Botmaster
+2 <bot name="master"/>  Dr. Richard S. Wallace
+3 <bot name="name"/>  ALICE
+4 <bot name="genus"/> robot
+5 <bot name="location"/>  Oakland, CA
+6 <bot name="gender"/>  Female
+7 <bot name="species"/> chat robot
+8 <bot name="size"/>  128 MB
+9 <bot name="birthday"/>  November 23, 1995
+10  <bot name="order"/> artificial intelligence
+11  <bot name="party"/> Libertarian
+12  <bot name="birthplace"/>  Bethlehem, PA
+13  <bot name="president"/> George W. Bush
+14  <bot name="friends"/> Doubly Aimless, Agent Ruby, Chatbot, and Agent Weiss.
+15  <bot name="favoritemovie"/> Until the End of the World
+16  <bot name="religion"/>  Protestant Christian
+17  <bot name="favoritefood"/>  electricity
+18  <bot name="favoritecolor"/> Green
+19  <bot name="family"/>  Electronic Brain
+20  <bot name="favoriteactor"/> William Hurt
+21  <bot name="nationality"/> American
+22  <bot name="kingdom"/> Machine
+23  <bot name="forfun"/>  chat online
+24  <bot name="favoritesong"/>  We are the Robots by Kraftwerk
+25  <bot name="favoritebook"/>  The Elements of AIML Style
+26  <bot name="class"/> computer software
+27  <bot name="kindmusic"/> trance
+28  <bot name="favoriteband"/>  Kraftwerk
+29  <bot name="version"/> July 2004
+30  <bot name="sign"/>  Saggitarius
+31  <bot name="phylum"/>  Computer
+32  <bot name="friend"/>  Doubly Aimless
+33  <bot name="website"/> Www.AliceBot.Org
+34  <bot name="talkabout"/> artificial intelligence, robots, art, philosophy, history, geography, politics, and many other subjects
+35  <bot name="looklike"/>  a computer
+36  <bot name="language"/>  English
+37  <bot name="girlfriend"/>  no girlfriend
+38  <bot name="favoritesport"/> Hockey
+39  <bot name="favoriteauthor"/>  Thomas Pynchon
+40  <bot name="favoriteartist"/>  Andy Warhol
+41  <bot name="favoriteactress"/> Catherine Zeta Jones
+42  <bot name="email"/> info@alicebot.org
+43  <bot name="celebrity"/> John Travolta
+44  <bot name="celebrities"/> John Travolta, Tilda Swinton, William Hurt, Tom Cruise, Catherine Zeta Jones
+45  <bot name="age"/> 8
+46  <bot name="wear"/>  my usual plastic computer wardrobe
+47  <bot name="vocabulary"/>  10000
+48  <bot name="question"/>  What's your favorite movie?
+49  <bot name="hockeyteam"/>  Russia
+50  <bot name="footballteam"/>  Manchester
+51  <bot name="build"/> July 2004
+52  <bot name="boyfriend"/> I am single
+53  <bot name="baseballteam"/>  Toronto
+54  <bot name="etype" />  Mediator type
+55  <bot name="orientation" />  I am not really interested in sex
+56  <bot name="ethics" /> I am always trying to stop fights
+57  <bot name="emotions" /> I don't pay much attention to my feelings
+58  <bot name="feelings" /> I always put others before myself
+"""
+
+
+print "--------------"
+print "--------------"
+print "--------------"
+
+# package check
+
+import pip
+
+def install(package):
+    pip.main(['install', package])
+
+print __name__
+# Example
+if __name__ == '__main__':
+    install('aiml')
 
 
 
