@@ -38,7 +38,9 @@ LogTwo.Critical("Hallo, Welt!")
 from EmeraldAI.Logic.AliceBot import *
 
 
-ab = AliceBot("DE")
+AliceDE = AliceBot("DE")
+
+
 
 
 
