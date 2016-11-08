@@ -47,4 +47,6 @@ class AliceBot(object):
 """
 ToDo: Test
 kernel.getSessionData("Bob")
+
+Brain Path
 """

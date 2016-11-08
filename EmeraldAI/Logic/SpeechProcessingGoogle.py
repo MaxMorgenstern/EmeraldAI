@@ -9,12 +9,12 @@ class SpeechProcessingGoogle(object):
   language_2letter_cc = 'de'
   language_4letter_cc = 'de-DE'
 
-  def speak(audioString):
+  def Speak(audioString):
     tts = gTTS(text=audioString, lang=language_2letter_cc)
     tts.save("TMPAudio.mp3")
     os.system("afplay TMPAudio.mp3")
 
-  def recordAudio():
+  def Listen():
     r = sr.Recognizer()
     with sr.Microphone() as source:
       audio = r.listen(source)

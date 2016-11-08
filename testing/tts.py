@@ -59,7 +59,7 @@ def jarvis(data):
     if len(data) == 0:
         return ""
     speak("Ich habe folgendes verstanden: " + data)
-	"""
+    """
     if "how are you" in data:
         speak("I am fine")
 
@@ -71,7 +71,7 @@ def jarvis(data):
         location = data[2]
         speak("Hold on Max, I will show you where " + location + " is.")
         os.system("chromium-browser https://www.google.nl/maps/place/" + location + "/&amp;")
-	"""
+    """
 # initialization
 time.sleep(2)
 speak("Hi Max, was kann ich für dich tun?")
