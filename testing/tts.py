@@ -25,9 +25,12 @@ import time
 import os
 from gtts import gTTS
 
+language_2letter_cc = 'de'
+language_4letter_cc = 'de-DE'
+
 def speak(audioString):
     print("Speak: " + audioString)
-    tts = gTTS(text=audioString, lang='en')
+    tts = gTTS(text=audioString, lang=language_2letter_cc)
     tts.save("audio.mp3")
     os.system("afplay audio.mp3")
 
@@ -43,7 +46,7 @@ def recordAudio():
     try:
         # Uses the default API key
         # To use another API key: `r.recognize_google(audio, key="GOOGLE_SPEECH_RECOGNITION_API_KEY")`
-        data = r.recognize_google(audio, key = None, language = "de-DE", show_all = False)
+        data = r.recognize_google(audio, key = None, language = language_4letter_cc, show_all = False)
         print("You said: " + data)
     except sr.UnknownValueError:
         print("Google Speech Recognition could not understand audio")
@@ -53,6 +56,10 @@ def recordAudio():
     return data
 
 def jarvis(data):
+    if len(data) == 0:
+        return ""
+    speak("Ich habe folgendes verstanden: " + data)
+	"""
     if "how are you" in data:
         speak("I am fine")
 
@@ -64,10 +71,10 @@ def jarvis(data):
         location = data[2]
         speak("Hold on Max, I will show you where " + location + " is.")
         os.system("chromium-browser https://www.google.nl/maps/place/" + location + "/&amp;")
-
+	"""
 # initialization
 time.sleep(2)
-speak("Hi Max, what can I do for you?")
+speak("Hi Max, was kann ich für dich tun?")
 while 1:
     data = recordAudio()
     jarvis(data)

@@ -402,6 +402,8 @@ if(found):
 
     kernel.setBotPredicate("name", "Hugo")
 
+    kernel.verbose(True)
+
 
     run = True
     while run:
