@@ -48,6 +48,19 @@ ssml = """<speak version='1.0' xml:lang='de-DE'>
 				</voice>
 			</speak>"""
 
+
+ssml = """<speak version='1.0' xml:lang='en-US'>
+				<voice xml:lang='en-US' xml:gender='Female' name='Microsoft Server Speech Text to Speech Voice (en-US, ZiraRUS)'>
+					<prosody pitch="low"> This is low pitch. </prosody><prosody pitch="medium"> This is medium pitch. </prosody><prosody pitch="high"> This is high pitch. </prosody><prosody rate="slow"> This is slow speech. </prosody><prosody rate="1"> This is medium speech. </prosody><prosody rate="fast"> This is fast speech. </prosody><prosody volume="x-soft"> This is extra soft volume. </prosody><prosody volume="medium"> This is medium volume. </prosody><prosody volume="x-loud"> This is extra loud volume. </prosody>
+				</voice>
+			</speak>"""
+
+ssml = """<speak version='1.0' xml:lang='de-DE'>
+				<voice xml:lang='de-DE' xml:gender='Female' name='Microsoft Server Speech Text to Speech Voice (de-DE, Hedda)'>
+					<prosody pitch="low"> This is low pitch. </prosody><prosody pitch="medium"> This is medium pitch. </prosody><prosody pitch="high"> This is high pitch. </prosody><prosody rate="slow"> This is slow speech. </prosody><prosody rate="1"> This is medium speech. </prosody><prosody rate="fast"> This is fast speech. </prosody><prosody volume="x-soft"> This is extra soft volume. </prosody><prosody volume="medium"> This is medium volume. </prosody><prosody volume="x-loud"> This is extra loud volume. </prosody>
+				</voice>
+			</speak>"""
+
 # Max: !!! NEW !!!
 body = ssml #.encode('utf8')
 
