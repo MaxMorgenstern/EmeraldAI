@@ -20,7 +20,7 @@ class Google(object):
     self.audioPlayer = Config().Get("TextToSpeech", "AudioPlayer") + " '{0}'"
 
     self.apiKey = Config().Get("TextToSpeech", "GoogleAPIKey")
-    if(len(self.apiKey) == 0)
+    if(len(self.apiKey) == 0):
       self.apiKey = None
 
   def Speak(self, audioString):
