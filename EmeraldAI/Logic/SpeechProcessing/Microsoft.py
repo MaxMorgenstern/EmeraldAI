@@ -2,19 +2,22 @@
 # -*- coding: utf-8 -*-
 import speech_recognition as sr
 import httplib
-from urlparse import urlparse
 import json
 import os
+import re
+from urlparse import urlparse
+from EmeraldAI.Logic.Global import Global
+from EmeraldAI.Config.Config import *
 
 class Microsoft(object):
 
   language_2letter_cc = 'de'
   language_4letter_cc = 'de-DE'
-  audioPlayer = "afplay {0}"
+  audioPlayer = "afplay '{0}'"
 
   voiceGender = 'Female'
   voiceName = 'Microsoft Server Speech Text to Speech Voice (de-DE, Hedda)'
-  apiKey = "62a761e7e88f4274b912796a7c4c97c7"
+  apiKey = None
   accesstoken = None
 
   ssmlTemplate = """<speak version='1.0' xml:lang='{0}'>
@@ -23,9 +26,15 @@ class Microsoft(object):
         </voice>
       </speak>"""
 
-  audioPlayer = "afplay"
-
   def __init__(self):
+    self.language_2letter_cc = Config().Get("TextToSpeech", "CountryCode2Letter")
+    self.language_4letter_cc = Config().Get("TextToSpeech", "CountryCode4Letter")
+    self.audioPlayer = Config().Get("TextToSpeech", "AudioPlayer") + " '{0}'"
+
+    self.voiceGender = Config().Get("TextToSpeech", "MicrosoftVoiceGender")
+    self.voiceName = Config().Get("TextToSpeech", "MicrosoftVoiceName")
+    self.apiKey = Config().Get("TextToSpeech", "MicrosoftAPIKey")
+
     params = ""
     headers = {"Ocp-Apim-Subscription-Key": self.apiKey}
 
@@ -35,7 +44,7 @@ class Microsoft(object):
     conn = httplib.HTTPSConnection(AccessTokenHost)
     conn.request("POST", path, params, headers)
     response = conn.getresponse()
-    print(response.status, response.reason)
+  #  print(response.status, response.reason)
 
     data = response.read()
     conn.close()
@@ -43,34 +52,37 @@ class Microsoft(object):
     self.accesstoken = data.decode("UTF-8")
 
 
-  def Speak(audioString):
-    ssml = self.ssmlTemplate.format(self.language_4letter_cc, self.voiceGender, self.voiceName, audioString)
-    body = ssml #.encode('utf8')
+  def Speak(self, audioString):
+    tmpAudioFile = Global().EmeraldPath + "Data/TTS/Microsoft_" + self.language_2letter_cc + "_" + self.CleanString(audioString) + ".wav"
 
-    headers = {"Content-type": "application/ssml+xml",
-      "X-Microsoft-OutputFormat": "riff-16khz-16bit-mono-pcm",
-      "Authorization": "Bearer " + self.accesstoken,
-      "X-Search-AppId": "07D3234E49CE426DAA29772419F436CA",
-      "X-Search-ClientID": "1ECFAE91408841A480F00935DC390960",
-      "User-Agent": "TTSForPython"}
+    if not os.path.isfile(tmpAudioFile):
+      ssml = self.ssmlTemplate.format(self.language_4letter_cc, self.voiceGender, self.voiceName, audioString)
+      body = ssml #.encode('utf8')
 
-    #Connect to server to synthesize the wave
-    conn = httplib.HTTPSConnection("speech.platform.bing.com")
-    conn.request("POST", "/synthesize", body, headers)
-    response = conn.getresponse()
-#      print(response.status, response.reason)
+      headers = {"Content-type": "application/ssml+xml",
+        "X-Microsoft-OutputFormat": "riff-16khz-16bit-mono-pcm",
+        "Authorization": "Bearer " + self.accesstoken,
+        "X-Search-AppId": "07D3234E49CE426DAA29772419F436CA",
+        "X-Search-ClientID": "1ECFAE91408841A480F00935DC390960",
+        "User-Agent": "TTSForPython"}
 
-    data = response.read()
-    conn.close()
-#       len(data)
+      #Connect to server to synthesize the wave
+      conn = httplib.HTTPSConnection("speech.platform.bing.com")
+      conn.request("POST", "/synthesize", body, headers)
+      response = conn.getresponse()
+  #      print(response.status, response.reason)
 
-    with open("TMPAudioMicrosoft.wav", "wb") as f:
-      f.write(data)
+      data = response.read()
+      conn.close()
+  #       len(data)
 
-    os.system(self.audioPlayer.format("TMPAudioMicrosoft.wav"))
+      with open(tmpAudioFile, "wb") as f:
+        f.write(data)
+
+    os.system(self.audioPlayer.format(tmpAudioFile))
 
 
-  def Listen():
+  def Listen(self):
     r = sr.Recognizer()
     with sr.Microphone() as source:
       audio = r.listen(source)
@@ -85,15 +97,21 @@ class Microsoft(object):
     return data
 
 
+  def CleanString(self, string):
+    data = re.sub(r'\W+', '', string)
+    return (data[:75] + '_TRIMMED') if len(data) > 75 else data
+
+
 
 """
+todo try catch
+
 
 pip install SpeechRecognition
 
 Speak:
 
 https://www.microsoft.com/cognitive-services/en-us/Speech-api/documentation/API-Reference-REST/BingVoiceOutput
-
 
 Locale	Gender	Service name mapping
 ar-EG*	Female	"Microsoft Server Speech Text to Speech Voice (ar-EG, Hoda)"

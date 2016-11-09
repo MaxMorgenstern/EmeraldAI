@@ -6,7 +6,6 @@ from EmeraldAI.Logic.Global import *
 from EmeraldAI.Logic.NLP import *
 from EmeraldAI.Config.Config import *
 
-from EmeraldAI.Logic.Logger import *
 
 
 x = Word("hi")
@@ -26,23 +25,32 @@ print Config().Get("Server", "Password")
 print Config().Get("Server", "Debug")
 
 
+"""
 
-LogTwo = Logger("ConsoleLogger")
+from EmeraldAI.Logic.Logger import *
+LogTwo = Logger("FileLogger")
 
 LogTwo.Info("Hallo, Welt!")
 LogTwo.Debug("Hallo, Welt!")
 LogTwo.Error("Hallo, Welt!")
 LogTwo.Critical("Hallo, Welt!")
-"""
-
-from EmeraldAI.Logic.AliceBot import *
 
 
-AliceDE = AliceBot("DE")
+#from EmeraldAI.Logic.AliceBot import *
+
+
+#AliceDE = AliceBot("DE")
 
 
 from EmeraldAI.Logic.SpeechProcessing.Google import *
 from EmeraldAI.Logic.SpeechProcessing.Microsoft import *
 
 g = Google()
+g.Speak("Frau Maus, ich singe dir ein Lied: pv zk pv pv zk pv zk kz zk pv pv pv zk pv zk zk pzk pzk pvzkpkzvpvzk kkkkkk bsch")
 g.Speak("Hallo Welt!")
+
+print "-----"
+
+m = Microsoft()
+m.Speak("Frau Maus, ich singe dir ein Lied: pv zk pv pv zk pv zk kz zk pv pv pv zk pv zk zk pzk pzk pvzkpkzvpvzk kkkkkk bsch")
+m.Speak("Hallo Welt!")
