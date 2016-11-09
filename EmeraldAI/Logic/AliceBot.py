@@ -43,10 +43,5 @@ class AliceBot(object):
   def SaveBrain(self, name, value):
     self.kernel.saveBrain(brainPath)
 
-
-"""
-ToDo: Test
-kernel.getSessionData("Bob")
-
-Brain Path
-"""
+  def GetSessionData(self, name):
+    self.kernel.getSessionData(name)

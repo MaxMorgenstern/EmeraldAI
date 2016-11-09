@@ -41,6 +41,8 @@ from EmeraldAI.Logic.AliceBot import *
 AliceDE = AliceBot("DE")
 
 
+from EmeraldAI.Logic.SpeechProcessing.Google import *
+from EmeraldAI.Logic.SpeechProcessing.Microsoft import *
 
-
-
+g = Google()
+g.Speak("Hallo Welt!")

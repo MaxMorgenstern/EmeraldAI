@@ -10,17 +10,20 @@ class Microsoft(object):
 
   language_2letter_cc = 'de'
   language_4letter_cc = 'de-DE'
+  audioPlayer = "afplay {0}"
+
   voiceGender = 'Female'
   voiceName = 'Microsoft Server Speech Text to Speech Voice (de-DE, Hedda)'
-
   apiKey = "62a761e7e88f4274b912796a7c4c97c7"
   accesstoken = None
 
   ssmlTemplate = """<speak version='1.0' xml:lang='{0}'>
-				<voice xml:lang='{0}' xml:gender='{1}' name='{2}'>
-					{3}
-				</voice>
-			</speak>"""
+        <voice xml:lang='{0}' xml:gender='{1}' name='{2}'>
+          {3}
+        </voice>
+      </speak>"""
+
+  audioPlayer = "afplay"
 
   def __init__(self):
     params = ""
@@ -51,21 +54,20 @@ class Microsoft(object):
       "X-Search-ClientID": "1ECFAE91408841A480F00935DC390960",
       "User-Agent": "TTSForPython"}
 
-      #Connect to server to synthesize the wave
-      conn = httplib.HTTPSConnection("speech.platform.bing.com")
-      conn.request("POST", "/synthesize", body, headers)
-      response = conn.getresponse()
+    #Connect to server to synthesize the wave
+    conn = httplib.HTTPSConnection("speech.platform.bing.com")
+    conn.request("POST", "/synthesize", body, headers)
+    response = conn.getresponse()
 #      print(response.status, response.reason)
 
-      data = response.read()
-      conn.close()
+    data = response.read()
+    conn.close()
 #       len(data)
 
-      with open("TMPAudioMicrosoft.wav", "wb") as f:
-        f.write(data)
+    with open("TMPAudioMicrosoft.wav", "wb") as f:
+      f.write(data)
 
-      os.system("afplay TMPAudioMicrosoft.wav")
-
+    os.system(self.audioPlayer.format("TMPAudioMicrosoft.wav"))
 
 
   def Listen():
@@ -85,6 +87,8 @@ class Microsoft(object):
 
 
 """
+
+pip install SpeechRecognition
 
 Speak:
 
@@ -121,3 +125,4 @@ zh-HK	Female	"Microsoft Server Speech Text to Speech Voice (zh-HK, Tracy, Apollo
 zh-HK	Male	"Microsoft Server Speech Text to Speech Voice (zh-HK, Danny, Apollo)"
 zh-TW	Female	"Microsoft Server Speech Text to Speech Voice (zh-TW, Yating, Apollo)"
 zh-TW	Male	"Microsoft Server Speech Text to Speech Voice (zh-TW, Zhiwei, Apollo)"
+"""
