@@ -1,7 +1,13 @@
 [DEFAULT]
-Testvalue = 45
-Debug = yes
+LoggerName = root
 
-[Server]
-Username = root
-Password = toor
+[TextToSpeech]
+CountryCode2Letter = de
+CountryCode4Letter = de-DE
+AudioPlayer = afplay
+
+MicrosoftVoiceGender = Female
+MicrosoftVoiceName = Microsoft Server Speech Text to Speech Voice (de-DE, Hedda)
+MicrosoftAPIKey = xxx
+
+GoogleAPIKey = xxx
