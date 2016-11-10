@@ -56,7 +56,6 @@ class Google(object):
 """
 
 TODO:
-self.apiKey - not in use
 
 log instead of print
 

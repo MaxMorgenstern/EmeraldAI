@@ -20,8 +20,17 @@ while(loop):
 
   if(data.lower() == 'ende' or data.lower() == 'beenden'):
   	loop = False
+  elif(len(data) == 0)
+    print "No data found"
   else:
     response = alice.GetResponse(data)
     print "We respond: '{0}'".format(response)
     speech.Speak(response)
 
+
+
+"""
+pip install SpeechRecognition
+pip install gTTS
+pip install aiml
+"""
