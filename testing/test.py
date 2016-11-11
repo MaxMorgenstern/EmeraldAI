@@ -7,15 +7,17 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 from EmeraldAI.Logic.SpeechProcessing.Google import *
+from EmeraldAI.Logic.SpeechProcessing.Ivona import *
 from EmeraldAI.Logic.AliceBot import *
 
-speech = Google()
+google = Google()
+ivona = Ivona()
 alice = AliceBot("DE")
 
 loop = True
 
 while(loop):
-  data = speech.Listen()
+  data = google.Listen()
   print "We got: '{0}'".format(data)
 
   if(data.lower() == 'ende' or data.lower() == 'beenden'):
@@ -25,7 +27,7 @@ while(loop):
   else:
     response = alice.GetResponse(data)
     print "We respond: '{0}'".format(response)
-    speech.Speak(response)
+    ivona.Speak(response)
 
 
 

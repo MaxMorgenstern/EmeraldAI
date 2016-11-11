@@ -8,6 +8,11 @@ AudioPlayer = afplay
 
 MicrosoftVoiceGender = Female
 MicrosoftVoiceName = Microsoft Server Speech Text to Speech Voice (de-DE, Hedda)
-MicrosoftAPIKey = xxx
+MicrosoftAPIKey =
 
-GoogleAPIKey = xxx
+GoogleAPIKey =
+
+IvonaVoiceGender = Hans
+IvonaVoiceName = Male
+IvonaAccessKey =
+IvonaSecretKey =
