@@ -6,7 +6,7 @@ import json
 import os
 import re
 from urlparse import urlparse
-from EmeraldAI.Logic.Global import Global
+from EmeraldAI.Logic.Modules import Global
 from EmeraldAI.Config.Config import *
 
 class Microsoft(object):
@@ -55,7 +55,7 @@ class Microsoft(object):
   def Speak(self, audioString):
     if(len(audioString) == 0):
       return
-    tmpAudioFile = Global().EmeraldPath + "Data/TTS/Microsoft_" + self.__language_2letter_cc + "_" + self.CleanString(audioString) + ".wav"
+    tmpAudioFile = Global.EmeraldPath + "Data/TTS/Microsoft_" + self.__language_2letter_cc + "_" + self.CleanString(audioString) + ".wav"
 
     if not os.path.isfile(tmpAudioFile):
       ssml = self.__ssmlTemplate.format(self.__language_4letter_cc, self.__voiceGender, self.__voiceName, audioString)

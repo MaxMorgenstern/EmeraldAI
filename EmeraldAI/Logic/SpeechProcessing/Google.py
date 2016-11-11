@@ -4,7 +4,7 @@ import speech_recognition as sr
 import os
 import re
 from gtts import gTTS
-from EmeraldAI.Logic.Global import Global
+from EmeraldAI.Logic.Modules import Global
 from EmeraldAI.Config.Config import *
 
 class Google(object):
@@ -26,7 +26,7 @@ class Google(object):
   def Speak(self, audioString):
     if(len(audioString) == 0):
       return
-    tmpAudioFile = Global().EmeraldPath + "Data/TTS/Google_" + self.__language_2letter_cc + "_" + self.CleanString(audioString) + ".mp3"
+    tmpAudioFile = Global.EmeraldPath + "Data/TTS/Google_" + self.__language_2letter_cc + "_" + self.CleanString(audioString) + ".mp3"
 
     if not os.path.isfile(tmpAudioFile):
       tts = gTTS(text=audioString, lang=self.__language_2letter_cc)

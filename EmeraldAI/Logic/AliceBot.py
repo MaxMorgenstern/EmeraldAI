@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import os
 import aiml
-from EmeraldAI.Logic.Global import Global
+from EmeraldAI.Logic.Modules import Global
 
 class AliceBot(object):
   kernel = None
@@ -17,8 +17,8 @@ class AliceBot(object):
     self.language = language
     self.kernel = aiml.Kernel()
 
-    self.__brainPath = Global().EmeraldPath + "Data/AIML/Brain/brain_" + language + ".brn"
-    self.__AIMLPath = Global().EmeraldPath + "Data/AIML/" + language.upper() + "/"
+    self.__brainPath = Global.EmeraldPath + "Data/AIML/Brain/brain_" + language + ".brn"
+    self.__AIMLPath = Global.EmeraldPath + "Data/AIML/" + language.upper() + "/"
 
     if os.path.isfile(self.__brainPath):
         self.kernel.bootstrap(self.__brainPath)
