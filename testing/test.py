@@ -20,7 +20,7 @@ while(loop):
 
   if(data.lower() == 'ende' or data.lower() == 'beenden'):
   	loop = False
-  elif(len(data) == 0)
+  elif(len(data) == 0):
     print "No data found"
   else:
     response = alice.GetResponse(data)

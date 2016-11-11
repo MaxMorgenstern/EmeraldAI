@@ -9,28 +9,30 @@ from EmeraldAI.Config.Config import *
 
 class Google(object):
 
-  language_2letter_cc = 'de'
-  language_4letter_cc = 'de-DE'
-  audioPlayer = "afplay '{0}'"
-  apiKey = None
+  __language_2letter_cc = 'de'
+  __language_4letter_cc = 'de-DE'
+  __audioPlayer = "afplay '{0}'"
+  __apiKey = None
 
   def __init__(self):
-    self.language_2letter_cc = Config().Get("TextToSpeech", "CountryCode2Letter")
-    self.language_4letter_cc = Config().Get("TextToSpeech", "CountryCode4Letter")
-    self.audioPlayer = Config().Get("TextToSpeech", "AudioPlayer") + " '{0}'"
+    self.__language_2letter_cc = Config().Get("TextToSpeech", "CountryCode2Letter")
+    self.__language_4letter_cc = Config().Get("TextToSpeech", "CountryCode4Letter")
+    self.__audioPlayer = Config().Get("TextToSpeech", "AudioPlayer") + " '{0}'"
 
-    self.apiKey = Config().Get("TextToSpeech", "GoogleAPIKey")
-    if(len(self.apiKey) == 0):
-      self.apiKey = None
+    self.__apiKey = Config().Get("TextToSpeech", "GoogleAPIKey")
+    if(len(self.__apiKey) == 0):
+      self.__apiKey = None
 
   def Speak(self, audioString):
-    tmpAudioFile = Global().EmeraldPath + "Data/TTS/Google_" + self.language_2letter_cc + "_" + self.CleanString(audioString) + ".mp3"
+    if(len(audioString) == 0):
+      return
+    tmpAudioFile = Global().EmeraldPath + "Data/TTS/Google_" + self.__language_2letter_cc + "_" + self.CleanString(audioString) + ".mp3"
 
     if not os.path.isfile(tmpAudioFile):
-      tts = gTTS(text=audioString, lang=self.language_2letter_cc)
+      tts = gTTS(text=audioString, lang=self.__language_2letter_cc)
       tts.save(tmpAudioFile)
 
-    os.system(self.audioPlayer.format(tmpAudioFile))
+    os.system(self.__audioPlayer.format(tmpAudioFile))
 
   def Listen(self):
     r = sr.Recognizer()
@@ -39,7 +41,7 @@ class Google(object):
 
     data = ""
     try:
-      data = r.recognize_google(audio, key = self.apiKey, language = self.language_4letter_cc, show_all = False)
+      data = r.recognize_google(audio, key = self.__apiKey, language = self.__language_4letter_cc, show_all = False)
     except sr.UnknownValueError:
       print("Google Speech Recognition could not understand audio")
     except sr.RequestError as e:

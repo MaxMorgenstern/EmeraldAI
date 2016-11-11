@@ -11,37 +11,37 @@ from EmeraldAI.Config.Config import *
 
 class Microsoft(object):
 
-  language_2letter_cc = 'de'
-  language_4letter_cc = 'de-DE'
-  audioPlayer = "afplay '{0}'"
+  __language_2letter_cc = 'de'
+  __language_4letter_cc = 'de-DE'
+  __audioPlayer = "afplay '{0}'"
 
-  voiceGender = 'Female'
-  voiceName = 'Microsoft Server Speech Text to Speech Voice (de-DE, Hedda)'
-  apiKey = None
-  accesstoken = None
+  __voiceGender = 'Female'
+  __voiceName = 'Microsoft Server Speech Text to Speech Voice (de-DE, Hedda)'
+  __apiKey = None
+  __accesstoken = None
 
-  ssmlTemplate = """<speak version='1.0' xml:lang='{0}'>
+  __ssmlTemplate = """<speak version='1.0' xml:lang='{0}'>
         <voice xml:lang='{0}' xml:gender='{1}' name='{2}'>
           {3}
         </voice>
       </speak>"""
 
   def __init__(self):
-    self.language_2letter_cc = Config().Get("TextToSpeech", "CountryCode2Letter")
-    self.language_4letter_cc = Config().Get("TextToSpeech", "CountryCode4Letter")
-    self.audioPlayer = Config().Get("TextToSpeech", "AudioPlayer") + " '{0}'"
+    self.__language_2letter_cc = Config().Get("TextToSpeech", "CountryCode2Letter")
+    self.__language_4letter_cc = Config().Get("TextToSpeech", "CountryCode4Letter")
+    self.__audioPlayer = Config().Get("TextToSpeech", "AudioPlayer") + " '{0}'"
 
-    self.voiceGender = Config().Get("TextToSpeech", "MicrosoftVoiceGender")
-    self.voiceName = Config().Get("TextToSpeech", "MicrosoftVoiceName")
-    self.apiKey = Config().Get("TextToSpeech", "MicrosoftAPIKey")
+    self.__voiceGender = Config().Get("TextToSpeech", "MicrosoftVoiceGender")
+    self.__voiceName = Config().Get("TextToSpeech", "MicrosoftVoiceName")
+    self.__apiKey = Config().Get("TextToSpeech", "MicrosoftAPIKey")
 
     params = ""
-    headers = {"Ocp-Apim-Subscription-Key": self.apiKey}
+    headers = {"Ocp-Apim-Subscription-Key": self.__apiKey}
 
-    AccessTokenHost = "api.cognitive.microsoft.com"
+    __AccessTokenHost = "api.cognitive.microsoft.com"
     path = "/sts/v1.0/issueToken"
 
-    conn = httplib.HTTPSConnection(AccessTokenHost)
+    conn = httplib.HTTPSConnection(__AccessTokenHost)
     conn.request("POST", path, params, headers)
     response = conn.getresponse()
   #  print(response.status, response.reason)
@@ -49,19 +49,21 @@ class Microsoft(object):
     data = response.read()
     conn.close()
 
-    self.accesstoken = data.decode("UTF-8")
+    self.__accesstoken = data.decode("UTF-8")
 
 
   def Speak(self, audioString):
-    tmpAudioFile = Global().EmeraldPath + "Data/TTS/Microsoft_" + self.language_2letter_cc + "_" + self.CleanString(audioString) + ".wav"
+    if(len(audioString) == 0):
+      return
+    tmpAudioFile = Global().EmeraldPath + "Data/TTS/Microsoft_" + self.__language_2letter_cc + "_" + self.CleanString(audioString) + ".wav"
 
     if not os.path.isfile(tmpAudioFile):
-      ssml = self.ssmlTemplate.format(self.language_4letter_cc, self.voiceGender, self.voiceName, audioString)
+      ssml = self.__ssmlTemplate.format(self.__language_4letter_cc, self.__voiceGender, self.__voiceName, audioString)
       body = ssml #.encode('utf8')
 
       headers = {"Content-type": "application/ssml+xml",
         "X-Microsoft-OutputFormat": "riff-16khz-16bit-mono-pcm",
-        "Authorization": "Bearer " + self.accesstoken,
+        "Authorization": "Bearer " + self.__accesstoken,
         "X-Search-AppId": "07D3234E49CE426DAA29772419F436CA",
         "X-Search-ClientID": "1ECFAE91408841A480F00935DC390960",
         "User-Agent": "TTSForPython"}
@@ -79,7 +81,7 @@ class Microsoft(object):
       with open(tmpAudioFile, "wb") as f:
         f.write(data)
 
-    os.system(self.audioPlayer.format(tmpAudioFile))
+    os.system(self.__audioPlayer.format(tmpAudioFile))
 
 
   def Listen(self):
@@ -89,7 +91,7 @@ class Microsoft(object):
 
     data = ""
     try:
-      data = r.recognize_bing(audio, key = self.apiKey, language = language_4letter_cc, show_all = False)
+      data = r.recognize_bing(audio, key = self.__apiKey, language = __language_4letter_cc, show_all = False)
     except sr.UnknownValueError:
         print("Microsoft Bing Voice Recognition could not understand audio")
     except sr.RequestError as e:
@@ -113,34 +115,34 @@ Speak:
 
 https://www.microsoft.com/cognitive-services/en-us/Speech-api/documentation/API-Reference-REST/BingVoiceOutput
 
-Locale	Gender	Service name mapping
-ar-EG*	Female	"Microsoft Server Speech Text to Speech Voice (ar-EG, Hoda)"
-de-DE	Female	"Microsoft Server Speech Text to Speech Voice (de-DE, Hedda)"
-de-DE	Male	"Microsoft Server Speech Text to Speech Voice (de-DE, Stefan, Apollo)"
-en-AU	Female	"Microsoft Server Speech Text to Speech Voice (en-AU, Catherine)"
-en-CA	Female	"Microsoft Server Speech Text to Speech Voice (en-CA, Linda)"
-en-GB	Female	"Microsoft Server Speech Text to Speech Voice (en-GB, Susan, Apollo)"
-en-GB	Male	"Microsoft Server Speech Text to Speech Voice (en-GB, George, Apollo)"
-en-IN	Male	"Microsoft Server Speech Text to Speech Voice (en-IN, Ravi, Apollo)"
-en-US	Female	"Microsoft Server Speech Text to Speech Voice (en-US, ZiraRUS)"
-en-US	Male	"Microsoft Server Speech Text to Speech Voice (en-US, BenjaminRUS)"
-es-ES	Female	"Microsoft Server Speech Text to Speech Voice (es-ES, Laura, Apollo)"
-es-ES	Male	"Microsoft Server Speech Text to Speech Voice (es-ES, Pablo, Apollo)"
-es-MX	Male	"Microsoft Server Speech Text to Speech Voice (es-MX, Raul, Apollo)"
-fr-CA	Female	"Microsoft Server Speech Text to Speech Voice (fr-CA, Caroline)"
-fr-FR	Female	"Microsoft Server Speech Text to Speech Voice (fr-FR, Julie, Apollo)"
-fr-FR	Male	"Microsoft Server Speech Text to Speech Voice (fr-FR, Paul, Apollo)"
-it-IT	Male	"Microsoft Server Speech Text to Speech Voice (it-IT, Cosimo, Apollo)"
-ja-JP	Female	"Microsoft Server Speech Text to Speech Voice (ja-JP, Ayumi, Apollo)"
-ja-JP	Male	"Microsoft Server Speech Text to Speech Voice (ja-JP, Ichiro, Apollo)"
-pt-BR	Male	"Microsoft Server Speech Text to Speech Voice (pt-BR, Daniel, Apollo)"
-ru-RU	Female	"Microsoft Server Speech Text to Speech Voice (ru-RU, Irina, Apollo)"
-ru-RU	Male	"Microsoft Server Speech Text to Speech Voice (ru-RU, Pavel, Apollo)"
-zh-CN	Female	"Microsoft Server Speech Text to Speech Voice (zh-CN, HuihuiRUS)"
-zh-CN	Female	"Microsoft Server Speech Text to Speech Voice (zh-CN, Yaoyao, Apollo)"
-zh-CN	Male	"Microsoft Server Speech Text to Speech Voice (zh-CN, Kangkang, Apollo)"
-zh-HK	Female	"Microsoft Server Speech Text to Speech Voice (zh-HK, Tracy, Apollo)"
-zh-HK	Male	"Microsoft Server Speech Text to Speech Voice (zh-HK, Danny, Apollo)"
-zh-TW	Female	"Microsoft Server Speech Text to Speech Voice (zh-TW, Yating, Apollo)"
-zh-TW	Male	"Microsoft Server Speech Text to Speech Voice (zh-TW, Zhiwei, Apollo)"
+Locale  Gender  Service name mapping
+ar-EG*  Female  "Microsoft Server Speech Text to Speech Voice (ar-EG, Hoda)"
+de-DE   Female  "Microsoft Server Speech Text to Speech Voice (de-DE, Hedda)"
+de-DE   Male    "Microsoft Server Speech Text to Speech Voice (de-DE, Stefan, Apollo)"
+en-AU   Female  "Microsoft Server Speech Text to Speech Voice (en-AU, Catherine)"
+en-CA   Female  "Microsoft Server Speech Text to Speech Voice (en-CA, Linda)"
+en-GB   Female  "Microsoft Server Speech Text to Speech Voice (en-GB, Susan, Apollo)"
+en-GB   Male    "Microsoft Server Speech Text to Speech Voice (en-GB, George, Apollo)"
+en-IN   Male    "Microsoft Server Speech Text to Speech Voice (en-IN, Ravi, Apollo)"
+en-US   Female  "Microsoft Server Speech Text to Speech Voice (en-US, ZiraRUS)"
+en-US   Male    "Microsoft Server Speech Text to Speech Voice (en-US, BenjaminRUS)"
+es-ES   Female  "Microsoft Server Speech Text to Speech Voice (es-ES, Laura, Apollo)"
+es-ES   Male    "Microsoft Server Speech Text to Speech Voice (es-ES, Pablo, Apollo)"
+es-MX   Male    "Microsoft Server Speech Text to Speech Voice (es-MX, Raul, Apollo)"
+fr-CA   Female  "Microsoft Server Speech Text to Speech Voice (fr-CA, Caroline)"
+fr-FR   Female  "Microsoft Server Speech Text to Speech Voice (fr-FR, Julie, Apollo)"
+fr-FR   Male    "Microsoft Server Speech Text to Speech Voice (fr-FR, Paul, Apollo)"
+it-IT   Male    "Microsoft Server Speech Text to Speech Voice (it-IT, Cosimo, Apollo)"
+ja-JP   Female  "Microsoft Server Speech Text to Speech Voice (ja-JP, Ayumi, Apollo)"
+ja-JP   Male    "Microsoft Server Speech Text to Speech Voice (ja-JP, Ichiro, Apollo)"
+pt-BR   Male    "Microsoft Server Speech Text to Speech Voice (pt-BR, Daniel, Apollo)"
+ru-RU   Female  "Microsoft Server Speech Text to Speech Voice (ru-RU, Irina, Apollo)"
+ru-RU   Male    "Microsoft Server Speech Text to Speech Voice (ru-RU, Pavel, Apollo)"
+zh-CN   Female  "Microsoft Server Speech Text to Speech Voice (zh-CN, HuihuiRUS)"
+zh-CN   Female  "Microsoft Server Speech Text to Speech Voice (zh-CN, Yaoyao, Apollo)"
+zh-CN   Male    "Microsoft Server Speech Text to Speech Voice (zh-CN, Kangkang, Apollo)"
+zh-HK   Female  "Microsoft Server Speech Text to Speech Voice (zh-HK, Tracy, Apollo)"
+zh-HK   Male    "Microsoft Server Speech Text to Speech Voice (zh-HK, Danny, Apollo)"
+zh-TW   Female  "Microsoft Server Speech Text to Speech Voice (zh-TW, Yating, Apollo)"
+zh-TW   Male    "Microsoft Server Speech Text to Speech Voice (zh-TW, Zhiwei, Apollo)"
 """
