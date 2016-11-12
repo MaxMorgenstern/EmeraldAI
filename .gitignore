@@ -221,3 +221,6 @@ pip-log.txt
 #############
 *.brn
 *.log
+*.wav
+*.mp3
+*.config

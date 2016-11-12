@@ -2,13 +2,13 @@
 # -*- coding: utf-8 -*-
 import logging
 import logging.config
-from EmeraldAI.Logic.Global import Global
+from EmeraldAI.Logic.Modules import Global
 
 class Logger(object):
   logger = None
 
   def __init__(self, loggerName):
-    logging.config.fileConfig(Global().EmeraldPath + "Config/logging.config")
+    logging.config.fileConfig(Global.EmeraldPath + "Config/logging.config")
     self.logger = logging.getLogger(loggerName)
 
   def Debug(self, data):
@@ -36,11 +36,5 @@ class=handlers.RotatingFileHandler
 level=DEBUG
 formatter=simpleFormatter
 args=('rotated.log', 'a', 100000, 1, 'utf8')
-
-
-Log Location:
-LOG_FILENAME = 'example.log'
-logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
-
 
 """

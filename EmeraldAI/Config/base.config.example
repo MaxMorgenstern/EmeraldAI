@@ -1,0 +1,18 @@
+[DEFAULT]
+LoggerName = root
+
+[TextToSpeech]
+CountryCode2Letter = de
+CountryCode4Letter = de-DE
+AudioPlayer = afplay
+
+MicrosoftVoiceGender = Female
+MicrosoftVoiceName = Microsoft Server Speech Text to Speech Voice (de-DE, Hedda)
+MicrosoftAPIKey =
+
+GoogleAPIKey =
+
+IvonaVoiceGender = Hans
+IvonaVoiceName = Male
+IvonaAccessKey =
+IvonaSecretKey =

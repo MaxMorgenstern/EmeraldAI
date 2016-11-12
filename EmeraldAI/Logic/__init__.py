@@ -1,1 +1,3 @@
-__all__ = ["AliceBot", "Global", "Logger", "NLP", "PackageManager"]
+import Modules
+import SpeechProcessing
+__all__ = ["AliceBot", "Logger"]
