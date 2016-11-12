@@ -102,7 +102,7 @@ class Ivona(object):
     self.__setCodec('mp3')
 
 
-  def Speak(self, audioString):
+  def Speak(self, audioString, playAudio=False):
     if(len(audioString) == 0):
       return
     tmpAudioFile = Global.EmeraldPath + "Data/TTS/Ivona_" + self.__language_2letter_cc + "_" + self.CleanString(audioString) + ".mp3"
@@ -118,7 +118,9 @@ class Ivona(object):
         else:
           f.write(r.content)
 
-    os.system(self.__audioPlayer.format(tmpAudioFile))
+    if(playAudio):
+      os.system(self.__audioPlayer.format(tmpAudioFile))
+    return tmpAudioFile
 
   def GetVoices(self):
     """Returns all the possible voices

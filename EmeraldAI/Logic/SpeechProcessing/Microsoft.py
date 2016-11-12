@@ -52,7 +52,7 @@ class Microsoft(object):
     self.__accesstoken = data.decode("UTF-8")
 
 
-  def Speak(self, audioString):
+  def Speak(self, audioString, playAudio=False):
     if(len(audioString) == 0):
       return
     tmpAudioFile = Global.EmeraldPath + "Data/TTS/Microsoft_" + self.__language_2letter_cc + "_" + self.CleanString(audioString) + ".wav"
@@ -81,7 +81,9 @@ class Microsoft(object):
       with open(tmpAudioFile, "wb") as f:
         f.write(data)
 
-    os.system(self.__audioPlayer.format(tmpAudioFile))
+    if(playAudio):
+      os.system(self.__audioPlayer.format(tmpAudioFile))
+    return tmpAudioFile
 
 
   def Listen(self):

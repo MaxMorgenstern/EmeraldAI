@@ -23,7 +23,7 @@ class Google(object):
     if(len(self.__apiKey) == 0):
       self.__apiKey = None
 
-  def Speak(self, audioString):
+  def Speak(self, audioString, playAudio=False):
     if(len(audioString) == 0):
       return
     tmpAudioFile = Global.EmeraldPath + "Data/TTS/Google_" + self.__language_2letter_cc + "_" + self.CleanString(audioString) + ".mp3"
@@ -32,7 +32,9 @@ class Google(object):
       tts = gTTS(text=audioString, lang=self.__language_2letter_cc)
       tts.save(tmpAudioFile)
 
-    os.system(self.__audioPlayer.format(tmpAudioFile))
+    if(playAudio):
+      os.system(self.__audioPlayer.format(tmpAudioFile))
+    return tmpAudioFile
 
   def Listen(self):
     r = sr.Recognizer()

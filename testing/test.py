@@ -27,8 +27,9 @@ while(loop):
   else:
     response = alice.GetResponse(data)
     print "We respond: '{0}'".format(response)
-    ivona.Speak(response)
-
+    audioPath = ivona.Speak(response)
+    print "Playing file: '{0}'".format(audioPath)
+    os.system("afplay '{0}'".format(audioPath))
 
 
 """
