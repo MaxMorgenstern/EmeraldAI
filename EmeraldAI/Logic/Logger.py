@@ -37,10 +37,4 @@ level=DEBUG
 formatter=simpleFormatter
 args=('rotated.log', 'a', 100000, 1, 'utf8')
 
-
-Log Location:
-LOG_FILENAME = 'example.log'
-logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
-
-
 """

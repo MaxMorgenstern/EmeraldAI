@@ -1,98 +1,23 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+Just a messy list with things to do
 
-#import imp
-#imp.load_module("mydummyname")
+- Check DB classes
+
+- Add Unit Tests
+
+- Check if we can change Config to Module
+
+- Add Logging
+
+- Add Base file to call
+
+
+
+
+
 
 # EN aiml reference https://code.google.com/archive/p/aiml-en-us-foundation-alice/
 
-import mydummyname
-from mydummyname.CleanMdashesExtension import CleanMdashesExtension
-
-import re   # Regex
-import os   # I/O
-
-print os.path.dirname(__file__)
-print os.path.basename(__file__)
-print os.path.dirname(os.path.abspath(__file__))
-
-class Global(object):
-    Path = os.path.dirname(os.path.abspath(__file__)).rstrip("/") + "/"
-
-
-import sqlite3 as lite
-import sys
-
-con = None
-
-try:
-    script_dir = Global.Path
-
-    con = lite.connect(script_dir + 'data/' + 'thesaurus_DE.sqlite')
-    con.text_factory = str
-
-    cur = con.cursor()
-    cur.execute('SELECT SQLITE_VERSION()')
-
-    data = cur.fetchone()
-
-    print "SQLite version: %s" % data
-
-    #cur.execute('SELECT * FROM synset WHERE synset.id = 1')
-    cur.execute('SELECT * FROM term, synset, term term2 WHERE synset.is_visible = 1 AND synset.id = term.synset_id AND term.synset_id AND term2.synset_id = synset.id AND term2.word = "Bank"')
-
-    rows = cur.fetchall()
-
-    for row in rows:
-        print row
-
-
-except lite.Error, e:
-
-    print "Error %s:" % e.args[0]
-    #sys.exit(1)
-
-finally:
-    print "Close DB Connection"
-    if con:
-        con.close()
-
-#sys.exit(0)
-
-print "--------------"
-
-
-cnx = None
-try:
-  import mysql.connector
-
-  cnx = mysql.connector.connect(user='root', password='',
-                                host='127.0.0.1',
-                                database='thesaurus')
-  #except mysql.connector.Error as err:
-  #  if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-  #    print("Something is wrong with your user name or password")
-  #  elif err.errno == errorcode.ER_BAD_DB_ERROR:
-  #    print("Database does not exist")
-  #  else:
-  #    print(err)
-
-  cursor = cnx.cursor()
-
-  cursor.execute('SELECT * FROM term, synset, term term2 WHERE synset.is_visible = 1 AND synset.id = term.synset_id AND term.synset_id AND term2.synset_id = synset.id AND term2.word = "Bank"')
-
-  for row in cursor:
-      print row
-
-except:
-  print "Mysql error"
-
-finally:
-  if(cnx):
-    cnx.close()
-
-
-
+---
 
 # Input Processing
   # Language Detection
@@ -112,8 +37,8 @@ finally:
   # Customize Answer
   # Train Conversation
 
+---
 
-"""
 Rank  Bot Property  Value
 1 <bot name="botmaster"/> Botmaster
 2 <bot name="master"/>  Dr. Richard S. Wallace
@@ -173,4 +98,3 @@ Rank  Bot Property  Value
 56  <bot name="ethics" /> I am always trying to stop fights
 57  <bot name="emotions" /> I don't pay much attention to my feelings
 58  <bot name="feelings" /> I always put others before myself
-"""
