@@ -19,3 +19,6 @@ def Fetchall(db, sql, index=None):
       row = row[index]
     result.append(row)
   return result
+
+def Disconnect(db):
+  db.close()

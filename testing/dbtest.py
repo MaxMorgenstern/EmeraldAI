@@ -12,20 +12,49 @@ from EmeraldAI.Logic.Modules.Database import SQlite3
 
 db = MySQL.GetDB("thesaurus")
 
-result = MySQL.Execute(db, "SHOW TABLES;")
+result = MySQL.Execute(db, "SELECT term.normalized_word, term.word, term2.word FROM term, synset, term term2 WHERE synset.is_visible = 1 AND synset.id = term.synset_id AND term.synset_id AND term2.synset_id = synset.id AND term2.word = 'Bank';")
 
 for row in result.fetchall():
-    print row[0]
+    print row
+
+MySQL.Disconnect(db)
 
 print "-----"
 
 litedb = SQlite3.GetDB("thesaurus_DE")
 
-literesult = SQlite3.Execute(litedb, "SELECT * FROM term, synset, term term2 WHERE synset.is_visible = 1 AND synset.id = term.synset_id AND term.synset_id AND term2.synset_id = synset.id AND term2.word = 'Bank';")
+literesult = SQlite3.Execute(litedb, "SELECT term.normalized_word, term.word, term2.word FROM term, synset, term term2 WHERE synset.is_visible = 1 AND synset.id = term.synset_id AND term.synset_id AND term2.synset_id = synset.id AND term2.word = 'Bank';")
+
+"""
+Synonym + Category
+SELECT term.normalized_word, term.word, term2.word, category.category_name
+FROM term, synset, term term2, category_link, category
+WHERE synset.is_visible = 1
+AND synset.id = term.synset_id
+AND term.synset_id
+AND term2.synset_id = synset.id
+AND term2.word = 'Auge'
+AND category_link.synset_id = synset.id
+ANd category_link.category_id = category.id;
+
+
+oppisite
+SELECT *
+FROM term, term_link, term term2
+WHERE term.word = 'schwarz'
+AND (
+(term.id = term_link.term_id
+AND term_link.target_term_id = term2.id)
+OR (term.id = term_link.target_term_id
+AND term_link.term_id = term2.id)
+);
+
+"""
 
 for row2 in literesult.fetchall():
     print row2
 
+SQlite3.Disconnect(litedb)
 
 """
 OpenThesaurus database structure

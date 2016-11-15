@@ -8,9 +8,11 @@ def GetDB(database):
   con.text_factory = str
   return con
 
+
 def Execute(db, sql):
   cur = db.cursor()
   cur.execute(sql)
+  db.commit()
   return cur
 
 
@@ -18,3 +20,8 @@ def Fetchall(db, sql):
   cur = execute(db.sql)
   rows = cur.fetchall()
   return rows
+
+
+def Disconnect(db):
+  db.commit()
+  db.close()
