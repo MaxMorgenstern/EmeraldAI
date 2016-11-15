@@ -5,25 +5,76 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 reload(sys)
 sys.setdefaultencoding('utf-8')
+
+
+
 from EmeraldAI.Logic.Modules.Database import MySQL
 from EmeraldAI.Logic.Modules.Database import SQlite3
-
-
-
+"""
 db = MySQL.GetDB("thesaurus")
-
 result = MySQL.Execute(db, "SELECT term.normalized_word, term.word, term2.word FROM term, synset, term term2 WHERE synset.is_visible = 1 AND synset.id = term.synset_id AND term.synset_id AND term2.synset_id = synset.id AND term2.word = 'Bank';")
-
 for row in result.fetchall():
     print row
-
 MySQL.Disconnect(db)
 
 print "-----"
 
 litedb = SQlite3.GetDB("thesaurus_DE")
-
 literesult = SQlite3.Execute(litedb, "SELECT term.normalized_word, term.word, term2.word FROM term, synset, term term2 WHERE synset.is_visible = 1 AND synset.id = term.synset_id AND term.synset_id AND term2.synset_id = synset.id AND term2.word = 'Bank';")
+for row2 in literesult.fetchall():
+    print row2
+SQlite3.Disconnect(litedb)
+"""
+
+litedb = SQlite3.GetDB("thesaurus_DE")
+
+
+literesult = SQlite3.Fetchall(litedb, "SELECT term.normalized_word, term.word, term2.word FROM term, synset, term term2 WHERE synset.is_visible = 1 AND synset.id = term.synset_id AND term.synset_id AND term2.synset_id = synset.id AND term2.word = 'Bank';")
+print literesult
+
+literesult = SQlite3.Fetchall(litedb, "SELECT term.normalized_word, term.word, term2.word FROM term, synset, term term2 WHERE synset.is_visible = 1 AND synset.id = term.synset_id AND term.synset_id AND term2.synset_id = synset.id AND term2.word = 'bank';")
+print literesult
+
+literesult = SQlite3.Fetchall(litedb, "SELECT term.normalized_word, term.word, term2.word FROM term, synset, term term2 WHERE synset.is_visible = 1 AND synset.id = term.synset_id AND term.synset_id AND term2.synset_id = synset.id AND term2.word  = 'bank' COLLATE NOCASE;")
+print literesult
+
+literesult = SQlite3.Fetchall(litedb, "SELECT term.normalized_word, term.word, term2.word FROM term, synset, term term2 WHERE synset.is_visible = 1 AND synset.id = term.synset_id AND term.synset_id AND term2.synset_id = synset.id AND UPPER(term2.word) = UPPER('bank');")
+print literesult
+SQlite3.Disconnect(litedb)
+
+
+print "-----"
+print "-----"
+print "-----"
+
+from EmeraldAI.Logic.Thesaurus import Thesaurus
+
+t = Thesaurus()
+
+print "-----"
+res = t.GetSynonyms("Bank")
+for x in res:
+  print x
+
+print " "
+
+res = t.GetCategory("Bank")
+for x in res:
+  print x
+
+print " "
+
+res = t.GetOpposite("schwarz")
+for x in res:
+  print x
+
+print " "
+
+res = t.GetSynonymsAndCategory("Bank")
+for x in res:
+  print x
+
+
 
 """
 Synonym + Category
@@ -31,14 +82,23 @@ SELECT term.normalized_word, term.word, term2.word, category.category_name
 FROM term, synset, term term2, category_link, category
 WHERE synset.is_visible = 1
 AND synset.id = term.synset_id
-AND term.synset_id
 AND term2.synset_id = synset.id
 AND term2.word = 'Auge'
 AND category_link.synset_id = synset.id
-ANd category_link.category_id = category.id;
+AND category_link.category_id = category.id;
 
 
-oppisite
+cat:
+SELECT term.normalized_word, term.word, category.category_name
+FROM term, synset, category_link, category
+WHERE synset.is_visible = 1
+AND synset.id = term.synset_id
+AND term.word = 'Auge'
+AND category_link.synset_id = synset.id
+AND category_link.category_id = category.id;
+
+
+oppisite:
 SELECT *
 FROM term, term_link, term term2
 WHERE term.word = 'schwarz'
@@ -49,27 +109,6 @@ OR (term.id = term_link.target_term_id
 AND term_link.term_id = term2.id)
 );
 
-"""
-
-for row2 in literesult.fetchall():
-    print row2
-
-SQlite3.Disconnect(litedb)
-
-"""
-OpenThesaurus database structure
-Daniel Naber, 2010-11-13
-
-This is a short description of the OpenThesaurus database structure. The most
-important thing to understand is that the data is organized as concepts. Like
-WordNet, a concept is a set of words and it's called 'synset' (synonym set).
-
-Example query to find all synonyms for "Bank":
-
-SELECT * FROM term, synset, term term2 WHERE synset.is_visible = 1 AND synset.id
-   = term.synset_id AND term.synset_id AND term2.synset_id = synset.id AND term2.word = 'Bank'
-
-Those terms that share the same value in synset_id belong to the same synset.
 
 Description of the important tables:
 

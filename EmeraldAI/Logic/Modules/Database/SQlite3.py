@@ -17,7 +17,8 @@ def Execute(db, sql):
 
 
 def Fetchall(db, sql):
-  cur = execute(db.sql)
+  cur = db.cursor()
+  cur.execute(sql)
   rows = cur.fetchall()
   return rows
 
