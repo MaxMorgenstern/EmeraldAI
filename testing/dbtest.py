@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import sys
 import os
+import time
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -28,18 +29,67 @@ SQlite3.Disconnect(litedb)
 
 litedb = SQlite3.GetDB("thesaurus_DE")
 
+"""
+print "TESTME HARD".title()
+print "TESTME HARD".lower()
+print "TESTME HARD".lower().title()
 
+start_time = time.time()
 literesult = SQlite3.Fetchall(litedb, "SELECT term.normalized_word, term.word, term2.word FROM term, synset, term term2 WHERE synset.is_visible = 1 AND synset.id = term.synset_id AND term.synset_id AND term2.synset_id = synset.id AND term2.word = 'Bank';")
-print literesult
+print("--- %s seconds ---" % (time.time() - start_time))
+print "Default"
 
+start_time = time.time()
+literesult = SQlite3.Fetchall(litedb, "SELECT term.normalized_word, term.word, term2.word FROM term, synset, term term2 WHERE synset.is_visible = 1 AND synset.id = term.synset_id AND term.synset_id AND term2.synset_id = synset.id AND (term2.word = 'bank' OR term2.word = 'Bank');")
+print("--- %s seconds ---" % (time.time() - start_time))
+print "two"
+
+start_time = time.time()
 literesult = SQlite3.Fetchall(litedb, "SELECT term.normalized_word, term.word, term2.word FROM term, synset, term term2 WHERE synset.is_visible = 1 AND synset.id = term.synset_id AND term.synset_id AND term2.synset_id = synset.id AND term2.word = 'bank';")
-print literesult
+print("--- %s seconds ---" % (time.time() - start_time))
+print "wrong result"
 
+start_time = time.time()
 literesult = SQlite3.Fetchall(litedb, "SELECT term.normalized_word, term.word, term2.word FROM term, synset, term term2 WHERE synset.is_visible = 1 AND synset.id = term.synset_id AND term.synset_id AND term2.synset_id = synset.id AND term2.word  = 'bank' COLLATE NOCASE;")
-print literesult
+print("--- %s seconds ---" % (time.time() - start_time))
+print "COLLATE NOCASE"
 
+start_time = time.time()
 literesult = SQlite3.Fetchall(litedb, "SELECT term.normalized_word, term.word, term2.word FROM term, synset, term term2 WHERE synset.is_visible = 1 AND synset.id = term.synset_id AND term.synset_id AND term2.synset_id = synset.id AND UPPER(term2.word) = UPPER('bank');")
-print literesult
+print("--- %s seconds ---" % (time.time() - start_time))
+print "upper"
+
+
+print "-----"
+
+
+start_time = time.time()
+literesult = SQlite3.Fetchall(litedb, "SELECT term.normalized_word, term.word, term2.word FROM term, synset, term term2 WHERE synset.is_visible = 1 AND synset.id = term.synset_id AND term.synset_id AND term2.synset_id = synset.id AND term2.word = 'Wurst';")
+print("--- %s seconds ---" % (time.time() - start_time))
+print "Default"
+
+start_time = time.time()
+literesult = SQlite3.Fetchall(litedb, "SELECT term.normalized_word, term.word, term2.word FROM term, synset, term term2 WHERE synset.is_visible = 1 AND synset.id = term.synset_id AND term.synset_id AND term2.synset_id = synset.id AND (term2.word = 'wurst' OR term2.word = 'Wurst');")
+print("--- %s seconds ---" % (time.time() - start_time))
+print "two"
+
+start_time = time.time()
+literesult = SQlite3.Fetchall(litedb, "SELECT term.normalized_word, term.word, term2.word FROM term, synset, term term2 WHERE synset.is_visible = 1 AND synset.id = term.synset_id AND term.synset_id AND term2.synset_id = synset.id AND term2.word = 'wurst';")
+print("--- %s seconds ---" % (time.time() - start_time))
+print "wrong result"
+
+start_time = time.time()
+literesult = SQlite3.Fetchall(litedb, "SELECT term.normalized_word, term.word, term2.word FROM term, synset, term term2 WHERE synset.is_visible = 1 AND synset.id = term.synset_id AND term.synset_id AND term2.synset_id = synset.id AND term2.word  = 'wurst' COLLATE NOCASE;")
+print("--- %s seconds ---" % (time.time() - start_time))
+print "COLLATE NOCASE"
+
+start_time = time.time()
+literesult = SQlite3.Fetchall(litedb, "SELECT term.normalized_word, term.word, term2.word FROM term, synset, term term2 WHERE synset.is_visible = 1 AND synset.id = term.synset_id AND term.synset_id AND term2.synset_id = synset.id AND UPPER(term2.word) = UPPER('wurst');")
+print("--- %s seconds ---" % (time.time() - start_time))
+print "upper"
+"""
+
+
 SQlite3.Disconnect(litedb)
 
 
@@ -52,25 +102,25 @@ from EmeraldAI.Logic.Thesaurus import Thesaurus
 t = Thesaurus()
 
 print "-----"
-res = t.GetSynonyms("Bank")
+res = t.GetSynonyms("bank")
 for x in res:
   print x
 
 print " "
 
-res = t.GetCategory("Bank")
+res = t.GetCategory("bank")
 for x in res:
   print x
 
 print " "
 
-res = t.GetOpposite("schwarz")
+res = t.GetOpposite("Schwarz")
 for x in res:
   print x
 
 print " "
 
-res = t.GetSynonymsAndCategory("Bank")
+res = t.GetSynonymsAndCategory("bank")
 for x in res:
   print x
 
