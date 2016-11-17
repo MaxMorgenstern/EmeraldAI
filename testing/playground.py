@@ -79,7 +79,8 @@ while True:
         cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
 
     # Display the resulting frame
-    cv2.imshow('Video', frame)
+    smallframe = cv2.resize(frame, (frame.shape[1]/2, frame.shape[0]/2), interpolation = cv2.INTER_CUBIC)
+    cv2.imshow('Video', smallframe)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
