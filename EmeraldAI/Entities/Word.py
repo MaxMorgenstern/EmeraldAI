@@ -11,5 +11,5 @@ class Word(BaseObject):
 		self.NormalizedWord = None
 		self.IsStopword = False
 
-		self.Ranking = 0
+		self.Priority = 1
 		self.SynonymList = []

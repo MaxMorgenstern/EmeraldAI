@@ -8,12 +8,14 @@ class Thesaurus(object):
   def __init__(self):
     self.database = SQlite3.GetDB("thesaurus_DE")
 
-
-  def GetSynonymsAndCategory(self, word, normalized=False):
+  def __executeQuery(self, query, word, normalized):
     queryWordCol = "word"
     if(normalized):
         queryWordCol = "normalized_word"
+    return SQlite3.Fetchall(self.database, query.format(col=queryWordCol, lowerword=word.lower(), titleword=word.decode('utf8').title()))
 
+
+  def GetSynonymsAndCategory(self, word, normalized=False):
     query = """SELECT term.normalized_word, term.word, term2.word, category.category_name
             FROM term, synset, term term2, category_link, category
             WHERE synset.is_visible = 1
@@ -23,14 +25,10 @@ class Thesaurus(object):
             AND category_link.synset_id = synset.id
             AND category_link.category_id = category.id
             ORDER BY term.word;"""
-    return SQlite3.Fetchall(self.database, query.format(col=queryWordCol, lowerword=word.lower(), titleword=word.decode('utf8').title()))
+    return self.__executeQuery(query, word, normalized)
 
 
   def GetSynonyms(self, word, normalized=False):
-    queryWordCol = "word"
-    if(normalized):
-        queryWordCol = "normalized_word"
-
     query = """SELECT term.normalized_word, term.word, term2.word
             FROM term, synset, term term2
             WHERE synset.is_visible = 1
@@ -39,14 +37,10 @@ class Thesaurus(object):
             AND term2.synset_id = synset.id
             AND (term2.{col} = '{lowerword}' OR term2.{col} = '{titleword}')
             ORDER BY term.word;"""
-    return SQlite3.Fetchall(self.database, query.format(col=queryWordCol, lowerword=word.lower(), titleword=word.decode('utf8').title()))
+    return self.__executeQuery(query, word, normalized)
 
 
   def GetCategory(self, word, normalized=False):
-    queryWordCol = "word"
-    if(normalized):
-        queryWordCol = "normalized_word"
-
     query = """SELECT term.normalized_word, term.word, category.category_name
             FROM term, synset, category_link, category
             WHERE synset.is_visible = 1
@@ -54,14 +48,10 @@ class Thesaurus(object):
             AND (term.{col} = '{lowerword}' OR term.{col} = '{titleword}')
             AND category_link.synset_id = synset.id
             AND category_link.category_id = category.id;"""
-    return SQlite3.Fetchall(self.database, query.format(col=queryWordCol, lowerword=word.lower(), titleword=word.decode('utf8').title()))
+    return self.__executeQuery(query, word, normalized)
 
 
   def GetOpposite(self, word, normalized=False):
-    queryWordCol = "word"
-    if(normalized):
-        queryWordCol = "normalized_word"
-
     query = """SELECT term.word, term2.word
             FROM term, term_link, term term2
             AND (term.{col} = '{lowerword}' OR term.{col} = '{titleword}')
@@ -69,4 +59,4 @@ class Thesaurus(object):
               (term.id = term_link.term_id AND term_link.target_term_id = term2.id)
               OR (term.id = term_link.target_term_id AND term_link.term_id = term2.id)
             );"""
-    return SQlite3.Fetchall(self.database, query.format(col=queryWordCol, lowerword=word.lower(), titleword=word.decode('utf8').title()))
+    return self.__executeQuery(query, word, normalized)
