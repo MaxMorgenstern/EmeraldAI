@@ -9,16 +9,22 @@ def GetDB(database):
   return con
 
 
-def Execute(db, sql):
+def Execute(db, sql, args=None):
   cur = db.cursor()
-  cur.execute(sql)
+  if args:
+    cur.execute(sql, args)
+  else:
+    cur.execute(sql)
   db.commit()
   return cur
 
 
-def Fetchall(db, sql):
+def Fetchall(db, sql, args=None):
   cur = db.cursor()
-  cur.execute(sql)
+  if args:
+    cur.execute(sql, args)
+  else:
+    cur.execute(sql)
   rows = cur.fetchall()
   return rows
 

@@ -5,7 +5,9 @@ from EmeraldAI.Entities.BaseObject import BaseObject
 class Word(BaseObject):
 	def __init__(self, input):
 		self.Word = input
-		self.Ranking = None
+		self.NormalizedWord = None
+
 		self.IsStopWord = False
 
+		self.Ranking = None
 		self.SynonymList = None
