@@ -15,10 +15,10 @@ def DetectLanguage(input):
   # 207 most common words in english + hello = 208
   words_EN = ReadFile("Commonwords", "en.txt")
 
-  exactMatch_DE = re.compile(r'\b%s\b' % '\\b|\\b'.join(words_DE), flags=re.IGNORECASE)
+  exactMatch_DE = re.compile(r'\b%s\b' % '\\b|\\b'.join(words_DE), flags=re.IGNORECASE|re.UNICODE)
   count_DE = len(exactMatch_DE.findall(input))
 
-  exactMatch_EN = re.compile(r'\b%s\b' % '\\b|\\b'.join(words_EN), flags=re.IGNORECASE)
+  exactMatch_EN = re.compile(r'\b%s\b' % '\\b|\\b'.join(words_EN), flags=re.IGNORECASE|re.UNICODE)
   count_EN = len(exactMatch_EN.findall(input))
 
   if(count_EN > count_DE):
@@ -26,7 +26,7 @@ def DetectLanguage(input):
   return "de"
 
 def WordSegmentation(input):
-  segmentationRegex = re.compile("[A-Z]{2,}(?![a-z])|[A-Z][a-z]+(?=[A-Z])|[\'\wÄÖÜäöüß\-]+", flags=re.IGNORECASE)
+  segmentationRegex = re.compile("[A-Z]{2,}(?![a-z])|[A-Z][a-z]+(?=[A-Z])|[\'\wÄÖÜäöüß\-]+", flags=re.UNICODE)
   return segmentationRegex.findall(input)
 
 def RemoveStopwords(wordlist, language):

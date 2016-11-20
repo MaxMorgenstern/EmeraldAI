@@ -3,11 +3,13 @@
 from EmeraldAI.Entities.BaseObject import BaseObject
 
 class Word(BaseObject):
-	def __init__(self, input):
+
+	def __init__(self, input, language):
 		self.Word = input
+		self.Language = language
+
 		self.NormalizedWord = None
+		self.IsStopword = False
 
-		self.IsStopWord = False
-
-		self.Ranking = None
-		self.SynonymList = None
+		self.Ranking = 0
+		self.SynonymList = []
