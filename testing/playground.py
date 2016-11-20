@@ -6,7 +6,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-
+folder_path = os.path.dirname(os.path.abspath(__file__))
 
 
 # https://docs.python.org/2/library/subprocess.html
@@ -24,7 +24,6 @@ import cv2
 from string import Template
 
 # first argument is the haarcascades path
-folder_path = os.path.dirname(os.path.abspath(__file__))
 face_cascade_path = folder_path + "/haarcascades/haarcascade_frontalface_default.xml"
 face_cascade = cv2.CascadeClassifier(os.path.expanduser(face_cascade_path))
 
@@ -51,10 +50,9 @@ cv2.waitKey(0)
 """
 
 
-
+"""
 import cv2
 
-folder_path = os.path.dirname(os.path.abspath(__file__))
 cascPath = folder_path + "/haarcascades/haarcascade_frontalface_default.xml"
 faceCascade = cv2.CascadeClassifier(cascPath)
 
@@ -89,6 +87,29 @@ while True:
 video_capture.release()
 cv2.destroyAllWindows()
 
+"""
 
+import Tkinter as tk
+from PIL import ImageTk, Image
+
+#This creates the main window of an application
+window = tk.Tk()
+window.title("Join")
+window.geometry("800x600")
+window.configure(background='grey')
+
+path = folder_path+"/exampleimage1.jpg"
+
+#Creates a Tkinter-compatible photo image, which can be used everywhere Tkinter expects an image object.
+img = ImageTk.PhotoImage(Image.open(path))
+
+#The Label widget is a standard Tkinter widget used to display a text or image on the screen.
+panel = tk.Label(window, image = img)
+
+#The Pack geometry manager packs widgets in rows or columns.
+panel.pack(side = "bottom", fill = "both", expand = "yes")
+
+#Start the GUI
+window.mainloop()
 
 
