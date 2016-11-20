@@ -13,7 +13,12 @@ Just a messy list with things to do
 - clean thesaurus db
 
 - speed of thesaurus - ignore case
-- thesaurus_DE to custom
+- thesaurus_DE to custom file so we can use more languages
+
+- logging config - log location
+
+- add notes to classes and modules - description
+
 
 # EN aiml reference https://code.google.com/archive/p/aiml-en-us-foundation-alice/
 

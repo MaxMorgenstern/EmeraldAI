@@ -14,6 +14,8 @@ from EmeraldAI.Logic.AliceBot import *
 from EmeraldAI.Logic.Thesaurus import *
 from EmeraldAI.Logic.Modules.Database import SQlite3
 
+from EmeraldAI.Entities.Word import Word
+
 #google = Google()
 #ivona = Ivona()
 #alice = AliceBot("DE")
@@ -29,44 +31,92 @@ def addToList(str_to_add, list_of_strings, language):
 
 def processInputData(data):
 	language = NLP.DetectLanguage(data)
-	#wordSegments = NLP.WordSegmentation(data)
-	#cleanWordSegments = NLP.RemoveStopwords(wordSegments, language)
 
-	wordSegments = NLP.WordSegmentation(NLP.Normalize(data, language))
+	# hallöchen --> hall + öchen
+	wordSegments = NLP.WordSegmentation(data)
 	cleanWordSegments = NLP.RemoveStopwords(wordSegments, language)
 
+	wordList = []
+
 	for word in wordSegments:
-		#normalizedWord = NLP.Normalize(word, language)
-		stopword = word not in cleanWordSegments
-		#print word + " - " + normalizedWord + " - " + str(stopword)
+		w = Word(word, language)
+
+		#print word.lower() + " - " +  word.decode('utf8').title()
+
+		w.IsStopword = word not in cleanWordSegments
+		if(w.IsStopword):
+			w.Priority *= 0.5
+		w.NormalizedWord = NLP.Normalize(word, language)
+
 		synonymList = []
-		synonymList = addToList(word, synonymList, language)
-		synonyms = thesaurus.GetSynonyms(word)
+		w.SynonymList = addToList(word, w.SynonymList, language)
+		synonyms = thesaurus.GetSynonyms(w.Word)
+		if(len(synonyms) == 0):
+			synonyms = thesaurus.GetSynonyms(w.NormalizedWord, True)
+
 		for synonym in synonyms:
 			if synonym[0]:
-				synonymList = addToList(synonym[0], synonymList, language)
+				w.SynonymList = addToList(synonym[0], w.SynonymList, language)
 			else:
-				synonymList = addToList(synonym[1], synonymList, language)
+				w.SynonymList = addToList(synonym[1], w.SynonymList, language)
+		wordList.append(w)
 
-		print synonymList
+		print w.toJSON()
+	return wordList
+
+"""
+#move
+sql = "SELECT * FROM Dialog_Keyword, Dialog_Trigger WHERE Dialog_Keyword.Normalized_Keyword IN ({wordlist}) AND Dialog_Keyword.ID = Dialog_Trigger.Keyword_ID;"
+finalsql = sql.format(wordlist = ','.join(['?']*len(synonymList)))
+result = SQlite3.Fetchall(litedb, finalsql, synonymList)
+print result
+"""
+# add result to global array initial priority
+# if result already present decrease priority
+	# stopwords = decrease priority by 50%
+	# synonym = decrease priority by 50%
+	# stopword + synonym = decrease priority by 30%
+	# Dialog_Trigger.Priority
+
+# get sentence with highest priority
+# replace placeholder
 
 
-		sql = "SELECT * FROM Dialog_Keyword, Dialog_Trigger WHERE Dialog_Keyword.Normalized_Keyword IN ({wordlist}) AND Dialog_Keyword.ID = Dialog_Trigger.Keyword_ID;"
-		finalsql = sql.format(wordlist = ','.join(['?']*len(synonymList)))
-		result = SQlite3.Fetchall(litedb, finalsql, synonymList)
-		print result
-
-		# add result to global array initial priority
-		# if result already present increase priority
-			# stopwords = half increase
-			# Dialog_Trigger.Priority
-
-	# get sentence with highest priority
-	# replace placeholder
-
-	return ""
 
 
+# Input Processing
+  # Language Detection
+  # Sentence + Word Segmentation
+  # Word Tagging + Synonym detection
+  # strip stoppwords
+
+# Input Analyzer
+  # Phrase Detection
+  # Pattern Detection
+  # Context Pipeline
+
+# Response Processing
+  # Answer Pipeline
+    # Answer selection
+    # ELIZA fallback
+  # Customize Answer
+  # Train Conversation
+
+
+
+# Get Input
+# NLP
+# Find Answer in DB
+	# Not Found Fallback to Eliza
+	# Found - Good
+# Train DB
+
+
+# Username
+# User Data
+
+# Timestamp
+#
 
 """
 INSERT OR IGNORE INTO Dialog_Keyword (Keyword, Normalized_Keyword, Stopword) VALUES ('', '')
@@ -79,23 +129,6 @@ INSERT OR IGNORE INTO Dialog_Trigger (Keyword_ID, Sentence_ID, Priority) VALUES 
 SELECT * FROM Dialog_Keyword, Dialog_Trigger WHERE Normalized_Keyword = '' AND Dialog_Keyword.ID = Dialog_Trigger.Keyword_ID
 
 """
-
-
-
-# Get Input
-# NLP
-# Find Answer in DB
-	# Not Found Fallback to Eliza
-	# Found - Good
-# Train DB
-
-
-
-# Username
-# User Data
-
-# Timestamp
-#
 
 loop = True
 
