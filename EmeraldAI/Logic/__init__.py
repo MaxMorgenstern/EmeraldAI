@@ -1,3 +1,3 @@
 import Modules
 import SpeechProcessing
-__all__ = ["AliceBot", "Logger"]
+__all__ = ["AliceBot", "Logger", "Thesaurus"]

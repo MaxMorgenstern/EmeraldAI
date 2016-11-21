@@ -8,13 +8,27 @@ def GetDB(database):
   con.text_factory = str
   return con
 
-def Execute(db, sql):
+
+def Execute(db, sql, args=None):
   cur = db.cursor()
-  cur.execute(sql)
+  if args:
+    cur.execute(sql, args)
+  else:
+    cur.execute(sql)
+  db.commit()
   return cur
 
 
-def Fetchall(db, sql):
-  cur = execute(db.sql)
+def Fetchall(db, sql, args=None):
+  cur = db.cursor()
+  if args:
+    cur.execute(sql, args)
+  else:
+    cur.execute(sql)
   rows = cur.fetchall()
   return rows
+
+
+def Disconnect(db):
+  db.commit()
+  db.close()

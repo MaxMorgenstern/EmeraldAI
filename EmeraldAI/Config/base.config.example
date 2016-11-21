@@ -12,7 +12,7 @@ MicrosoftAPIKey =
 
 GoogleAPIKey =
 
-IvonaVoiceGender = Hans
-IvonaVoiceName = Male
+IvonaVoiceGender = Male
+IvonaVoiceName = Hans
 IvonaAccessKey =
 IvonaSecretKey =

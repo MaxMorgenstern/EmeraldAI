@@ -224,3 +224,5 @@ pip-log.txt
 *.wav
 *.mp3
 *.config
+
+EmeraldAI/Data/SqliteDB/brain.sqlite
