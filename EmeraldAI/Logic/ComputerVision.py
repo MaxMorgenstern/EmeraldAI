@@ -9,6 +9,8 @@ class ComputerVision(object):
 
 
 """
+also see: https://github.com/bytefish/facerec
+
 
 import os
 import sys
