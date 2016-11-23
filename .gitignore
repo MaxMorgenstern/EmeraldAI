@@ -226,3 +226,5 @@ pip-log.txt
 *.config
 
 EmeraldAI/Data/SqliteDB/brain.sqlite
+
+*.pgm

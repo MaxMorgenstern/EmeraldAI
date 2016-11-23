@@ -20,7 +20,41 @@ print ('Press Ctrl-C to quit.')
 # Create the directory for positive training images if it doesn't exist.
 img_dir = myCV.GetTrainingImageDir() + name
 if not os.path.exists(img_dir):
-os.makedirs(img_dir)
+  os.makedirs(img_dir)
+
+
+def img_message(img_num):
+  switcher = {
+    0: "normal face",
+    1: "smile",
+    2: "sad face",
+    3: "suprised",
+    4: "look slightly to the right",
+    5: "look slightly to the left",
+    6: "look slightly up",
+    7: "look slightly down",
+    8: "lighting from the left",
+    9: "lighting from the right",
+    10: "eyes closed"
+  }
+  return switcher.get(img_num, "nothing")
+
+def img_name(img_num):
+  switcher = {
+    0: "normal",
+    1: "happy",
+    2: "sad",
+    3: "suprised",
+    4: "looking_right",
+    5: "looking_left",
+    6: "looking_up",
+    7: "looking_down",
+    8: "left_light",
+    9: "right_light",
+    10: "eyes_closed"
+  }
+  return switcher.get(img_num, "nothing")
+
 
 img_num = 0
 
