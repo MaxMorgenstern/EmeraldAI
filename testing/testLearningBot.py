@@ -61,7 +61,7 @@ def processInputData(data):
 				w.SynonymList = addToList(synonym[1], w.SynonymList, language)
 		wordList.append(w)
 
-		print w.toJSON()
+		#print w.toJSON()
 	return wordList
 
 """
