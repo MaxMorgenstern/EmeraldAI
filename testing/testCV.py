@@ -3,6 +3,7 @@
 import sys
 import os
 import cv2
+import re
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -17,11 +18,18 @@ print ('This app will capture several images to learn your face.')
 name = raw_input('Please enter your name:')
 print ('Press Ctrl-C to quit.')
 
+max_img_num = 0
+
 # Create the directory for positive training images if it doesn't exist.
 img_dir = myCV.GetTrainingImageDir() + name
 if not os.path.exists(img_dir):
   os.makedirs(img_dir)
-
+else:
+  for root, dirs, filenames in os.walk(img_dir):
+    for f in filenames:
+      tmp_num = re.findall('\d+|$', f)[0]
+      if(tmp_num > max_img_num):
+        max_img_num = tmp_num
 
 def img_message(img_num):
   switcher = {
@@ -55,8 +63,7 @@ def img_name(img_num):
   }
   return switcher.get(img_num, "nothing")
 
-
-img_num = 0
+img_num = max_img_num
 
 while img_num < 11:
   # Show the capture window
