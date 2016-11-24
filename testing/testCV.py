@@ -11,11 +11,11 @@ from EmeraldAI.Logic.ComputerVision import *
 
 myCV = ComputerVision()
 
-camera = cv2.VideoCapture(0)
-ret = camera.set(3,320)
-ret = camera.set(4,240)
+camera = cv2.VideoCapture(1)
+#ret = camera.set(3,320)
+#ret = camera.set(4,240)
 print ('This app will capture several images to learn your face.')
-name = raw_input('Please enter your name:')
+name = raw_input('Please enter your name: ')
 print ('Press Ctrl-C to quit.')
 
 max_img_num = 0
@@ -65,10 +65,11 @@ def img_name(img_num):
 
 img_num = max_img_num
 
+"""
 while img_num < 11:
   # Show the capture window
   image = myCV.CapturePerson(camera, img_message(img_num))
-  #image = show_capture_window(camera, img_message(img_num))
+
   # Get coordinates of single face in captured image.
   result = myCV.DetectFaceInImage(image)
 
@@ -85,7 +86,7 @@ while img_num < 11:
   cv2.imwrite(filename, img_crop)
   print ('Found face and wrote training image' + filename)
   img_num += 1
-
+"""
 # No Enter 2 Eyes
 while img_num < 25:
   image = myCV.CapturePerson(camera, '', False, True, True)
