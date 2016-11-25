@@ -129,10 +129,10 @@ class ComputerVision(object):
 
       if(showCam):
         cv2.imshow('Video', image)
-        cv2.moveWindow('Video',100,100)
+        #cv2.moveWindow('Video',100,100)
+        cv2.waitKey(10)
 
       if(onEnter):
-        cv2.waitKey(10)
         if cv2.waitKey(1) & 0xFF == ord('q'):
           break
         if self.__checkEnterPressed():
