@@ -60,9 +60,8 @@ class ComputerVision(object):
     return image[y1:y2, x:x+w]
 
 
+  # TODO - sems not to work on windows
   def __checkEnterPressed(self):
-    # Utility function to check if a specific character is available on stdin.
-    # Comparison is case insensitive.
     if select.select([sys.stdin,],[],[],0.0)[0]:
       input_char = sys.stdin.read(1)
       print(input_char)
@@ -82,10 +81,9 @@ class ComputerVision(object):
 
     if(onEnter):
       print (message)
-      print ("press enter to capture image")
+      print ("press 'enter' to capture image")
 
     while not imageCaptured:
-
       ret, image = camera.read()
       gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
@@ -120,8 +118,14 @@ class ComputerVision(object):
         for (ex,ey,ew,eh) in glasses:
           cv2.rectangle(roi_color,(ex,ey),(ex+ew,ey+eh),(255,0,255),2)
 
+      font = None
+      if(self.is_cv2()):
+        font = cv2.CV_AA
+      if(self.is_cv3()):
+      	font = cv2.LINE_AA
+
       if(len(message) > 0):
-        cv2.putText(image, message,(25,25), cv2.FONT_HERSHEY_PLAIN, 0.5, (255,0,0), 2, cv2.LINE_AA) # opencv3: LINE_AA  -- opencv2: CV_AA
+        cv2.putText(image, message,(25,25), cv2.FONT_HERSHEY_PLAIN, 0.5, (255,0,0), 2, font)
 
       if(showCam):
         cv2.imshow('Video', image)
@@ -131,15 +135,13 @@ class ComputerVision(object):
         cv2.waitKey(10)
         if cv2.waitKey(1) & 0xFF == ord('q'):
           break
-        #if self.__checkEnterPressed():
-        raw_input("Press Enter to continue...")
-        if twoEyes and (len(eyes) == 2 or len(glasses) == 2) or not twoEyes and (len(eyes) <= 2 or len(glasses) <= 2):
-          ret, image = camera.read()
-          returnImage = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
-          imageCaptured = True
-        else:
-          print ("Unable to detect a proper face or too many faces detected: try again")
-          print ("press c to capture image")
+        if self.__checkEnterPressed():
+          if twoEyes and (len(eyes) == 2 or len(glasses) == 2) or not twoEyes and (len(eyes) <= 2 or len(glasses) <= 2):
+            ret, image = camera.read()
+            returnImage = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+            imageCaptured = True
+          else:
+            print ("Unable to detect a proper face or too many faces detected: try again")
 
       else:
         if twoEyes and (len(eyes) == 2 or len(glasses) == 2) or not twoEyes and (len(eyes) <= 2 or len(glasses) <= 2):
@@ -150,7 +152,11 @@ class ComputerVision(object):
     return returnImage
 
 
-# TODO: line 124
-# opencv3: LINE_AA  -- opencv2: CV_AA
+  def is_cv2(self):
+    return self.check_opencv_version("2.")
 
-#line 134 ff
+  def is_cv3(self):
+    return self.check_opencv_version("3.")
+
+  def check_opencv_version(self, major):
+    return cv2.__version__.startswith(major)

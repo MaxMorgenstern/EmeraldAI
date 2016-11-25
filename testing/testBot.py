@@ -16,7 +16,7 @@ alice = AliceBot("DE")
 
 loop = True
 
-audioPlayer = Config().Get("TextToSpeech", "AudioPlayer") + " {0}"
+audioPlayer = Config().Get("TextToSpeech", "AudioPlayer") + " '{0}'"
 
 while(loop):
   data = google.Listen()
@@ -31,8 +31,9 @@ while(loop):
     print "We respond: '{0}'".format(response)
     audioPath = ivona.Speak(response)
     print "Playing file: '{0}'".format(audioPath)
-    os.system(audioPlayer.format(audioPath).replace('/', '\\'))
-    #os.system(audioPlayer.format(audioPath))
+    print audioPlayer.format(audioPath)
+    #os.system(audioPlayer.format(audioPath).replace('/', '\\'))
+    os.system(audioPlayer.format(audioPath))
 
 
 """

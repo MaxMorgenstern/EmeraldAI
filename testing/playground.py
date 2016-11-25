@@ -9,6 +9,19 @@ sys.setdefaultencoding('utf-8')
 folder_path = os.path.dirname(os.path.abspath(__file__))
 
 
+from EmeraldAI.Logic.Modules import Global
+
+print Global.OS
+"""
+import platform
+print platform.platform()
+
+print platform.linux_distribution()
+print platform.mac_ver()
+print platform.os.name
+
+print sys.platform
+"""
 # https://docs.python.org/2/library/subprocess.html
 #from subprocess import call
 #call(["ls", "-l"])

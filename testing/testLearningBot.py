@@ -48,7 +48,6 @@ def processInputData(data):
 			w.Priority *= 0.5
 		w.NormalizedWord = NLP.Normalize(word, language)
 
-		synonymList = []
 		w.SynonymList = addToList(word, w.SynonymList, language)
 		synonyms = thesaurus.GetSynonyms(w.Word)
 		if(len(synonyms) == 0):
