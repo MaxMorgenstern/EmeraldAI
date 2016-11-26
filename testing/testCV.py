@@ -7,11 +7,13 @@ import re
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 reload(sys)
 sys.setdefaultencoding('utf-8')
-from EmeraldAI.Logic.ComputerVision import *
+from EmeraldAI.Logic.ComputerVision.Trainer import *
+from EmeraldAI.Logic.ComputerVision.Detector import *
 
-myCV = ComputerVision()
+myCV = Trainer()
+myDect = Detector()
 
-camera = cv2.VideoCapture(2)
+camera = cv2.VideoCapture(0)
 ret = camera.set(3,640)
 ret = camera.set(4,360)
 #ret = camera.set(3,640)
@@ -115,7 +117,7 @@ while True:
   image = myCV.CapturePerson(camera, '', False, True, False)
 
   # Get coordinates of single face in captured image.
-  result = myCV.DetectFaceInImage(image)
+  result = myDect.DetectSingleFace(image)
   if result is None:
     continue
 

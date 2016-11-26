@@ -1,3 +1,4 @@
 import Modules
 import SpeechProcessing
-__all__ = ["AliceBot", "ComputerVision", "Logger", "Thesaurus"]
+import ComputerVision
+__all__ = ["AliceBot", "Logger", "Thesaurus"]
