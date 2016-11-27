@@ -14,11 +14,11 @@ from EmeraldAI.Logic.External.facerec.classifier import NearestNeighbor
 from EmeraldAI.Logic.External.facerec.validation import KFoldCrossValidation
 from EmeraldAI.Logic.External.facerec.serialization import save_model, load_model
 
-class __extendedPredictableModel(PredictableModel):
-    def __init__(self, feature, classifier, image_size, subject_names):
-        PredictableModel.__init__(self, feature=feature, classifier=classifier)
-        self.image_size = image_size
-        self.subject_names = subject_names
+class ExtendedPredictableModel(PredictableModel):
+  def __init__(self, feature, classifier, image_size, subject_names):
+    PredictableModel.__init__(self, feature=feature, classifier=classifier)
+    self.image_size = image_size
+    self.subject_names = subject_names
 
 class Predictor(object):
 
@@ -30,7 +30,7 @@ class Predictor(object):
   def __getModel(self, image_size, subject_names):
     feature = Fisherfaces()
     classifier = NearestNeighbor(dist_metric=EuclideanDistance(), k=1)
-    return __extendedPredictableModel(feature=feature, classifier=classifier, image_size=image_size, subject_names=subject_names)
+    return ExtendedPredictableModel(feature=feature, classifier=classifier, image_size=image_size, subject_names=subject_names)
 
   def __readImages(self, path):
     c = 0
@@ -58,10 +58,10 @@ class Predictor(object):
 
 
   def CreateDataset(self):
-    dataset = Global.EmeraldPath + "Data/ComputerVisionData/"
-    model_filename = "myModel.pkl"
+    datasetPath = Global.EmeraldPath + "Data/ComputerVisionData/"
+    modelName = datasetPath + "myModel.pkl"
 
-    [images, labels, subject_names] = self.__readImages(dataset)
+    [images, labels, subject_names] = self.__readImages(datasetPath)
     # Zip us a {label, name} dict from the given data:
     list_of_labels = list(xrange(max(labels)+1))
     subject_dictionary = dict(zip(list_of_labels, subject_names))
@@ -71,7 +71,28 @@ class Predictor(object):
     # Compute the model:
     model.compute(images, labels)
     # And save the model, which uses Pythons pickle module:
-    save_model(model_filename, model)
+    save_model(modelName, model)
+
+  """
+Traceback (most recent call last):
+  File "testing/testCV-detection.py", line 14, in <module>
+    p.CreateDataset()
+  File "/Users/maximilianporzelt/Google Drive/EmeraldAI/EmeraldAI/Logic/ComputerVision/Predictor.py", line 72, in CreateDataset
+    model.compute(images, labels)
+  File "/Users/maximilianporzelt/Google Drive/EmeraldAI/EmeraldAI/Logic/External/facerec/model.py", line 21, in compute
+    features = self.feature.compute(X,y)
+  File "/Users/maximilianporzelt/Google Drive/EmeraldAI/EmeraldAI/Logic/External/facerec/feature.py", line 193, in compute
+    model.compute(X,y)
+  File "/Users/maximilianporzelt/Google Drive/EmeraldAI/EmeraldAI/Logic/External/facerec/operators.py", line 41, in compute
+    X = self.model1.compute(X,y)
+  File "/Users/maximilianporzelt/Google Drive/EmeraldAI/EmeraldAI/Logic/External/facerec/feature.py", line 54, in compute
+    XC = asColumnMatrix(X)
+  File "/Users/maximilianporzelt/Google Drive/EmeraldAI/EmeraldAI/Logic/External/facerec/util.py", line 52, in asColumnMatrix
+    mat = np.append(mat, col.reshape(-1,1), axis=1) # same as hstack
+  File "/usr/local/lib/python2.7/site-packages/numpy/lib/function_base.py", line 4586, in append
+    return concatenate((arr, values), axis=axis)
+ValueError: all the input array dimensions except for the concatenation axis must match exactly
+  """
 
   def TestModel():
     print "numfolds"
