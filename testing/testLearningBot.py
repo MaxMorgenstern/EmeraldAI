@@ -48,7 +48,6 @@ def processInputData(data):
 			w.Priority *= 0.5
 		w.NormalizedWord = NLP.Normalize(word, language)
 
-		synonymList = []
 		w.SynonymList = addToList(word, w.SynonymList, language)
 		synonyms = thesaurus.GetSynonyms(w.Word)
 		if(len(synonyms) == 0):
@@ -61,7 +60,7 @@ def processInputData(data):
 				w.SynonymList = addToList(synonym[1], w.SynonymList, language)
 		wordList.append(w)
 
-		print w.toJSON()
+		#print w.toJSON()
 	return wordList
 
 """

@@ -64,6 +64,14 @@ TODO:
 log instead of print
 
 
+the same for microsoft:
+energy_threshold
+The recognizer tries to recognize speech even when I’m not speaking.
+Try increasing the recognizer_instance.energy_threshold property.
+This is basically how sensitive the recognizer is to when recognition should start.
+Higher values mean that it will be less sensitive, which is useful if you are in a loud room.
+
+
 pip install SpeechRecognition
 
 """

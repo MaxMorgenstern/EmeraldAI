@@ -9,6 +9,30 @@ sys.setdefaultencoding('utf-8')
 folder_path = os.path.dirname(os.path.abspath(__file__))
 
 
+from EmeraldAI.Logic.Modules import Global
+
+print Global.OS
+
+
+
+#windows only
+def __checkEnterPressed():
+  import msvcrt
+  if msvcrt.kbhit():
+    key = msvcrt.getch()
+    print key
+    return (key == "\r")
+  return False
+
+
+
+print "gogog"
+while True:
+  print "."
+  if __checkEnterPressed():
+    break
+print "the end"
+
 # https://docs.python.org/2/library/subprocess.html
 #from subprocess import call
 #call(["ls", "-l"])
@@ -20,7 +44,6 @@ folder_path = os.path.dirname(os.path.abspath(__file__))
 
 
 """
-import cv2
 from string import Template
 
 # first argument is the haarcascades path
@@ -89,6 +112,10 @@ cv2.destroyAllWindows()
 
 """
 
+
+
+
+"""
 import Tkinter as tk
 from PIL import ImageTk, Image
 
@@ -111,5 +138,5 @@ panel.pack(side = "bottom", fill = "both", expand = "yes")
 
 #Start the GUI
 window.mainloop()
-
+"""
 

@@ -19,6 +19,7 @@ Just a messy list with things to do
 
 - add notes to classes and modules - description
 
+- slashes dependend on OS
 
 # EN aiml reference https://code.google.com/archive/p/aiml-en-us-foundation-alice/
 
@@ -103,3 +104,4 @@ Rank  Bot Property  Value
 56  <bot name="ethics" /> I am always trying to stop fights
 57  <bot name="emotions" /> I don't pay much attention to my feelings
 58  <bot name="feelings" /> I always put others before myself
+
