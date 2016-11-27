@@ -1,10 +1,15 @@
-
-#!/usr/bin/env python
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
-# Copyright (c) Philipp Wagner. All rights reserved.
-# Licensed under the BSD license. See LICENSE file in the project root for full license information.
 
+from EmeraldAI.Logic.ComputerVision.Predictor import *
+
+
+
+"""
 import logging
 # cv2 and helper:
 import cv2
@@ -24,10 +29,7 @@ from facerec.serialization import save_model, load_model
 from facedet.detector import CascadedDetector
 
 class ExtendedPredictableModel(PredictableModel):
-    """ Subclasses the PredictableModel to store some more
-        information, so we don't need to pass the dataset
-        on each program call...
-    """
+
 
     def __init__(self, feature, classifier, image_size, subject_names):
         PredictableModel.__init__(self, feature=feature, classifier=classifier)
@@ -35,10 +37,7 @@ class ExtendedPredictableModel(PredictableModel):
         self.subject_names = subject_names
 
 def get_model(image_size, subject_names):
-    """ This method returns the PredictableModel which is used to learn a model
-        for possible further usage. If you want to define your own model, this
-        is the method to return it from!
-    """
+
     # Define the Fisherfaces Method as Feature Extraction method:
     feature = Fisherfaces()
     # Define a 1-NN classifier with Euclidean Distance:
@@ -47,15 +46,7 @@ def get_model(image_size, subject_names):
     return ExtendedPredictableModel(feature=feature, classifier=classifier, image_size=image_size, subject_names=subject_names)
 
 def read_subject_names(path):
-    """Reads the folders of a given directory, which are used to display some
-        meaningful name instead of simply displaying a number.
 
-    Args:
-        path: Path to a folder with subfolders representing the subjects (persons).
-
-    Returns:
-        folder_names: The names of the folder, so you can display it in a prediction.
-    """
     folder_names = []
     for dirname, dirnames, filenames in os.walk(path):
         for subdirname in dirnames:
@@ -63,19 +54,6 @@ def read_subject_names(path):
     return folder_names
 
 def read_images(path, image_size=None):
-    """Reads the images in a given folder, resizes images on the fly if size is given.
-
-    Args:
-        path: Path to a folder with subfolders representing the subjects (persons).
-        sz: A tuple with the size Resizes
-
-    Returns:
-        A list [X, y, folder_names]
-
-            X: The images, which is a Python list of numpy arrays.
-            y: The corresponding labels (the unique number of the subject, person) in a Python list.
-            folder_names: The names of the folder, so you can display it in a prediction.
-    """
     c = 0
     X = []
     y = []
@@ -246,3 +224,4 @@ if __name__ == '__main__':
     App(model=model,
         camera_id=options.camera_id,
         cascade_filename=options.cascade_filename).run()
+"""

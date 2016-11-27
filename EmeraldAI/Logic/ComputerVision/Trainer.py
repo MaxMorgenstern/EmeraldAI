@@ -8,9 +8,6 @@ from EmeraldAI.Logic.ComputerVision.Detector import *
 
 class Trainer(object):
 
-  __faceWidth  = 92
-  __faceHeight = 112
-
   def __init__(self):
     self.__imageDir = Global.EmeraldPath + "Data/ComputerVisionData/"
     self.__detector = Detector()
@@ -18,14 +15,6 @@ class Trainer(object):
 
   def GetTrainingImageDir(self):
     return self.__imageDir
-
-
-  def CropImage(self, image, x, y, w, h):
-    cropHeight = int((self.__faceHeight / float(self.__faceWidth)) * w)
-    midy = y + h/2
-    y1 = max(0, midy-cropHeight/2)
-    y2 = min(image.shape[0]-1, midy+cropHeight/2)
-    return image[y1:y2, x:x+w]
 
 
   def __checkEnterPressed(self):
@@ -49,10 +38,17 @@ class Trainer(object):
       return (key == "\r")
     return False
 
+  def __is_cv2(self):
+    return self.__check_opencv_version("2.")
 
-  def CapturePerson(self, camera, message='', onEnter=True, showCam=True, twoEyes=True):
+  def __is_cv3(self):
+    return self.__check_opencv_version("3.")
+
+  def __check_opencv_version(self, major):
+    return cv2.__version__.startswith(major)
+
+  def CaptureFace(self, camera, message='', onEnter=True, showCam=True, twoEyes=True):
     imageCaptured = False
-    returnImage = None
     faces = []
     eyes = []
     glasses = []
@@ -89,9 +85,9 @@ class Trainer(object):
 
       if(len(message) > 0):
         font = None
-        if(self.is_cv2()):
+        if(self.__is_cv2()):
           font = cv2.CV_AA
-        if(self.is_cv3()):
+        if(self.__is_cv3()):
           font = cv2.LINE_AA
         cv2.putText(image, message,(25,25), cv2.FONT_HERSHEY_PLAIN, 0.5, (255,0,0), 2, font)
 
@@ -115,20 +111,10 @@ class Trainer(object):
       else:
       	imageCaptured = True
 
-    ret, image = camera.read()
-    returnImage = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
-    return returnImage
-
-
-  def is_cv2(self):
-    return self.check_opencv_version("2.")
-
-  def is_cv3(self):
-    return self.check_opencv_version("3.")
-
-  def check_opencv_version(self, major):
-    return cv2.__version__.startswith(major)
-
-
-# TODO
-# return Cropped image
+    ret, returnImage = camera.read()
+    greyImage = cv2.cvtColor(returnImage, cv2.COLOR_RGB2GRAY)
+    detectionResult = self.__detector.DetectSingleFace(greyImage)
+    if detectionResult is None:
+      return None
+    x, y, w, h = detectionResult
+    return self.__detector.CropImage(greyImage, x, y, w, h)

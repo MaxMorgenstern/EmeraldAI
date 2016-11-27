@@ -114,23 +114,24 @@ while img_num < 25:
 #while img_num < 50:
 
 while True:
-  image = myCV.CapturePerson(camera, '', False, True, False)
-
-  cv2.imshow('Output', image)
+  image = myCV.CaptureFace(camera, '', False, True, False)
+  if(image != None):
+    cv2.imshow('Output', image)
 
   # Get coordinates of single face in captured image.
-  result = myDect.DetectSingleFace(image)
-  if result is None:
-    continue
-  print "okay"
-  x, y, w, h = result
+  #result = myDect.DetectSingleFace(image)
+  #if result is None:
+  #  continue
+  #print "okay"
+  #x, y, w, h = result
   # Crop image as close as possible to desired face aspect ratio.
   # Might be smaller if face is near edge of image.
-  img_crop = myCV.CropImage(image, x, y, w, h)
+  #img_crop = myCV.CropImage(image, x, y, w, h)
   # Save image to file.
-  filename = os.path.join(img_dir, '%02d_%s_auto.pgm' % (img_num, name))
-  cv2.imwrite(filename, img_crop)
-  print ('Found face and wrote training image' + filename)
-  img_num += 1
+  if(image != None):
+    filename = os.path.join(img_dir, '%02d_%s_auto.pgm' % (img_num, name))
+    cv2.imwrite(filename, image)
+    print ('Found face and wrote training image' + filename)
+    img_num += 1
 
 cv2.destroyAllWindows()
