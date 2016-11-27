@@ -116,11 +116,13 @@ while img_num < 25:
 while True:
   image = myCV.CapturePerson(camera, '', False, True, False)
 
+  cv2.imshow('Output', image)
+
   # Get coordinates of single face in captured image.
   result = myDect.DetectSingleFace(image)
   if result is None:
     continue
-
+  print "okay"
   x, y, w, h = result
   # Crop image as close as possible to desired face aspect ratio.
   # Might be smaller if face is near edge of image.

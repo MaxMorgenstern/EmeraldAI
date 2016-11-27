@@ -102,14 +102,18 @@ class Trainer(object):
       if(onEnter):
         if cv2.waitKey(1) & 0xFF == ord('q'):
           break
-        if self.__checkEnterPressed():
-          if twoEyes and (len(eyes) == 2 or len(glasses) == 2) or not twoEyes and (len(eyes) <= 2 or len(glasses) <= 2):
+        if (self.__checkEnterPressed()):
+          if (twoEyes and (len(eyes) == 2 or len(glasses) == 2)):
             imageCaptured = True
-          else:
-            print ("Unable to detect a proper face or too many faces detected: try again")
 
-      elif woEyes and (len(eyes) == 2 or len(glasses) == 2):
+          elif (not twoEyes and (len(eyes) <= 2 or len(glasses) <= 2)):
+          	imageCaptured = True
+
+      elif (twoEyes and (len(eyes) == 2 or len(glasses) == 2)):
           imageCaptured = True
+
+      else:
+      	imageCaptured = True
 
     ret, image = camera.read()
     returnImage = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
@@ -124,3 +128,7 @@ class Trainer(object):
 
   def check_opencv_version(self, major):
     return cv2.__version__.startswith(major)
+
+
+# TODO
+# return Cropped image
