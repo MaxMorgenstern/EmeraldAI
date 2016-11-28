@@ -17,7 +17,7 @@ class PredictableModel(object):
         self.feature = feature
         self.classifier = classifier
 
-    def compute(self, X, y):
+    def compute(self, X, y, XC=None):
         features = self.feature.compute(X,y)
         self.classifier.compute(features,y)
 

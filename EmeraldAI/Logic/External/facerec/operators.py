@@ -37,7 +37,7 @@ class ChainOperator(FeatureOperator):
     def __init__(self,model1,model2):
         FeatureOperator.__init__(self,model1,model2)
 
-    def compute(self,X,y):
+    def compute(self, X, y, XC=None):
         X = self.model1.compute(X,y)
         return self.model2.compute(X,y)
 
@@ -63,7 +63,7 @@ class CombineOperator(FeatureOperator):
     def __init__(self,model1,model2):
         FeatureOperator.__init__(self, model1, model2)
 
-    def compute(self,X,y):
+    def compute(self, X, y, XC=None):
         A = self.model1.compute(X,y)
         B = self.model2.compute(X,y)
         C = []
@@ -98,7 +98,7 @@ class CombineOperatorND(FeatureOperator):
         FeatureOperator.__init__(self, model1, model2)
         self._hstack = hstack
 
-    def compute(self,X,y):
+    def compute(self, X, y, XC=None):
         A = self.model1.compute(X,y)
         B = self.model2.compute(X,y)
         C = []

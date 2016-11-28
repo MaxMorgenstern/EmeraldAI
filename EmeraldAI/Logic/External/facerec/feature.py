@@ -8,7 +8,7 @@ import numpy as np
 
 class AbstractFeature(object):
 
-    def compute(self,X,y,XC):
+    def compute(self,X,y,XC=None):
         raise NotImplementedError("Every AbstractFeature must implement the compute method.")
 
     def extract(self,X):
@@ -31,7 +31,7 @@ class Identity(AbstractFeature):
     def __init__(self):
         AbstractFeature.__init__(self)
 
-    def compute(self,X,y):
+    def compute(self, X, y, XC=None):
         return X
 
     def extract(self,X):
@@ -42,14 +42,14 @@ class Identity(AbstractFeature):
 
 
 from EmeraldAI.Logic.External.facerec.util import asColumnMatrix
-from EmeraldAI.Logic.External.facerec.operators import ChainOperator, CombineOperator
+from EmeraldAI.Logic.External.facerec.operators import ChainOperator
 
 class PCA(AbstractFeature):
     def __init__(self, num_components=0):
         AbstractFeature.__init__(self)
         self._num_components = num_components
 
-    def compute(self,X,y,XC=None):
+    def compute(self, X, y, XC=None):
         # build the column matrix
         if(XC==None):
           XC = asColumnMatrix(X)
@@ -244,7 +244,7 @@ class SpatialHistogram(AbstractFeature):
         self.lbp_operator = lbp_operator
         self.sz = sz
 
-    def compute(self,X,y):
+    def compute(self, X, y, XC=None):
         features = []
         for x in X:
             x = np.asarray(x)

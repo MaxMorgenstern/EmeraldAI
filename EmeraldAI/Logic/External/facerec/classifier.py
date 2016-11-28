@@ -13,7 +13,7 @@ from sklearn import svm
 
 class AbstractClassifier(object):
 
-    def compute(self,X,y):
+    def compute(self, X, y, XC=None):
         raise NotImplementedError("Every AbstractClassifier must implement the compute method.")
 
     def predict(self,X):
@@ -40,7 +40,7 @@ class NearestNeighbor(AbstractClassifier):
         self.X.append(X)
         self.y = np.append(self.y, y)
 
-    def compute(self, X, y):
+    def compute(self, X, y, XC=None):
         self.X = X
         self.y = np.asarray(y)
 
@@ -143,7 +143,7 @@ class SVM(AbstractClassifier):
 
 
 
-    def compute(self, X, y):
+    def compute(self, X, y, XC=None):
         X = asRowMatrix(X)
         y = np.asarray(y)
         self.svm.fit(X, y)

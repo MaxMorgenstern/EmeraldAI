@@ -15,7 +15,7 @@ class Resize(AbstractFeature):
         AbstractFeature.__init__(self)
         self._size = size
 
-    def compute(self,X,y):
+    def compute(self, X, y, XC=None):
         Xp = []
         for xi in X:
             Xp.append(self.extract(xi))
@@ -32,7 +32,7 @@ class HistogramEqualization(AbstractFeature):
         AbstractFeature.__init__(self)
         self._num_bins = num_bins
 
-    def compute(self,X,y):
+    def compute(self, X, y, XC=None):
         Xp = []
         for xi in X:
             Xp.append(self.extract(xi))
@@ -56,7 +56,7 @@ class TanTriggsPreprocessing(AbstractFeature):
         self._sigma0 = float(sigma0)
         self._sigma1 = float(sigma1)
 
-    def compute(self,X,y):
+    def compute(self, X, y, XC=None):
         Xp = []
         for xi in X:
             Xp.append(self.extract(xi))
@@ -82,7 +82,7 @@ class LBPPreprocessing(AbstractFeature):
         AbstractFeature.__init__(self)
         self._lbp_operator = lbp_operator
 
-    def compute(self,X,y):
+    def compute(self, X, y, XC=None):
         Xp = []
         for xi in X:
             Xp.append(self.extract(xi))
@@ -102,9 +102,10 @@ class MinMaxNormalizePreprocessing(AbstractFeature):
         self._low = low
         self._high = high
 
-    def compute(self,X,y):
+    def compute(self, X, y, XC=None):
         Xp = []
-        XC = asColumnMatrix(X)
+        if(XC==None):
+          XC = asColumnMatrix(X)
         self._min = np.min(XC)
         self._max = np.max(XC)
         for xi in X:
@@ -123,8 +124,9 @@ class ZScoreNormalizePreprocessing(AbstractFeature):
         self._mean = 0.0
         self._std = 1.0
 
-    def compute(self,X,y):
-        XC = asColumnMatrix(X)
+    def compute(self, X, y, XC=None):
+        if(XC==None):
+          XC = asColumnMatrix(X)
         self._mean = XC.mean()
         self._std = XC.std()
         Xp = []
