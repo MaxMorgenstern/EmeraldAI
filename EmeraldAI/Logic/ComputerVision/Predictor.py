@@ -120,6 +120,7 @@ class PredictorApp(object):
       #  x,y,w,h = r
       #  cv2.rectangle(imgout, (x, y), (x+w, y+h), (0, 255, 255), 2)
 
+      """
       for i,r in enumerate(self.__detector.DetectFaceFrontal(img)):
         #for i,r in enumerate(self.detector.detect(img)):
         x0,y0,x1,y1 = r
@@ -139,6 +140,11 @@ class PredictorApp(object):
           draw_str(imgout, (x0-20,y0-20), "Unknown - " + str(distance))
         else:
           draw_str(imgout, (x0-20,y0-20), self.model.subject_names[prediction] + " - " + str(distance))
+      """
+      profiles = self.__detector.DetectFaceFrontal(img)
+      for (x, y, w, h) in profiles:
+        cv2.rectangle(imgout, (x, y), (x+w, y+h), (0, 255, 255), 2)
+
 
       cv2.imshow('videofacerec', imgout)
 
