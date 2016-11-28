@@ -15,6 +15,51 @@ p.CreateDataset()
 
 
 """
+import gc
+gc.collect()
+
+
+----- Fisherfaces
+----- PCA
+----- LDA
+
+raceback (most recent call last):
+  File "testCV-detection.py", line 14, in <module>
+    p.CreateDataset()
+  File "C:\Git\EmeraldAI\EmeraldAI\Logic\ComputerVision\Predictor.py", line 75, in CreateDataset
+    model.compute(images, labels)
+  File "C:\Git\EmeraldAI\EmeraldAI\Logic\External\facerec\model.py", line 21, in compute
+    features = self.feature.compute(X,y)
+  File "C:\Git\EmeraldAI\EmeraldAI\Logic\External\facerec\feature.py", line 199, in compute
+    model.compute(X,y,XC)
+TypeError: compute() takes exactly 3 arguments (4 given)
+
+
+-------
+
+Traceback (most recent call last):
+  File "testCV-detection.py", line 14, in <module>
+    p.CreateDataset()
+  File "C:\Git\EmeraldAI\EmeraldAI\Logic\ComputerVision\Predictor.py", line 75, in CreateDataset
+    model.compute(images, labels)
+  File "C:\Git\EmeraldAI\EmeraldAI\Logic\External\facerec\model.py", line 21, in compute
+    features = self.feature.compute(X,y)
+  File "C:\Git\EmeraldAI\EmeraldAI\Logic\External\facerec\feature.py", line 204, in compute
+    model.compute(X,y)
+  File "C:\Git\EmeraldAI\EmeraldAI\Logic\External\facerec\operators.py", line 41, in compute
+    X = self.model1.compute(X,y)
+  File "C:\Git\EmeraldAI\EmeraldAI\Logic\External\facerec\feature.py", line 75, in compute
+    self._eigenvalues, self._eigenvectors = self._eigenvalues[idx], self._eigenvectors[:,idx]
+  File "C:\Python27\lib\site-packages\numpy\matrixlib\defmatrix.py", line 318, in __getitem__
+    out = N.ndarray.__getitem__(self, index)
+MemoryError
+"""
+
+
+
+
+
+"""
 import logging
 # cv2 and helper:
 import cv2
