@@ -6,6 +6,7 @@ import sys
 import numpy as np
 
 from EmeraldAI.Logic.Modules import Global
+from EmeraldAI.Logic.ComputerVision.Detector import *
 
 from EmeraldAI.Logic.External.facerec.model import PredictableModel
 from EmeraldAI.Logic.External.facerec.feature import Fisherfaces
@@ -13,6 +14,9 @@ from EmeraldAI.Logic.External.facerec.distance import EuclideanDistance
 from EmeraldAI.Logic.External.facerec.classifier import NearestNeighbor
 from EmeraldAI.Logic.External.facerec.validation import KFoldCrossValidation
 from EmeraldAI.Logic.External.facerec.serialization import save_model, load_model
+from EmeraldAI.Logic.External.facerec.helper.common import *
+from EmeraldAI.Logic.External.facerec.helper.video import *
+
 
 class ExtendedPredictableModel(PredictableModel):
   def __init__(self, feature, classifier, image_size, subject_names):
@@ -57,10 +61,13 @@ class Predictor(object):
             c = c+1
     return [X,y,folder_names]
 
+  def __getModelName(self):
+    datasetPath = Global.EmeraldPath + "Data/ComputerVisionData/"
+    modelName = datasetPath + "myModel.pkl"
+    return modelName
 
   def CreateDataset(self):
     datasetPath = Global.EmeraldPath + "Data/ComputerVisionData/"
-    modelName = datasetPath + "myModel.pkl"
     imageSize = self.__getImageSize()
 
     [images, labels, subject_names] = self.__readImages(datasetPath, imageSize)
@@ -74,13 +81,68 @@ class Predictor(object):
     # Compute the model:
     model.compute(images, labels)
     # And save the model, which uses Pythons pickle module:
-    save_model(modelName, model)
+    save_model(self.__getModelName(), model)
 
-  def TestModel():
+  def TestModel(self):
     print "numfolds"
 
-  def LoadDataset():
-    print ""
+  def LoadDataset(self):
+    return load_model(self.__getModelName())
 
-  def PredictPerson():
-    print ""
+  def PredictPerson(self, camera, model=None):
+    if(model==None):
+        model = self.LoadDataset()
+    if not isinstance(model, ExtendedPredictableModel):
+        print "[Error] The given model is not of type '%s'." % "ExtendedPredictableModel"
+        return
+    PredictorApp(model, camera, "").run()
+
+
+
+
+
+class PredictorApp(object):
+  def __init__(self, model, camera, cascade_filename):
+    self.model = model
+    self.__detector = Detector()
+    #self.detector = CascadedDetector(cascade_fn=cascade_filename, minNeighbors=5, scaleFactor=1.1)
+    #self.detectorUpperBody = CascadedDetector(cascade_fn="haarcascade_upperbody.xml", minNeighbors=5, scaleFactor=1.1)
+    self.cam = camera
+
+  def run(self):
+    while True:
+      ret, frame = self.cam.read()
+      # Resize the frame to half the original size for speeding up the detection process:
+      img = cv2.resize(frame, (frame.shape[1]/2, frame.shape[0]/2), interpolation = cv2.INTER_CUBIC)
+      imgout = img.copy()
+
+      #for i,r in enumerate(self.detectorUpperBody.detect(img)):
+      #  x,y,w,h = r
+      #  cv2.rectangle(imgout, (x, y), (x+w, y+h), (0, 255, 255), 2)
+
+      for i,r in enumerate(self.__detector.DetectFaceFrontal(img)):
+        #for i,r in enumerate(self.detector.detect(img)):
+        x0,y0,x1,y1 = r
+        # (1) Get face, (2) Convert to grayscale & (3) resize to image_size:
+        face = img[y0:y1, x0:x1]
+        face = cv2.cvtColor(face,cv2.COLOR_BGR2GRAY)
+        face = cv2.resize(face, self.model.image_size, interpolation = cv2.INTER_CUBIC)
+        # Get a prediction from the model:
+        predInfo = self.model.predict(face)
+        distance = predInfo[1]['distances'][0]
+        prediction = predInfo[0]
+        # Draw the face area in image:
+        cv2.rectangle(imgout, (x0,y0),(x1,y1),(0,255,0),2)
+        # Draw the predicted name (folder name...):
+
+        if distance > 200:
+          draw_str(imgout, (x0-20,y0-20), "Unknown - " + str(distance))
+        else:
+          draw_str(imgout, (x0-20,y0-20), self.model.subject_names[prediction] + " - " + str(distance))
+
+      cv2.imshow('videofacerec', imgout)
+
+      # Show image & exit on escape:
+      ch = cv2.waitKey(10)
+      if ch == 27:
+        break

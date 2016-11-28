@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import sys
 import os
+import cv2
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -9,10 +10,14 @@ sys.setdefaultencoding('utf-8')
 
 from EmeraldAI.Logic.ComputerVision.Predictor import *
 
+camera = cv2.VideoCapture(0)
+ret = camera.set(3,640)
+ret = camera.set(4,360)
+
 
 p = Predictor()
-p.CreateDataset()
-
+#p.CreateDataset()
+p.PredictPerson(camera)
 
 """
 import gc
