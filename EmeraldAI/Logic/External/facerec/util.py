@@ -23,7 +23,7 @@ def read_image(filename):
 def asRowMatrix(X):
     """
     Creates a row-matrix from multi-dimensional data items in list l.
-    
+
     X [list] List with multi-dimensional data.
     """
     if len(X) == 0:
@@ -39,7 +39,7 @@ def asRowMatrix(X):
 def asColumnMatrix(X):
     """
     Creates a column-matrix from multi-dimensional data items in list l.
-    
+
     X [list] List with multi-dimensional data.
     """
     if len(X) == 0:
@@ -55,7 +55,7 @@ def asColumnMatrix(X):
 
 def minmax_normalize(X, low, high, minX=None, maxX=None, dtype=np.float):
     """ min-max normalize a given matrix to given range [low,high].
-    
+
     Args:
         X [rows x columns] input data
         low [numeric] lower bound
@@ -67,7 +67,7 @@ def minmax_normalize(X, low, high, minX=None, maxX=None, dtype=np.float):
         maxX = np.max(X)
     minX = float(minX)
     maxX = float(maxX)
-    # Normalize to [0...1].    
+    # Normalize to [0...1].
     X = X - minX
     X = X / (maxX - minX)
     # Scale to [low...high].
@@ -78,7 +78,7 @@ def minmax_normalize(X, low, high, minX=None, maxX=None, dtype=np.float):
 def zscore(X):
     X = np.asanyarray(X)
     mean = X.mean()
-    std = X.std() 
+    std = X.std()
     X = (X-mean)/std
     return X, mean, std
 
@@ -93,6 +93,3 @@ def shuffle_array(X,y):
     X = [X[i] for i in idx]
     y = [y[i] for i in idx]
     return (X, y)
-    
-
-

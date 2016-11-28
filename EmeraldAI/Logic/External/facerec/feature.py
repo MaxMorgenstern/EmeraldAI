@@ -8,7 +8,7 @@ import numpy as np
 
 class AbstractFeature(object):
 
-    def compute(self,X,y):
+    def compute(self,X,y,XC):
         raise NotImplementedError("Every AbstractFeature must implement the compute method.")
 
     def extract(self,X):
@@ -49,9 +49,11 @@ class PCA(AbstractFeature):
         AbstractFeature.__init__(self)
         self._num_components = num_components
 
-    def compute(self,X,y):
+    def compute(self,X,y,XC=None):
         # build the column matrix
-        XC = asColumnMatrix(X)
+        if(XC==None):
+          XC = asColumnMatrix(X)
+
         y = np.asarray(y)
         # set a valid number of components
         if self._num_components <= 0 or (self._num_components > XC.shape[1]-1):
@@ -113,9 +115,11 @@ class LDA(AbstractFeature):
         AbstractFeature.__init__(self)
         self._num_components = num_components
 
-    def compute(self, X, y):
+    def compute(self, X, y, XC=None):
         # build the column matrix
-        XC = asColumnMatrix(X)
+        if(XC==None):
+          XC = asColumnMatrix(X)
+
         y = np.asarray(y)
         # calculate dimensions
         d = XC.shape[0]
@@ -177,9 +181,11 @@ class Fisherfaces(AbstractFeature):
         AbstractFeature.__init__(self)
         self._num_components = num_components
 
-    def compute(self, X, y):
+    def compute(self, X, y, XC=None):
         # turn into numpy representation
-        #Xc = asColumnMatrix(X)
+        if(XC==None):
+          XC = asColumnMatrix(X)
+        print "XC calculated"
         y = np.asarray(y)
         # gather some statistics about the dataset
         n = len(y)
@@ -190,7 +196,7 @@ class Fisherfaces(AbstractFeature):
         # fisherfaces are a chained feature of PCA followed by LDA
         model = ChainOperator(pca,lda)
         # computing the chained model then calculates both decompositions
-        model.compute(X,y)
+        model.compute(X,y,XC)
         # store eigenvalues and number of components used
         self._eigenvalues = lda.eigenvalues
         self._num_components = lda.num_components

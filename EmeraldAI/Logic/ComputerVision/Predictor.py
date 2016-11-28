@@ -70,31 +70,11 @@ class Predictor(object):
     # Get the model we want to compute:
     model = self.__getModel(image_size=imageSize, subject_names=subject_dictionary)
 
+    print "CreateDataset..."
     # Compute the model:
     model.compute(images, labels)
     # And save the model, which uses Pythons pickle module:
     save_model(modelName, model)
-
-  """
-Traceback (most recent call last):
-  File "testing/testCV-detection.py", line 14, in <module>
-    p.CreateDataset()
-  File "/Users/maximilianporzelt/Google Drive/EmeraldAI/EmeraldAI/Logic/ComputerVision/Predictor.py", line 72, in CreateDataset
-    model.compute(images, labels)
-  File "/Users/maximilianporzelt/Google Drive/EmeraldAI/EmeraldAI/Logic/External/facerec/model.py", line 21, in compute
-    features = self.feature.compute(X,y)
-  File "/Users/maximilianporzelt/Google Drive/EmeraldAI/EmeraldAI/Logic/External/facerec/feature.py", line 193, in compute
-    model.compute(X,y)
-  File "/Users/maximilianporzelt/Google Drive/EmeraldAI/EmeraldAI/Logic/External/facerec/operators.py", line 41, in compute
-    X = self.model1.compute(X,y)
-  File "/Users/maximilianporzelt/Google Drive/EmeraldAI/EmeraldAI/Logic/External/facerec/feature.py", line 54, in compute
-    XC = asColumnMatrix(X)
-  File "/Users/maximilianporzelt/Google Drive/EmeraldAI/EmeraldAI/Logic/External/facerec/util.py", line 52, in asColumnMatrix
-    mat = np.append(mat, col.reshape(-1,1), axis=1) # same as hstack
-  File "/usr/local/lib/python2.7/site-packages/numpy/lib/function_base.py", line 4586, in append
-    return concatenate((arr, values), axis=axis)
-ValueError: all the input array dimensions except for the concatenation axis must match exactly
-  """
 
   def TestModel():
     print "numfolds"
