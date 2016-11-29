@@ -86,7 +86,14 @@ class NearestNeighbor(AbstractClassifier):
         sorted_y = self.y[idx]
         sorted_distances = distances[idx]
         # Take only the k first items:
-        sorted_y = sorted_y[0:self.k]
+
+
+        # this is for non 64 bit systems
+        sorted_y = sorted_y[0:self.k].astype(np.int32)
+        #sorted_y = sorted_y[0:self.k]
+
+
+
         sorted_distances = sorted_distances[0:self.k]
         # Make a histogram of them:
         hist = dict((key,val) for key, val in enumerate(np.bincount(sorted_y)) if val)

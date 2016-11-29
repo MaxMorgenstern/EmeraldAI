@@ -120,32 +120,29 @@ class PredictorApp(object):
       #  x,y,w,h = r
       #  cv2.rectangle(imgout, (x, y), (x+w, y+h), (0, 255, 255), 2)
 
-      """
-      for i,r in enumerate(self.__detector.DetectFaceFrontal(img)):
-        #for i,r in enumerate(self.detector.detect(img)):
-        x0,y0,x1,y1 = r
-        # (1) Get face, (2) Convert to grayscale & (3) resize to image_size:
-        face = img[y0:y1, x0:x1]
-        face = cv2.cvtColor(face,cv2.COLOR_BGR2GRAY)
+
+      profiles = self.__detector.DetectFaceFrontal(img)
+      for (x, y, w, h) in profiles:
+        face = img.copy()
+        face = cv2.cvtColor(face, cv2.COLOR_BGR2GRAY)
+        face = self.__detector.CropImage(face, x, y, w, h)
+
         face = cv2.resize(face, self.model.image_size, interpolation = cv2.INTER_CUBIC)
-        # Get a prediction from the model:
+
         predInfo = self.model.predict(face)
         distance = predInfo[1]['distances'][0]
         prediction = predInfo[0]
-        # Draw the face area in image:
-        cv2.rectangle(imgout, (x0,y0),(x1,y1),(0,255,0),2)
-        # Draw the predicted name (folder name...):
 
         if distance > 200:
-          draw_str(imgout, (x0-20,y0-20), "Unknown - " + str(distance))
+          cv2.rectangle(imgout, (x, y), (x+w, y+h), (0, 0, 255), 1)
+          cv2.putText(imgout, "Unknown - " + str(distance),(x-25,y-25), cv2.FONT_HERSHEY_PLAIN, 0.5, (0,0,255), 1)
+          #draw_str(imgout, (20,20), "Unknown - " + str(distance))
         else:
-          draw_str(imgout, (x0-20,y0-20), self.model.subject_names[prediction] + " - " + str(distance))
-      """
-      profiles = self.__detector.DetectFaceFrontal(img)
-      for (x, y, w, h) in profiles:
-        cv2.rectangle(imgout, (x, y), (x+w, y+h), (0, 255, 255), 2)
+          cv2.rectangle(imgout, (x, y), (x+w, y+h), (0, 255, 0), 1)
+          cv2.putText(imgout, self.model.subject_names[prediction] + " - " + str(distance),(x-25,y-25), cv2.FONT_HERSHEY_PLAIN, 0.5, (0,255,0), 1)
+          #draw_str(imgout, (20,20), self.model.subject_names[prediction] + " - " + str(distance))
 
-
+      imgout = cv2.resize(imgout, (imgout.shape[1]*2, imgout.shape[0]*2), interpolation = cv2.INTER_CUBIC)
       cv2.imshow('videofacerec', imgout)
 
       # Show image & exit on escape:
