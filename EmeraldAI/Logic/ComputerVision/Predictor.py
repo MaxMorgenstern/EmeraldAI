@@ -5,6 +5,8 @@ import os
 import sys
 import numpy as np
 
+import operator
+
 from EmeraldAI.Logic.Modules import Global
 from EmeraldAI.Logic.ComputerVision.Detector import *
 
@@ -99,27 +101,29 @@ class Predictor(object):
 
 
 
-
-
+# TODO cascade_filename
 class PredictorApp(object):
   def __init__(self, model, camera, cascade_filename):
-    self.model = model
+    self.__model = model
     self.__detector = Detector()
-    #self.detector = CascadedDetector(cascade_fn=cascade_filename, minNeighbors=5, scaleFactor=1.1)
-    #self.detectorUpperBody = CascadedDetector(cascade_fn="haarcascade_upperbody.xml", minNeighbors=5, scaleFactor=1.1)
-    self.cam = camera
+    self.__cam = camera
+    self.__maxDistance = 200
+    self.__predicted = {}
+
+  def AddPrediction(self, key, distance):
+    if(self.__predicted.has_key(key)):
+      self.__predicted[key] += (self.__maxDistance-distance)/10
+    else:
+      self.__predicted[key] = (self.__maxDistance-distance)/10
 
   def run(self):
+    displayTick = 0;
+    probeCount = 0;
     while True:
-      ret, frame = self.cam.read()
+      ret, img = self.__cam.read()
       # Resize the frame to half the original size for speeding up the detection process:
-      img = cv2.resize(frame, (frame.shape[1]/2, frame.shape[0]/2), interpolation = cv2.INTER_CUBIC)
+      #img = cv2.resize(frame, (frame.shape[1]/2, frame.shape[0]/2), interpolation = cv2.INTER_CUBIC)
       imgout = img.copy()
-
-      #for i,r in enumerate(self.detectorUpperBody.detect(img)):
-      #  x,y,w,h = r
-      #  cv2.rectangle(imgout, (x, y), (x+w, y+h), (0, 255, 255), 2)
-
 
       profiles = self.__detector.DetectFaceFrontal(img)
       for (x, y, w, h) in profiles:
@@ -127,25 +131,42 @@ class PredictorApp(object):
         face = cv2.cvtColor(face, cv2.COLOR_BGR2GRAY)
         face = self.__detector.CropImage(face, x, y, w, h)
 
-        face = cv2.resize(face, self.model.image_size, interpolation = cv2.INTER_CUBIC)
+        face = cv2.resize(face, self.__model.image_size, interpolation = cv2.INTER_CUBIC)
 
-        predInfo = self.model.predict(face)
+        predInfo = self.__model.predict(face)
         distance = predInfo[1]['distances'][0]
         prediction = predInfo[0]
 
-        if distance > 200:
+        if distance > self.__maxDistance:
           cv2.rectangle(imgout, (x, y), (x+w, y+h), (0, 0, 255), 1)
-          cv2.putText(imgout, "Unknown - " + str(distance),(x-25,y-25), cv2.FONT_HERSHEY_PLAIN, 0.5, (0,0,255), 1)
-          #draw_str(imgout, (20,20), "Unknown - " + str(distance))
+          cv2.putText(imgout, "Unknown - " + str(distance),(x-10,y-10), cv2.FONT_HERSHEY_PLAIN, 0.5, (0,0,255), 1)
+          self.AddPrediction("Unknown", distance)
         else:
+          key = self.__model.subject_names[prediction]
           cv2.rectangle(imgout, (x, y), (x+w, y+h), (0, 255, 0), 1)
-          cv2.putText(imgout, self.model.subject_names[prediction] + " - " + str(distance),(x-25,y-25), cv2.FONT_HERSHEY_PLAIN, 0.5, (0,255,0), 1)
-          #draw_str(imgout, (20,20), self.model.subject_names[prediction] + " - " + str(distance))
+          cv2.putText(imgout, key + " - " + str(distance),(x-10,y-10), cv2.FONT_HERSHEY_PLAIN, 0.5, (0,255,0), 1)
+          self.AddPrediction(key, distance)
+        probeCount += 1
 
-      imgout = cv2.resize(imgout, (imgout.shape[1]*2, imgout.shape[0]*2), interpolation = cv2.INTER_CUBIC)
+      #imgout = cv2.resize(imgout, (imgout.shape[1]*2, imgout.shape[0]*2), interpolation = cv2.INTER_CUBIC)
       cv2.imshow('videofacerec', imgout)
 
-      # Show image & exit on escape:
+      # space
       ch = cv2.waitKey(10)
+      if ch == 32:
+        self.__predicted.clear()
+        print "prediction cleared"
+        displayTick = 0;
+        probeCount = 0;
+
+      # Show image & exit on escape:
       if ch == 27:
         break
+
+      if(len(self.__predicted) > 0 and probeCount > 5 and displayTick%20 == 0):
+        sortedList = sorted(self.__predicted.items(), key=operator.itemgetter(1), reverse=True)
+        print sortedList
+        if(probeCount > 20):
+          print "This is: " + sortedList[0][0]
+
+      displayTick += 1

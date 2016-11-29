@@ -18,6 +18,7 @@ ret = camera.set(4,360)
 p = Predictor()
 #p.CreateDataset()
 p.PredictPerson(camera)
+print "yea"
 
 """
 import gc
