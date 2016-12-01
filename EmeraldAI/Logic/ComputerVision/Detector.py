@@ -1,9 +1,12 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import cv2
+from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Logic.Modules import Global
 
+#Singleton Class
 class Detector(object):
+  __metaclass__ = Singleton
 
   __haarFaceFrontal = 'haarcascade_frontalface_alt2.xml'
   __haarFaceProfile = 'haarcascade_profileface.xml'

@@ -6,6 +6,7 @@ import sys
 import numpy as np
 
 import operator
+import time
 
 from EmeraldAI.Logic.Modules import Global
 from EmeraldAI.Logic.ComputerVision.Detector import *
@@ -91,24 +92,32 @@ class Predictor(object):
   def LoadDataset(self):
     return load_model(self.__getModelName())
 
-  def PredictPerson(self, camera, model=None):
+  def PredictPerson(self, camera, detectorFunction=None, model=None):
+    predictorApp = self.GetPredictor(camera, detectorFunction, model)
+    return predictorApp.run()
+
+  def GetPredictor(self, camera, detectorFunction=None, model=None):
     if(model==None):
         model = self.LoadDataset()
     if not isinstance(model, ExtendedPredictableModel):
         print "[Error] The given model is not of type '%s'." % "ExtendedPredictableModel"
         return
-    PredictorApp(model, camera, "").run()
+
+    return PredictorApp(model, camera, detectorFunction)
 
 
-
-# TODO cascade_filename
 class PredictorApp(object):
-  def __init__(self, model, camera, cascade_filename):
+  def __init__(self, model, camera, detectorFunction=None):
     self.__model = model
     self.__detector = Detector()
+    if(detectorFunction == None):
+      detectorFunction = self.__detector.DetectFaceFrontal
+    self.__detectorFunction = detectorFunction
     self.__cam = camera
-    self.__maxDistance = 200
+    self.__maxDistance = 150
     self.__predicted = {}
+    self.__timeout = 5
+    self.__probeTreshhold = 50 # after 10 detections return
 
   def AddPrediction(self, key, distance):
     if(self.__predicted.has_key(key)):
@@ -117,6 +126,44 @@ class PredictorApp(object):
       self.__predicted[key] = (self.__maxDistance-distance)/10
 
   def run(self):
+    self.__predicted = {}
+    probeCount = 0;
+    timeout = time.time() + self.__timeout
+
+    while True and time.time() <= timeout:
+      ret, img = self.__cam.read()
+      # Resize the frame to half the original size for speeding up the detection process:
+      #img = cv2.resize(frame, (frame.shape[1]/2, frame.shape[0]/2), interpolation = cv2.INTER_CUBIC)
+
+      profiles = self.__detectorFunction(img)
+      for (x, y, w, h) in profiles:
+        face = img.copy()
+        face = cv2.cvtColor(face, cv2.COLOR_BGR2GRAY)
+        face = self.__detector.CropImage(face, x, y, w, h)
+
+        face = cv2.resize(face, self.__model.image_size, interpolation = cv2.INTER_CUBIC)
+
+        predInfo = self.__model.predict(face)
+        distance = predInfo[1]['distances'][0]
+        prediction = predInfo[0]
+
+        if distance > self.__maxDistance:
+          self.AddPrediction("Unknown", distance-self.__maxDistance)
+        else:
+          key = self.__model.subject_names[prediction]
+          self.AddPrediction(key, distance)
+        probeCount += 1
+
+
+      if(probeCount > self.__probeTreshhold):
+        break
+
+    sortedList = sorted(self.__predicted.items(), key=operator.itemgetter(1), reverse=True)
+    return sortedList
+
+
+
+  def runVisual(self):
     displayTick = 0;
     probeCount = 0;
     while True:
@@ -163,9 +210,10 @@ class PredictorApp(object):
       if ch == 27:
         break
 
-      if(len(self.__predicted) > 0 and probeCount > 5 and displayTick%20 == 0):
+      if(len(self.__predicted) > 0 and probeCount > 5 and displayTick%30 == 0):
         sortedList = sorted(self.__predicted.items(), key=operator.itemgetter(1), reverse=True)
         print sortedList
+        print "Probe Count " + str(probeCount)
         if(probeCount > 20):
           print "This is: " + sortedList[0][0]
 

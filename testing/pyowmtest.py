@@ -31,18 +31,37 @@ print w.get_detailed_status()
 print w.get_status()
 print w.get_snow()
 print w.get_rain()
+print w.get_weather_icon_name()
+print w.get_sunrise_time('iso')	# GMT
+print w.get_sunset_time('iso')	#GMT
 
+print "-----"
+print "-----"
+
+fc = owm.three_hours_forecast('Bad Vilbel,de')
+f = fc.get_forecast()
+for weather in f:
+      print (weather.get_reference_time('iso'),weather.get_detailed_status(),weather.get_temperature('celsius'),weather.get_wind())
+
+print "-----"
+print "-----"
 
 fc = owm.daily_forecast('Bad Vilbel,de', limit=6)
 f = fc.get_forecast()
 for weather in f:
-      print (weather.get_reference_time('iso'),weather.get_detailed_status(),weather.get_temperature('celsius'))
+      print (weather.get_reference_time('iso'),weather.get_detailed_status(),weather.get_temperature('celsius'),weather.get_wind())
 
 print "-----"
 
-date_tomorrow = datetime(2016, 11, 29, 13, 37)
+date_tomorrow = datetime(2016, 11, 30, 12, 0)
+tw = fc.get_weather_at(date_tomorrow)
+print tw.get_temperature('celsius')
+
+"""
+date_tomorrow = datetime(2016, 11, 30, 13, 37)
 at = fc.get_weather_at(date_tomorrow)
 print (at.get_reference_time('iso'),at.get_detailed_status(),at.get_temperature('celsius'))
+"""
 
 # Search current weather observations in the surroundings of
 # lat=22.57W, lon=43.12S (Rio de Janeiro, BR)
