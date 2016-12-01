@@ -11,4 +11,19 @@ print wikipedia.summary("Rolling Stones")
 #print ny
 
 
-print wikipedia.summary("The Rolling Stones", sentences=1)
+#print wikipedia.summary("The Rolling Stones", sentences=1)
+
+
+k = wikipedia.WikipediaPage("Rolling Stones")
+
+for i in k.images:
+	print i
+
+for i in k.categories:
+	print i
+
+for i in k.sections:
+	print i
+
+print k.summary
+
