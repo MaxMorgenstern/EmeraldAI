@@ -14,7 +14,7 @@ from EmeraldAI.Logic.Modules import Global
 print Global.OS
 
 
-
+"""
 #windows only
 def __checkEnterPressed():
   import msvcrt
@@ -32,6 +32,12 @@ while True:
   if __checkEnterPressed():
     break
 print "the end"
+"""
+
+from EmeraldAI.Logic.KnowledgeGathering.Wikipedia import *
+
+wp = Wikipedia()
+print wp.GetSummary("USB Kabel").encode(sys.stdout.encoding, errors='replace')
 
 # https://docs.python.org/2/library/subprocess.html
 #from subprocess import call

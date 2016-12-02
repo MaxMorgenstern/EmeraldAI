@@ -2,8 +2,10 @@
 # -*- coding: utf-8 -*-
 import ConfigParser
 import os
+from EmeraldAI.Logic.Singleton import Singleton
 
 class Config():
+  __metaclass__ = Singleton
   __config = None
 
   def __init__(self):
