@@ -37,7 +37,27 @@ print "the end"
 from EmeraldAI.Logic.KnowledgeGathering.Wikipedia import *
 
 wp = Wikipedia()
-print wp.GetSummary("USB Kabel").encode(sys.stdout.encoding, errors='replace')
+data = wp.GetSummary("USB Kabel")
+print data.encode(sys.stdout.encoding, errors='replace')
+
+
+
+from EmeraldAI.Logic.KnowledgeGathering.Weather import *
+
+we = Weather()
+
+cuwe = we.GetCurrentWeather("Bad Vilbel")
+print cuwe.get_wind()                  # {'speed': 4.6, 'deg': 330}
+print cuwe.get_humidity()              # 87
+print cuwe.get_temperature('celsius')  # {'temp_max': 10.5, 'temp': 9.7, 'temp_min': 9.0}
+print cuwe.get_detailed_status()
+print cuwe.get_status()
+print cuwe.get_snow()
+print cuwe.get_rain()
+print cuwe.get_weather_icon_name()
+print cuwe.get_sunrise_time('iso') # GMT
+print cuwe.get_sunset_time('iso')  #GMT
+
 
 # https://docs.python.org/2/library/subprocess.html
 #from subprocess import call
