@@ -7,7 +7,8 @@
 from datetime import datetime
 import pyowm
 
-owm = pyowm.OWM(API_key='47748de03b79380c94ecc84ef729f301', language='de')  # You MUST provide a valid API key
+owm = pyowm.OWM(API_key='47748de03b79380c94ecc84ef729f301',
+                language='de')  # You MUST provide a valid API key
 
 # You have a pro subscription? Use:
 # owm = pyowm.OWM(API_key='your-API-key', subscription_type='pro')
@@ -15,8 +16,8 @@ owm = pyowm.OWM(API_key='47748de03b79380c94ecc84ef729f301', language='de')  # Yo
 # Will it be sunny tomorrow at this time in Milan (Italy) ?
 #forecast = owm.daily_forecast("Hanau,de")
 #tomorrow = pyowm.timeutils.tomorrow()
-#print forecast.will_be_sunny_at(tomorrow)
-#print forecast
+# print forecast.will_be_sunny_at(tomorrow)
+# print forecast
 
 # Search for current weather in London (UK)
 observation = owm.weather_at_place('Bad Vilbel,de')
@@ -26,14 +27,15 @@ print(w)
 # Weather details
 print w.get_wind()                  # {'speed': 4.6, 'deg': 330}
 print w.get_humidity()              # 87
-print w.get_temperature('celsius')  # {'temp_max': 10.5, 'temp': 9.7, 'temp_min': 9.0}
+# {'temp_max': 10.5, 'temp': 9.7, 'temp_min': 9.0}
+print w.get_temperature('celsius')
 print w.get_detailed_status()
 print w.get_status()
 print w.get_snow()
 print w.get_rain()
 print w.get_weather_icon_name()
-print w.get_sunrise_time('iso')	# GMT
-print w.get_sunset_time('iso')	#GMT
+print w.get_sunrise_time('iso')  # GMT
+print w.get_sunset_time('iso')  # GMT
 
 print "-----"
 print "-----"
@@ -41,7 +43,8 @@ print "-----"
 fc = owm.three_hours_forecast('Bad Vilbel,de')
 f = fc.get_forecast()
 for weather in f:
-      print (weather.get_reference_time('iso'),weather.get_detailed_status(),weather.get_temperature('celsius'),weather.get_wind())
+    print(weather.get_reference_time('iso'), weather.get_detailed_status(),
+          weather.get_temperature('celsius'), weather.get_wind())
 
 print "-----"
 print "-----"
@@ -49,7 +52,8 @@ print "-----"
 fc = owm.daily_forecast('Bad Vilbel,de', limit=6)
 f = fc.get_forecast()
 for weather in f:
-      print (weather.get_reference_time('iso'),weather.get_detailed_status(),weather.get_temperature('celsius'),weather.get_wind())
+    print(weather.get_reference_time('iso'), weather.get_detailed_status(),
+          weather.get_temperature('celsius'), weather.get_wind())
 
 print "-----"
 

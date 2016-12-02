@@ -2,109 +2,110 @@
 # -*- coding: utf-8 -*-
 import speech_recognition as sr
 import httplib
-import json
 import os
 import re
-from urlparse import urlparse
 from EmeraldAI.Logic.Modules import Global
 from EmeraldAI.Config.Config import *
 
+
 class Microsoft(object):
 
-  __language_2letter_cc = 'de'
-  __language_4letter_cc = 'de-DE'
-  __audioPlayer = "afplay '{0}'"
+    __language_2letter_cc = 'de'
+    __language_4letter_cc = 'de-DE'
+    __audioPlayer = "afplay '{0}'"
 
-  __voiceGender = 'Female'
-  __voiceName = 'Microsoft Server Speech Text to Speech Voice (de-DE, Hedda)'
-  __apiKey = None
-  __accesstoken = None
+    __voiceGender = 'Female'
+    __voiceName = 'Microsoft Server Speech Text to Speech Voice (de-DE, Hedda)'
+    __apiKey = None
+    __accesstoken = None
 
-  __ssmlTemplate = """<speak version='1.0' xml:lang='{0}'>
+    __ssmlTemplate = """<speak version='1.0' xml:lang='{0}'>
         <voice xml:lang='{0}' xml:gender='{1}' name='{2}'>
           {3}
         </voice>
       </speak>"""
 
-  def __init__(self):
-    self.__language_2letter_cc = Config().Get("TextToSpeech", "CountryCode2Letter")
-    self.__language_4letter_cc = Config().Get("TextToSpeech", "CountryCode4Letter")
-    self.__audioPlayer = Config().Get("TextToSpeech", "AudioPlayer") + " '{0}'"
+    def __init__(self):
+        self.__language_2letter_cc = Config().Get("TextToSpeech", "CountryCode2Letter")
+        self.__language_4letter_cc = Config().Get("TextToSpeech", "CountryCode4Letter")
+        self.__audioPlayer = Config().Get(
+            "TextToSpeech", "AudioPlayer") + " '{0}'"
 
-    self.__voiceGender = Config().Get("TextToSpeech", "MicrosoftVoiceGender")
-    self.__voiceName = Config().Get("TextToSpeech", "MicrosoftVoiceName")
-    self.__apiKey = Config().Get("TextToSpeech", "MicrosoftAPIKey")
+        self.__voiceGender = Config().Get("TextToSpeech", "MicrosoftVoiceGender")
+        self.__voiceName = Config().Get("TextToSpeech", "MicrosoftVoiceName")
+        self.__apiKey = Config().Get("TextToSpeech", "MicrosoftAPIKey")
 
-    params = ""
-    headers = {"Ocp-Apim-Subscription-Key": self.__apiKey}
+        params = ""
+        headers = {"Ocp-Apim-Subscription-Key": self.__apiKey}
 
-    __AccessTokenHost = "api.cognitive.microsoft.com"
-    path = "/sts/v1.0/issueToken"
+        __AccessTokenHost = "api.cognitive.microsoft.com"
+        path = "/sts/v1.0/issueToken"
 
-    conn = httplib.HTTPSConnection(__AccessTokenHost)
-    conn.request("POST", path, params, headers)
-    response = conn.getresponse()
-  #  print(response.status, response.reason)
+        conn = httplib.HTTPSConnection(__AccessTokenHost)
+        conn.request("POST", path, params, headers)
+        response = conn.getresponse()
+    #  print(response.status, response.reason)
 
-    data = response.read()
-    conn.close()
+        data = response.read()
+        conn.close()
 
-    self.__accesstoken = data.decode("UTF-8")
+        self.__accesstoken = data.decode("UTF-8")
 
+    def Speak(self, audioString, playAudio=False):
+        if(len(audioString) == 0):
+            return
+        tmpAudioFile = Global.EmeraldPath + "Data/TTS/Microsoft_" + \
+            self.__language_2letter_cc + "_" + \
+            self.CleanString(audioString) + ".wav"
 
-  def Speak(self, audioString, playAudio=False):
-    if(len(audioString) == 0):
-      return
-    tmpAudioFile = Global.EmeraldPath + "Data/TTS/Microsoft_" + self.__language_2letter_cc + "_" + self.CleanString(audioString) + ".wav"
+        if not os.path.isfile(tmpAudioFile):
+            ssml = self.__ssmlTemplate.format(
+                self.__language_4letter_cc, self.__voiceGender, self.__voiceName, audioString)
+            body = ssml  # .encode('utf8')
 
-    if not os.path.isfile(tmpAudioFile):
-      ssml = self.__ssmlTemplate.format(self.__language_4letter_cc, self.__voiceGender, self.__voiceName, audioString)
-      body = ssml #.encode('utf8')
+            headers = {"Content-type": "application/ssml+xml",
+                       "X-Microsoft-OutputFormat": "riff-16khz-16bit-mono-pcm",
+                       "Authorization": "Bearer " + self.__accesstoken,
+                       "X-Search-AppId": "07D3234E49CE426DAA29772419F436CA",
+                       "X-Search-ClientID": "1ECFAE91408841A480F00935DC390960",
+                       "User-Agent": "TTSForPython"}
 
-      headers = {"Content-type": "application/ssml+xml",
-        "X-Microsoft-OutputFormat": "riff-16khz-16bit-mono-pcm",
-        "Authorization": "Bearer " + self.__accesstoken,
-        "X-Search-AppId": "07D3234E49CE426DAA29772419F436CA",
-        "X-Search-ClientID": "1ECFAE91408841A480F00935DC390960",
-        "User-Agent": "TTSForPython"}
+            # Connect to server to synthesize the wave
+            conn = httplib.HTTPSConnection("speech.platform.bing.com")
+            conn.request("POST", "/synthesize", body, headers)
+            response = conn.getresponse()
+    #      print(response.status, response.reason)
 
-      #Connect to server to synthesize the wave
-      conn = httplib.HTTPSConnection("speech.platform.bing.com")
-      conn.request("POST", "/synthesize", body, headers)
-      response = conn.getresponse()
-  #      print(response.status, response.reason)
+            data = response.read()
+            conn.close()
+    #       len(data)
 
-      data = response.read()
-      conn.close()
-  #       len(data)
+            with open(tmpAudioFile, "wb") as f:
+                f.write(data)
 
-      with open(tmpAudioFile, "wb") as f:
-        f.write(data)
+        if(playAudio):
+            os.system(self.__audioPlayer.format(tmpAudioFile))
+        return tmpAudioFile
 
-    if(playAudio):
-      os.system(self.__audioPlayer.format(tmpAudioFile))
-    return tmpAudioFile
+    def Listen(self):
+        r = sr.Recognizer()
+        with sr.Microphone() as source:
+            audio = r.listen(source)
 
+        data = ""
+        try:
+            data = r.recognize_bing(
+                audio, key=self.__apiKey, language=__language_4letter_cc, show_all=False)
+        except sr.UnknownValueError:
+            print("Microsoft Bing Voice Recognition could not understand audio")
+        except sr.RequestError as e:
+            print(
+                "Could not request results from Microsoft Bing Voice Recognition service; {0}".format(e))
+        return data
 
-  def Listen(self):
-    r = sr.Recognizer()
-    with sr.Microphone() as source:
-      audio = r.listen(source)
-
-    data = ""
-    try:
-      data = r.recognize_bing(audio, key = self.__apiKey, language = __language_4letter_cc, show_all = False)
-    except sr.UnknownValueError:
-        print("Microsoft Bing Voice Recognition could not understand audio")
-    except sr.RequestError as e:
-        print("Could not request results from Microsoft Bing Voice Recognition service; {0}".format(e))
-    return data
-
-
-  def CleanString(self, string):
-    data = re.sub(r'\W+', '', string)
-    return (data[:75] + '_TRIMMED') if len(data) > 75 else data
-
+    def CleanString(self, string):
+        data = re.sub(r'\W+', '', string)
+        return (data[:75] + '_TRIMMED') if len(data) > 75 else data
 
 
 """

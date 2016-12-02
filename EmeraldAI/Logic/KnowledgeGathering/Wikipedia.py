@@ -11,7 +11,6 @@ class Wikipedia(object):
     def __init__(self):
         wikipedia.set_lang("de")
 
-
     def GetSummary(self, term, trimBrackets=True):
         summary = wikipedia.summary(term)
         if(trimBrackets):

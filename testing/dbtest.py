@@ -8,7 +8,6 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 
-
 from EmeraldAI.Logic.Modules.Database import MySQL
 from EmeraldAI.Logic.Modules.Database import SQlite3
 """
@@ -104,26 +103,25 @@ t = Thesaurus()
 print "-----"
 res = t.GetSynonyms("bank")
 for x in res:
-  print x
+    print x
 
 print " "
 
 res = t.GetCategory("bank")
 for x in res:
-  print x
+    print x
 
 print " "
 
 res = t.GetOpposite("Schwarz")
 for x in res:
-  print x
+    print x
 
 print " "
 
 res = t.GetSynonymsAndCategory("bank")
 for x in res:
-  print x
-
+    print x
 
 
 """

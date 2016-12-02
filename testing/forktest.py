@@ -8,6 +8,7 @@ import multiprocessing
 from multiprocessing import Queue
 import sys
 
+
 def daemon(q):
     p = multiprocessing.current_process()
     print 'Starting:', p.name, p.pid
@@ -18,9 +19,10 @@ def daemon(q):
         print "daemon loop"
         q.put(i)
         time.sleep(2)
-        i +=1
+        i += 1
     print 'Exiting :', p.name, p.pid
     sys.stdout.flush()
+
 
 def non_daemon(q):
     p = multiprocessing.current_process()
@@ -30,7 +32,7 @@ def non_daemon(q):
     while i < 5:
         print "non_daemon loop", p.name, p.pid
         time.sleep(1)
-        i +=1
+        i += 1
     print 'Exiting :', p.name, p.pid
     sys.stdout.flush()
 
@@ -40,19 +42,18 @@ if __name__ == '__main__':
     d = multiprocessing.Process(name='daemon', target=daemon, args=(queue,))
     d.daemon = True
 
-    n = multiprocessing.Process(name='non-daemon', target=non_daemon, args=(queue,))
+    n = multiprocessing.Process(
+        name='non-daemon', target=non_daemon, args=(queue,))
     n.daemon = False
 
-
-    n2 = multiprocessing.Process(name='non-daemon-2', target=non_daemon, args=(queue,))
+    n2 = multiprocessing.Process(
+        name='non-daemon-2', target=non_daemon, args=(queue,))
     n2.daemon = False
-
 
     n2.start()
     d.start()
     time.sleep(1)
     n.start()
-
 
     i = 0
     while i < 10:
@@ -65,7 +66,7 @@ if __name__ == '__main__':
             print "#"
 
         time.sleep(1)
-        i +=1
+        i += 1
 
     print "main done - waiting for N"
 
