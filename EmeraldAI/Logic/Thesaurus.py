@@ -7,14 +7,14 @@ class Thesaurus(object):
     database = None
 
     def __init__(self):
-        self.database = SQlite3.GetDB("thesaurus_DE")
+        self.database = SQlite3.GetDB("brain")
 
     def __executeQuery(self, query, word):
         return SQlite3.Fetchall(self.database, query.format(lowerword=word.lower()))
 
     def GetSynonymsAndCategory(self, word):
         query = """SELECT term.normalized_word, term.word, term2.word, category.category_name
-            FROM term, synset, term term2, category_link, category
+            FROM Thesaurus_Term term, Thesaurus_Synset synset, Thesaurus_Term term2, Thesaurus_Category_Link category_link, Thesaurus_Category category
             WHERE synset.is_visible = 1
             AND synset.id = term.synset_id
             AND term2.synset_id = synset.id
@@ -26,7 +26,7 @@ class Thesaurus(object):
 
     def GetSynonyms(self, word):
         query = """SELECT term.normalized_word, term.word, term2.word
-            FROM term, synset, term term2
+            FROM Thesaurus_Term term, Thesaurus_Synset synset, Thesaurus_Term term2
             WHERE synset.is_visible = 1
             AND synset.id = term.synset_id
             AND term.synset_id
@@ -37,7 +37,7 @@ class Thesaurus(object):
 
     def GetCategory(self, word):
         query = """SELECT term.normalized_word, term.word, category.category_name
-            FROM term, synset, category_link, category
+            FROM Thesaurus_Term term, Thesaurus_Synset synset, Thesaurus_Category_Link category_link, Thesaurus_Category category
             WHERE synset.is_visible = 1
             AND synset.id = term.synset_id
             AND (term2.word = '{lowerword}' OR term2.normalized_word = '{lowerword}')
@@ -47,7 +47,7 @@ class Thesaurus(object):
 
     def GetOpposite(self, word):
         query = """SELECT term.word, term2.word
-            FROM term, term_link, term term2
+            FROM Thesaurus_Term term, Thesaurus_Synset synset, Thesaurus_Term term2
             AND (term2.word = '{lowerword}' OR term2.normalized_word = '{lowerword}')
             AND (
               (term.id = term_link.term_id AND term_link.target_term_id = term2.id)
