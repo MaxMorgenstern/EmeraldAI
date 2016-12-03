@@ -38,6 +38,10 @@ def processInputData(data):
     wordSegments = NLP.WordSegmentation(data)
     cleanWordSegments = NLP.RemoveStopwords(wordSegments, language)
 
+    normalizedSentence = NLP.Normalize(data, language)
+    sentenceSyn = thesaurus.GetSynonyms(normalizedSentence)
+    print sentenceSyn
+
     wordList = []
 
     for word in wordSegments:
@@ -52,8 +56,8 @@ def processInputData(data):
 
         w.SynonymList = addToList(word, w.SynonymList, language)
         synonyms = thesaurus.GetSynonyms(w.Word)
-        if(len(synonyms) == 0):
-            synonyms = thesaurus.GetSynonyms(w.NormalizedWord, True)
+        #if(len(synonyms) == 0):
+        #    synonyms = thesaurus.GetSynonyms(w.NormalizedWord, True)
 
         for synonym in synonyms:
             if synonym[0]:
@@ -62,7 +66,7 @@ def processInputData(data):
                 w.SynonymList = addToList(synonym[1], w.SynonymList, language)
         wordList.append(w)
 
-        # print w.toJSON()
+        print w.toJSON()
     return wordList
 
 """

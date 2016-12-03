@@ -9,51 +9,48 @@ class Thesaurus(object):
     def __init__(self):
         self.database = SQlite3.GetDB("thesaurus_DE")
 
-    def __executeQuery(self, query, word, normalized):
-        queryWordCol = "word"
-        if(normalized):
-            queryWordCol = "normalized_word"
-        return SQlite3.Fetchall(self.database, query.format(col=queryWordCol, lowerword=word.lower(), titleword=word.decode('utf8').title()))
+    def __executeQuery(self, query, word):
+        return SQlite3.Fetchall(self.database, query.format(lowerword=word.lower()))
 
-    def GetSynonymsAndCategory(self, word, normalized=False):
+    def GetSynonymsAndCategory(self, word):
         query = """SELECT term.normalized_word, term.word, term2.word, category.category_name
             FROM term, synset, term term2, category_link, category
             WHERE synset.is_visible = 1
             AND synset.id = term.synset_id
             AND term2.synset_id = synset.id
-            AND (term2.{col} = '{lowerword}' OR term2.{col} = '{titleword}')
+            AND (term2.word = '{lowerword}' OR term2.normalized_word = '{lowerword}')
             AND category_link.synset_id = synset.id
             AND category_link.category_id = category.id
             ORDER BY term.word;"""
-        return self.__executeQuery(query, word, normalized)
+        return self.__executeQuery(query, word)
 
-    def GetSynonyms(self, word, normalized=False):
+    def GetSynonyms(self, word):
         query = """SELECT term.normalized_word, term.word, term2.word
             FROM term, synset, term term2
             WHERE synset.is_visible = 1
             AND synset.id = term.synset_id
             AND term.synset_id
             AND term2.synset_id = synset.id
-            AND (term2.{col} = '{lowerword}' OR term2.{col} = '{titleword}')
+            AND (term2.word = '{lowerword}' OR term2.normalized_word = '{lowerword}')
             ORDER BY term.word;"""
-        return self.__executeQuery(query, word, normalized)
+        return self.__executeQuery(query, word)
 
-    def GetCategory(self, word, normalized=False):
+    def GetCategory(self, word):
         query = """SELECT term.normalized_word, term.word, category.category_name
             FROM term, synset, category_link, category
             WHERE synset.is_visible = 1
             AND synset.id = term.synset_id
-            AND (term.{col} = '{lowerword}' OR term.{col} = '{titleword}')
+            AND (term2.word = '{lowerword}' OR term2.normalized_word = '{lowerword}')
             AND category_link.synset_id = synset.id
             AND category_link.category_id = category.id;"""
-        return self.__executeQuery(query, word, normalized)
+        return self.__executeQuery(query, word)
 
-    def GetOpposite(self, word, normalized=False):
+    def GetOpposite(self, word):
         query = """SELECT term.word, term2.word
             FROM term, term_link, term term2
-            AND (term.{col} = '{lowerword}' OR term.{col} = '{titleword}')
+            AND (term2.word = '{lowerword}' OR term2.normalized_word = '{lowerword}')
             AND (
               (term.id = term_link.term_id AND term_link.target_term_id = term2.id)
               OR (term.id = term_link.target_term_id AND term_link.term_id = term2.id)
             );"""
-        return self.__executeQuery(query, word, normalized)
+        return self.__executeQuery(query, word)
