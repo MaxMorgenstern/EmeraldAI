@@ -223,9 +223,9 @@ def levenshteinDistance(str1, str2):
 print(levenshteinDistance("kitten","sitting"))
 print(levenshteinDistance("rosettacode","raisethysword"))
 
-
+"""
 from functools import lru_cache
-@lru_cache(maxsize=4095)
+lru_cache(maxsize=4095)
 def ld(s, t):
     if not s: return len(t)
     if not t: return len(s)
@@ -236,6 +236,6 @@ def ld(s, t):
     return 1 + min(l1, l2, l3)
 
 print( ld("kitten","sitting"),ld("rosettacode","raisethysword") )
-
+"""
 
 
