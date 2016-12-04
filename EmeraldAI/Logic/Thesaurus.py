@@ -40,7 +40,7 @@ class Thesaurus(object):
             FROM Thesaurus_Term term, Thesaurus_Synset synset, Thesaurus_Category_Link category_link, Thesaurus_Category category
             WHERE synset.is_visible = 1
             AND synset.id = term.synset_id
-            AND (term2.word = '{lowerword}' OR term2.normalized_word = '{lowerword}')
+            AND (term.word = '{lowerword}' OR term.normalized_word = '{lowerword}')
             AND category_link.synset_id = synset.id
             AND category_link.category_id = category.id;"""
         return self.__executeQuery(query, word)

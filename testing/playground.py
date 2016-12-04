@@ -14,6 +14,19 @@ from EmeraldAI.Logic.Modules import Global
 print Global.OS
 
 
+print eval('1 + 0')
+print eval('1 * 4')
+print eval('16 / 4')
+
+print eval('1 * (2 + 2)')
+namespace = {'__builtins__': None}
+print eval('123 + 987', namespace)
+
+import math
+ns = vars(math).copy()
+ns['__builtins__'] = None
+print eval('cos(pi/3)', ns)
+
 """
 #windows only
 def __checkEnterPressed():

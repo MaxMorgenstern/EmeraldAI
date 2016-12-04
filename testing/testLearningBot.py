@@ -42,6 +42,7 @@ def processInputData(data):
     sentenceSyn = thesaurus.GetSynonyms(normalizedSentence)
     print sentenceSyn
 
+
     wordList = []
 
     for word in wordSegments:
@@ -56,8 +57,7 @@ def processInputData(data):
 
         w.SynonymList = addToList(word, w.SynonymList, language)
         synonyms = thesaurus.GetSynonyms(w.Word)
-        #if(len(synonyms) == 0):
-        #    synonyms = thesaurus.GetSynonyms(w.NormalizedWord, True)
+        #category = thesaurus.GetCategory(w.Word)
 
         for synonym in synonyms:
             if synonym[0]:
@@ -68,6 +68,15 @@ def processInputData(data):
 
         print w.toJSON()
     return wordList
+
+
+def AnalyzeInput(data, wordlist):
+	# Phrase Detection
+    # Pattern Detection
+    # Context Pipeline
+	print data
+	print wordlist
+
 
 """
 #move
@@ -145,7 +154,8 @@ while(loop):
         print "No Data found"
     else:
         #response = alice.GetResponse(inputData)
-        response = processInputData(inputData)
-        print "We respond: '{0}'".format(response)
+        wordList = processInputData(inputData)
+
+        #print "We respond: '{0}'".format(response)
         #audioPath = ivona.Speak(response)
         #os.system("afplay '{0}'".format(audioPath))
