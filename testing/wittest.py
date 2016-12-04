@@ -11,7 +11,8 @@ with sr.Microphone() as source:
     audio = r.listen(source)
 
 # recognize speech using Wit.ai
-WIT_AI_KEY = "SIXPIB6BXKQHL7XAYHJLHQPBHO4TXVRR" # Wit.ai keys are 32-character uppercase alphanumeric strings
+# Wit.ai keys are 32-character uppercase alphanumeric strings
+WIT_AI_KEY = "SIXPIB6BXKQHL7XAYHJLHQPBHO4TXVRR"
 try:
     print("Wit.ai thinks you said " + r.recognize_wit(audio, key=WIT_AI_KEY))
 except sr.UnknownValueError:

@@ -4,7 +4,7 @@
 # Copyright (c) Philipp Wagner. All rights reserved.
 # Licensed under the BSD license. See LICENSE file in the project root for full license information.
 
-from facerec.normalization import minmax
+from EmeraldAI.Logic.External.facerec.normalization import minmax
 
 import os as os
 import numpy as np
@@ -34,7 +34,7 @@ def plot_gray(X,  sz=None, filename=None):
         plt.show()
     else:
         fig.savefig(filename, format="png", transparent=False)
-    
+
 def plot_eigenvectors(eigenvectors, num_components, sz, filename=None, start_component=0, rows = None, cols = None, title="Subplot", color=True):
         if (rows is None) or (cols is None):
             rows = cols = int(math.ceil(np.sqrt(num_components)))
@@ -44,9 +44,9 @@ def plot_eigenvectors(eigenvectors, num_components, sz, filename=None, start_com
             vi = eigenvectors[0:,i].copy()
             vi = minmax(np.asarray(vi), 0, 255, dtype=np.uint8)
             vi = vi.reshape(sz)
-            
+
             ax0 = fig.add_subplot(rows,cols,(i-start_component)+1)
-            
+
             plt.setp(ax0.get_xticklabels(), visible=False)
             plt.setp(ax0.get_yticklabels(), visible=False)
             plt.title("%s #%d" % (title, i), create_font('Tahoma',10))
@@ -58,11 +58,11 @@ def plot_eigenvectors(eigenvectors, num_components, sz, filename=None, start_com
             fig.show()
         else:
             fig.savefig(filename, format="png", transparent=False)
-            
+
 def subplot(title, images, rows, cols, sptitle="subplot", sptitles=[], colormap=cm.gray, ticks_visible=True, filename=None):
     fig = plt.figure()
     # main title
-    fig.text(.5, .95, title, horizontalalignment='center') 
+    fig.text(.5, .95, title, horizontalalignment='center')
     for i in range(len(images)):
         ax0 = fig.add_subplot(rows,cols,(i+1))
         plt.setp(ax0.get_xticklabels(), visible=False)

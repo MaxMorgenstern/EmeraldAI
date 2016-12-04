@@ -14,7 +14,20 @@ from EmeraldAI.Logic.Modules import Global
 print Global.OS
 
 
+print eval('1 + 0')
+print eval('1 * 4')
+print eval('16 / 4')
 
+print eval('1 * (2 + 2)')
+namespace = {'__builtins__': None}
+print eval('123 + 987', namespace)
+
+import math
+ns = vars(math).copy()
+ns['__builtins__'] = None
+print eval('cos(pi/3)', ns)
+
+"""
 #windows only
 def __checkEnterPressed():
   import msvcrt
@@ -32,6 +45,32 @@ while True:
   if __checkEnterPressed():
     break
 print "the end"
+"""
+
+from EmeraldAI.Logic.KnowledgeGathering.Wikipedia import *
+
+wp = Wikipedia()
+data = wp.GetSummary("USB Kabel")
+print data.encode(sys.stdout.encoding, errors='replace')
+
+
+from EmeraldAI.Logic.KnowledgeGathering.Weather import *
+
+we = Weather()
+
+cuwe = we.GetCurrentWeather("Bad Vilbel")
+print cuwe.get_wind()                  # {'speed': 4.6, 'deg': 330}
+print cuwe.get_humidity()              # 87
+# {'temp_max': 10.5, 'temp': 9.7, 'temp_min': 9.0}
+print cuwe.get_temperature('celsius')
+print cuwe.get_detailed_status()
+print cuwe.get_status()
+print cuwe.get_snow()
+print cuwe.get_rain()
+print cuwe.get_weather_icon_name()
+print cuwe.get_sunrise_time('iso')  # GMT
+print cuwe.get_sunset_time('iso')  # GMT
+
 
 # https://docs.python.org/2/library/subprocess.html
 #from subprocess import call
@@ -40,7 +79,6 @@ print "the end"
 
 #from subprocess import Popen
 #instance = Popen(['open', '-a', "/Applications/VLC.app"])
-
 
 
 """
@@ -113,8 +151,6 @@ cv2.destroyAllWindows()
 """
 
 
-
-
 """
 import Tkinter as tk
 from PIL import ImageTk, Image
@@ -139,4 +175,3 @@ panel.pack(side = "bottom", fill = "both", expand = "yes")
 #Start the GUI
 window.mainloop()
 """
-

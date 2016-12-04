@@ -1,0 +1,33 @@
+eins
+zwei
+drei
+vier
+fünf
+sechs
+sieben
+acht
+neun
+null
+zehn
+elf
+zwölf
+
+
+
+plus
+minus
+mal
+geteilt
+
+klammer
+klammer auf
+runde klammer auf
+eckige klammer auf
+geschweifte klammer auf
+
+klammer zu
+runde klammer zu
+eckige klammer zu
+geschweifte klammer zu
+
+

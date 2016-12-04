@@ -4,8 +4,6 @@ Just a messy list with things to do
 
 - Add Unit Tests
 
-- Check if we can change Config to Module
-
 - Add Logging
 
 - Add Base file to call
@@ -20,6 +18,14 @@ Just a messy list with things to do
 - add notes to classes and modules - description
 
 - slashes dependend on OS
+
+- strip unused facerec data
+
+- Singleton check - convert all classes to singleton which need to be - config
+
+- using config in CV files
+
+- add wit.ai to STT
 
 # EN aiml reference https://code.google.com/archive/p/aiml-en-us-foundation-alice/
 

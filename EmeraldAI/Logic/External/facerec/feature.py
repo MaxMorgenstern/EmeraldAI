@@ -8,50 +8,52 @@ import numpy as np
 
 class AbstractFeature(object):
 
-    def compute(self,X,y):
+    def compute(self,X,y,XC=None):
         raise NotImplementedError("Every AbstractFeature must implement the compute method.")
-    
+
     def extract(self,X):
         raise NotImplementedError("Every AbstractFeature must implement the extract method.")
-        
+
     def save(self):
         raise NotImplementedError("Not implemented yet (TODO).")
-    
+
     def load(self):
         raise NotImplementedError("Not implemented yet (TODO).")
-        
+
     def __repr__(self):
         return "AbstractFeature"
 
 class Identity(AbstractFeature):
     """
-    Simplest AbstractFeature you could imagine. It only forwards the data and does not operate on it, 
+    Simplest AbstractFeature you could imagine. It only forwards the data and does not operate on it,
     probably useful for learning a Support Vector Machine on raw data for example!
     """
     def __init__(self):
         AbstractFeature.__init__(self)
-        
-    def compute(self,X,y):
+
+    def compute(self, X, y, XC=None):
         return X
-    
+
     def extract(self,X):
         return X
-    
+
     def __repr__(self):
         return "Identity"
 
 
-from facerec.util import asColumnMatrix
-from facerec.operators import ChainOperator, CombineOperator
-        
+from EmeraldAI.Logic.External.facerec.util import asColumnMatrix
+from EmeraldAI.Logic.External.facerec.operators import ChainOperator
+
 class PCA(AbstractFeature):
     def __init__(self, num_components=0):
         AbstractFeature.__init__(self)
         self._num_components = num_components
-        
-    def compute(self,X,y):
+
+    def compute(self, X, y, XC=None):
         # build the column matrix
-        XC = asColumnMatrix(X)
+        if(XC==None):
+          XC = asColumnMatrix(X)
+
         y = np.asarray(y)
         # set a valid number of components
         if self._num_components <= 0 or (self._num_components > XC.shape[1]-1):
@@ -67,7 +69,7 @@ class PCA(AbstractFeature):
         # use only num_components
         self._eigenvectors = self._eigenvectors[0:,0:self._num_components].copy()
         self._eigenvalues = self._eigenvalues[0:self._num_components].copy()
-        # finally turn singular values into eigenvalues 
+        # finally turn singular values into eigenvalues
         self._eigenvalues = np.power(self._eigenvalues,2) / XC.shape[1]
         # get the features from the given data
         features = []
@@ -75,11 +77,11 @@ class PCA(AbstractFeature):
             xp = self.project(x.reshape(-1,1))
             features.append(xp)
         return features
-    
+
     def extract(self,X):
         X = np.asarray(X).reshape(-1,1)
         return self.project(X)
-        
+
     def project(self, X):
         X = X - self._mean
         return np.dot(self._eigenvectors.T, X)
@@ -95,7 +97,7 @@ class PCA(AbstractFeature):
     @property
     def eigenvalues(self):
         return self._eigenvalues
-        
+
     @property
     def eigenvectors(self):
         return self._eigenvectors
@@ -103,23 +105,25 @@ class PCA(AbstractFeature):
     @property
     def mean(self):
         return self._mean
-        
+
     def __repr__(self):
         return "PCA (num_components=%d)" % (self._num_components)
-        
+
 class LDA(AbstractFeature):
 
     def __init__(self, num_components=0):
         AbstractFeature.__init__(self)
         self._num_components = num_components
 
-    def compute(self, X, y):
+    def compute(self, X, y, XC=None):
         # build the column matrix
-        XC = asColumnMatrix(X)
+        if(XC==None):
+          XC = asColumnMatrix(X)
+
         y = np.asarray(y)
         # calculate dimensions
         d = XC.shape[0]
-        c = len(np.unique(y))        
+        c = len(np.unique(y))
         # set a valid number of components
         if self._num_components <= 0:
             self._num_components = c-1
@@ -149,7 +153,7 @@ class LDA(AbstractFeature):
             xp = self.project(x.reshape(-1,1))
             features.append(xp)
         return features
-        
+
     def project(self, X):
         return np.dot(self._eigenvectors.T, X)
 
@@ -163,23 +167,25 @@ class LDA(AbstractFeature):
     @property
     def eigenvectors(self):
         return self._eigenvectors
-    
+
     @property
     def eigenvalues(self):
         return self._eigenvalues
-    
+
     def __repr__(self):
         return "LDA (num_components=%d)" % (self._num_components)
-        
+
 class Fisherfaces(AbstractFeature):
 
     def __init__(self, num_components=0):
         AbstractFeature.__init__(self)
         self._num_components = num_components
-    
-    def compute(self, X, y):
+
+    def compute(self, X, y, XC=None):
         # turn into numpy representation
-        Xc = asColumnMatrix(X)
+        if(XC==None):
+          XC = asColumnMatrix(X)
+        print "XC calculated"
         y = np.asarray(y)
         # gather some statistics about the dataset
         n = len(y)
@@ -190,7 +196,7 @@ class Fisherfaces(AbstractFeature):
         # fisherfaces are a chained feature of PCA followed by LDA
         model = ChainOperator(pca,lda)
         # computing the chained model then calculates both decompositions
-        model.compute(X,y)
+        model.compute(X,y,XC)
         # store eigenvalues and number of components used
         self._eigenvalues = lda.eigenvalues
         self._num_components = lda.num_components
@@ -209,18 +215,18 @@ class Fisherfaces(AbstractFeature):
 
     def project(self, X):
         return np.dot(self._eigenvectors.T, X)
-    
+
     def reconstruct(self, X):
         return np.dot(self._eigenvectors, X)
 
     @property
     def num_components(self):
         return self._num_components
-        
+
     @property
     def eigenvalues(self):
         return self._eigenvalues
-    
+
     @property
     def eigenvectors(self):
         return self._eigenvectors
@@ -228,7 +234,7 @@ class Fisherfaces(AbstractFeature):
     def __repr__(self):
         return "Fisherfaces (num_components=%s)" % (self.num_components)
 
-from facerec.lbp import LocalDescriptor, ExtendedLBP
+from EmeraldAI.Logic.External.facerec.lbp import LocalDescriptor, ExtendedLBP
 
 class SpatialHistogram(AbstractFeature):
     def __init__(self, lbp_operator=ExtendedLBP(), sz = (8,8)):
@@ -237,15 +243,15 @@ class SpatialHistogram(AbstractFeature):
             raise TypeError("Only an operator of type facerec.lbp.LocalDescriptor is a valid lbp_operator.")
         self.lbp_operator = lbp_operator
         self.sz = sz
-        
-    def compute(self,X,y):
+
+    def compute(self, X, y, XC=None):
         features = []
         for x in X:
             x = np.asarray(x)
             h = self.spatially_enhanced_histogram(x)
             features.append(h)
         return features
-    
+
     def extract(self,X):
         X = np.asarray(X)
         return self.spatially_enhanced_histogram(X)
@@ -266,6 +272,6 @@ class SpatialHistogram(AbstractFeature):
                 # probably useful to apply a mapping?
                 E.extend(H)
         return np.asarray(E)
-    
+
     def __repr__(self):
         return "SpatialHistogram (operator=%s, grid=%s)" % (repr(self.lbp_operator), str(self.sz))

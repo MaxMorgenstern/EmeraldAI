@@ -23,45 +23,60 @@ from EmeraldAI.Entities.Word import Word
 thesaurus = Thesaurus()
 litedb = SQlite3.GetDB("brain")
 
+
 def addToList(str_to_add, list_of_strings, language):
-	str_to_add = NLP.Normalize(str_to_add, language)
-	if str_to_add not in list_of_strings:
-		list_of_strings.append(str_to_add)
-	return list_of_strings
+    str_to_add = NLP.Normalize(str_to_add, language)
+    if str_to_add not in list_of_strings:
+        list_of_strings.append(str_to_add)
+    return list_of_strings
+
 
 def processInputData(data):
-	language = NLP.DetectLanguage(data)
+    language = NLP.DetectLanguage(data)
 
-	# hallöchen --> hall + öchen
-	wordSegments = NLP.WordSegmentation(data)
-	cleanWordSegments = NLP.RemoveStopwords(wordSegments, language)
+    # hallöchen --> hall + öchen
+    wordSegments = NLP.WordSegmentation(data)
+    cleanWordSegments = NLP.RemoveStopwords(wordSegments, language)
 
-	wordList = []
+    normalizedSentence = NLP.Normalize(data, language)
+    sentenceSyn = thesaurus.GetSynonyms(normalizedSentence)
+    print sentenceSyn
 
-	for word in wordSegments:
-		w = Word(word, language)
 
-		#print word.lower() + " - " +  word.decode('utf8').title()
+    wordList = []
 
-		w.IsStopword = word not in cleanWordSegments
-		if(w.IsStopword):
-			w.Priority *= 0.5
-		w.NormalizedWord = NLP.Normalize(word, language)
+    for word in wordSegments:
+        w = Word(word, language)
 
-		w.SynonymList = addToList(word, w.SynonymList, language)
-		synonyms = thesaurus.GetSynonyms(w.Word)
-		if(len(synonyms) == 0):
-			synonyms = thesaurus.GetSynonyms(w.NormalizedWord, True)
+        # print word.lower() + " - " +  word.decode('utf8').title()
 
-		for synonym in synonyms:
-			if synonym[0]:
-				w.SynonymList = addToList(synonym[0], w.SynonymList, language)
-			else:
-				w.SynonymList = addToList(synonym[1], w.SynonymList, language)
-		wordList.append(w)
+        w.IsStopword = word not in cleanWordSegments
+        if(w.IsStopword):
+            w.Priority *= 0.5
+        w.NormalizedWord = NLP.Normalize(word, language)
 
-		#print w.toJSON()
-	return wordList
+        w.SynonymList = addToList(word, w.SynonymList, language)
+        synonyms = thesaurus.GetSynonyms(w.Word)
+        #category = thesaurus.GetCategory(w.Word)
+
+        for synonym in synonyms:
+            if synonym[0]:
+                w.SynonymList = addToList(synonym[0], w.SynonymList, language)
+            else:
+                w.SynonymList = addToList(synonym[1], w.SynonymList, language)
+        wordList.append(w)
+
+        print w.toJSON()
+    return wordList
+
+
+def AnalyzeInput(data, wordlist):
+	# Phrase Detection
+    # Pattern Detection
+    # Context Pipeline
+	print data
+	print wordlist
+
 
 """
 #move
@@ -72,42 +87,39 @@ print result
 """
 # add result to global array initial priority
 # if result already present decrease priority
-	# stopwords = decrease priority by 50%
-	# synonym = decrease priority by 50%
-	# stopword + synonym = decrease priority by 30%
-	# Dialog_Trigger.Priority
+# stopwords = decrease priority by 50%
+# synonym = decrease priority by 50%
+# stopword + synonym = decrease priority by 30%
+# Dialog_Trigger.Priority
 
 # get sentence with highest priority
 # replace placeholder
 
 
-
-
 # Input Processing
-  # Language Detection
-  # Sentence + Word Segmentation
-  # Word Tagging + Synonym detection
-  # strip stoppwords
+# Language Detection
+# Sentence + Word Segmentation
+# Word Tagging + Synonym detection
+# strip stoppwords
 
 # Input Analyzer
-  # Phrase Detection
-  # Pattern Detection
-  # Context Pipeline
+# Phrase Detection
+# Pattern Detection
+# Context Pipeline
 
 # Response Processing
-  # Answer Pipeline
-    # Answer selection
-    # ELIZA fallback
-  # Customize Answer
-  # Train Conversation
-
+# Answer Pipeline
+# Answer selection
+# ELIZA fallback
+# Customize Answer
+# Train Conversation
 
 
 # Get Input
 # NLP
 # Find Answer in DB
-	# Not Found Fallback to Eliza
-	# Found - Good
+# Not Found Fallback to Eliza
+# Found - Good
 # Train DB
 
 
@@ -133,16 +145,17 @@ loop = True
 
 while(loop):
   #inputData = google.Listen()
-  inputData = raw_input("Enter Response: ")
-  #print "We got: '{0}'".format(inputData)
+    inputData = raw_input("Enter Response: ")
+    # print "We got: '{0}'".format(inputData)
 
-  if(inputData.lower() == 'ende' or inputData.lower() == 'beenden'):
-  	loop = False
-  elif(len(inputData) == 0):
-    print "No Data found"
-  else:
-    #response = alice.GetResponse(inputData)
-    response = processInputData(inputData)
-    print "We respond: '{0}'".format(response)
-    #audioPath = ivona.Speak(response)
-    #os.system("afplay '{0}'".format(audioPath))
+    if(inputData.lower() == 'ende' or inputData.lower() == 'beenden'):
+        loop = False
+    elif(len(inputData) == 0):
+        print "No Data found"
+    else:
+        #response = alice.GetResponse(inputData)
+        wordList = processInputData(inputData)
+
+        #print "We respond: '{0}'".format(response)
+        #audioPath = ivona.Speak(response)
+        #os.system("afplay '{0}'".format(audioPath))

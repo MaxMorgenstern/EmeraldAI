@@ -19,21 +19,21 @@ loop = True
 audioPlayer = Config().Get("TextToSpeech", "AudioPlayer") + " '{0}'"
 
 while(loop):
-  data = google.Listen()
-  print "We got: '{0}'".format(data)
+    data = google.Listen()
+    print "We got: '{0}'".format(data)
 
-  if(data.lower() == 'ende' or data.lower() == 'beenden'):
-  	loop = False
-  elif(len(data) == 0):
-    print "No data found"
-  else:
-    response = alice.GetResponse(data)
-    print "We respond: '{0}'".format(response)
-    audioPath = ivona.Speak(response)
-    print "Playing file: '{0}'".format(audioPath)
-    print audioPlayer.format(audioPath)
-    #os.system(audioPlayer.format(audioPath).replace('/', '\\'))
-    os.system(audioPlayer.format(audioPath))
+    if(data.lower() == 'ende' or data.lower() == 'beenden'):
+        loop = False
+    elif(len(data) == 0):
+        print "No data found"
+    else:
+        response = alice.GetResponse(data)
+        print "We respond: '{0}'".format(response)
+        audioPath = ivona.Speak(response)
+        print "Playing file: '{0}'".format(audioPath)
+        print audioPlayer.format(audioPath)
+        #os.system(audioPlayer.format(audioPath).replace('/', '\\'))
+        os.system(audioPlayer.format(audioPath))
 
 
 """

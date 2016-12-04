@@ -2,22 +2,24 @@
 # -*- coding: utf-8 -*-
 from EmeraldAI.Entities.BaseObject import BaseObject
 
+
 class PipelineData(BaseObject):
-	def __init__(self, input):
-		self.Input = input
 
-		self.Language = None
-		self.WordList = None
-		self.WordlistClean = None
-		self.SynonymList = None
+    def __init__(self, input):
+        self.Input = input
 
-		self.Context = None
-		self.User = None
+        self.Language = None
+        self.WordList = None
+        self.WordlistClean = None
+        self.SynonymList = None
 
-		self.Answer = None
-		self.AnswerFound = False
+        self.Context = None
+        self.User = None
 
-		self.Pattern = None
-		self.PatternFound = False
+        self.Answer = None
+        self.AnswerFound = False
 
-		self.Error = None
+        self.Pattern = None
+        self.PatternFound = False
+
+        self.Error = None
