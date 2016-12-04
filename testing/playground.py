@@ -175,3 +175,67 @@ panel.pack(side = "bottom", fill = "both", expand = "yes")
 #Start the GUI
 window.mainloop()
 """
+
+
+def minimumEditDistance(s1,s2):
+    if len(s1) > len(s2):
+        s1,s2 = s2,s1
+    distances = range(len(s1) + 1)
+    for index2,char2 in enumerate(s2):
+        newDistances = [index2+1]
+        for index1,char1 in enumerate(s1):
+            if char1 == char2:
+                newDistances.append(distances[index1])
+            else:
+                newDistances.append(1 + min((distances[index1],
+                                             distances[index1+1],
+                                             newDistances[-1])))
+        distances = newDistances
+    return distances[-1]
+
+
+print(minimumEditDistance("kitten","sitting"))
+print(minimumEditDistance("rosettacode","raisethysword"))
+
+
+
+def levenshteinDistance(str1, str2):
+    m = len(str1)
+    n = len(str2)
+    lensum = float(m + n)
+    d = []
+    for i in range(m+1):
+        d.append([i])
+    del d[0][0]
+    for j in range(n+1):
+        d[0].append(j)
+    for j in range(1,n+1):
+        for i in range(1,m+1):
+            if str1[i-1] == str2[j-1]:
+                d[i].insert(j,d[i-1][j-1])
+            else:
+                minimum = min(d[i-1][j]+1, d[i][j-1]+1, d[i-1][j-1]+2)
+                d[i].insert(j, minimum)
+    ldist = d[-1][-1]
+    ratio = (lensum - ldist)/lensum
+    return {'distance':ldist, 'ratio':ratio}
+
+print(levenshteinDistance("kitten","sitting"))
+print(levenshteinDistance("rosettacode","raisethysword"))
+
+
+from functools import lru_cache
+@lru_cache(maxsize=4095)
+def ld(s, t):
+    if not s: return len(t)
+    if not t: return len(s)
+    if s[0] == t[0]: return ld(s[1:], t[1:])
+    l1 = ld(s, t[1:])
+    l2 = ld(s[1:], t)
+    l3 = ld(s[1:], t[1:])
+    return 1 + min(l1, l2, l3)
+
+print( ld("kitten","sitting"),ld("rosettacode","raisethysword") )
+
+
+
