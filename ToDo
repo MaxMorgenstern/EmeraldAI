@@ -27,6 +27,8 @@ Just a messy list with things to do
 
 - add wit.ai to STT
 
+- move Database modules back to classes - use config for DB
+
 # EN aiml reference https://code.google.com/archive/p/aiml-en-us-foundation-alice/
 
 ---

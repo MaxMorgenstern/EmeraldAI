@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import re
 from EmeraldAI.Logic.Modules import Global
+from EmeraldAI.Logic.Modules.Database import SQlite3
 
 
 def ReadFile(foldername, filename):
@@ -43,9 +44,15 @@ def RemoveStopwords(wordlist, language):
 
 def Normalize(input, language):
     normalizedInput = input.lower()
-    if(language .lower() == "de"):
+    if(language.lower() == "all" or language.lower() == "de"):
         normalizedInput = normalizedInput.replace('ä', 'ae')
         normalizedInput = normalizedInput.replace('ü', 'ue')
         normalizedInput = normalizedInput.replace('ö', 'oe')
         normalizedInput = normalizedInput.replace('ß', 'ss')
     return normalizedInput
+
+
+def IsFirstname(input):
+    normalizedInput = Normalize(input, "all")
+    result = SQlite3.Fetchall(SQlite3.GetDB("brain"), "SELECT * FROM NLP_Firstname WHERE Firstname = '{0}'".format(normalizedInput.title()))
+    return len(result) > 0
