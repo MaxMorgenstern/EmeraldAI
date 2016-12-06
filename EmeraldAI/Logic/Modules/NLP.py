@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import re
 from EmeraldAI.Logic.Modules import Global
-from EmeraldAI.Logic.Modules.Database import SQlite3
+from EmeraldAI.Logic.Database.SQlite3 import *
 
 
 def ReadFile(foldername, filename):
@@ -54,5 +54,10 @@ def Normalize(input, language):
 
 def IsFirstname(input):
     normalizedInput = Normalize(input, "all")
-    result = SQlite3.Fetchall(SQlite3.GetDB("brain"), "SELECT * FROM NLP_Firstname WHERE Firstname = '{0}'".format(normalizedInput.title()))
+    result = SQlite3().Fetchall("SELECT * FROM NLP_Firstname WHERE Firstname = '{0}'".format(normalizedInput.title()))
+    return len(result) > 0
+
+def IsLastname(input):
+    normalizedInput = Normalize(input, "all")
+    result = SQlite3().Fetchall("SELECT * FROM NLP_Lastname WHERE Lastname = '{0}'".format(normalizedInput.title()))
     return len(result) > 0

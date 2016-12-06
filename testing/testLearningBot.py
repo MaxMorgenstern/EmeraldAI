@@ -12,7 +12,6 @@ from EmeraldAI.Logic.Modules import NLP
 #from EmeraldAI.Logic.SpeechProcessing.Ivona import *
 from EmeraldAI.Logic.AliceBot import *
 from EmeraldAI.Logic.Thesaurus import *
-from EmeraldAI.Logic.Modules.Database import SQlite3
 
 from EmeraldAI.Entities.Word import Word
 
@@ -21,7 +20,6 @@ from EmeraldAI.Entities.Word import Word
 #alice = AliceBot("DE")
 
 thesaurus = Thesaurus()
-litedb = SQlite3.GetDB("brain")
 
 
 def addToList(str_to_add, list_of_strings, language):
@@ -54,6 +52,9 @@ def processInputData(data):
         if(w.IsStopword):
             w.Priority *= 0.5
         w.NormalizedWord = NLP.Normalize(word, language)
+
+        w.Firstname = NLP.IsFirstname(word)
+        w.Lastname = NLP.IsLastname(word)
 
         w.SynonymList = addToList(word, w.SynonymList, language)
         synonyms = thesaurus.GetSynonyms(w.Word)

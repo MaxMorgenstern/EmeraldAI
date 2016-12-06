@@ -17,13 +17,11 @@ Just a messy list with things to do
 
 - strip unused facerec data
 
-- Singleton check - convert all classes to singleton which need to be - config
+- Singleton check - convert all classes to singleton which need to be - config?
 
 - using config in CV files
 
 - add wit.ai to STT
-
-- move Database modules back to classes - use config for DB
 
 # EN aiml reference https://code.google.com/archive/p/aiml-en-us-foundation-alice/
 
