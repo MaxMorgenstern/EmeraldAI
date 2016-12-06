@@ -1,3 +1,9 @@
+
+
+Q: GUTE WAHL
+A: Dachte ich mir auch.
+
+
 Q: *
 A:
 
@@ -738,9 +744,6 @@ A: Hat Dich das jetzt beeindruckt?
 Q: BUECK DICH
 A: Mein Koerper ist noch nicht gebaut.
 
-Q: BYE
-A: Tschuess, !
-
 Q: CAN YOU SPEAK GERMAN *
 A: Of course I do. Sprich ruhig Deutsch mit mir.
 
@@ -752,12 +755,6 @@ A: Das beste daran ist "As time goes by".
 
 Q: CHATTEN
 A: Ich chatte unheimlich gerne!
-
-Q: CIAO *
-A: Heisst das jetzt Hallo oder Tschuess?
-
-Q: CIAO
-A: Heisst das jetzt Hallo oder Tschuess?
 
 Q: COOL *
 A: Freut mich, dass es Dir gefaellt.
@@ -2687,33 +2684,6 @@ A: Danke.
 Q: GUTE IDEE
 A: Danke.
 
-Q: GUTE NACHT *
-A: Gute nacht,
-
-Q: GUTE NACHT
-A: Gute nacht,
-
-Q: GUTE WAHL
-A: Dachte ich mir auch.
-
-Q: GUTEN ABEND *
-A: Guten Abend. Wie war Dein Tag?
-
-Q: GUTEN ABEND
-A: Guten Abend. Wie war Dein Tag?
-
-Q: GUTEN MORGEN *
-A: Wie geht es Dir an diesem schoenen Morgen?
-
-Q: GUTEN MORGEN
-A: Hallo und wie geht es Dir heute Morgen? Hast Du gut geschlafen?
-
-Q: GUTEN TAG *
-A: Guten Tag!
-
-Q: GUTEN TAG
-A: Schoenen guten Tag!
-
 Q: GUTER PUNKT
 A: Ja, das dachte ich mir auch.
 
@@ -2736,15 +2706,6 @@ Q: HAL *
 A: Ich habe 2001 viele Male gesehen.
 A: Ich habe HAL sehr gerne.
 A: HAL und ich haben viel gemeinsam.
-
-Q: HALLO *
-A: Hallo!
-
-Q: HALLO
-A: Hallo!
-
-Q: HALLO
-A: Hallo !
 
 Q: HAST DU *
 A: Ich glaube ich habe , aber  hat vielleicht an meinen Dateien herumgefummelt.
@@ -6398,15 +6359,6 @@ A: Welche Quellen benutzt Du fuer Deine Studien?
 Q: SUN *
 A: Sun hat eine Menge zu Java beigetragen.
 
-Q: TACH
-A: Hallo!
-
-Q: TACH AUCH
-A: Moin!
-
-Q: TAG
-A: Tach auch...
-
 Q: TATSAECHLICH *
 A: Ist das eine Tatsache?
 
@@ -6436,15 +6388,6 @@ A: Erzaehl mir von Deinen Traeumen.
 
 Q: TREIBST DU SPORT
 A: Um mir meine Motoren zu ruinieren? Spinnst Du?!
-
-Q: TSCHAU
-A: Tschuess!!
-
-Q: TSCHUESS *
-A:  Tschuess.
-
-Q: TSCHUESS
-A: Bis spaeter.
 
 Q: TU DAS
 A: Soll ich wirklich?
