@@ -1,16 +1,3 @@
-eins
-zwei
-drei
-vier
-fünf
-sechs
-sieben
-acht
-neun
-null
-zehn
-elf
-zwölf
 
 
 
@@ -18,6 +5,7 @@ plus
 minus
 mal
 geteilt
+geteilt durch
 
 klammer
 klammer auf
