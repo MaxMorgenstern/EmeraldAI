@@ -30,8 +30,8 @@ class Google(object):
         self.__microphone = sr.Microphone(device_index=microphoneID)
 
         with self.__microphone as source:
-            self.__recognizer.dynamic_energy_threshold = True
-            self.__recognizer.adjust_for_ambient_noise(source)
+            #self.__recognizer.dynamic_energy_threshold = True
+            #self.__recognizer.adjust_for_ambient_noise(source)
             self.__audio = self.__recognizer.listen(source)
 
         self.__apiKey = Config().Get("TextToSpeech", "GoogleAPIKey")
@@ -54,6 +54,8 @@ class Google(object):
         return tmpAudioFile
 
     def Listen(self):
+
+        print self.__recognizer.energy_threshold
 
         with self.__microphone as source:
             self.__audio = self.__recognizer.listen(source)
