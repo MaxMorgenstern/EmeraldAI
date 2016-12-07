@@ -32,11 +32,11 @@ class Google(object):
         with self.__microphone as source:
             self.__recognizer.dynamic_energy_threshold = True
             self.__recognizer.adjust_for_ambient_noise(source)
-            self.__audio = self.__recognizer.listen(source)
 
         self.__apiKey = Config().Get("TextToSpeech", "GoogleAPIKey")
         if(len(self.__apiKey) == 0):
             self.__apiKey = None
+
 
     def Speak(self, audioString, playAudio=False):
         if(len(audioString) == 0):
@@ -53,26 +53,31 @@ class Google(object):
             os.system(self.__audioPlayer.format(tmpAudioFile))
         return tmpAudioFile
 
-    def Listen(self):
 
+    def Listen(self):
         with self.__microphone as source:
             self.__audio = self.__recognizer.listen(source)
 
-        data = ""
-        try:
-            data = self.__recognizer.recognize_google(
-                self.__audio, key=self.__apiKey, language=self.__language_4letter_cc, show_all=False)
-        except sr.UnknownValueError:
-            print("Google Speech Recognition could not understand audio")
-        except sr.RequestError as e:
-            print(
-                "Could not request results from Google Speech Recognition service; {0}".format(e))
+            data = ""
+            try:
+                data = self.__recognizer.recognize_google(
+                    self.__audio, key=self.__apiKey, language=self.__language_4letter_cc, show_all=False)
+            except sr.UnknownValueError:
+                print("Google Speech Recognition could not understand audio")
+            except sr.RequestError as e:
+                print(
+                    "Could not request results from Google Speech Recognition service; {0}".format(e))
 
-        return data
+            return data
+
 
     def CleanString(self, string):
         data = re.sub(r'\W+', '', string)
         return (data[:75] + '_TRIMMED') if len(data) > 75 else data
+
+
+    def GetAvailiabeMicrophones(self):
+        return sr.Microphone().list_microphone_names()
 
 
 """
