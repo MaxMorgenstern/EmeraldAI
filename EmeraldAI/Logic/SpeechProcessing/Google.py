@@ -42,7 +42,15 @@ class Google(object):
 
     def Listen(self):
         r = sr.Recognizer()
-        with sr.Microphone() as source:
+
+        m = None
+        for i, microphone_name in enumerate(sr.Microphone().list_microphone_names()):
+            if microphone_name == "Mikrofon (USB Camera-B4.09.24.1":
+                m = sr.Microphone(device_index=i)
+
+
+        with m as source:
+            r.adjust_for_ambient_noise(source)
             audio = r.listen(source)
 
         data = ""
