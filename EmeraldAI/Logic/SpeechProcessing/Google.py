@@ -18,8 +18,21 @@ class Google(object):
     def __init__(self):
         self.__language_2letter_cc = Config().Get("TextToSpeech", "CountryCode2Letter")
         self.__language_4letter_cc = Config().Get("TextToSpeech", "CountryCode4Letter")
-        self.__audioPlayer = Config().Get(
-            "TextToSpeech", "AudioPlayer") + " '{0}'"
+        self.__audioPlayer = Config().Get("TextToSpeech", "AudioPlayer") + " '{0}'"
+
+        microphoneID = None
+        microphoneName = Config().Get("TextToSpeech", "Microphone")
+        for i, microphone_name in enumerate(sr.Microphone().list_microphone_names()):
+            if microphone_name == microphoneName:
+                microphoneID = i
+
+        self.__recognizer = sr.Recognizer()
+        self.__microphone = sr.Microphone(device_index=microphoneID)
+
+        with self.__microphone as source:
+            self.__recognizer.dynamic_energy_threshold = True
+            self.__recognizer.adjust_for_ambient_noise(source)
+            self.__audio = self.__recognizer.listen(source)
 
         self.__apiKey = Config().Get("TextToSpeech", "GoogleAPIKey")
         if(len(self.__apiKey) == 0):
@@ -41,22 +54,14 @@ class Google(object):
         return tmpAudioFile
 
     def Listen(self):
-        r = sr.Recognizer()
 
-        m = None
-        for i, microphone_name in enumerate(sr.Microphone().list_microphone_names()):
-            if microphone_name == "Mikrofon (USB Camera-B4.09.24.1":
-                m = sr.Microphone(device_index=i)
-
-
-        with m as source:
-            r.adjust_for_ambient_noise(source)
-            audio = r.listen(source)
+        with self.__microphone as source:
+            self.__audio = self.__recognizer.listen(source)
 
         data = ""
         try:
-            data = r.recognize_google(
-                audio, key=self.__apiKey, language=self.__language_4letter_cc, show_all=False)
+            data = self.__recognizer.recognize_google(
+                self.__audio, key=self.__apiKey, language=self.__language_4letter_cc, show_all=False)
         except sr.UnknownValueError:
             print("Google Speech Recognition could not understand audio")
         except sr.RequestError as e:
