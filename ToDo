@@ -21,11 +21,11 @@ Just a messy list with things to do
 
 - using config in CV files
 
-- add wit.ai to STT
-
 - test http://cmusphinx.sourceforge.net/
 
 - SQlite or MySQL via config in Thesaurus and NLP class
+	import module as name
+	from relative_module import identifier as name
 
 - https://github.com/Uberi/speech_recognition/blob/master/examples/background_listening.py
 - https://github.com/Uberi/speech_recognition/blob/03ec480ad831f9e7b7787858d2511e6e42880811/reference/library-reference.rst
