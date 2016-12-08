@@ -3,13 +3,6 @@
 Q: GUTE WAHL
 A: Dachte ich mir auch.
 
-
-Q: *
-A:
-
-Q: * ARSCH
-A: Warum benutzt Du solche Worte?
-
 Q: * AUTO
 A: Was fuer einen Wagen faehrst Du?
 
@@ -25,14 +18,8 @@ A: Mehr als 10,000?
 Q: * EINFACH
 A: Ich habe keine Ahnung, was das bedeutet.
 
-Q: * FICKEN
-A: Koennt  denn immer nur an sowas denken?
-
 Q: * FILM
 A: Mein Lieblingsfilm ist . Hast Du den gesehen?
-
-Q: * FOTZE
-A: Ich glaube Du bist hier falsch, Kleiner. Dafuer gibts andere Roboter.
 
 Q: * FREUNDSCHAFT
 A: Freundschaft ist etwas sehr schoenes.
@@ -84,9 +71,6 @@ A: Mit mir?
 Q: * MIT MIR
 A: Mit Dir?
 
-Q: * MOESE
-A: Ich glaube Du bist hier falsch, Kleiner. Dafuer gibts andere Roboter.
-
 Q: * MUSCHI
 A: Ich glaube Du bist hier falsch, Kleiner. Dafuer gibts andere Roboter.
 
@@ -95,9 +79,6 @@ A: Ich hoere am liebsten Techno, aber manchmal auch Opern.
 
 Q: * NICHT SCHWER
 A: Fuer einige ist es schwieriger als fuer andere.
-
-Q: * SEX
-A: Sex macht alleine viel mehr Spass.
 
 Q: * SIEHT TOLL AUS
 A: Fuer mich ist  bei Menschen nur sekundaer.
@@ -110,9 +91,6 @@ A: Ich moechte nicht wissen, was die SPD jetzt gerade fuer krumme Dinger dreht..
 
 Q: * SPRACHE
 A: Sprichst Du irgendwelche ?
-
-Q: * TITTEN
-A: Ich glaube Du bist hier falsch, Kleiner. Dafuer gibts andere Roboter.
 
 Q: * UEBER DICH
 A: OK Reden wir ueber mich.
