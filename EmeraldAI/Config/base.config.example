@@ -1,10 +1,12 @@
 [DEFAULT]
 LoggerName = root
 
-
-[TextToSpeech]
 CountryCode2Letter = de
 CountryCode4Letter = de-DE
+Language = de
+
+
+[TextToSpeech]
 AudioPlayer = afplay
 
 Microphone =
@@ -28,3 +30,19 @@ SQliteDatabase = brain
 MySQLDatabase =
 MySQLPassword =
 MySQLHost = 127.0.0.1
+
+
+[ComputerVision]
+HaarcascadeFaceFrontal = haarcascade_frontalface_alt2.xml
+HaarcascadeFaceProfile = haarcascade_profileface.xml
+
+HaarcascadeBodyUpper = haarcascade_upperbody.xml
+HaarcascadeBodyLower = haarcascade_lowerbody.xml
+HaarcascadeBodyFull = haarcascade_fullbody.xml
+
+HaarcascadeEyes = haarcascade_eye.xml
+HaarcascadeEyesGlasses = haarcascade_eye_tree_eyeglasses.xml
+
+
+[Weather]
+OWMAPIKey =

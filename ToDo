@@ -19,8 +19,6 @@ Just a messy list with things to do
 
 - Singleton check - convert all classes to singleton which need to be - config?
 
-- using config in CV files
-
 - test http://cmusphinx.sourceforge.net/
 
 - SQlite or MySQL via config in Thesaurus and NLP class
