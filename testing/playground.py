@@ -8,6 +8,11 @@ sys.setdefaultencoding('utf-8')
 
 folder_path = os.path.dirname(os.path.abspath(__file__))
 
+from EmeraldAI.Logic.Modules import NLP
+
+print NLP.IsFirstname("inga")
+
+exit()
 
 from EmeraldAI.Logic.Modules import Global
 
@@ -175,3 +180,4 @@ panel.pack(side = "bottom", fill = "both", expand = "yes")
 #Start the GUI
 window.mainloop()
 """
+

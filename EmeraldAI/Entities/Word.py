@@ -14,3 +14,6 @@ class Word(BaseObject):
 
         self.Priority = 1
         self.SynonymList = []
+
+        self.Firstname = False
+        self.Lastname = False

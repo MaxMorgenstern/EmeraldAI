@@ -1,6 +1,7 @@
 [DEFAULT]
 LoggerName = root
 
+
 [TextToSpeech]
 CountryCode2Letter = de
 CountryCode4Letter = de-DE
@@ -16,3 +17,10 @@ IvonaVoiceGender = Male
 IvonaVoiceName = Hans
 IvonaAccessKey =
 IvonaSecretKey =
+
+
+[Database]
+SQliteDatabase = brain
+MySQLDatabase =
+MySQLPassword =
+MySQLHost = 127.0.0.1

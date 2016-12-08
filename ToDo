@@ -1,16 +1,12 @@
 Just a messy list with things to do
 
-- Check DB classes
-
 - Add Unit Tests
 
 - Add Logging
 
 - Add Base file to call
 
-- clean thesaurus db
-
-- speed of thesaurus - ignore case
+- clean unused thesaurus fields - add language tag
 - thesaurus_DE to custom file so we can use more languages
 
 - logging config - log location
@@ -21,11 +17,16 @@ Just a messy list with things to do
 
 - strip unused facerec data
 
-- Singleton check - convert all classes to singleton which need to be - config
+- Singleton check - convert all classes to singleton which need to be - config?
 
 - using config in CV files
 
 - add wit.ai to STT
+
+- test http://cmusphinx.sourceforge.net/
+
+- SQlite or MySQL via config in Thesaurus and NLP class
+
 
 # EN aiml reference https://code.google.com/archive/p/aiml-en-us-foundation-alice/
 

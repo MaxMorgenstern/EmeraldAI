@@ -1,16 +1,12 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-from EmeraldAI.Logic.Modules.Database import SQlite3
+from EmeraldAI.Logic.Database.SQlite3 import *
 
 
 class Thesaurus(object):
-    database = None
-
-    def __init__(self):
-        self.database = SQlite3.GetDB("brain")
 
     def __executeQuery(self, query, word):
-        return SQlite3.Fetchall(self.database, query.format(lowerword=word.lower()))
+        return SQlite3().Fetchall(query.format(lowerword=word.lower()))
 
     def GetSynonymsAndCategory(self, word):
         query = """SELECT term.normalized_word, term.word, term2.word, category.category_name

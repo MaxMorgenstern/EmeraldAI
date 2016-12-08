@@ -1,0 +1,78 @@
+
+Q: Input
+A: <Requirement> Response <Context Category>
+
+Requirement comparison logic
+lt less than
+le less then or equal
+eq equals
+gt greater than
+ge greater than or equal
+
+Requirement Tags
+Time: Hour Minute
+Day: Day of week
+
+
+Category:
+Wellbeing
+
+Variables
+{name}	last name of person
+-----
+
+
+
+Q: GUTEN ABEND
+A: <Time:gt1700>Guten Abend {name}. Ich hoffe Sie hatten einen schönen Tag.
+A: <Time:gt1700>Guten Abend {name}.
+
+
+Q: GUTEN MORGEN
+A: <Time:lt1100>Ich wünsche Ihnen ebenfalls einen guten Morgen {name}.
+A: <Time:lt1100>Guten Morgen {name}.
+A: <Time:lt1100>Guten Morgen {name}. Wie geht es Ihnen heute Früh?<Category:Wellbeing>
+A: <Time:lt1100>Hallo {name}, wie geht es Ihnen heute?<Category:Wellbeing>
+A: <Time:lt1100|Day:Monday>Guten Morgen {name}. Ich hoffe Sie hatten ein schönes Wochenende?
+A: <Time:lt1100|Day:Monday>Guten Morgen {name}. Ich hoffe Sie hatten ein erholsames Wochenende?
+
+
+Q: GUTEN MORGEN
+Q: GUTEN TAG
+Q: GUTEN ABEND
+Q: Moin Moin
+Q: Hallo
+Q: Tach
+Q: Tag auch
+Q: Hallöchen
+A: Hallo {name}
+A: Guten Tag {name}.
+A: Guten Tag {name}. Wie kann ich Ihnen heute behilflich sein?
+A: Ich wünsche Ihnen einen schönen guten Tag!
+
+
+
+
+
+
+Q: GUTE NACHT
+A: Gute nacht,
+
+Q: TSCHAU
+A: Tschuess!!
+
+Q: TSCHUESS *
+A:  Tschuess.
+
+Q: TSCHUESS
+A: Bis spaeter.
+
+Q: BYE
+A: Tschuess, !
+
+Q: CIAO *
+A: Heisst das jetzt Hallo oder Tschuess?
+
+Q: CIAO
+A: Heisst das jetzt Hallo oder Tschuess?
+
