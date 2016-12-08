@@ -27,6 +27,12 @@ class Google(object):
                 microphoneID = i
 
         self.__recognizer = sr.Recognizer()
+        #Represents the minimum length of silence (in seconds) that will register as the
+        #end of a phrase. Can be changed.
+        #Smaller values result in the recognition completing more quickly, but might result
+        #in slower speakers being cut off.
+        self.__recognizer.pause_threshold = 0.5
+
         self.__microphone = sr.Microphone(device_index=microphoneID)
 
         with self.__microphone as source:
@@ -58,6 +64,7 @@ class Google(object):
     def Listen(self):
         with self.__microphone as source:
             self.__audio = self.__recognizer.listen(source)
+            #self.__recognizer.adjust_for_ambient_noise(source)
 
             data = ""
             try:

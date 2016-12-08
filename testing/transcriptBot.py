@@ -9,11 +9,15 @@ sys.setdefaultencoding('utf-8')
 
 from EmeraldAI.Logic.SpeechProcessing.Google import *
 
+for i, microphone_name in enumerate(sr.Microphone().list_microphone_names()):
+    print microphone_name
+
+
 google = Google()
 
 loop = True
 
-f = open('transcript.txt','w')
+f = open('transcript_{0}.txt'.format(datetime.datetime.now().strftime('%Y%m%d_%H%M%S')),'w')
 
 def printfile(file, quantifyer, text):
     file.write("{0} {1}\n".format(quantifyer, text))
