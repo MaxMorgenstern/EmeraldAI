@@ -1,7 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+from __future__ import division
 import math
+import re
+from collections import OrderedDict
 from EmeraldAI.Logic.Singleton import Singleton
+from EmeraldAI.Logic.Modules import Global
 
 
 class Math(object):
@@ -14,27 +18,44 @@ class Math(object):
         self.__safe_list = ['math', 'acos', 'asin', 'atan', 'atan2', 'ceil', 'cos', 'cosh', 'degrees', 'e', 'exp', 'fabs', 'floor',
                             'fmod', 'frexp', 'hypot', 'ldexp', 'log', 'log10', 'modf', 'pi', 'pow', 'radians', 'sin', 'sinh', 'sqrt', 'tan', 'tanh']
 
+        self.__replaceWordDictionary = OrderedDict()
+        replaceWords = Global.ReadDataFile("Math", "de.txt")
+        for word in replaceWords:
+            if(len(word) > 1):
+                wordArray = word.split("|")
+                self.__replaceWordDictionary[wordArray[1]] = wordArray[0]
+
+        self.__ReplacePattern = re.compile(r'\b(' + '|'.join(self.__replaceWordDictionary.keys()) + r')\b')
+
+
         # https://docs.python.org/2/library/math.html
-        pi = math.pi
-        e = math.e
-        print pi
-        print e
+        # pi = math.pi
+        # e = math.e
+        # print pi
+        # print e
         # common constants
         # pi
         # e - euler
         # ...
 
+    def CleanTerm(self, term):
+        #term = re.sub(r'"(\d+) (\d+)"', r'\1\2', term)
+        result = self.__ReplacePattern.sub(lambda x: self.__replaceWordDictionary[x.group()], term)
+        return result
 
 
     def Calculate(self, term):
-        # clean up sting
         # replace words with math func
         # make sure no bad words are in there
         # make sure it's a equation
 
+        cleanTerm = self.CleanTerm(term.lower())
+
+        print cleanTerm
+
         try:
 
-            return eval(term, self.__namespace)
+            return eval(cleanTerm, self.__namespace)
         except:
             return None
 

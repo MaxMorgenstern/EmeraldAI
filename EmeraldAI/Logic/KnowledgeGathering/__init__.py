@@ -1,1 +1,1 @@
-__all__ = ["Wikipedia"]
+__all__ = ["Math", "Weather", "Wikipedia"]

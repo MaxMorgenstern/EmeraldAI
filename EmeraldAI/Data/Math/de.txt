@@ -1,21 +1,24 @@
++|plus
 
+-|minus
 
+*|x
+*|mal
+*|multipliziert mit
 
-plus
-minus
-mal
-geteilt
-geteilt durch
+/|geteilt durch
+/|dividiert durch
+/|durch
+/|geteilt
 
-klammer
-klammer auf
-runde klammer auf
-eckige klammer auf
-geschweifte klammer auf
+[|eckige klammer auf
 
-klammer zu
-runde klammer zu
-eckige klammer zu
-geschweifte klammer zu
+]|eckige klammer zu
 
+}|geschweifte klammer zu
+{|geschweifte klammer auf
 
+(|runde klammer auf
+)|runde klammer zu
+)|klammer zu
+(|klammer auf

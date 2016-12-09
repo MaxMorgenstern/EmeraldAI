@@ -28,6 +28,8 @@ Just a messy list with things to do
 - https://github.com/Uberi/speech_recognition/blob/master/examples/background_listening.py
 - https://github.com/Uberi/speech_recognition/blob/03ec480ad831f9e7b7787858d2511e6e42880811/reference/library-reference.rst
 
+- use Global.ReadDataFile in NLP class
+
 # EN aiml reference https://code.google.com/archive/p/aiml-en-us-foundation-alice/
 
 ---
