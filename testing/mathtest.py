@@ -14,7 +14,11 @@ m = Math()
 
 loop = True
 
-audioPlayer = Config().Get("TextToSpeech", "AudioPlayer") + " '{0}'"
+print m.Calculate("10 + 25")
+print m.Calculate("1.000 + 25")
+print m.Calculate("100 000 + 25")
+print m.Calculate("10,5 / 25")
+
 
 while(loop):
     data = google.Listen()
@@ -26,3 +30,4 @@ while(loop):
         print "No data found"
     else:
     	print m.Calculate(data)
+
