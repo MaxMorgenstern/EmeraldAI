@@ -26,6 +26,9 @@ IvonaSecretKey =
 
 
 [Database]
+NLPDatabaseType = sqlite
+ThesaurusDatabaseType = sqlite
+
 SQliteDatabase = brain
 MySQLDatabase =
 MySQLPassword =

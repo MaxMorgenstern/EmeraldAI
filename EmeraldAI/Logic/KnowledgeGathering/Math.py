@@ -28,11 +28,6 @@ class Math(object):
         self.__ReplacePattern = re.compile(r'\b(' + '|'.join(self.__replaceWordDictionary.keys()) + r')\b')
 
 
-        # https://docs.python.org/2/library/math.html
-        # pi = math.pi
-        # e = math.e
-
-
     def CleanTerm(self, term):
         # replace whitespace and dots in between numbers
         term = re.sub("(\d+)[\s.]+(\d+)", r"\1\2", term)
@@ -44,19 +39,14 @@ class Math(object):
 
 
     def Calculate(self, term):
-        # replace words with math func
-        # make sure no bad words are in there
-        # make sure it's a equation
-
         cleanTerm = self.CleanTerm(term.lower())
-
-
         try:
             return eval(cleanTerm, self.__namespace)
         except:
             return None
 
 
-
-
-
+"""
+TODO: make sure term is equation
+TODO: add more operations mentioned in the safe_list
+"""
