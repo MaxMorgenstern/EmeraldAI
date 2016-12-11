@@ -62,6 +62,8 @@ class Google(object):
 
 
     def Listen(self):
+       # print self.__recognizer.energy_threshold
+
         with self.__microphone as source:
             self.__audio = self.__recognizer.listen(source)
             #self.__recognizer.adjust_for_ambient_noise(source)
