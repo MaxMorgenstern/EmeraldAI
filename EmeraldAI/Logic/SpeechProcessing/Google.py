@@ -18,12 +18,31 @@ class Google(object):
     def __init__(self):
         self.__language_2letter_cc = Config().Get("TextToSpeech", "CountryCode2Letter")
         self.__language_4letter_cc = Config().Get("TextToSpeech", "CountryCode4Letter")
-        self.__audioPlayer = Config().Get(
-            "TextToSpeech", "AudioPlayer") + " '{0}'"
+        self.__audioPlayer = Config().Get("TextToSpeech", "AudioPlayer") + " '{0}'"
+
+        microphoneID = None
+        microphoneName = Config().Get("TextToSpeech", "Microphone")
+        for i, microphone_name in enumerate(sr.Microphone().list_microphone_names()):
+            if microphone_name == microphoneName:
+                microphoneID = i
+
+        self.__recognizer = sr.Recognizer()
+        #Represents the minimum length of silence (in seconds) that will register as the
+        #end of a phrase. Can be changed.
+        #Smaller values result in the recognition completing more quickly, but might result
+        #in slower speakers being cut off.
+        self.__recognizer.pause_threshold = 0.5
+
+        self.__microphone = sr.Microphone(device_index=microphoneID)
+
+        with self.__microphone as source:
+            self.__recognizer.dynamic_energy_threshold = True
+            self.__recognizer.adjust_for_ambient_noise(source)
 
         self.__apiKey = Config().Get("TextToSpeech", "GoogleAPIKey")
         if(len(self.__apiKey) == 0):
             self.__apiKey = None
+
 
     def Speak(self, audioString, playAudio=False):
         if(len(audioString) == 0):
@@ -40,26 +59,35 @@ class Google(object):
             os.system(self.__audioPlayer.format(tmpAudioFile))
         return tmpAudioFile
 
+
+
     def Listen(self):
-        r = sr.Recognizer()
-        with sr.Microphone() as source:
-            audio = r.listen(source)
+       # print self.__recognizer.energy_threshold
 
-        data = ""
-        try:
-            data = r.recognize_google(
-                audio, key=self.__apiKey, language=self.__language_4letter_cc, show_all=False)
-        except sr.UnknownValueError:
-            print("Google Speech Recognition could not understand audio")
-        except sr.RequestError as e:
-            print(
-                "Could not request results from Google Speech Recognition service; {0}".format(e))
+        with self.__microphone as source:
+            self.__audio = self.__recognizer.listen(source)
+            #self.__recognizer.adjust_for_ambient_noise(source)
 
-        return data
+            data = ""
+            try:
+                data = self.__recognizer.recognize_google(
+                    self.__audio, key=self.__apiKey, language=self.__language_4letter_cc, show_all=False)
+            except sr.UnknownValueError:
+                print("Google Speech Recognition could not understand audio")
+            except sr.RequestError as e:
+                print(
+                    "Could not request results from Google Speech Recognition service; {0}".format(e))
+
+            return data
+
 
     def CleanString(self, string):
         data = re.sub(r'\W+', '', string)
         return (data[:75] + '_TRIMMED') if len(data) > 75 else data
+
+
+    def GetAvailiabeMicrophones(self):
+        return sr.Microphone().list_microphone_names()
 
 
 """

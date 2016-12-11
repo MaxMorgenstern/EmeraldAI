@@ -1,28 +1,19 @@
-#!/usr/bin/env python
-from os import path
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+import speech_recognition as sr
 
-from pocketsphinx.pocketsphinx import *
-from sphinxbase.sphinxbase import *
+# obtain audio from the microphone
+r = sr.Recognizer()
+with sr.Microphone() as source:
+    print("Say something!")
+    audio = r.listen(source)
 
-MODELDIR = "pocketsphinx/model"
-DATADIR = "pocketsphinx/test/data"
+# recognize speech using Sphinx
+try:
+    print("Sphinx thinks you said " + r.recognize_sphinx(audio))
+except sr.UnknownValueError:
+    print("Sphinx could not understand audio")
+except sr.RequestError as e:
+    print("Sphinx error; {0}".format(e))
 
-# Create a decoder with certain model
-config = Decoder.default_config()
-config.set_string('-hmm', path.join(MODELDIR, 'en-us/en-us'))
-config.set_string('-lm', path.join(MODELDIR, 'en-us/en-us.lm.bin'))
-config.set_string('-dict', path.join(MODELDIR, 'en-us/cmudict-en-us.dict'))
-decoder = Decoder(config)
 
-# Decode streaming data.
-decoder = Decoder(config)
-decoder.start_utt()
-stream = open(path.join(DATADIR, 'goforward.raw'), 'rb')
-while True:
-  buf = stream.read(1024)
-  if buf:
-    decoder.process_raw(buf, False, False)
-  else:
-    break
-decoder.end_utt()
-print ('Best hypothesis segments: ', [seg.word for seg in decoder.seg()])

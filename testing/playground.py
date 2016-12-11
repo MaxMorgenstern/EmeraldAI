@@ -8,16 +8,16 @@ sys.setdefaultencoding('utf-8')
 
 folder_path = os.path.dirname(os.path.abspath(__file__))
 
-from EmeraldAI.Logic.Modules import NLP
-
-print NLP.IsFirstname("inga")
-
-exit()
 
 from EmeraldAI.Logic.Modules import Global
 
 print Global.OS
 
+
+print eval('1 ^ 0')
+print eval('1 ^ 1')
+print eval('1 ^ 2')
+print eval('1 ^ 3')
 
 print eval('1 + 0')
 print eval('1 * 4')

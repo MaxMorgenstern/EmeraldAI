@@ -2,21 +2,19 @@
 # -*- coding: utf-8 -*-
 import re
 from EmeraldAI.Logic.Modules import Global
-from EmeraldAI.Logic.Database.SQlite3 import *
-
-
-def ReadFile(foldername, filename):
-    script_dir = Global.EmeraldPath + \
-        "Data/{0}/{1}".format(foldername, filename)
-    return [line.rstrip('\n').rstrip('\r') for line in open(script_dir)]
+from EmeraldAI.Config.Config import *
+if(Config().Get("Database", "NLPDatabaseType").lower() == "sqlite"):
+    from EmeraldAI.Logic.Database.SQlite3 import SQlite3 as db
+elif(Config().Get("Database", "NLPDatabaseType").lower() == "mysql"):
+    from EmeraldAI.Logic.Database.MySQL import MySQL as db
 
 
 def DetectLanguage(input):
     # 207 most common words in germen + hallo = 208
-    words_DE = ReadFile("Commonwords", "de.txt")
+    words_DE = Global.ReadDataFile("Commonwords", "de.txt")
 
     # 207 most common words in english + hello = 208
-    words_EN = ReadFile("Commonwords", "en.txt")
+    words_EN = Global.ReadDataFile("Commonwords", "en.txt")
 
     exactMatch_DE = re.compile(r'\b%s\b' % '\\b|\\b'.join(
         words_DE), flags=re.IGNORECASE | re.UNICODE)
@@ -38,7 +36,7 @@ def WordSegmentation(input):
 
 
 def RemoveStopwords(wordlist, language):
-    stopwords = ReadFile("Stopwords", "{0}.txt".format(language.upper()))
+    stopwords = Global.ReadDataFile("Stopwords", "{0}.txt".format(language.upper()))
     return [x for x in wordlist if x not in stopwords]
 
 
@@ -54,10 +52,10 @@ def Normalize(input, language):
 
 def IsFirstname(input):
     normalizedInput = Normalize(input, "all")
-    result = SQlite3().Fetchall("SELECT * FROM NLP_Firstname WHERE Firstname = '{0}'".format(normalizedInput.title()))
+    result = db().Fetchall("SELECT * FROM NLP_Firstname WHERE Firstname = '{0}'".format(normalizedInput.title()))
     return len(result) > 0
 
 def IsLastname(input):
     normalizedInput = Normalize(input, "all")
-    result = SQlite3().Fetchall("SELECT * FROM NLP_Lastname WHERE Lastname = '{0}'".format(normalizedInput.title()))
+    result = db().Fetchall("SELECT * FROM NLP_Lastname WHERE Lastname = '{0}'".format(normalizedInput.title()))
     return len(result) > 0

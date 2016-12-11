@@ -3,6 +3,7 @@
 import pyowm
 from datetime import datetime
 from EmeraldAI.Logic.Singleton import Singleton
+from EmeraldAI.Config.Config import *
 
 
 class Weather(object):
@@ -13,10 +14,9 @@ class Weather(object):
     __defaultCountry = None
 
     def __init__(self):
-        self.__language = 'de'
-        self.__defaultCountry = 'de'
-        self.__owm = pyowm.OWM(
-            API_key='47748de03b79380c94ecc84ef729f301', language='de')
+        self.__language = Config().Get("Weather", "Language")
+        self.__defaultCountry = Config().Get("Weather", "CountryCode2Letter")
+        self.__owm = pyowm.OWM(API_key=Config().Get("Weather", "OWMAPIKey"), language=self.__language)
 
     def GetCurrentWeather(self, location, country=None):
         if(country == None):

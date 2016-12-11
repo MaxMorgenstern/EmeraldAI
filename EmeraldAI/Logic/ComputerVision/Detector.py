@@ -3,22 +3,11 @@
 import cv2
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Logic.Modules import Global
-
-# Singleton Class
+from EmeraldAI.Config.Config import *
 
 
 class Detector(object):
     __metaclass__ = Singleton
-
-    __haarFaceFrontal = 'haarcascade_frontalface_alt2.xml'
-    __haarFaceProfile = 'haarcascade_profileface.xml'
-
-    __haarBodyUpper = 'haarcascade_upperbody.xml'
-    __haarBodyLower = 'haarcascade_lowerbody.xml'
-    __haarBodyFull = 'haarcascade_fullbody.xml'
-
-    __haarEyes = 'haarcascade_eye.xml'
-    __haarEyesGlasses = 'haarcascade_eye_tree_eyeglasses.xml'
 
     __haarScale = 1.1
     __haarMinNeighbors = 4
@@ -29,22 +18,16 @@ class Detector(object):
 
     def __init__(self):
         self.__haarDir = Global.EmeraldPath + "Data/HaarCascades/"
-        self.__cascadeFaceFrontal = cv2.CascadeClassifier(
-            self.__haarDir + self.__haarFaceFrontal)
-        self.__cascadeFaceProfile = cv2.CascadeClassifier(
-            self.__haarDir + self.__haarFaceProfile)
 
-        self.__cascadeBodyUpper = cv2.CascadeClassifier(
-            self.__haarDir + self.__haarBodyUpper)
-        self.__cascadeBodyLower = cv2.CascadeClassifier(
-            self.__haarDir + self.__haarBodyLower)
-        self.__cascadeBodyFull = cv2.CascadeClassifier(
-            self.__haarDir + self.__haarBodyFull)
+        self.__cascadeFaceFrontal = cv2.CascadeClassifier(self.__haarDir + Config().Get("ComputerVision", "HaarcascadeFaceFrontal"))
+        self.__cascadeFaceProfile = cv2.CascadeClassifier(self.__haarDir + Config().Get("ComputerVision", "HaarcascadeFaceProfile"))
 
-        self.__cascadeEyes = cv2.CascadeClassifier(
-            self.__haarDir + self.__haarEyes)
-        self.__cascadeEyesGlasses = cv2.CascadeClassifier(
-            self.__haarDir + self.__haarEyesGlasses)
+        self.__cascadeBodyUpper = cv2.CascadeClassifier(self.__haarDir + Config().Get("ComputerVision", "HaarcascadeBodyUpper"))
+        self.__cascadeBodyLower = cv2.CascadeClassifier(self.__haarDir + Config().Get("ComputerVision", "HaarcascadeBodyLower"))
+        self.__cascadeBodyFull = cv2.CascadeClassifier(self.__haarDir + Config().Get("ComputerVision", "HaarcascadeBodyFull"))
+
+        self.__cascadeEyes = cv2.CascadeClassifier(self.__haarDir + Config().Get("ComputerVision", "HaarcascadeEyes"))
+        self.__cascadeEyesGlasses = cv2.CascadeClassifier(self.__haarDir + Config().Get("ComputerVision", "HaarcascadeEyesGlasses"))
 
     def CropImage(self, image, x, y, w, h):
         cropHeight = int(

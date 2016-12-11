@@ -28,8 +28,21 @@ class Microsoft(object):
     def __init__(self):
         self.__language_2letter_cc = Config().Get("TextToSpeech", "CountryCode2Letter")
         self.__language_4letter_cc = Config().Get("TextToSpeech", "CountryCode4Letter")
-        self.__audioPlayer = Config().Get(
-            "TextToSpeech", "AudioPlayer") + " '{0}'"
+        self.__audioPlayer = Config().Get("TextToSpeech", "AudioPlayer") + " '{0}'"
+
+
+        microphoneID = None
+        microphoneName = Config().Get("TextToSpeech", "Microphone")
+        for i, microphone_name in enumerate(sr.Microphone().list_microphone_names()):
+            if microphone_name == microphoneName:
+                microphoneID = i
+
+        self.__recognizer = sr.Recognizer()
+        self.__microphone = sr.Microphone(device_index=microphoneID)
+
+        with self.__microphone as source:
+            self.__recognizer.dynamic_energy_threshold = True
+            self.__recognizer.adjust_for_ambient_noise(source)
 
         self.__voiceGender = Config().Get("TextToSpeech", "MicrosoftVoiceGender")
         self.__voiceName = Config().Get("TextToSpeech", "MicrosoftVoiceName")
@@ -50,6 +63,7 @@ class Microsoft(object):
         conn.close()
 
         self.__accesstoken = data.decode("UTF-8")
+
 
     def Speak(self, audioString, playAudio=False):
         if(len(audioString) == 0):
@@ -74,11 +88,9 @@ class Microsoft(object):
             conn = httplib.HTTPSConnection("speech.platform.bing.com")
             conn.request("POST", "/synthesize", body, headers)
             response = conn.getresponse()
-    #      print(response.status, response.reason)
 
             data = response.read()
             conn.close()
-    #       len(data)
 
             with open(tmpAudioFile, "wb") as f:
                 f.write(data)
@@ -87,26 +99,31 @@ class Microsoft(object):
             os.system(self.__audioPlayer.format(tmpAudioFile))
         return tmpAudioFile
 
-    def Listen(self):
-        r = sr.Recognizer()
-        with sr.Microphone() as source:
-            audio = r.listen(source)
 
-        data = ""
-        try:
-            data = r.recognize_bing(
-                audio, key=self.__apiKey, language=__language_4letter_cc, show_all=False)
-        except sr.UnknownValueError:
-            print("Microsoft Bing Voice Recognition could not understand audio")
-        except sr.RequestError as e:
-            print(
-                "Could not request results from Microsoft Bing Voice Recognition service; {0}".format(e))
-        return data
+    def Listen(self):
+        with self.__microphone as source:
+            self.__audio = self.__recognizer.listen(source)
+
+            data = ""
+            try:
+                data = self.__recognizer.recognize_bing(
+                    self.__audio, key=self.__apiKey, language=__language_4letter_cc, show_all=False)
+            except sr.UnknownValueError:
+                print("Microsoft Bing Voice Recognition could not understand audio")
+            except sr.RequestError as e:
+                print(
+                    "Could not request results from Microsoft Bing Voice Recognition service; {0}".format(e))
+
+            return data
+
 
     def CleanString(self, string):
         data = re.sub(r'\W+', '', string)
         return (data[:75] + '_TRIMMED') if len(data) > 75 else data
 
+
+    def GetAvailiabeMicrophones(self):
+        return sr.Microphone().list_microphone_names()
 
 """
 todo try catch
