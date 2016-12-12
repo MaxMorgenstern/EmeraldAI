@@ -47,7 +47,7 @@ class Google(object):
     def Speak(self, audioString, playAudio=False):
         if(len(audioString) == 0):
             return
-        tmpAudioFile = Global.EmeraldPath + "Data/TTS/Google_" + \
+        tmpAudioFile = Global.EmeraldPath + "Data" + os.sep + "TTS" + os.sep + "Google_" + \
             self.__language_2letter_cc + "_" + \
             self.CleanString(audioString) + ".mp3"
 

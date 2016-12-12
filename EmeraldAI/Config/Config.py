@@ -12,7 +12,7 @@ class Config():
     def __init__(self):
         self.__config = ConfigParser.ConfigParser()
         self.__config.read(os.path.dirname(
-            os.path.abspath(__file__)) + "/base.config")
+            os.path.abspath(__file__)) + os.sep + "base.config")
 
     def Get(self, section, parameter):
         return self.__config.get(section, parameter)

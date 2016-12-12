@@ -68,12 +68,12 @@ class Predictor(object):
         return [X, y, folder_names]
 
     def __getModelName(self):
-        datasetPath = Global.EmeraldPath + "Data/ComputerVisionData/"
+        datasetPath = Global.EmeraldPath + "Data" + os.sep + "ComputerVisionData" + os.sep
         modelName = datasetPath + "myModel.pkl"
         return modelName
 
     def CreateDataset(self):
-        datasetPath = Global.EmeraldPath + "Data/ComputerVisionData/"
+        datasetPath = Global.EmeraldPath + "Data" + os.sep + "ComputerVisionData" + os.sep
         imageSize = self.__getImageSize()
 
         [images, labels, subject_names] = self.__readImages(
