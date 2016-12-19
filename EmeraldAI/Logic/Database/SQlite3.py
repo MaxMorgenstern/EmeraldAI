@@ -31,7 +31,7 @@ class SQlite3(object):
         else:
             cur.execute(sql)
         db.commit()
-        return cur
+        return cur.lastrowid
 
 
     def Fetchall(self, sql, args=None):
