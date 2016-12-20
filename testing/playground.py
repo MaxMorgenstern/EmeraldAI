@@ -13,31 +13,31 @@ import plistlib
 from EmeraldAI.Logic.Database.SQlite3 import SQlite3 as db
 
 while True:
-	locationInput = raw_input("Enter Location: ")
-	if(len(locationInput) < 2):
-		break
+    locationInput = raw_input("Enter Location: ")
+    if(len(locationInput) < 2):
+        break
 
-	positionID = db().Execute("INSERT INTO Fingerprint_Position ('Name') Values ('{0}');".format(locationInput))
+    positionID = db().Execute("INSERT INTO Fingerprint_Position ('Name') Values ('{0}');".format(locationInput))
 
-	locationLoop = 0
-	while locationLoop < 5:
-		print "Loop #{0} in progress...".format((locationLoop+1))
-		proc = subprocess.Popen(["/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -s -x"], stdout=subprocess.PIPE, shell=True)
-		(out, err) = proc.communicate()
+    locationLoop = 0
+    while locationLoop < 5:
+        print "Loop #{0} in progress...".format((locationLoop+1))
+        proc = subprocess.Popen(["/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -s -x"], stdout=subprocess.PIPE, shell=True)
+        (out, err) = proc.communicate()
 
-		wifilist = plistlib.readPlistFromString(out)
-		for wifi in wifilist:
+        wifilist = plistlib.readPlistFromString(out)
+        for wifi in wifilist:
 
-			query = "INSERT INTO Fingerprint_WiFi ('BSSID', 'SSID', 'RSSI', 'NOISE', 'STRENGTH') Values ('{0}','{1}','{2}','{3}','{4}');".format(wifi["BSSID"], wifi["SSID_STR"], wifi["RSSI"], wifi["NOISE"], (wifi["RSSI"] - wifi["NOISE"]))
-			wifientry = db().Execute(query)
+            query = "INSERT INTO Fingerprint_WiFi ('BSSID', 'SSID', 'RSSI', 'NOISE', 'STRENGTH') Values ('{0}','{1}','{2}','{3}','{4}');".format(wifi["BSSID"], wifi["SSID_STR"], wifi["RSSI"], wifi["NOISE"], (wifi["RSSI"] - wifi["NOISE"]))
+            wifientry = db().Execute(query)
 
-			query = "INSERT INTO Fingerprint_Position_WiFi ('PositionID', 'WiFiID') VALUES ('{0}','{1}');".format(positionID, wifientry)
-			db().Execute(query)
+            query = "INSERT INTO Fingerprint_Position_WiFi ('PositionID', 'WiFiID') VALUES ('{0}','{1}');".format(positionID, wifientry)
+            db().Execute(query)
 
-		time.sleep( 5 )
-		locationLoop += 1
+        time.sleep( 5 )
+        locationLoop += 1
 
-	print "Location Scan Complete!"
+    print "Location Scan Complete!"
 
 
 
@@ -46,38 +46,38 @@ while True:
 print "Determine where we are..."
 
 while True:
-	prediction = {}
+    prediction = {}
 
-	proc = subprocess.Popen(["/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -s -x"], stdout=subprocess.PIPE, shell=True)
-	(out, err) = proc.communicate()
+    proc = subprocess.Popen(["/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -s -x"], stdout=subprocess.PIPE, shell=True)
+    (out, err) = proc.communicate()
 
-	wifilist = plistlib.readPlistFromString(out)
-	for wifi in wifilist:
-		query = """SELECT Fingerprint_WiFi.*, ABS({1}-Fingerprint_WiFi.STRENGTH) as diff, Fingerprint_Position.Name
-		FROM Fingerprint_WiFi, Fingerprint_Position_WiFi, Fingerprint_Position
-		WHERE BSSID = '{0}'
-		AND Fingerprint_WiFi.ID = Fingerprint_Position_WiFi.WiFiID
-		AND Fingerprint_Position_WiFi.PositionID = Fingerprint_Position.ID
-		ORDER BY ABS({1}-STRENGTH)
-		LIMIT 5"""
+    wifilist = plistlib.readPlistFromString(out)
+    for wifi in wifilist:
+        query = """SELECT Fingerprint_WiFi.*, ABS({1}-Fingerprint_WiFi.STRENGTH) as diff, Fingerprint_Position.Name
+        FROM Fingerprint_WiFi, Fingerprint_Position_WiFi, Fingerprint_Position
+        WHERE BSSID = '{0}'
+        AND Fingerprint_WiFi.ID = Fingerprint_Position_WiFi.WiFiID
+        AND Fingerprint_Position_WiFi.PositionID = Fingerprint_Position.ID
+        ORDER BY ABS({1}-STRENGTH)
+        LIMIT 5"""
 
-		result = db().Fetchall(query.format(wifi['BSSID'], (wifi["RSSI"] - wifi["NOISE"])))
-		for r in result:
-			distance = r[6]+1
-			if r[7] in prediction:
-				prediction[r[7]] += (r[5]/distance)
-			else:
-				prediction[r[7]] = (r[5]/distance)
-			prediction[r[7]] += 10
+        result = db().Fetchall(query.format(wifi['BSSID'], (wifi["RSSI"] - wifi["NOISE"])))
+        for r in result:
+            distance = r[6]+1
+            if r[7] in prediction:
+                prediction[r[7]] += (r[5]/distance)
+            else:
+                prediction[r[7]] = (r[5]/distance)
+            prediction[r[7]] += 10
 
-			print r
-		print "---"
-	#print prediction
+            print r
+        print "---"
+    #print prediction
 
-	percent = 100 / sum(prediction.values())
+    percent = 100 / sum(prediction.values())
 
-	for key, value in prediction.iteritems():
-		print "{0}: {1:.2f}%".format(key, (value * percent))
+    for key, value in prediction.iteritems():
+        print "{0}: {1:.2f}%".format(key, (value * percent))
 
 
 
