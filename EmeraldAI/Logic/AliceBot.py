@@ -19,8 +19,8 @@ class AliceBot(object):
         self.kernel = aiml.Kernel()
 
         self.__brainPath = Global.EmeraldPath + \
-            "Data/AIML/Brain/brain_" + language + ".brn"
-        self.__AIMLPath = Global.EmeraldPath + "Data/AIML/" + language.upper() + "/"
+            "Data" + os.sep + "AIML" + os.sep + "Brain" + os.sep + "brain_" + language + ".brn"
+        self.__AIMLPath = Global.EmeraldPath + "Data" + os.sep + "AIML" + os.sep + language.upper() + os.sep
 
         if os.path.isfile(self.__brainPath):
             self.kernel.bootstrap(self.__brainPath)
