@@ -28,7 +28,7 @@ while True:
         wifilist = plistlib.readPlistFromString(out)
         for wifi in wifilist:
 
-            query = "INSERT INTO Fingerprint_WiFi ('BSSID', 'SSID', 'RSSI', 'NOISE', 'STRENGTH') Values ('{0}','{1}','{2}','{3}','{4}');".format(wifi["BSSID"], wifi["SSID_STR"], wifi["RSSI"], wifi["NOISE"], (wifi["RSSI"] - wifi["NOISE"]))
+            query = "INSERT INTO Fingerprint_WiFi ('BSSID', 'SSID', 'RSSI', 'Noise', 'Indicator') Values ('{0}','{1}','{2}','{3}','{4}');".format(wifi["BSSID"], wifi["SSID_STR"], wifi["RSSI"], wifi["NOISE"], (wifi["RSSI"] - wifi["NOISE"]))
             wifientry = db().Execute(query)
 
             query = "INSERT INTO Fingerprint_Position_WiFi ('PositionID', 'WiFiID') VALUES ('{0}','{1}');".format(positionID, wifientry)
