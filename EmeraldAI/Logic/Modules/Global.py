@@ -8,6 +8,11 @@ RootPath = os.path.dirname(os.path.dirname(os.path.abspath(sys.argv[0]))).rstrip
 EmeraldPath = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))).rstrip(os.sep) + os.sep
 OS = platform.system().lower()  # darwin (=osx) - windows - linux
 
+class OperatingSystem():
+    Linux = "linux"
+    Windows = "windows"
+    OSX = "darwin"
+
 def ReadDataFile(foldername, filename):
     script_dir = EmeraldPath + \
         "Data" + os.set + foldername + os.sep + filename

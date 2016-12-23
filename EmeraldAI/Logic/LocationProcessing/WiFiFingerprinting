@@ -1,0 +1,27 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+from EmeraldAI.Logic.Singleton import Singleton
+from EmeraldAI.Logic.Modules import Global
+
+class WiFiFingerprinting(object):
+    __metaclass__ = Singleton
+
+    def GetWiFiList(self):
+    	if(Global.OS == Global.OperatingSystem.Windows):
+    		self.GetWiFiListWindows()
+
+    	if(Global.OS == Global.OperatingSystem.Linux):
+    		self.GetWiFiListLinux()
+
+    	if(Global.OS == Global.OperatingSystem.OSX):
+    		self.GetWiFiListOSX()
+
+    def GetWiFiListWindows(self):
+    	return ""
+
+    def GetWiFiListLinux(self):
+    	return ""
+
+    def GetWiFiListOSX(self):
+    	return ""
+

@@ -3,6 +3,7 @@
 import itertools
 
 cmd = """
+iwlist scan | egrep 'Cell |Quality|ESSID'
 iwlist scan
 wlan0     Scan completed :
           Cell 01 - Address: 64:66:B3:4C:81:EC
@@ -153,7 +154,7 @@ for key, group in itertools.groupby(cmd, group_separator):
 
 
             quality = (signalDetails[0].split("=", 1)[1].replace("/100", "")) # quality
-            level = (signalDetails[1].split("=", 1)[1].replace("/100", "")) # signal level
+            level = (signalDetails[1].split("=", 1)[1].replace("/100", "")) # signal level <--------
 
             print "Quality: " + quality
             print "Level: " + level
