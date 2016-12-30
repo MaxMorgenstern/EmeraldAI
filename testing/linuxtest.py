@@ -155,6 +155,7 @@ for key, group in itertools.groupby(cmd, group_separator):
 
             quality = (signalDetails[0].split("=", 1)[1].replace("/100", "")) # quality
             level = (signalDetails[1].split("=", 1)[1].replace("/100", "")) # signal level <--------
+            signal = level
 
             print "Quality: " + quality
             print "Level: " + level

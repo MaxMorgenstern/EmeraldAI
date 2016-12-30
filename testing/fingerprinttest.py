@@ -12,4 +12,7 @@ fp = WiFiFingerprinting()
 
 wfl = fp.GetWiFiList()
 
-print wfl
+print len(wfl)
+
+for w in wfl:
+	print w.BSSID + " - " + w.SSID
