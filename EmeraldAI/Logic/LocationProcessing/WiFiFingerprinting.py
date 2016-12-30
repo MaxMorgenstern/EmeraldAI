@@ -43,6 +43,7 @@ class WiFiFingerprinting(object):
         if(Global.OS == Global.OperatingSystem.OSX):
             return self.GetWiFiListOSX()
 
+
     def GetWiFiListWindows(self):
         proc = subprocess.Popen([self.__windowsCall], stdout=subprocess.PIPE, shell=True)
         (out, err) = proc.communicate()
@@ -74,6 +75,7 @@ class WiFiFingerprinting(object):
                     signal = None
 
         return returnList
+
 
     def GetWiFiListLinux(self):
         proc = subprocess.Popen([self.__linuxCall], stdout=subprocess.PIPE, shell=True)
@@ -109,6 +111,7 @@ class WiFiFingerprinting(object):
 
         return returnList
 
+
     def GetWiFiListOSX(self):
         proc = subprocess.Popen([self.__osxCall], stdout=subprocess.PIPE, shell=True)
         (out, err) = proc.communicate()
@@ -119,6 +122,7 @@ class WiFiFingerprinting(object):
             returnList.append(Hotspot(wifi["BSSID"], wifi["SSID_STR"], (wifi["RSSI"] - wifi["NOISE"]), wifi["RSSI"], wifi["NOISE"]))
 
         return returnList
+
 
     def __groupSeparator(self, line):
         return line=='\n'
