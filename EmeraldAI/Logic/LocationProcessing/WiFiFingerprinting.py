@@ -5,6 +5,7 @@ import plistlib
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Logic.Modules import Global
 
+# TODO: move hotspot into entities - inherit from base object
 class Hotspot(object):
     BSSID = None
     SSID = None
@@ -33,13 +34,13 @@ class WiFiFingerprinting(object):
 
     def GetWiFiList(self):
         if(Global.OS == Global.OperatingSystem.Windows):
-            self.GetWiFiListWindows()
+            return self.GetWiFiListWindows()
 
         if(Global.OS == Global.OperatingSystem.Linux):
-            self.GetWiFiListLinux()
+            return self.GetWiFiListLinux()
 
         if(Global.OS == Global.OperatingSystem.OSX):
-            self.GetWiFiListOSX()
+            return self.GetWiFiListOSX()
 
     def GetWiFiListWindows(self):
         return ""
