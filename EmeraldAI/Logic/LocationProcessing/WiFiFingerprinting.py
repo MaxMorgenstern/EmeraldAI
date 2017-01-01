@@ -113,23 +113,25 @@ class WiFiFingerprinting(object):
 
 
 
-
+    # TODO - Test
 
     def CreateLocation(self, name):
         return db().Execute("INSERT INTO Fingerprint_Position ('Name') Values ('{0}');".format(name))
 
     def GetLocationID(self, name):
-        location = db().Fetchall("SELECT * FROM Fingerprint_Position WHERE Name = '{0}'".format(name))
-        #TODO
-        return ""
+        location = db().Fetchall("SELECT ID FROM Fingerprint_Position WHERE Name = '{0}'".format(name))
+        return location[0][0]
+
+    def GetLocationName(self, name):
+        location = db().Fetchall("SELECT Name FROM Fingerprint_Position WHERE Name = '{0}'".format(name))
+        return location[0][0]
 
     def PredictLocation(self):
         wifiList = self.GetWiFiList()
         prediction = {}
 
-
         for wifi in wifiList:
-            query = """SELECT Fingerprint_WiFi.Indicator, ABS({1}-Fingerprint_WiFi.Indicator) as diff, Fingerprint_Position.Name
+            query = """SELECT Fingerprint_WiFi.Indicator, ABS({1}-Fingerprint_WiFi.Indicator) as diff, Fingerprint_Position.ID
             FROM Fingerprint_WiFi, Fingerprint_Position_WiFi, Fingerprint_Position
             WHERE BSSID = '{0}'
             AND Fingerprint_WiFi.ID = Fingerprint_Position_WiFi.WiFiID
@@ -147,7 +149,6 @@ class WiFiFingerprinting(object):
                     prediction[r[2]] = (r[0]/distance)
                 prediction[r[2]] += 10
 
-        # TODO: maybe ID as well
         return prediction
 
 
