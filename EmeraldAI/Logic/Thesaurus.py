@@ -47,7 +47,7 @@ class Thesaurus(object):
 
     def GetOpposite(self, word):
         query = """SELECT term.word, term2.word
-            FROM Thesaurus_Term term, Thesaurus_Synset synset, Thesaurus_Term term2
+            FROM Thesaurus_Term term, Thesaurus_Synset synset, Thesaurus_Term term2, Thesaurus_Term_Link term_link
             AND (term2.word = '{lowerword}' OR term2.normalized_word = '{lowerword}')
             AND (
               (term.id = term_link.term_id AND term_link.target_term_id = term2.id)

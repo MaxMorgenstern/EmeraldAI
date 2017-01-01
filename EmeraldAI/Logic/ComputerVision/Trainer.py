@@ -17,7 +17,7 @@ class Trainer(object):
         return self.__imageDir
 
     def __checkEnterPressed(self):
-        if(Global.OS == 'windows'):
+        if(Global.OS == Global.OperatingSystem.Windows):
             return self.__checkEnterPressedWindows()
         else:
             return self.__checkEnterPressedOSXLinux()
