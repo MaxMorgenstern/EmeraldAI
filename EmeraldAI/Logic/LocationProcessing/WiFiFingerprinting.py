@@ -107,24 +107,19 @@ class WiFiFingerprinting(object):
         return returnList
 
 
-    def __groupSeparator(self, line):
-        return line=='\n'
-
-
-
-
-    # TODO - Test
-
     def CreateLocation(self, name):
         return db().Execute("INSERT INTO Fingerprint_Position ('Name') Values ('{0}');".format(name))
+
 
     def GetLocationID(self, name):
         location = db().Fetchall("SELECT ID FROM Fingerprint_Position WHERE Name = '{0}'".format(name))
         return location[0][0]
 
-    def GetLocationName(self, name):
-        location = db().Fetchall("SELECT Name FROM Fingerprint_Position WHERE Name = '{0}'".format(name))
+
+    def GetLocationName(self, id):
+        location = db().Fetchall("SELECT Name FROM Fingerprint_Position WHERE ID = '{0}'".format(id))
         return location[0][0]
+
 
     def PredictLocation(self):
         wifiList = self.GetWiFiList()
@@ -139,9 +134,8 @@ class WiFiFingerprinting(object):
             ORDER BY ABS({1}-Indicator)
             LIMIT 5"""
 
-            result = db().Fetchall(query.format(wifi['BSSID'], (wifi["RSSI"] - wifi["NOISE"])))
+            result = db().Fetchall(query.format(wifi.BSSID, wifi.Indicator))
             for r in result:
-                print r
                 distance = r[1]+1
                 if r[2] in prediction:
                     prediction[r[2]] += (r[0]/distance)
@@ -162,4 +156,7 @@ class WiFiFingerprinting(object):
         query = "INSERT INTO Fingerprint_Position_WiFi ('PositionID', 'WiFiID') VALUES ('{0}','{1}');".format(location, wifientry)
         db().Execute(query)
 
+
+    def __groupSeparator(self, line):
+        return line=='\n'
 
