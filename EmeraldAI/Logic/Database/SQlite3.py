@@ -25,14 +25,16 @@ class SQlite3(object):
         return self.ExecuteDB(self.__Database, sql, args)
 
     def ExecuteDB(self, db, sql, args=None):
-        cur = db.cursor()
-        if args:
-            cur.execute(sql, args)
-        else:
-            cur.execute(sql)
-        db.commit()
-        return cur.lastrowid
-
+        try:
+            cur = db.cursor()
+            if args:
+                cur.execute(sql, args)
+            else:
+                cur.execute(sql)
+            db.commit()
+            return cur.lastrowid
+        except lite.IntegrityError:
+            return None
 
     def Fetchall(self, sql, args=None):
         return self.FetchallDB(self.__Database, sql, args)

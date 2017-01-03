@@ -29,11 +29,15 @@ def DetectLanguage(input):
     return "de"
 
 
-def WordSegmentation(input):
-    segmentationRegex = re.compile(
-        "[A-Z]{2,}(?![a-z])|[A-Z][a-z]+(?=[A-Z])|[\'\wÄÖÜäöüß\-]+", flags=re.UNICODE)
-    return segmentationRegex.findall(input)
+def WordSegmentation(input, extended=False):
+    if not extended:
+        segmentationRegex = re.compile(
+            "[A-Z]{2,}(?![a-z])|[A-Z][a-z]+(?=[A-Z])|[\'\wÄÖÜäöüß\-]+", flags=re.UNICODE)
+    else:
+        segmentationRegex = re.compile(
+            "[A-Z]{2,}(?![a-z])|[A-Z][a-z]+(?=[A-Z])|[\'\wÄÖÜäöüß\-\{\}]+", flags=re.UNICODE)
 
+    return segmentationRegex.findall(input)
 
 def RemoveStopwords(wordlist, language):
     stopwords = Global.ReadDataFile("Stopwords", "{0}.txt".format(language.upper()))
