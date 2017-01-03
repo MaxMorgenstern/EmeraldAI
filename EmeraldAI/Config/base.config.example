@@ -5,6 +5,9 @@ CountryCode2Letter = de
 CountryCode4Letter = de-DE
 Language = de
 
+[Bot]
+Name = Johnny
+
 
 [TextToSpeech]
 AudioPlayer = afplay
