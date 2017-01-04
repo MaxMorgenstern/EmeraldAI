@@ -130,17 +130,6 @@ print result
 # Timestamp
 #
 
-"""
-INSERT OR IGNORE INTO Dialog_Keyword (Keyword, Normalized_Keyword, Stopword) VALUES ('', '')
-INSERT OR IGNORE INTO Dialog_Keyword_Sentence (Keyword_ID, Sentence_ID) VALUES ('', '')
-INSERT OR IGNORE INTO Dialog_Sentence (Sentence, Normalized_Sentence, Category, Language) VALUES ('', '', '', '')
-INSERT OR IGNORE INTO Dialog_Trigger (Keyword_ID, Sentence_ID, Priority) VALUES ('', '')
-
-
-
-SELECT * FROM Dialog_Keyword, Dialog_Trigger WHERE Normalized_Keyword = '' AND Dialog_Keyword.ID = Dialog_Trigger.Keyword_ID
-
-"""
 
 loop = True
 

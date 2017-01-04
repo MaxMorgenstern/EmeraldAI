@@ -25,7 +25,7 @@ class CommandTrainer(object):
             return False
 
         for word in wordSegments:
-            query = "INSERT INTO Command_Keyword ('Keyword', 'Normalized') Values ('{0}', '{1}')".format(word, NLP.Normalize(word, Language))
+            query = "INSERT INTO Command_Keyword ('Keyword', 'Normalized', 'Language') Values ('{0}', '{1}', '{2}')".format(word, NLP.Normalize(word, Language), Language)
             KeywordID = db().Execute(query)
             if(KeywordID == None):
                 query = "SELECT ID FROM Command_Keyword WHERE Keyword = '{0}'".format(word)
@@ -40,4 +40,7 @@ class CommandTrainer(object):
         query = "INSERT INTO Command_Pattern_Module ('PatternID', 'ModuleID') Values ('{0}', '{1}')".format(PatternID, ModuleID)
         db().Execute(query)
 
+
+        print "New Pattern '{0}'".format(Pattern)
         return True
+
