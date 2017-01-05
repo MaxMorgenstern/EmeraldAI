@@ -41,6 +41,6 @@ class CommandTrainer(object):
             query = "INSERT INTO Command_Pattern_Keyword ('PatternID', 'KeywordID') Values ('{0}', '{1}')".format(PatternID, KeywordID)
             db().Execute(query)
 
-        print "New Pattern '{0}'".format(Pattern)
+        print "New pattern created: '{0}'".format(Pattern)
         return True
 
