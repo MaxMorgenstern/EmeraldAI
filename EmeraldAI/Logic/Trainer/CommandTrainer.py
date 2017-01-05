@@ -13,14 +13,17 @@ class CommandTrainer(object):
     __metaclass__ = Singleton
 
     def TrainPattern(self, Name, Pattern, Language, Module, Class, Function):
-
         wordSegments = NLP.WordSegmentation(Pattern, True)
 
+        query = "SELECT ID FROM Command_Module WHERE Module = '{0}' AND Class = '{1}' AND Function = '{2}'".format(Module, Class, Function)
+        result = db().Fetchall(query)
+        if (len(result) > 0):
+            ModuleID = result[0][0]
+        else:
+            query = "INSERT INTO Command_Module ('Module', 'Class', 'Function') Values ('{0}', '{1}', '{2}')".format(Module, Class, Function)
+            ModuleID = db().Execute(query)
 
-        # TODO: Remove Command_Pattern_Module Table - this is a 1:n relation
-
-
-        query = "INSERT INTO Command_Pattern ('Name', 'Pattern', 'Language', 'KeywordLength') Values ('{0}', '{1}', '{2}', '{3}')".format(Name, Pattern, Language, len(wordSegments))
+        query = "INSERT INTO Command_Pattern ('Name', 'Pattern', 'Language', 'KeywordLength', 'ModuleID') Values ('{0}', '{1}', '{2}', '{3}', '{4}')".format(Name, Pattern, Language, len(wordSegments), ModuleID)
         PatternID = db().Execute(query)
         if(PatternID == None):
             #query = "SELECT ID FROM Command_Pattern WHERE Pattern = '{0}'".format(Pattern)
@@ -37,13 +40,6 @@ class CommandTrainer(object):
 
             query = "INSERT INTO Command_Pattern_Keyword ('PatternID', 'KeywordID') Values ('{0}', '{1}')".format(PatternID, KeywordID)
             db().Execute(query)
-
-        query = "INSERT INTO Command_Module ('Module', 'Class', 'Function') Values ('{0}', '{1}', '{2}')".format(Module, Class, Function)
-        ModuleID = db().Execute(query)
-
-        query = "INSERT INTO Command_Pattern_Module ('PatternID', 'ModuleID') Values ('{0}', '{1}')".format(PatternID, ModuleID)
-        db().Execute(query)
-
 
         print "New Pattern '{0}'".format(Pattern)
         return True

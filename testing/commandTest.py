@@ -16,7 +16,9 @@ start_time = time.time()
 
 ct = CommandTrainer()
 ct.TrainPattern("Name", "Wieviel ist {equation}", "de", "ModuleX", "ClassX", "FunctionX")
-ct.TrainPattern("Name", "Wer ist {name}", "de", "ModuleY", "ClassY", "FunctionY")
+ct.TrainPattern("Name", "Wer ist {name}", "de", "ModuleY1", "ClassY", "FunctionY")
+ct.TrainPattern("Name", "Wer ist {lastname}", "de", "ModuleY2", "ClassY", "FunctionY")
+ct.TrainPattern("Name", "Wer ist {firstname} {lastname}", "de", "ModuleY3", "ClassY", "FunctionY")
 ct.TrainPattern("Name", "Wie macht man Butter", "de", "ModuleZ", "ClassZ", "FunctionZ")
 ct.TrainPattern("Name", "Wieviel Cent ist ein Euro wert", "de", "ModuleA", "ClassA", "FunctionA")
 
@@ -109,7 +111,7 @@ def ResolveCommand(inputProcessed):
         for r in sqlResult:
             patternList.append(r[0])
 
-    query = """SELECT distinct(Command_Pattern_Keyword.PatternID)
+    query = """SELECT Command_Pattern_Keyword.PatternID
         FROM Command_Keyword, Command_Pattern_Keyword
         WHERE Normalized in ({0})
         AND Command_Keyword.ID = Command_Pattern_Keyword.KeywordID
@@ -121,18 +123,19 @@ def ResolveCommand(inputProcessed):
     patternDict = dict(Counter(patternList))
     print patternDict
     moduleToCall = None
+    moduleToCallPatternLength = 0
     for key, value in patternDict.iteritems():
         query = """SELECT Command_Module.Module, Command_Module.Class, Command_Module.Function
-            FROM Command_Pattern, Command_Pattern_Module, Command_Module
+            FROM Command_Pattern, Command_Module
             WHERE Command_Pattern.ID = {0}
             ANd Command_Pattern.KeywordLength = {1}
-            AND Command_Pattern.ID = Command_Pattern_Module.PatternID
-            AND Command_Pattern_Module.ModuleID = Command_Module.ID
+            AND Command_Pattern.ModuleID= Command_Module.ID
             """.format(key, value)
         sqlResult = db().Fetchall(query)
         for re in sqlResult:
-            moduleToCall = re
-            break
+            if(value > moduleToCallPatternLength):
+                moduleToCallPatternLength = value
+                moduleToCall = re
 
     return moduleToCall
 
@@ -142,6 +145,7 @@ def ResolveCommand(inputProcessed):
 inputString = "Günther, Wieviel ergibt 56 plus 87"
 print inputString
 
+# THIS SHOULD BE DONE BY THE PIPELINE BEFORE - NOT SPECIFIC TO RESPLVING THE COMMAND
 inputWordList = processInput(inputString)
 print("--- %s seconds ---" % (time.time() - start_time))
 
@@ -153,6 +157,18 @@ print ""
 
 
 
+
+
+inputString = "Wer ist Einstein"
+print inputString
+
+inputWordList = processInput(inputString)
+print("--- %s seconds ---" % (time.time() - start_time))
+
+commandResult = ResolveCommand(inputWordList)
+print("--- %s seconds ---" % (time.time() - start_time))
+
+print commandResult
 
 
 inputString = "Wer ist Albert Einstein"
