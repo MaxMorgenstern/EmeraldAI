@@ -16,6 +16,10 @@ class CommandTrainer(object):
 
         wordSegments = NLP.WordSegmentation(Pattern, True)
 
+
+        # TODO: Remove Command_Pattern_Module Table - this is a 1:n relation
+
+
         query = "INSERT INTO Command_Pattern ('Name', 'Pattern', 'Language', 'KeywordLength') Values ('{0}', '{1}', '{2}', '{3}')".format(Name, Pattern, Language, len(wordSegments))
         PatternID = db().Execute(query)
         if(PatternID == None):

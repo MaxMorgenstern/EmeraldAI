@@ -33,17 +33,6 @@ for key, value in x.iteritems():
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 class Foo(object):
 	def write(self):
 		print "Hello Foo()"
