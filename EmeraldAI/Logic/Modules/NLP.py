@@ -45,7 +45,7 @@ def RemoveStopwords(wordlist, language):
 
 def IsStopword(word, language):
     stopwords = Global.ReadDataFile("Stopwords", "{0}.txt".format(language.upper()))
-    return word not in stopwords
+    return word in stopwords
 
 def Normalize(input, language):
     normalizedInput = input.lower()

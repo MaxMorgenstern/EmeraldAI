@@ -81,7 +81,7 @@ class DialogTrainer(object):
         return keywordList
 
 
-    def TrainSentence(self, Sentence, Language, KeywordList, RequirementObjectList, HasCategoryList, SetCategoryList, FollowUpActionObject):
+    def TrainSentence(self, Sentence, Language, KeywordList, RequirementObjectList, HasCategoryList, SetCategoryList, FollowUpActionName):
         # Train Keywords of response
         self.TrainKeywords(Sentence, Language)
 
@@ -107,29 +107,37 @@ class DialogTrainer(object):
             # create requirement if it does not exist - or get ID
             requirementID = self.SaveRequirement(requirement.Name)
             # Link requirement - sentence
-            query = "INSERT INTO Conversation_Sentence_Requirement ('SentenceID', 'RequirementID', 'Comparison', 'Value') Values ('{0}', '{1}', '{2}', '{3}')".format(sentenceID, requirementID, requirement.Comparison, requirement.Value)
+
+            if(requirement.Comparison == None):
+                query = "INSERT INTO Conversation_Sentence_Requirement ('SentenceID', 'RequirementID', 'Value') Values ('{0}', '{1}', '{2}')".format(sentenceID, requirementID, requirement.Value)
+            else:
+                query = "INSERT INTO Conversation_Sentence_Requirement ('SentenceID', 'RequirementID', 'Comparison', 'Value') Values ('{0}', '{1}', '{2}', '{3}')".format(sentenceID, requirementID, requirement.Comparison, requirement.Value)
             db().Execute(query)
 
 
         for category in HasCategoryList:
-            # create category if it does not exist - or get ID
-            categoryID = self.SaveCategory(category)
-            # Link category - sentence
-            query = "INSERT INTO Conversation_Sentence_Category_Has ('SentenceID', 'CategoryID') Values ('{0}', '{1}')".format(sentenceID, categoryID)
-            db().Execute(query)
+            if(len(category) > 1):
+                # create category if it does not exist - or get ID
+                categoryID = self.SaveCategory(category)
+                # Link category - sentence
+                query = "INSERT INTO Conversation_Sentence_Category_Has ('SentenceID', 'CategoryID') Values ('{0}', '{1}')".format(sentenceID, categoryID)
+                db().Execute(query)
 
 
         for category in SetCategoryList:
-            # create set category if it does not exist - or get ID
-            categoryID = self.SaveCategory(category)
-            # Link set category - sentence
-            query = "INSERT INTO Conversation_Sentence_Category_Set ('SentenceID', 'CategoryID') Values ('{0}', '{1}')".format(sentenceID, categoryID)
-            db().Execute(query)
+            if(len(category) > 1):
+                # create set category if it does not exist - or get ID
+                categoryID = self.SaveCategory(category)
+                # Link set category - sentence
+                query = "INSERT INTO Conversation_Sentence_Category_Set ('SentenceID', 'CategoryID') Values ('{0}', '{1}')".format(sentenceID, categoryID)
+                db().Execute(query)
 
-        if(FollowUpActionObject != None):
+        if(FollowUpActionName != None and len(FollowUpActionName) > 1):
             # create follow up action if it does not exist - or get ID
-            actionID = self.SaveAction(FollowUpActionObject.Name, FollowUpActionObject.Module, FollowUpActionObject.Class, FollowUpActionObject.Function)
+            #actionID = self.SaveAction(FollowUpActionObject.Name, FollowUpActionObject.Module, FollowUpActionObject.Class, FollowUpActionObject.Function)
             # Link follow up action - sentence
+            query = "SELECT ID FROM Conversation_Action WHERE Name = '{0}'".format(FollowUpActionName)
+            actionID = db().Fetchall(query)[0][0]
             query = "INSERT INTO Conversation_Sentence_Action ('SentenceID', 'ActionID') Values ('{0}', '{1}')".format(sentenceID, actionID)
             db().Execute(query)
 
