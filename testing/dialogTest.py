@@ -184,13 +184,9 @@ def ResolveDialog(inputProcessed):
             AND Conversation_Sentence.Disabled = {1}
             AND Conversation_Keyword.Normalized IN ({2}) AND Conversation_Keyword.Language = '{3}'"""
 
-        query = """SELECT Conversation_Keyword.Stopword, Conversation_Sentence_Keyword.Priority, Conversation_Sentence_Keyword.SentenceID
-            FROM Conversation_Keyword, Conversation_Sentence_Keyword
-            WHERE Conversation_Keyword.ID = Conversation_Sentence_Keyword.KeywordID
-            AND Conversation_Keyword.Normalized IN ({0}) AND Conversation_Keyword.Language = '{1}'
-            """
-        # Get all Synonyms
-        sqlResult = db().Fetchall(query.format(wordList, word.Language))
+        isAdmin = 1
+
+        sqlResult = db().Fetchall(query.format(isAdmin, '0', wordList, word.Language))
         for r in sqlResult:
             stopwordNumer = 1
             if(r[0] == 1):
@@ -203,7 +199,7 @@ def ResolveDialog(inputProcessed):
 
 
         # Get actual word
-        sqlResult = db().Fetchall(query.format("'"+word.NormalizedWord+"'", word.Language))
+        sqlResult = db().Fetchall(query.format('1', '0', "'"+word.NormalizedWord+"'", word.Language))
         for r in sqlResult:
             stopwordNumer = 1
             if(r[0] == 1):
@@ -216,6 +212,8 @@ def ResolveDialog(inputProcessed):
 
         # r[1] == Priority of keyword-sentence relation
 
+    # todo - split function
+    # return list with sentence IDs and ranking based on keywords
     print sentenceList
 
     User = "Max"
@@ -268,6 +266,8 @@ def ResolveDialog(inputProcessed):
     for d in deleteList:
         del sentenceList[d]
     print sentenceList
+
+    # todo - calculate the affect of the category
 
     highestRanking = max(sentenceList.values())
     result = [key for key in sentenceList if sentenceList[key]==highestRanking]
