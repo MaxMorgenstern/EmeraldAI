@@ -68,4 +68,5 @@ class Math(object):
 """
 TODO: make sure term is equation
 TODO: add more operations mentioned in the safe_list
+TODO: improve is equation - maybe split in in mathematical for single words/terms
 """

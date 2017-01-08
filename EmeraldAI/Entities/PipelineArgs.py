@@ -21,10 +21,6 @@ class PipelineData(BaseObject):
         self.Context = None
         self.User = None
 
-        # Pattern | Pattern Found
-        self.Pattern = None
-        self.PatternFound = False
-
         # Response | Response found
         self.Dialog = None
         self.DialogFound = False

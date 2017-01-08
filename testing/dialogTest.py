@@ -148,7 +148,7 @@ def processInput(data):
         append(w.ParameterList, Parameterizer.IsLastname(word))
         append(w.ParameterList, Parameterizer.IsFirstname(word))
         append(w.ParameterList, Parameterizer.IsName(word))
-        append(w.ParameterList, Parameterizer.IsEquation(word))
+        append(w.ParameterList, Parameterizer.IsEquation(word)) # TODO - this needs to check more than one word
         append(w.ParameterList, Parameterizer.IsBotname(word))
         append(w.ParameterList, Parameterizer.IsWeekday(word, language))
         append(w.ParameterList, Parameterizer.IsLanguage(word, language))
@@ -167,6 +167,7 @@ def processInput(data):
 
 __synonymFactor = 0.5
 __stopwordFactor = 0.5
+__parameterFactor = 2
 __RequirementBonus = 1
 
 def GetSentencesByKeyword(sentenceList, word, language, isSynonym, isAdmin):
@@ -191,6 +192,23 @@ def GetSentencesByKeyword(sentenceList, word, language, isSynonym, isAdmin):
             sentenceList[r[2]] += (synonymNumber * stopwordNumber * r[1])
         else:
             sentenceList[r[2]] = (synonymNumber * stopwordNumber * r[1])
+    return sentenceList
+
+def GetSentencesByParameter(sentenceList, parameterList, language, isAdmin):
+    query = """SELECT Conversation_Keyword.Stopword, Conversation_Sentence_Keyword.Priority,
+            Conversation_Sentence_Keyword.SentenceID
+            FROM Conversation_Keyword, Conversation_Sentence_Keyword, Conversation_Sentence
+            WHERE Conversation_Keyword.ID = Conversation_Sentence_Keyword.KeywordID
+            AND Conversation_Sentence_Keyword.SentenceID = Conversation_Sentence.ID
+            AND Conversation_Sentence.Approved = {0}
+            AND Conversation_Sentence.Disabled = {1}
+            AND Conversation_Keyword.Normalized IN ({2}) AND Conversation_Keyword.Language = '{3}'"""
+    sqlResult = db().Fetchall(query.format(isAdmin, '0', "'{" + "}', '{".join(parameterList) + "}'", language))
+    for r in sqlResult:
+        if r[2] in sentenceList:
+            sentenceList[r[2]] += (__parameterFactor * r[1])
+        else:
+            sentenceList[r[2]] = (__parameterFactor * r[1])
     return sentenceList
 
 def AddSentencePriority(sentenceList):
@@ -241,6 +259,8 @@ def CalculateRequirement(sentenceList, parameterList, delete=True):
 
     return {'sentenceList':sentenceList, 'deleteList':deleteList}
 
+def CalculateCategory():
+    return None
 
 
 def ResolveDialog(inputProcessed):
@@ -254,6 +274,7 @@ def ResolveDialog(inputProcessed):
 
         sentenceList = GetSentencesByKeyword(sentenceList, wordList, word.Language, True, isAdmin)
         sentenceList = GetSentencesByKeyword(sentenceList, "'"+word.NormalizedWord+"'", word.Language, False, isAdmin)
+        sentenceList = GetSentencesByParameter(sentenceList, word.ParameterList, word.Language, isAdmin)
 
         # r[1] == Priority of keyword-sentence relation
 
@@ -265,13 +286,8 @@ def ResolveDialog(inputProcessed):
 
     print sentenceList
 
-    # TODO category Priority
+    # TODO category + Priority
 
-    User = "Max"
-    Time = time.strftime("%H%M")
-    Day = "Monday"#time.strftime("%A")
-
-    print User, Time, Day
     parameterList = {}
     parameterList["User"] = "Unknown"
     parameterList["Time"] = time.strftime("%H%M")
@@ -285,13 +301,14 @@ def ResolveDialog(inputProcessed):
 
 
 def GetHighestValue(dataList, margin=0):
-    highestRanking = max(dataList.values())
-    if margin > 0:
-        result = [key for key in dataList if dataList[key]>=(highestRanking-margin)]
-    else:
-        result = [key for key in dataList if dataList[key]==highestRanking]
-
-    return result
+    if dialogResult != None and len(dataList) > 0:
+        highestRanking = max(dataList.values())
+        if margin > 0:
+            result = [key for key in dataList if dataList[key]>=(highestRanking-margin)]
+        else:
+            result = [key for key in dataList if dataList[key]==highestRanking]
+        return result
+    return None
 
 
 
@@ -309,7 +326,8 @@ print dialogResult
 print ""
 
 import random
-print random.choice(dialogResult)
+if dialogResult != None and len(dialogResult) > 0:
+    print random.choice(dialogResult)
 
 
 print("--- %s seconds ---" % (time.time() - start_time))

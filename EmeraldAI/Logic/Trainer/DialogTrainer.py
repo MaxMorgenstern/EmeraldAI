@@ -81,7 +81,8 @@ class DialogTrainer(object):
         return keywordList
 
 
-    def TrainSentence(self, Sentence, Language, KeywordList, RequirementObjectList, HasCategoryList, SetCategoryList, FollowUpActionName):
+    # TODO: ensure we don't train sentences multiple times
+    def TrainSentence(self, Sentence, Language, KeywordList, RequirementObjectList, HasCategoryList, SetCategoryList, ActionName):
         # Train Keywords of response
         self.TrainKeywords(Sentence, Language)
 
@@ -132,11 +133,12 @@ class DialogTrainer(object):
                 query = "INSERT INTO Conversation_Sentence_Category_Set ('SentenceID', 'CategoryID') Values ('{0}', '{1}')".format(sentenceID, categoryID)
                 db().Execute(query)
 
-        if(FollowUpActionName != None and len(FollowUpActionName) > 1):
+
+        if(ActionName != None and len(ActionName) > 1):
             # create follow up action if it does not exist - or get ID
             #actionID = self.SaveAction(FollowUpActionObject.Name, FollowUpActionObject.Module, FollowUpActionObject.Class, FollowUpActionObject.Function)
             # Link follow up action - sentence
-            query = "SELECT ID FROM Conversation_Action WHERE Name = '{0}'".format(FollowUpActionName)
+            query = "SELECT ID FROM Conversation_Action WHERE Name = '{0}'".format(ActionName)
             actionID = db().Fetchall(query)[0][0]
             query = "INSERT INTO Conversation_Sentence_Action ('SentenceID', 'ActionID') Values ('{0}', '{1}')".format(sentenceID, actionID)
             db().Execute(query)
