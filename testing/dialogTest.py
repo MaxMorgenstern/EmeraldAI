@@ -169,58 +169,40 @@ __synonymFactor = 0.5
 __stopwordFactor = 0.5
 __RequirementBonus = 1
 
-def ResolveDialog(inputProcessed):
-
-    sentenceList = {}
-    # get all sentences related to the imput and rank
-    for word in inputProcessed:
-        wordList = "'" + "', '".join(word.SynonymList) + "'"
-
-        query = """SELECT Conversation_Keyword.Stopword, Conversation_Sentence_Keyword.Priority, Conversation_Sentence_Keyword.SentenceID
+def GetSentencesByKeyword(sentenceList, word, language, isSynonym, isAdmin):
+    query = """SELECT Conversation_Keyword.Stopword, Conversation_Sentence_Keyword.Priority,
+            Conversation_Sentence_Keyword.SentenceID
             FROM Conversation_Keyword, Conversation_Sentence_Keyword, Conversation_Sentence
             WHERE Conversation_Keyword.ID = Conversation_Sentence_Keyword.KeywordID
-            AND Conversation_Sentence_Keyword.KeywordID = Conversation_Sentence.ID
+            AND Conversation_Sentence_Keyword.SentenceID = Conversation_Sentence.ID
             AND Conversation_Sentence.Approved = {0}
             AND Conversation_Sentence.Disabled = {1}
             AND Conversation_Keyword.Normalized IN ({2}) AND Conversation_Keyword.Language = '{3}'"""
+    sqlResult = db().Fetchall(query.format(isAdmin, '0', word, language))
+    for r in sqlResult:
+        stopwordNumber = 1
+        if(r[0] == 1):
+            stopwordNumber *= __stopwordFactor
+        synonymNumber = 1
+        if(isSynonym):
+            synonymNumber *= __synonymFactor
 
-        isAdmin = 1
+        if r[2] in sentenceList:
+            sentenceList[r[2]] += (synonymNumber * stopwordNumber * r[1])
+        else:
+            sentenceList[r[2]] = (synonymNumber * stopwordNumber * r[1])
+    return sentenceList
 
-        sqlResult = db().Fetchall(query.format(isAdmin, '0', wordList, word.Language))
+def AddSentencePriority(sentenceList):
+    query = """SELECT Priority FROM Conversation_Sentence WHERE ID = '{0}'"""
+    for sentenceID, value in sentenceList.iteritems():
+        sqlResult = db().Fetchall(query.format(sentenceID))
         for r in sqlResult:
-            stopwordNumer = 1
-            if(r[0] == 1):
-                stopwordNumer *= __stopwordFactor
-
-            if r[2] in sentenceList:
-                sentenceList[r[2]] += (__synonymFactor * stopwordNumer * r[1])
-            else:
-                sentenceList[r[2]] = (__synonymFactor * stopwordNumer * r[1])
+            sentenceList[sentenceID] += r[0]
+    return sentenceList
 
 
-        # Get actual word
-        sqlResult = db().Fetchall(query.format('1', '0', "'"+word.NormalizedWord+"'", word.Language))
-        for r in sqlResult:
-            stopwordNumer = 1
-            if(r[0] == 1):
-                stopwordNumer *= __stopwordFactor
-
-            if r[2] in sentenceList:
-                sentenceList[r[2]] += (stopwordNumer * r[1])
-            else:
-                sentenceList[r[2]] = (stopwordNumer * r[1])
-
-        # r[1] == Priority of keyword-sentence relation
-
-    # todo - split function
-    # return list with sentence IDs and ranking based on keywords
-    print sentenceList
-
-    User = "Max"
-    Time = time.strftime("%H%M")
-    Day = time.strftime("%A")
-
-    print User, Time, Day
+def CalculateRequirement(sentenceList, parameterList, delete=True):
     query="""SELECT Conversation_Sentence_Requirement.Comparison,
         Conversation_Sentence_Requirement.Value, Conversation_Requirement.Name
         FROM Conversation_Sentence_Requirement, Conversation_Requirement
@@ -233,45 +215,85 @@ def ResolveDialog(inputProcessed):
     for sentenceID, value in sentenceList.iteritems():
         sqlResult = db().Fetchall(query.format(sentenceID))
         for r in sqlResult:
-            if r[2] == "User" and r[1] != User:
-                deleteList.append(sentenceID)
-                break
-            if r[2] == "User" and r[1] == User:
-                sentenceList[sentenceID] += __RequirementBonus
-                break
-
-            if r[2] == "Time":
-                if r[0] == "lt" and not Time < r[1]:
-                    deleteList.append(sentenceID)
-                if r[0] == "le" and not Time <= r[1]:
-                    deleteList.append(sentenceID)
-                if r[0] == "eq" and not Time == r[1]:
-                    deleteList.append(sentenceID)
-                if r[0] == "ge" and not Time >= r[1]:
-                    deleteList.append(sentenceID)
-                if r[0] == "gt" and not Time > r[1]:
+            if r[0] == "None":
+                if parameterList[r[2]] != r[1]:
                     deleteList.append(sentenceID)
                 else:
                     sentenceList[sentenceID] += __RequirementBonus
-                break
+                continue
+            else:
+                if r[0] == "lt" and not parameterList[r[2]] < r[1]:
+                    deleteList.append(sentenceID)
+                if r[0] == "le" and not parameterList[r[2]] <= r[1]:
+                    deleteList.append(sentenceID)
+                if r[0] == "eq" and not parameterList[r[2]] == r[1]:
+                    deleteList.append(sentenceID)
+                if r[0] == "ge" and not parameterList[r[2]] >= r[1]:
+                    deleteList.append(sentenceID)
+                if r[0] == "gt" and not parameterList[r[2]] > r[1]:
+                    deleteList.append(sentenceID)
+                else:
+                    sentenceList[sentenceID] += __RequirementBonus
+                continue
+    if delete:
+        for d in deleteList:
+            del sentenceList[d]
 
-            if r[2] == "Day" and r[1] != Day:
-                deleteList.append(sentenceID)
-                break
-            if r[2] == "Day" and r[1] == Day:
-                sentenceList[sentenceID] += __RequirementBonus
-                break
+    return {'sentenceList':sentenceList, 'deleteList':deleteList}
+
+
+
+def ResolveDialog(inputProcessed):
+
+    sentenceList = {}
+    # get all sentences related to the imput and rank
+    for word in inputProcessed:
+        wordList = "'" + "', '".join(word.SynonymList) + "'"
+
+        isAdmin = 1
+
+        sentenceList = GetSentencesByKeyword(sentenceList, wordList, word.Language, True, isAdmin)
+        sentenceList = GetSentencesByKeyword(sentenceList, "'"+word.NormalizedWord+"'", word.Language, False, isAdmin)
+
+        # r[1] == Priority of keyword-sentence relation
+
+    # todo - split function
+    # return list with sentence IDs and ranking based on keywords
+    print sentenceList
+
+    sentenceList = AddSentencePriority(sentenceList)
 
     print sentenceList
-    for d in deleteList:
-        del sentenceList[d]
+
+    # TODO category Priority
+
+    User = "Max"
+    Time = time.strftime("%H%M")
+    Day = "Monday"#time.strftime("%A")
+
+    print User, Time, Day
+    parameterList = {}
+    parameterList["User"] = "Unknown"
+    parameterList["Time"] = time.strftime("%H%M")
+    parameterList["Day"] = "Monday"#time.strftime("%A")
+
+    calculationResult = CalculateRequirement(sentenceList, parameterList)
+    sentenceList = calculationResult["sentenceList"]
+
     print sentenceList
+    return GetHighestValue(sentenceList)
 
-    # todo - calculate the affect of the category
 
-    highestRanking = max(sentenceList.values())
-    result = [key for key in sentenceList if sentenceList[key]==highestRanking]
+def GetHighestValue(dataList, margin=0):
+    highestRanking = max(dataList.values())
+    if margin > 0:
+        result = [key for key in dataList if dataList[key]>=(highestRanking-margin)]
+    else:
+        result = [key for key in dataList if dataList[key]==highestRanking]
+
     return result
+
+
 
 inputString = "Guten Morgen"
 print inputString
