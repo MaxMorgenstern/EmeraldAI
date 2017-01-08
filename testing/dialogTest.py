@@ -29,28 +29,32 @@ dt = DialogTrainer()
 language = "de"
 colCount = 6
 data=""
-#data = """Q;;Guten Abend;;Greeting;
-#Q;;Guten Morgen;;Greeting;
-#Q;;Guten Tag;;Greeting;
-#Q;;Moin Moin;;Greeting;
-#Q;;Hallo;;Greeting;
-#Q;;Tach;;Greeting;
-#Q;;Tag auch;;Greeting;
-#Q;;Hallöchen;;Greeting;
-#A;;Hallo {name}.;Greeting;;
-#A;;Guten Tag {name}.;Greeting;;
-#A;;Guten Tag {name}. Wie kann ich Ihnen heute behilflich sein?;Greeting;Question;
-#A;;Ich wünsche Ihnen einen schönen guten Tag!;Greeting;;
-#A;User:Unknown;Guten Tag. Wie ist Ihr Name?;Greeting;Question|Name;
-#A;Time:lt1100|User:Unknown;Guten Morgen. Wie ist Ihr Name?;Greeting;Question|Name;
-#A;Time:lt1100;Ich wünsche Ihnen ebenfalls einen guten Morgen {name}.;Greeting;;
-#A;Time:lt1100;Guten Morgen {name}.;Greeting;;
-#A;Time:lt1100;Guten Morgen {name}. Wie geht es Ihnen heute Früh?;Greeting;Wellbeing|Question;
-#A;Time:lt1100;Hallo {name}, wie geht es Ihnen heute?;Greeting;Wellbeing|Question;
-#A;Time:lt1100|Day:Monday;Guten Morgen {name}. Ich hoffe Sie hatten ein schönes Wochenende?;Greeting;Wellbeing|Question;
-#A;Time:lt1100|Day:Monday;Guten Morgen {name}. Ich hoffe Sie hatten ein erholsames Wochenende?;Greeting;Wellbeing|Question;
-#A;Time:gt1700;Guten Abend {name}. Ich hoffe Sie hatten einen schönen Tag.;Greeting;Wellbeing|Question;
-#A;Time:gt1700;Guten Abend {name}.;Greeting;;"""
+data = """Q;;Guten Abend;;Greeting;
+Q;;Guten Morgen;;Greeting;
+Q;;Guten Tag;;Greeting;
+Q;;Moin Moin;;Greeting;
+Q;;Hallo;;Greeting;
+Q;;Tach;;Greeting;
+Q;;Tag auch;;Greeting;
+Q;;Hallöchen;;Greeting;
+A;;Hallo {name}.;Greeting;;
+A;;Guten Tag {name}.;Greeting;;
+A;;Guten Tag {name}. Wie kann ich Ihnen heute behilflich sein?;Greeting;Question;
+A;;Ich wünsche Ihnen einen schönen guten Tag!;Greeting;;
+A;User:Unknown;Guten Tag. Wie ist Ihr Name?;Greeting;Question|Name;
+A;Time:lt1100|User:Unknown;Guten Morgen. Wie ist Ihr Name?;Greeting;Question|Name;
+A;Time:lt1100;Ich wünsche Ihnen ebenfalls einen guten Morgen {name}.;Greeting;;
+A;Time:lt1100;Guten Morgen {name}.;Greeting;;
+A;Time:lt1100;Guten Morgen {name}. Wie geht es Ihnen heute Früh?;Greeting;Wellbeing|Question;
+A;Time:lt1100;Hallo {name}, wie geht es Ihnen heute?;Greeting;Wellbeing|Question;
+A;Time:lt1100|Day:Monday;Guten Morgen {name}. Ich hoffe Sie hatten ein schönes Wochenende?;Greeting;Wellbeing|Question;
+A;Time:lt1100|Day:Monday;Guten Morgen {name}. Ich hoffe Sie hatten ein erholsames Wochenende?;Greeting;Wellbeing|Question;
+A;Time:gt1700;Guten Abend {name}. Ich hoffe Sie hatten einen schönen Tag.;Greeting;Wellbeing|Question;
+A;Time:gt1700;Guten Abend {name}.;Greeting;;
+---
+Q;;Wer ist {name};;Command;
+A;;{name} ist {result};;;
+"""
 
 comparisonValues = ["lt", "gt", "le", "eq", "ge"]
 
@@ -60,6 +64,11 @@ for key, group in itertools.groupby(data, __groupSeparator):
     line = ''.join(str(e) for e in group)
     line = line.strip()
     if (len(line) > 1):
+
+        if(line == "---"):
+            qlist = []
+            continue
+
         splitLine = line.split(";")
         if(len(splitLine) == colCount):
             qa = splitLine[0]
@@ -99,9 +108,6 @@ for key, group in itertools.groupby(data, __groupSeparator):
                 followUpActionObject = None
 
                 dt.TrainSentence(sent, language, qlist, requirementObjectList, hasCategoryList, setCategoryList, followUpActionObject)
-
-            if(qa == ""):
-                qlist = []
 
 print("--- %s seconds ---" % (time.time() - start_time))
 
@@ -159,15 +165,18 @@ def processInput(data):
                 w.SynonymList = addToWordList(synonym[0], w.SynonymList, language)
             else:
                 w.SynonymList = addToWordList(synonym[1], w.SynonymList, language)
+        w.SynonymList.remove(w.NormalizedWord)
         wordList.append(w)
-        print w.toJSON()
+        #print w.toJSON()
+        print w.NormalizedWord
         print("--- %s seconds ---" % (time.time() - start_time))
     return wordList
 
 
 __synonymFactor = 0.5
 __stopwordFactor = 0.5
-__parameterFactor = 2
+__parameterBonus = 5
+__parameterButNoKeywordFactor = 0.25
 __RequirementBonus = 1
 
 def GetSentencesByKeyword(sentenceList, word, language, isSynonym, isAdmin):
@@ -192,10 +201,11 @@ def GetSentencesByKeyword(sentenceList, word, language, isSynonym, isAdmin):
             sentenceList[r[2]] += (synonymNumber * stopwordNumber * r[1])
         else:
             sentenceList[r[2]] = (synonymNumber * stopwordNumber * r[1])
+    #print word, sentenceList
     return sentenceList
 
 def GetSentencesByParameter(sentenceList, parameterList, language, isAdmin):
-    query = """SELECT Conversation_Keyword.Stopword, Conversation_Sentence_Keyword.Priority,
+    query = """SELECT Conversation_Keyword.Priority, Conversation_Sentence_Keyword.Priority,
             Conversation_Sentence_Keyword.SentenceID
             FROM Conversation_Keyword, Conversation_Sentence_Keyword, Conversation_Sentence
             WHERE Conversation_Keyword.ID = Conversation_Sentence_Keyword.KeywordID
@@ -205,10 +215,14 @@ def GetSentencesByParameter(sentenceList, parameterList, language, isAdmin):
             AND Conversation_Keyword.Normalized IN ({2}) AND Conversation_Keyword.Language = '{3}'"""
     sqlResult = db().Fetchall(query.format(isAdmin, '0', "'{" + "}', '{".join(parameterList) + "}'", language))
     for r in sqlResult:
+
+        # TODO!!!
+        # check if only stopwords point to sentence - if so rank low!
+
         if r[2] in sentenceList:
-            sentenceList[r[2]] += (__parameterFactor * r[1])
+            sentenceList[r[2]] += (r[0] + __parameterBonus + r[1])
         else:
-            sentenceList[r[2]] = (__parameterFactor * r[1])
+            sentenceList[r[2]] = (__parameterBonus * __parameterButNoKeywordFactor + r[1])
     return sentenceList
 
 def AddSentencePriority(sentenceList):
@@ -266,6 +280,7 @@ def CalculateCategory():
 def ResolveDialog(inputProcessed):
 
     sentenceList = {}
+    parameterList = []
     # get all sentences related to the imput and rank
     for word in inputProcessed:
         wordList = "'" + "', '".join(word.SynonymList) + "'"
@@ -274,17 +289,18 @@ def ResolveDialog(inputProcessed):
 
         sentenceList = GetSentencesByKeyword(sentenceList, wordList, word.Language, True, isAdmin)
         sentenceList = GetSentencesByKeyword(sentenceList, "'"+word.NormalizedWord+"'", word.Language, False, isAdmin)
-        sentenceList = GetSentencesByParameter(sentenceList, word.ParameterList, word.Language, isAdmin)
 
-        # r[1] == Priority of keyword-sentence relation
+        parameterList += list(set(word.ParameterList) - set(parameterList))
 
-    # todo - split function
-    # return list with sentence IDs and ranking based on keywords
-    print sentenceList
+    print "Keyword:\t\t", sentenceList
+
+    sentenceList = GetSentencesByParameter(sentenceList, parameterList, word.Language, isAdmin)
+
+    print "Parameter:\t\t", sentenceList, "\t", parameterList
 
     sentenceList = AddSentencePriority(sentenceList)
 
-    print sentenceList
+    print "Sentence Priority:\t", sentenceList
 
     # TODO category + Priority
 
@@ -296,12 +312,12 @@ def ResolveDialog(inputProcessed):
     calculationResult = CalculateRequirement(sentenceList, parameterList)
     sentenceList = calculationResult["sentenceList"]
 
-    print sentenceList
+    print "Calculate Requirement:\t",sentenceList
     return GetHighestValue(sentenceList)
 
 
 def GetHighestValue(dataList, margin=0):
-    if dialogResult != None and len(dataList) > 0:
+    if dataList != None and len(dataList) > 0:
         highestRanking = max(dataList.values())
         if margin > 0:
             result = [key for key in dataList if dataList[key]>=(highestRanking-margin)]
@@ -311,8 +327,10 @@ def GetHighestValue(dataList, margin=0):
     return None
 
 
+import random
 
-inputString = "Guten Morgen"
+
+inputString = "Guten Abend Peter"
 print inputString
 
 # THIS SHOULD BE DONE BY THE PIPELINE BEFORE - NOT SPECIFIC TO RESPLVING THE COMMAND
@@ -325,10 +343,57 @@ print("--- %s seconds ---" % (time.time() - start_time))
 print dialogResult
 print ""
 
-import random
 if dialogResult != None and len(dialogResult) > 0:
     print random.choice(dialogResult)
 
+print("--- %s seconds ---" % (time.time() - start_time))
+
+
+
+
+inputString = "Guten abend, Wer war Freddy Mercury"
+print inputString
+
+# THIS SHOULD BE DONE BY THE PIPELINE BEFORE - NOT SPECIFIC TO RESPLVING THE COMMAND
+inputWordList = processInput(inputString)
+print("processInput() done --- %s seconds ---" % (time.time() - start_time))
+
+dialogResult = ResolveDialog(inputWordList)
+print("--- %s seconds ---" % (time.time() - start_time))
+
+print dialogResult
+print ""
+
+if dialogResult != None and len(dialogResult) > 0:
+    print random.choice(dialogResult)
 
 print("--- %s seconds ---" % (time.time() - start_time))
+
+
+
+
+
+inputString = "Was ist drei plus sieben?"
+print inputString
+
+# THIS SHOULD BE DONE BY THE PIPELINE BEFORE - NOT SPECIFIC TO RESPLVING THE COMMAND
+inputWordList = processInput(inputString)
+print("processInput() done --- %s seconds ---" % (time.time() - start_time))
+
+dialogResult = ResolveDialog(inputWordList)
+print("--- %s seconds ---" % (time.time() - start_time))
+
+print dialogResult
+print ""
+
+if dialogResult != None and len(dialogResult) > 0:
+    print random.choice(dialogResult)
+
+print("--- %s seconds ---" % (time.time() - start_time))
+
+
+
+
+# TODO: Keyword priority to rank parameter
+
 
