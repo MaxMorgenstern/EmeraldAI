@@ -147,10 +147,6 @@ def processInput(data):
             w.Priority *= 0.5
         w.NormalizedWord = NLP.Normalize(word, language)
 
-        w.SynonymList = addToWordList(word, w.SynonymList, language)
-
-        synonyms = thesaurus.GetSynonyms(w.Word)
-
         append(w.ParameterList, Parameterizer.IsLastname(word))
         append(w.ParameterList, Parameterizer.IsFirstname(word))
         append(w.ParameterList, Parameterizer.IsName(word))
@@ -160,6 +156,9 @@ def processInput(data):
         append(w.ParameterList, Parameterizer.IsLanguage(word, language))
         append(w.ParameterList, Parameterizer.IsCurseword(word, language))
 
+        #if not w.IsStopword:
+        w.SynonymList = addToWordList(word, w.SynonymList, language)
+        synonyms = thesaurus.GetSynonyms(w.Word)
         for synonym in synonyms:
             if synonym[0]:
                 w.SynonymList = addToWordList(synonym[0], w.SynonymList, language)
