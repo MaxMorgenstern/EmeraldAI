@@ -18,9 +18,9 @@ print len(wfl)
 for w in wfl:
 	print w.BSSID + " - " + w.SSID
 
-
-x = fp.PredictLocation()
-print x
-percent = 100 / sum(x.values())
-for key, value in x.iteritems():
-    print "{0}: {1:.2f}%".format(fp.GetLocationName(key), (value * percent))
+while True:
+	x = fp.PredictLocation()
+	print x
+	percent = 100 / sum(x.values())
+	for key, value in x.iteritems():
+	    print "{0}: {1:.2f}%".format(fp.GetLocationName(key), (value * percent))

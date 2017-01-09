@@ -15,5 +15,5 @@ class OperatingSystem():
 
 def ReadDataFile(foldername, filename):
     script_dir = EmeraldPath + \
-        "Data" + os.set + foldername + os.sep + filename
+        "Data" + os.sep + foldername + os.sep + filename
     return [line.rstrip('\n').rstrip('\r') for line in open(script_dir)]

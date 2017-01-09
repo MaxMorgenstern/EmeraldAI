@@ -46,7 +46,27 @@ class Math(object):
             return None
 
 
+    def IsEquation(self, term):
+        if self.__ReplacePattern.search(term) is not None:
+            return True
+
+        numberCount = 0
+        wasPreviousNumber = False
+        for char in term:
+            if char.isdigit():
+                if not wasPreviousNumber:
+                    numberCount += 1
+                    wasPreviousNumber = True
+            else:
+                wasPreviousNumber = False
+        if numberCount >= 2:
+            return True
+
+        return False
+
+
 """
 TODO: make sure term is equation
 TODO: add more operations mentioned in the safe_list
+TODO: improve is equation - maybe split in in mathematical for single words/terms
 """

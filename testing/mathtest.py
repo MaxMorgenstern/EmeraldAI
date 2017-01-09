@@ -20,6 +20,15 @@ print m.Calculate("100 000 + 25")
 print m.Calculate("10,5 / 25")
 
 
+print m.IsEquation("Wieviel ist drei plus sieben")	# T
+print m.IsEquation("Wieviel ist drei und sieben")
+print m.IsEquation("Wer sind die Rolling Stones")
+print m.IsEquation("Was ist 30")
+print m.IsEquation("Was ist 3 + 10")	# T
+print m.IsEquation("Ich male gerne")
+
+print "-----"
+
 while(loop):
     data = google.Listen()
     print "We got: '{0}'".format(data)

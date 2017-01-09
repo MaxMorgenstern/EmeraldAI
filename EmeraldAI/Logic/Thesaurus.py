@@ -29,7 +29,6 @@ class Thesaurus(object):
             FROM Thesaurus_Term term, Thesaurus_Synset synset, Thesaurus_Term term2
             WHERE synset.is_visible = 1
             AND synset.id = term.synset_id
-            AND term.synset_id
             AND term2.synset_id = synset.id
             AND (term2.word = '{lowerword}' OR term2.normalized_word = '{lowerword}')
             ORDER BY term.word;"""

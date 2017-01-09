@@ -6,20 +6,24 @@ from EmeraldAI.Entities.BaseObject import BaseObject
 class PipelineData(BaseObject):
 
     def __init__(self, input):
+        # Original Input
         self.Input = input
 
+        # Input Language | List of EmeraldAI.Entities.BaseObject.Word objects | List of parameters
         self.Language = None
         self.WordList = None
-        self.WordlistClean = None
-        self.SynonymList = None
+        self.ParameterList = None
 
+        # Input with parameterized data
+        self.ParameterizedInput = None
+
+        # Current Context | Current User
         self.Context = None
         self.User = None
 
-        self.Answer = None
-        self.AnswerFound = False
+        # Response | Response found
+        self.Dialog = None
+        self.DialogFound = False
 
-        self.Pattern = None
-        self.PatternFound = False
-
+        # List of Errors
         self.Error = None
