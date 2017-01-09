@@ -29,32 +29,32 @@ dt = DialogTrainer()
 language = "de"
 colCount = 6
 data=""
-data = """Q;;Guten Abend;;Greeting;
-Q;;Guten Morgen;;Greeting;
-Q;;Guten Tag;;Greeting;
-Q;;Moin Moin;;Greeting;
-Q;;Hallo;;Greeting;
-Q;;Tach;;Greeting;
-Q;;Tag auch;;Greeting;
-Q;;Hallöchen;;Greeting;
-A;;Hallo {name}.;Greeting;;
-A;;Guten Tag {name}.;Greeting;;
-A;;Guten Tag {name}. Wie kann ich Ihnen heute behilflich sein?;Greeting;Question;
-A;;Ich wünsche Ihnen einen schönen guten Tag!;Greeting;;
-A;User:Unknown;Guten Tag. Wie ist Ihr Name?;Greeting;Question|Name;
-A;Time:lt1100|User:Unknown;Guten Morgen. Wie ist Ihr Name?;Greeting;Question|Name;
-A;Time:lt1100;Ich wünsche Ihnen ebenfalls einen guten Morgen {name}.;Greeting;;
-A;Time:lt1100;Guten Morgen {name}.;Greeting;;
-A;Time:lt1100;Guten Morgen {name}. Wie geht es Ihnen heute Früh?;Greeting;Wellbeing|Question;
-A;Time:lt1100;Hallo {name}, wie geht es Ihnen heute?;Greeting;Wellbeing|Question;
-A;Time:lt1100|Day:Monday;Guten Morgen {name}. Ich hoffe Sie hatten ein schönes Wochenende?;Greeting;Wellbeing|Question;
-A;Time:lt1100|Day:Monday;Guten Morgen {name}. Ich hoffe Sie hatten ein erholsames Wochenende?;Greeting;Wellbeing|Question;
-A;Time:gt1700;Guten Abend {name}. Ich hoffe Sie hatten einen schönen Tag.;Greeting;Wellbeing|Question;
-A;Time:gt1700;Guten Abend {name}.;Greeting;;
----
-Q;;Wer ist {name};;Command;
-A;;{name} ist {result};;;
-"""
+#data = """Q;;Guten Abend;;Greeting;
+#Q;;Guten Morgen;;Greeting;
+#Q;;Guten Tag;;Greeting;
+#Q;;Moin Moin;;Greeting;
+#Q;;Hallo;;Greeting;
+#Q;;Tach;;Greeting;
+#Q;;Tag auch;;Greeting;
+#Q;;Hallöchen;;Greeting;
+#A;;Hallo {name}.;Greeting;;
+#A;;Guten Tag {name}.;Greeting;;
+#A;;Guten Tag {name}. Wie kann ich Ihnen heute behilflich sein?;Greeting;Question;
+#A;;Ich wünsche Ihnen einen schönen guten Tag!;Greeting;;
+#A;User:Unknown;Guten Tag. Wie ist Ihr Name?;Greeting;Question|Name;
+#A;Time:lt1100|User:Unknown;Guten Morgen. Wie ist Ihr Name?;Greeting;Question|Name;
+#A;Time:lt1100;Ich wünsche Ihnen ebenfalls einen guten Morgen {name}.;Greeting;;
+#A;Time:lt1100;Guten Morgen {name}.;Greeting;;
+#A;Time:lt1100;Guten Morgen {name}. Wie geht es Ihnen heute Früh?;Greeting;Wellbeing|Question;
+#A;Time:lt1100;Hallo {name}, wie geht es Ihnen heute?;Greeting;Wellbeing|Question;
+#A;Time:lt1100|Day:Monday;Guten Morgen {name}. Ich hoffe Sie hatten ein schönes Wochenende?;Greeting;Wellbeing|Question;
+#A;Time:lt1100|Day:Monday;Guten Morgen {name}. Ich hoffe Sie hatten ein erholsames Wochenende?;Greeting;Wellbeing|Question;
+#A;Time:gt1700;Guten Abend {name}. Ich hoffe Sie hatten einen schönen Tag.;Greeting;Wellbeing|Question;
+#A;Time:gt1700;Guten Abend {name}.;Greeting;;
+#---
+#Q;;Wer ist {name};;Command;
+#A;;{name} ist {result};;;
+#"""
 
 comparisonValues = ["lt", "gt", "le", "eq", "ge"]
 
@@ -173,10 +173,41 @@ def processInput(data):
     return wordList
 
 
+class Sentence(object):
+    ID = None
+    Rating = 0
+    KeywordList = []
+    OnlyStopwords = True
+
+    def __init__(self, ID, Rating, Keyword, IsStopword):
+        self.ID = ID
+        self.Rating = Rating
+        self.KeywordList = [Keyword]
+        self.OnlyStopwords = IsStopword
+
+    def __repr__(self):
+         return "R:{0} L:{1} S:{2}\n".format(self.Rating, len(self.KeywordList), self.OnlyStopwords)
+
+    def __str__(self):
+         return "R:{0} L:{1} S:{2}\n".format(self.Rating, len(self.KeywordList), self.OnlyStopwords)
+
+    def AddKeyword(self, Rating, Keyword, IsStopword):
+        self.Rating += Rating
+        self.KeywordList.append(Keyword)
+        if not self.OnlyStopwords:
+            self.OnlyStopwords = IsStopword
+
+    def AddPriority(self, Rating):
+        self.Rating += Rating
+
+
 __synonymFactor = 0.5
 __stopwordFactor = 0.5
+
 __parameterBonus = 5
-__parameterButNoKeywordFactor = 0.25
+__parameterButNoKeywordFactor = 0.2
+__parameterOnlyStopwordThreshhold = 1.5
+
 __RequirementBonus = 1
 
 def GetSentencesByKeyword(sentenceList, word, language, isSynonym, isAdmin):
@@ -191,22 +222,24 @@ def GetSentencesByKeyword(sentenceList, word, language, isSynonym, isAdmin):
     sqlResult = db().Fetchall(query.format(isAdmin, '0', word, language))
     for r in sqlResult:
         stopwordNumber = 1
+        isStopword = False
         if(r[0] == 1):
             stopwordNumber *= __stopwordFactor
+            isStopword = True
         synonymNumber = 1
         if(isSynonym):
             synonymNumber *= __synonymFactor
 
         if r[2] in sentenceList:
-            sentenceList[r[2]] += (synonymNumber * stopwordNumber * r[1])
+            sentenceList[r[2]].AddKeyword((synonymNumber * stopwordNumber * r[1]), word, isStopword)
         else:
-            sentenceList[r[2]] = (synonymNumber * stopwordNumber * r[1])
+            sentenceList[r[2]] = Sentence(r[2], (synonymNumber * stopwordNumber * r[1]), word, isStopword)
     #print word, sentenceList
     return sentenceList
 
 def GetSentencesByParameter(sentenceList, parameterList, language, isAdmin):
     query = """SELECT Conversation_Keyword.Priority, Conversation_Sentence_Keyword.Priority,
-            Conversation_Sentence_Keyword.SentenceID
+            Conversation_Sentence_Keyword.SentenceID, Conversation_Keyword.Normalized
             FROM Conversation_Keyword, Conversation_Sentence_Keyword, Conversation_Sentence
             WHERE Conversation_Keyword.ID = Conversation_Sentence_Keyword.KeywordID
             AND Conversation_Sentence_Keyword.SentenceID = Conversation_Sentence.ID
@@ -216,13 +249,20 @@ def GetSentencesByParameter(sentenceList, parameterList, language, isAdmin):
     sqlResult = db().Fetchall(query.format(isAdmin, '0', "'{" + "}', '{".join(parameterList) + "}'", language))
     for r in sqlResult:
 
-        # TODO!!!
-        # check if only stopwords point to sentence - if so rank low!
+        stopword = "{{{0}}}".format(r[3])
 
         if r[2] in sentenceList:
-            sentenceList[r[2]] += (r[0] + __parameterBonus + r[1])
+            # if only stop-keywords present and threshhold reached
+            if sentenceList[r[2]].OnlyStopwords and sentenceList[r[2]].Rating >= __parameterOnlyStopwordThreshhold:
+                sentenceList[r[2]].AddKeyword((r[0] + __parameterBonus * __stopwordFactor * r[1]), stopword, True)
+
+            # if there are normal keywords present
+            if not sentenceList[r[2]].OnlyStopwords:
+                sentenceList[r[2]].AddKeyword((r[0] + __parameterBonus * r[1]), stopword, True)
+        # sentence not in list by now
         else:
-            sentenceList[r[2]] = (__parameterBonus * __parameterButNoKeywordFactor + r[1])
+            sentenceList[r[2]] = Sentence(r[2], (__parameterBonus * __parameterButNoKeywordFactor * r[1]), stopword, True)
+
     return sentenceList
 
 def AddSentencePriority(sentenceList):
@@ -230,7 +270,8 @@ def AddSentencePriority(sentenceList):
     for sentenceID, value in sentenceList.iteritems():
         sqlResult = db().Fetchall(query.format(sentenceID))
         for r in sqlResult:
-            sentenceList[sentenceID] += r[0]
+            if not sentenceList[sentenceID].OnlyStopwords:
+                sentenceList[sentenceID].AddPriority(r[0])
     return sentenceList
 
 
@@ -247,11 +288,11 @@ def CalculateRequirement(sentenceList, parameterList, delete=True):
     for sentenceID, value in sentenceList.iteritems():
         sqlResult = db().Fetchall(query.format(sentenceID))
         for r in sqlResult:
-            if r[0] == "None":
+            if r[0] == None:
                 if parameterList[r[2]] != r[1]:
                     deleteList.append(sentenceID)
                 else:
-                    sentenceList[sentenceID] += __RequirementBonus
+                    sentenceList[sentenceID].AddPriority(__RequirementBonus)
                 continue
             else:
                 if r[0] == "lt" and not parameterList[r[2]] < r[1]:
@@ -265,7 +306,7 @@ def CalculateRequirement(sentenceList, parameterList, delete=True):
                 if r[0] == "gt" and not parameterList[r[2]] > r[1]:
                     deleteList.append(sentenceID)
                 else:
-                    sentenceList[sentenceID] += __RequirementBonus
+                    sentenceList[sentenceID].AddPriority(__RequirementBonus)
                 continue
     if delete:
         for d in deleteList:
@@ -305,8 +346,8 @@ def ResolveDialog(inputProcessed):
     # TODO category + Priority
 
     parameterList = {}
-    parameterList["User"] = "Unknown"
-    parameterList["Time"] = time.strftime("%H%M")
+    parameterList["User"] = "Max"
+    parameterList["Time"] = "1000"#time.strftime("%H%M")
     parameterList["Day"] = "Monday"#time.strftime("%A")
 
     calculationResult = CalculateRequirement(sentenceList, parameterList)
@@ -318,11 +359,11 @@ def ResolveDialog(inputProcessed):
 
 def GetHighestValue(dataList, margin=0):
     if dataList != None and len(dataList) > 0:
-        highestRanking = max(dataList.values())
+        highestRanking = max(node.Rating for node in dataList.values())
         if margin > 0:
-            result = [key for key in dataList if dataList[key]>=(highestRanking-margin)]
+            result = [node.ID for node in dataList.values() if node.Rating>=(highestRanking-margin)]
         else:
-            result = [key for key in dataList if dataList[key]==highestRanking]
+            result = [node.ID for node in dataList.values() if node.Rating==highestRanking]
         return result
     return None
 
