@@ -178,11 +178,17 @@ class Sentence(object):
     KeywordList = []
     OnlyStopwords = True
 
+    HasCategory = []
+    SetsCategory = []
+
     def __init__(self, ID, Rating, Keyword, IsStopword):
         self.ID = ID
         self.Rating = Rating
         self.KeywordList = [Keyword]
         self.OnlyStopwords = IsStopword
+
+        self.HasCategory = []
+        self.SetsCategory = []
 
     def __repr__(self):
          return "R:{0} L:{1} S:{2}\n".format(self.Rating, len(self.KeywordList), self.OnlyStopwords)
@@ -190,10 +196,10 @@ class Sentence(object):
     def __str__(self):
          return "R:{0} L:{1} S:{2}\n".format(self.Rating, len(self.KeywordList), self.OnlyStopwords)
 
-    def AddKeyword(self, Rating, Keyword, IsStopword):
+    def AddKeyword(self, Rating, Keyword, IsStopword=True):
         self.Rating += Rating
         self.KeywordList.append(Keyword)
-        if not self.OnlyStopwords:
+        if self.OnlyStopwords:
             self.OnlyStopwords = IsStopword
 
     def AddPriority(self, Rating):
@@ -205,13 +211,15 @@ __stopwordFactor = 0.5
 
 __parameterBonus = 5
 __parameterButNoKeywordFactor = 0.2
-__parameterOnlyStopwordThreshhold = 1.5
+__parameterStopwordThreshhold = 1.5
+
+__categoryBonus = 1
 
 __RequirementBonus = 1
 
 def GetSentencesByKeyword(sentenceList, word, language, isSynonym, isAdmin):
     query = """SELECT Conversation_Keyword.Stopword, Conversation_Sentence_Keyword.Priority,
-            Conversation_Sentence_Keyword.SentenceID
+            Conversation_Sentence_Keyword.SentenceID, Conversation_Keyword.Priority
             FROM Conversation_Keyword, Conversation_Sentence_Keyword, Conversation_Sentence
             WHERE Conversation_Keyword.ID = Conversation_Sentence_Keyword.KeywordID
             AND Conversation_Sentence_Keyword.SentenceID = Conversation_Sentence.ID
@@ -220,19 +228,14 @@ def GetSentencesByKeyword(sentenceList, word, language, isSynonym, isAdmin):
             AND Conversation_Keyword.Normalized IN ({2}) AND Conversation_Keyword.Language = '{3}'"""
     sqlResult = db().Fetchall(query.format(isAdmin, '0', word, language))
     for r in sqlResult:
-        stopwordNumber = 1
-        isStopword = False
-        if(r[0] == 1):
-            stopwordNumber *= __stopwordFactor
-            isStopword = True
-        synonymNumber = 1
-        if(isSynonym):
-            synonymNumber *= __synonymFactor
+        stopwordNumber = __stopwordFactor if r[0] == 1 else 1
+        isStopword = True if r[0] == 1 else False
+        synonymNumber = __synonymFactor if isSynonym else 1
 
         if r[2] in sentenceList:
-            sentenceList[r[2]].AddKeyword((synonymNumber * stopwordNumber * r[1]), word, isStopword)
+            sentenceList[r[2]].AddKeyword((r[3] + synonymNumber * stopwordNumber * r[1]), word, isStopword)
         else:
-            sentenceList[r[2]] = Sentence(r[2], (synonymNumber * stopwordNumber * r[1]), word, isStopword)
+            sentenceList[r[2]] = Sentence(r[2], (r[3] + synonymNumber * stopwordNumber * r[1]), word, isStopword)
     #print word, sentenceList
     return sentenceList
 
@@ -248,21 +251,22 @@ def GetSentencesByParameter(sentenceList, parameterList, language, isAdmin):
     sqlResult = db().Fetchall(query.format(isAdmin, '0', "'{" + "}', '{".join(parameterList) + "}'", language))
     for r in sqlResult:
 
-        stopword = "{{{0}}}".format(r[3])
+        word = "{{{0}}}".format(r[3])
 
         if r[2] in sentenceList:
             # if only stop-keywords present and threshhold reached
-            if sentenceList[r[2]].OnlyStopwords and sentenceList[r[2]].Rating >= __parameterOnlyStopwordThreshhold:
-                sentenceList[r[2]].AddKeyword((r[0] + __parameterBonus * __stopwordFactor * r[1]), stopword, True)
+            if sentenceList[r[2]].OnlyStopwords and sentenceList[r[2]].Rating >= __parameterStopwordThreshhold:
+                sentenceList[r[2]].AddKeyword((r[0] + __parameterBonus * __stopwordFactor * r[1]), word)
 
             # if there are normal keywords present
             if not sentenceList[r[2]].OnlyStopwords:
-                sentenceList[r[2]].AddKeyword((r[0] + __parameterBonus * r[1]), stopword, True)
+                sentenceList[r[2]].AddKeyword((r[0] + __parameterBonus * r[1]), word)
         # sentence not in list by now
         else:
-            sentenceList[r[2]] = Sentence(r[2], (__parameterBonus * __parameterButNoKeywordFactor * r[1]), stopword, True)
+            sentenceList[r[2]] = Sentence(r[2], (__parameterBonus * __parameterButNoKeywordFactor * r[1]), word)
 
     return sentenceList
+
 
 def AddSentencePriority(sentenceList):
     query = """SELECT Priority FROM Conversation_Sentence WHERE ID = '{0}'"""
@@ -313,8 +317,25 @@ def CalculateRequirement(sentenceList, parameterList, delete=True):
 
     return {'sentenceList':sentenceList, 'deleteList':deleteList}
 
-def CalculateCategory():
-    return None
+def CalculateCategory(sentenceList, category):
+    query = """SELECT Conversation_Category.Name
+        FROM Conversation_Category, {0}
+        WHERE Conversation_Category.ID = {0}.CategoryID
+        AND {0}.SentenceID = '{1}'"""
+
+    for sentenceID, value in sentenceList.iteritems():
+        sqlResult = db().Fetchall(query.format("Conversation_Sentence_Category_Has", sentenceID))
+        for r in sqlResult:
+            sentenceList[sentenceID].HasCategory.append(r[0])
+
+        sqlResult = db().Fetchall(query.format("Conversation_Sentence_Category_Set", sentenceID))
+        for r in sqlResult:
+            sentenceList[sentenceID].SetsCategory.append(r[0])
+
+    if category in sentenceList[sentenceID].HasCategory:
+        sentenceList[sentenceID].AddPriority(__categoryBonus)
+
+    return sentenceList
 
 
 def ResolveDialog(inputProcessed):
@@ -331,31 +352,32 @@ def ResolveDialog(inputProcessed):
         sentenceList = GetSentencesByKeyword(sentenceList, "'"+word.NormalizedWord+"'", word.Language, False, isAdmin)
 
         parameterList += list(set(word.ParameterList) - set(parameterList))
-
     print "Keyword:\t\t", sentenceList
 
     sentenceList = GetSentencesByParameter(sentenceList, parameterList, word.Language, isAdmin)
-
     print "Parameter:\t\t", sentenceList, "\t", parameterList
-
-    sentenceList = AddSentencePriority(sentenceList)
-
-    print "Sentence Priority:\t", sentenceList
-
-    # TODO category + Priority
 
     parameterList = {}
     parameterList["User"] = "Max"
     parameterList["Time"] = "1000"#time.strftime("%H%M")
     parameterList["Day"] = "Monday"#time.strftime("%A")
+    parameterList["Category"] = "Greeting"#time.strftime("%A")
 
     calculationResult = CalculateRequirement(sentenceList, parameterList)
     sentenceList = calculationResult["sentenceList"]
+    print "Calculate Requirement:\t", sentenceList
 
-    print "Calculate Requirement:\t",sentenceList
+
+    sentenceList = AddSentencePriority(sentenceList)
+    print "Sentence Priority:\t", sentenceList
+
+    sentenceList = AddSentenceCategory(sentenceList, parameterList["Category"])
+    print "Calculate Category:\t", sentenceList
+
     return GetHighestValue(sentenceList)
 
 
+# TODO - also pass the whole node / sentence object
 def GetHighestValue(dataList, margin=0):
     if dataList != None and len(dataList) > 0:
         highestRanking = max(node.Rating for node in dataList.values())
