@@ -181,7 +181,7 @@ class Sentence(object):
     HasCategory = []
     SetsCategory = []
 
-    def __init__(self, ID, Rating, Keyword, IsStopword):
+    def __init__(self, ID, Rating, Keyword, IsStopword=True):
         self.ID = ID
         self.Rating = Rating
         self.KeywordList = [Keyword]
@@ -312,7 +312,7 @@ def CalculateRequirement(sentenceList, parameterList, delete=True):
                     sentenceList[sentenceID].AddPriority(__RequirementBonus)
                 continue
     if delete:
-        for d in deleteList:
+        for d in list(set(deleteList)):
             del sentenceList[d]
 
     return {'sentenceList':sentenceList, 'deleteList':deleteList}
@@ -359,9 +359,9 @@ def ResolveDialog(inputProcessed):
 
     parameterList = {}
     parameterList["User"] = "Max"
-    parameterList["Time"] = "1000"#time.strftime("%H%M")
-    parameterList["Day"] = "Monday"#time.strftime("%A")
-    parameterList["Category"] = "Greeting"#time.strftime("%A")
+    parameterList["Time"] = time.strftime("%H%M")
+    parameterList["Day"] = time.strftime("%A")
+    parameterList["Category"] = "Greeting"
 
     calculationResult = CalculateRequirement(sentenceList, parameterList)
     sentenceList = calculationResult["sentenceList"]
@@ -371,7 +371,7 @@ def ResolveDialog(inputProcessed):
     sentenceList = AddSentencePriority(sentenceList)
     print "Sentence Priority:\t", sentenceList
 
-    sentenceList = AddSentenceCategory(sentenceList, parameterList["Category"])
+    sentenceList = CalculateCategory(sentenceList, parameterList["Category"])
     print "Calculate Category:\t", sentenceList
 
     return GetHighestValue(sentenceList)
