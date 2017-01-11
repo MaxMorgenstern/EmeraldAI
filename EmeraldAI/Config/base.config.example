@@ -5,8 +5,21 @@ CountryCode2Letter = de
 CountryCode4Letter = de-DE
 Language = de
 
+
 [Bot]
 Name = Johnny
+
+
+[SentenceResolver]
+SynonymFactor = 0.5
+StopwordFactor = 0.5
+ParameterFactor = 5
+ParameterFactorNoKeyword = 0.2
+
+ParameterStopwordThreshold = 1.5
+
+CategoryBonus = 1
+RequirementBonus = 1
 
 
 [TextToSpeech]

@@ -11,33 +11,16 @@ elif(Config().Get("Database", "NLPDatabaseType").lower() == "mysql"):
 class SentenceResolver(object):
     __metaclass__ = Singleton
 
-    __synonymFactor = 0.5
-    __stopwordFactor = 0.5
-
-    __parameterBonus = 5
-    __parameterButNoKeywordFactor = 0.2
-    __parameterStopwordThreshhold = 1.5
-
-    __categoryBonus = 1
-
-    __RequirementBonus = 1
-
-    # TODO: config
     def __init__(self):
-        self.__synonymFactor = 0.5
-        self.__stopwordFactor = 0.5
+        self.__synonymFactor = Config().GetFloat("SentenceResolver", "SynonymFactor") #0.5
+        self.__stopwordFactor = Config().GetFloat("SentenceResolver", "StopwordFactor") #0.5
+        self.__parameterFactor = Config().GetFloat("SentenceResolver", "ParameterFactor") #5
+        self.__parameterFactorNoKeyword = Config().GetFloat("SentenceResolver", "ParameterFactorNoKeyword") #0.2
 
-        self.__parameterBonus = 5
-        self.__parameterButNoKeywordFactor = 0.2
-        self.__parameterStopwordThreshhold = 1.5
+        self.__parameterStopwordThreshold = Config().GetFloat("SentenceResolver", "ParameterStopwordThreshold") #1.5
 
-        self.__categoryBonus = 1
-
-        self.__RequirementBonus = 1
-
-
-    #TODO
-
+        self.__categoryBonus = Config().GetFloat("SentenceResolver", "CategoryBonus") #1
+        self.__RequirementBonus = Config().GetFloat("SentenceResolver", "RequirementBonus") #1
 
 
     def GetSentencesByKeyword(self, sentenceList, word, language, isSynonym, isAdmin):
@@ -51,14 +34,14 @@ class SentenceResolver(object):
                 AND Conversation_Keyword.Normalized IN ({2}) AND Conversation_Keyword.Language = '{3}'"""
         sqlResult = db().Fetchall(query.format(isAdmin, '0', word, language))
         for r in sqlResult:
-            stopwordNumber = self.__stopwordFactor if r[0] == 1 else 1
+            stopwordFactor = self.__stopwordFactor if r[0] == 1 else 1
             isStopword = True if r[0] == 1 else False
-            synonymNumber = self.__synonymFactor if isSynonym else 1
+            synonymFactor = self.__synonymFactor if isSynonym else 1
 
             if r[2] in sentenceList:
-                sentenceList[r[2]].AddKeyword((r[3] + synonymNumber * stopwordNumber * r[1]), word, isStopword)
+                sentenceList[r[2]].AddKeyword((r[3] + synonymFactor * stopwordFactor * r[1]), word, isStopword)
             else:
-                sentenceList[r[2]] = Sentence(r[2], (r[3] + synonymNumber * stopwordNumber * r[1]), word, isStopword)
+                sentenceList[r[2]] = Sentence(r[2], (r[3] + synonymFactor * stopwordFactor * r[1]), word, isStopword)
 
         return sentenceList
 
@@ -73,20 +56,19 @@ class SentenceResolver(object):
                 AND Conversation_Keyword.Normalized IN ({2}) AND Conversation_Keyword.Language = '{3}'"""
         sqlResult = db().Fetchall(query.format(isAdmin, '0', "'{" + "}', '{".join(parameterList) + "}'", language))
         for r in sqlResult:
-
             word = "{{{0}}}".format(r[3])
 
             if r[2] in sentenceList:
-                # if only stop-keywords present and threshhold reached
-                if sentenceList[r[2]].OnlyStopwords and sentenceList[r[2]].Rating >= self.__parameterStopwordThreshhold:
-                    sentenceList[r[2]].AddKeyword((r[0] + self.__parameterBonus * self.__stopwordFactor * r[1]), word)
+                # if only stop-keywords present and threshold reached
+                if sentenceList[r[2]].OnlyStopwords and sentenceList[r[2]].Rating >= self.__parameterStopwordThreshold:
+                    sentenceList[r[2]].AddKeyword((r[0] + self.__parameterFactor * r[1] * self.__stopwordFactor), word)
 
                 # if there are normal keywords present
                 if not sentenceList[r[2]].OnlyStopwords:
-                    sentenceList[r[2]].AddKeyword((r[0] + self.__parameterBonus * r[1]), word)
+                    sentenceList[r[2]].AddKeyword((r[0] + self.__parameterFactor * r[1]), word)
             # sentence not in list by now
             else:
-                sentenceList[r[2]] = Sentence(r[2], (self.__parameterBonus * self.__parameterButNoKeywordFactor * r[1]), word)
+                sentenceList[r[2]] = Sentence(r[2], (self.__parameterFactor * r[1] * self.__parameterFactorNoKeyword), word)
 
         return sentenceList
 
@@ -160,8 +142,3 @@ class SentenceResolver(object):
             sentenceList[sentenceID].AddPriority(self.__categoryBonus)
 
         return sentenceList
-
-
-
-
-
