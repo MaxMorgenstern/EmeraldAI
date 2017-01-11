@@ -12,6 +12,7 @@ class PipelineData(BaseObject):
         # Input Language | List of EmeraldAI.Entities.BaseObject.Word objects | List of parameters
         self.Language = None
         self.WordList = None
+        self.SentenceList = None
         self.ParameterList = None
 
         # Input with parameterized data

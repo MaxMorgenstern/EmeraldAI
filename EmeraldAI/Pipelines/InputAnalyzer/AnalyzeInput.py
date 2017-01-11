@@ -8,4 +8,4 @@ class AnalyzeInput(object):
 
 
     def Process(self, PipelineArgs):
-    	return PipelineArgs
+        return PipelineArgs

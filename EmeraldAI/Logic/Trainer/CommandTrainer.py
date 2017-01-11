@@ -44,3 +44,4 @@ class CommandTrainer(object):
         print "New pattern created: '{0}'".format(Pattern)
         return True
 
+# OBSOLETE!
