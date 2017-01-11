@@ -3,7 +3,7 @@
 from EmeraldAI.Entities.BaseObject import BaseObject
 
 
-class PipelineData(BaseObject):
+class PipelineArgs(BaseObject):
 
     def __init__(self, input):
         # Original Input

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Entities.Sentence import Sentence
-
+from EmeraldAI.Config.Config import *
 if(Config().Get("Database", "NLPDatabaseType").lower() == "sqlite"):
     from EmeraldAI.Logic.Database.SQlite3 import SQlite3 as db
 elif(Config().Get("Database", "NLPDatabaseType").lower() == "mysql"):

@@ -23,9 +23,9 @@ class ProcessInput(object):
 
     def Process(self, PipelineArgs):
 
-        PipelineArgs.Language = NLP.DetectLanguage(PipelineArgs.inputData)
+        PipelineArgs.Language = NLP.DetectLanguage(PipelineArgs.Input)
 
-        wordSegments = NLP.WordSegmentation(PipelineArgs.inputData)
+        wordSegments = NLP.WordSegmentation(PipelineArgs.Input)
         cleanWordSegments = NLP.RemoveStopwords(wordSegments, PipelineArgs.Language)
 
         wordList = []
@@ -50,7 +50,7 @@ class ProcessInput(object):
             parameterList += list(set(w.ParameterList) - set(parameterList))
 
             w.SynonymList = self.__addToWordList(w.NormalizedWord, w.SynonymList, PipelineArgs.Language)
-            synonyms = thesaurus.GetSynonyms(w.Word)
+            synonyms = Thesaurus().GetSynonyms(w.Word)
             for synonym in synonyms:
                 if synonym[0]:
                     w.SynonymList = self.__addToWordList(synonym[0], w.SynonymList, PipelineArgs.Language)

@@ -114,228 +114,12 @@ print("--- %s seconds ---" % (time.time() - start_time))
 
 # Resolving #############
 
-from EmeraldAI.Logic.Modules import NLP
-from EmeraldAI.Entities.Word import Word
-from EmeraldAI.Logic.Thesaurus import *
-from EmeraldAI.Logic.Modules import Parameterizer
+import random
 
+from EmeraldAI.Pipelines.InputProcessing.ProcessInput import ProcessInput
+from EmeraldAI.Entities.PipelineArgs import PipelineArgs
+from EmeraldAI.Logic.Conversation.SentenceResolver import SentenceResolver
 
-thesaurus = Thesaurus()
-
-def addToWordList(str_to_add, list_of_strings, language):
-    str_to_add = NLP.Normalize(str_to_add, language)
-    if str_to_add not in list_of_strings:
-        list_of_strings.append(str_to_add)
-    return list_of_strings
-
-def append(parent, child):
-    if child is not None:
-        parent.append(child)
-
-def processInput(data):
-    language = NLP.DetectLanguage(data)
-    wordSegments = NLP.WordSegmentation(data)
-    cleanWordSegments = NLP.RemoveStopwords(wordSegments, language)
-
-    wordList = []
-
-    for word in wordSegments:
-        w = Word(word, language)
-
-        w.IsStopword = word not in cleanWordSegments
-        if(w.IsStopword):
-            w.Priority *= 0.5
-        w.NormalizedWord = NLP.Normalize(word, language)
-
-        append(w.ParameterList, Parameterizer.IsLastname(word))
-        append(w.ParameterList, Parameterizer.IsFirstname(word))
-        append(w.ParameterList, Parameterizer.IsName(word))
-        append(w.ParameterList, Parameterizer.IsEquation(word)) # TODO - this needs to check more than one word
-        append(w.ParameterList, Parameterizer.IsBotname(word))
-        append(w.ParameterList, Parameterizer.IsWeekday(word, language))
-        append(w.ParameterList, Parameterizer.IsLanguage(word, language))
-        append(w.ParameterList, Parameterizer.IsCurseword(word, language))
-
-        #if not w.IsStopword:
-        w.SynonymList = addToWordList(word, w.SynonymList, language)
-        synonyms = thesaurus.GetSynonyms(w.Word)
-        for synonym in synonyms:
-            if synonym[0]:
-                w.SynonymList = addToWordList(synonym[0], w.SynonymList, language)
-            else:
-                w.SynonymList = addToWordList(synonym[1], w.SynonymList, language)
-        w.SynonymList.remove(w.NormalizedWord)
-        wordList.append(w)
-        #print w.toJSON()
-        print w.NormalizedWord
-        print("--- %s seconds ---" % (time.time() - start_time))
-    return wordList
-
-
-class Sentence(object):
-    ID = None
-    Rating = 0
-    KeywordList = []
-    OnlyStopwords = True
-
-    HasCategory = []
-    SetsCategory = []
-
-    def __init__(self, ID, Rating, Keyword, IsStopword=True):
-        self.ID = ID
-        self.Rating = Rating
-        self.KeywordList = [Keyword]
-        self.OnlyStopwords = IsStopword
-
-        self.HasCategory = []
-        self.SetsCategory = []
-
-    def __repr__(self):
-         return "R:{0} L:{1} S:{2}\n".format(self.Rating, len(self.KeywordList), self.OnlyStopwords)
-
-    def __str__(self):
-         return "R:{0} L:{1} S:{2}\n".format(self.Rating, len(self.KeywordList), self.OnlyStopwords)
-
-    def AddKeyword(self, Rating, Keyword, IsStopword=True):
-        self.Rating += Rating
-        self.KeywordList.append(Keyword)
-        if self.OnlyStopwords:
-            self.OnlyStopwords = IsStopword
-
-    def AddPriority(self, Rating):
-        self.Rating += Rating
-
-
-__synonymFactor = 0.5
-__stopwordFactor = 0.5
-
-__parameterBonus = 5
-__parameterButNoKeywordFactor = 0.2
-__parameterStopwordThreshhold = 1.5
-
-__categoryBonus = 1
-
-__RequirementBonus = 1
-
-def GetSentencesByKeyword(sentenceList, word, language, isSynonym, isAdmin):
-    query = """SELECT Conversation_Keyword.Stopword, Conversation_Sentence_Keyword.Priority,
-            Conversation_Sentence_Keyword.SentenceID, Conversation_Keyword.Priority
-            FROM Conversation_Keyword, Conversation_Sentence_Keyword, Conversation_Sentence
-            WHERE Conversation_Keyword.ID = Conversation_Sentence_Keyword.KeywordID
-            AND Conversation_Sentence_Keyword.SentenceID = Conversation_Sentence.ID
-            AND Conversation_Sentence.Approved = {0}
-            AND Conversation_Sentence.Disabled = {1}
-            AND Conversation_Keyword.Normalized IN ({2}) AND Conversation_Keyword.Language = '{3}'"""
-    sqlResult = db().Fetchall(query.format(isAdmin, '0', word, language))
-    for r in sqlResult:
-        stopwordNumber = __stopwordFactor if r[0] == 1 else 1
-        isStopword = True if r[0] == 1 else False
-        synonymNumber = __synonymFactor if isSynonym else 1
-
-        if r[2] in sentenceList:
-            sentenceList[r[2]].AddKeyword((r[3] + synonymNumber * stopwordNumber * r[1]), word, isStopword)
-        else:
-            sentenceList[r[2]] = Sentence(r[2], (r[3] + synonymNumber * stopwordNumber * r[1]), word, isStopword)
-    #print word, sentenceList
-    return sentenceList
-
-def GetSentencesByParameter(sentenceList, parameterList, language, isAdmin):
-    query = """SELECT Conversation_Keyword.Priority, Conversation_Sentence_Keyword.Priority,
-            Conversation_Sentence_Keyword.SentenceID, Conversation_Keyword.Normalized
-            FROM Conversation_Keyword, Conversation_Sentence_Keyword, Conversation_Sentence
-            WHERE Conversation_Keyword.ID = Conversation_Sentence_Keyword.KeywordID
-            AND Conversation_Sentence_Keyword.SentenceID = Conversation_Sentence.ID
-            AND Conversation_Sentence.Approved = {0}
-            AND Conversation_Sentence.Disabled = {1}
-            AND Conversation_Keyword.Normalized IN ({2}) AND Conversation_Keyword.Language = '{3}'"""
-    sqlResult = db().Fetchall(query.format(isAdmin, '0', "'{" + "}', '{".join(parameterList) + "}'", language))
-    for r in sqlResult:
-
-        word = "{{{0}}}".format(r[3])
-
-        if r[2] in sentenceList:
-            # if only stop-keywords present and threshhold reached
-            if sentenceList[r[2]].OnlyStopwords and sentenceList[r[2]].Rating >= __parameterStopwordThreshhold:
-                sentenceList[r[2]].AddKeyword((r[0] + __parameterBonus * __stopwordFactor * r[1]), word)
-
-            # if there are normal keywords present
-            if not sentenceList[r[2]].OnlyStopwords:
-                sentenceList[r[2]].AddKeyword((r[0] + __parameterBonus * r[1]), word)
-        # sentence not in list by now
-        else:
-            sentenceList[r[2]] = Sentence(r[2], (__parameterBonus * __parameterButNoKeywordFactor * r[1]), word)
-
-    return sentenceList
-
-
-def AddSentencePriority(sentenceList):
-    query = """SELECT Priority FROM Conversation_Sentence WHERE ID = '{0}'"""
-    for sentenceID, value in sentenceList.iteritems():
-        sqlResult = db().Fetchall(query.format(sentenceID))
-        for r in sqlResult:
-            if not sentenceList[sentenceID].OnlyStopwords:
-                sentenceList[sentenceID].AddPriority(r[0])
-    return sentenceList
-
-
-def CalculateRequirement(sentenceList, parameterList, delete=True):
-    query="""SELECT Conversation_Sentence_Requirement.Comparison,
-        Conversation_Sentence_Requirement.Value, Conversation_Requirement.Name
-        FROM Conversation_Sentence_Requirement, Conversation_Requirement
-        WHERE Conversation_Sentence_Requirement.RequirementID = Conversation_Requirement.ID
-        AND Conversation_Sentence_Requirement.SentenceID='{0}'
-        GROUP BY Conversation_Sentence_Requirement.SentenceID, Conversation_Sentence_Requirement.RequirementID
-        """
-
-    deleteList = []
-    for sentenceID, value in sentenceList.iteritems():
-        sqlResult = db().Fetchall(query.format(sentenceID))
-        for r in sqlResult:
-            if r[0] == None:
-                if parameterList[r[2]] != r[1]:
-                    deleteList.append(sentenceID)
-                else:
-                    sentenceList[sentenceID].AddPriority(__RequirementBonus)
-                continue
-            else:
-                if r[0] == "lt" and not parameterList[r[2]] < r[1]:
-                    deleteList.append(sentenceID)
-                if r[0] == "le" and not parameterList[r[2]] <= r[1]:
-                    deleteList.append(sentenceID)
-                if r[0] == "eq" and not parameterList[r[2]] == r[1]:
-                    deleteList.append(sentenceID)
-                if r[0] == "ge" and not parameterList[r[2]] >= r[1]:
-                    deleteList.append(sentenceID)
-                if r[0] == "gt" and not parameterList[r[2]] > r[1]:
-                    deleteList.append(sentenceID)
-                else:
-                    sentenceList[sentenceID].AddPriority(__RequirementBonus)
-                continue
-    if delete:
-        for d in list(set(deleteList)):
-            del sentenceList[d]
-
-    return {'sentenceList':sentenceList, 'deleteList':deleteList}
-
-def CalculateCategory(sentenceList, category):
-    query = """SELECT Conversation_Category.Name
-        FROM Conversation_Category, {0}
-        WHERE Conversation_Category.ID = {0}.CategoryID
-        AND {0}.SentenceID = '{1}'"""
-
-    for sentenceID, value in sentenceList.iteritems():
-        sqlResult = db().Fetchall(query.format("Conversation_Sentence_Category_Has", sentenceID))
-        for r in sqlResult:
-            sentenceList[sentenceID].HasCategory.append(r[0])
-
-        sqlResult = db().Fetchall(query.format("Conversation_Sentence_Category_Set", sentenceID))
-        for r in sqlResult:
-            sentenceList[sentenceID].SetsCategory.append(r[0])
-
-    if category in sentenceList[sentenceID].HasCategory:
-        sentenceList[sentenceID].AddPriority(__categoryBonus)
-
-    return sentenceList
 
 
 def ResolveDialog(inputProcessed):
@@ -348,13 +132,13 @@ def ResolveDialog(inputProcessed):
 
         isAdmin = 1
 
-        sentenceList = GetSentencesByKeyword(sentenceList, wordList, word.Language, True, isAdmin)
-        sentenceList = GetSentencesByKeyword(sentenceList, "'"+word.NormalizedWord+"'", word.Language, False, isAdmin)
+        sentenceList = SentenceResolver().GetSentencesByKeyword(sentenceList, wordList, word.Language, True, isAdmin)
+        sentenceList = SentenceResolver().GetSentencesByKeyword(sentenceList, "'"+word.NormalizedWord+"'", word.Language, False, isAdmin)
 
         parameterList += list(set(word.ParameterList) - set(parameterList))
     print "Keyword:\t\t", sentenceList
 
-    sentenceList = GetSentencesByParameter(sentenceList, parameterList, word.Language, isAdmin)
+    sentenceList = SentenceResolver().GetSentencesByParameter(sentenceList, parameterList, word.Language, isAdmin)
     print "Parameter:\t\t", sentenceList, "\t", parameterList
 
     parameterList = {}
@@ -363,15 +147,15 @@ def ResolveDialog(inputProcessed):
     parameterList["Day"] = time.strftime("%A")
     parameterList["Category"] = "Greeting"
 
-    calculationResult = CalculateRequirement(sentenceList, parameterList)
+    calculationResult = SentenceResolver().CalculateRequirement(sentenceList, parameterList)
     sentenceList = calculationResult["sentenceList"]
     print "Calculate Requirement:\t", sentenceList
 
 
-    sentenceList = AddSentencePriority(sentenceList)
+    sentenceList = SentenceResolver().AddSentencePriority(sentenceList)
     print "Sentence Priority:\t", sentenceList
 
-    sentenceList = CalculateCategory(sentenceList, parameterList["Category"])
+    sentenceList = SentenceResolver().CalculateCategory(sentenceList, parameterList["Category"])
     print "Calculate Category:\t", sentenceList
 
     return GetHighestValue(sentenceList)
@@ -388,74 +172,35 @@ def GetHighestValue(dataList, margin=0):
         return result
     return None
 
+def doWork(inputString):
+    print inputString
+    pa = PipelineArgs(inputString)
 
-import random
+    # THIS SHOULD BE DONE BY THE PIPELINE BEFORE - NOT SPECIFIC TO RESPLVING THE COMMAND
+    pa = ProcessInput().Process(pa)
+    print("processInput() done --- %s seconds ---" % (time.time() - start_time))
 
+    dialogResult = ResolveDialog(pa.WordList)
+    print("--- %s seconds ---" % (time.time() - start_time))
 
-inputString = "Guten Abend Peter"
-print inputString
+    print dialogResult
+    print ""
 
-# THIS SHOULD BE DONE BY THE PIPELINE BEFORE - NOT SPECIFIC TO RESPLVING THE COMMAND
-inputWordList = processInput(inputString)
-print("processInput() done --- %s seconds ---" % (time.time() - start_time))
+    if dialogResult != None and len(dialogResult) > 0:
+        print random.choice(dialogResult)
 
-dialogResult = ResolveDialog(inputWordList)
-print("--- %s seconds ---" % (time.time() - start_time))
-
-print dialogResult
-print ""
-
-if dialogResult != None and len(dialogResult) > 0:
-    print random.choice(dialogResult)
-
-print("--- %s seconds ---" % (time.time() - start_time))
+    print("--- %s seconds ---" % (time.time() - start_time))
 
 
 
 
-inputString = "Guten abend, Wer war Freddy Mercury"
-print inputString
+doWork("Guten Abend Peter")
 
-# THIS SHOULD BE DONE BY THE PIPELINE BEFORE - NOT SPECIFIC TO RESPLVING THE COMMAND
-inputWordList = processInput(inputString)
-print("processInput() done --- %s seconds ---" % (time.time() - start_time))
+doWork("Guten abend, Wer war Freddy Mercury")
 
-dialogResult = ResolveDialog(inputWordList)
-print("--- %s seconds ---" % (time.time() - start_time))
-
-print dialogResult
-print ""
-
-if dialogResult != None and len(dialogResult) > 0:
-    print random.choice(dialogResult)
-
-print("--- %s seconds ---" % (time.time() - start_time))
+doWork("Was ist drei plus sieben?")
 
 
 
-
-
-inputString = "Was ist drei plus sieben?"
-print inputString
-
-# THIS SHOULD BE DONE BY THE PIPELINE BEFORE - NOT SPECIFIC TO RESPLVING THE COMMAND
-inputWordList = processInput(inputString)
-print("processInput() done --- %s seconds ---" % (time.time() - start_time))
-
-dialogResult = ResolveDialog(inputWordList)
-print("--- %s seconds ---" % (time.time() - start_time))
-
-print dialogResult
-print ""
-
-if dialogResult != None and len(dialogResult) > 0:
-    print random.choice(dialogResult)
-
-print("--- %s seconds ---" % (time.time() - start_time))
-
-
-
-
-# TODO: Keyword priority to rank parameter
 
 
