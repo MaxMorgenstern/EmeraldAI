@@ -114,63 +114,10 @@ print("--- %s seconds ---" % (time.time() - start_time))
 
 # Resolving #############
 
-import random
-
 from EmeraldAI.Pipelines.InputProcessing.ProcessInput import ProcessInput
+from EmeraldAI.Pipelines.InputAnalyzer.AnalyzeInput import AnalyzeInput
 from EmeraldAI.Entities.PipelineArgs import PipelineArgs
-from EmeraldAI.Logic.Conversation.SentenceResolver import SentenceResolver
 
-
-
-def ResolveDialog(inputProcessed):
-
-    sentenceList = {}
-    parameterList = []
-    # get all sentences related to the imput and rank
-    for word in inputProcessed:
-        wordList = "'" + "', '".join(word.SynonymList) + "'"
-
-        isAdmin = 1
-
-        sentenceList = SentenceResolver().GetSentencesByKeyword(sentenceList, wordList, word.Language, True, isAdmin)
-        sentenceList = SentenceResolver().GetSentencesByKeyword(sentenceList, "'"+word.NormalizedWord+"'", word.Language, False, isAdmin)
-
-        parameterList += list(set(word.ParameterList) - set(parameterList))
-    print "Keyword:\t\t", sentenceList
-
-    sentenceList = SentenceResolver().GetSentencesByParameter(sentenceList, parameterList, word.Language, isAdmin)
-    print "Parameter:\t\t", sentenceList, "\t", parameterList
-
-    parameterList = {}
-    parameterList["User"] = "Max"
-    parameterList["Time"] = time.strftime("%H%M")
-    parameterList["Day"] = time.strftime("%A")
-    parameterList["Category"] = "Greeting"
-
-    calculationResult = SentenceResolver().CalculateRequirement(sentenceList, parameterList)
-    sentenceList = calculationResult["sentenceList"]
-    print "Calculate Requirement:\t", sentenceList
-
-
-    sentenceList = SentenceResolver().AddSentencePriority(sentenceList)
-    print "Sentence Priority:\t", sentenceList
-
-    sentenceList = SentenceResolver().CalculateCategory(sentenceList, parameterList["Category"])
-    print "Calculate Category:\t", sentenceList
-
-    return GetHighestValue(sentenceList)
-
-
-# TODO - also pass the whole node / sentence object
-def GetHighestValue(dataList, margin=0):
-    if dataList != None and len(dataList) > 0:
-        highestRanking = max(node.Rating for node in dataList.values())
-        if margin > 0:
-            result = [node.ID for node in dataList.values() if node.Rating>=(highestRanking-margin)]
-        else:
-            result = [node.ID for node in dataList.values() if node.Rating==highestRanking]
-        return result
-    return None
 
 def doWork(inputString):
     print inputString
@@ -180,14 +127,15 @@ def doWork(inputString):
     pa = ProcessInput().Process(pa)
     print("processInput() done --- %s seconds ---" % (time.time() - start_time))
 
-    dialogResult = ResolveDialog(pa.WordList)
+    dialogResult = AnalyzeInput().Process(pa)
     print("--- %s seconds ---" % (time.time() - start_time))
 
-    print dialogResult
+    print dialogResult.SentenceList
     print ""
 
-    if dialogResult != None and len(dialogResult) > 0:
-        print random.choice(dialogResult)
+    #if dialogResult.SentenceList != None and len(dialogResult.SentenceList) > 0:
+        #print random.choice(dialogResult.GetSentencesWithHighestValue())
+    print dialogResult.GetRandomSentenceWithHighestValue()
 
     print("--- %s seconds ---" % (time.time() - start_time))
 

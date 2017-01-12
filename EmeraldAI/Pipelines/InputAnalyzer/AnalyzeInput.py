@@ -1,7 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+import time
 from EmeraldAI.Logic.Singleton import Singleton
-
+from EmeraldAI.Logic.Conversation.SentenceResolver import SentenceResolver
 
 class AnalyzeInput(object):
     __metaclass__ = Singleton
@@ -15,7 +16,7 @@ class AnalyzeInput(object):
         for word in PipelineArgs.WordList:
             wordList = "'{0}'".format("', '".join(word.SynonymList))
 
-            #TODO
+            #TODO - get user by name
             isAdmin = 1
 
             sentenceList = SentenceResolver().GetSentencesByKeyword(sentenceList, wordList, word.Language, True, isAdmin)
@@ -27,12 +28,12 @@ class AnalyzeInput(object):
         sentenceList = SentenceResolver().GetSentencesByParameter(sentenceList, parameterList, word.Language, isAdmin)
         #print "Parameter:\t\t", sentenceList, "\t", parameterList
 
-        # TODO
+        # TODO - get / build parameter list
         parameterList = {}
-        parameterList["User"] = "Max"
+        parameterList["User"] = PipelineArgs.UserName
         parameterList["Time"] = time.strftime("%H%M")
         parameterList["Day"] = time.strftime("%A")
-        parameterList["Category"] = "Greeting"
+        parameterList["Category"] = PipelineArgs.Category
 
         calculationResult = SentenceResolver().CalculateRequirement(sentenceList, parameterList)
         sentenceList = calculationResult["sentenceList"]
