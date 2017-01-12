@@ -25,7 +25,15 @@ class Math(object):
                 wordArray = word.split("|")
                 self.__replaceWordDictionary[wordArray[1]] = wordArray[0]
 
-        self.__ReplacePattern = re.compile(r'\b(' + '|'.join(self.__replaceWordDictionary.keys()) + r')\b')
+        keys = r'|'.join(self.__replaceWordDictionary.keys())
+        self.__FindPattern = re.compile(r'\b(' + keys + r')\b', flags=re.IGNORECASE)
+        #self.__FindWords = re.compile(r'\b[a-zA-Z]+\b', flags=re.IGNORECASE)
+
+        values= r''
+        for v in list(set(self.__replaceWordDictionary.values())):
+            values += re.escape(v) + "|"
+
+        self.__FindWords = re.compile(values + r'\b(' + r'[0-9]+|' + keys + r')\b', flags=re.IGNORECASE)
 
 
     def CleanTerm(self, term):
@@ -34,7 +42,7 @@ class Math(object):
         # replace comma with dot
         term = term.replace(",", ".")
         #replace words with mathematical symbols
-        result = self.__ReplacePattern.sub(lambda x: self.__replaceWordDictionary[x.group()], term)
+        result = self.__FindPattern.sub(lambda x: self.__replaceWordDictionary[x.group()], term)
         return result
 
 
@@ -47,7 +55,18 @@ class Math(object):
 
 
     def IsEquation(self, term):
-        if self.__ReplacePattern.search(term) is not None:
+        #t = self.CleanTerm(term)
+
+        z = self.__FindWords.sub(lambda x: "-{0}-".format(x.group()), term)
+        print term, " -  ", z.strip()
+
+        g = self.__FindWords.findall(term)
+        print g
+
+
+
+        if self.__FindPattern.search(term) is not None:
+            #print self.__FindPattern.search(term)
             return True
 
         numberCount = 0
