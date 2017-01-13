@@ -24,6 +24,7 @@ class ProcessInput(object):
     def Process(self, PipelineArgs):
 
         PipelineArgs.Language = NLP.DetectLanguage(PipelineArgs.Input)
+        PipelineArgs.Normalized = NLP.Normalize(PipelineArgs.Input, PipelineArgs.Language)
 
         wordSegments = NLP.WordSegmentation(PipelineArgs.Input)
         cleanWordSegments = NLP.RemoveStopwords(wordSegments, PipelineArgs.Language)
@@ -44,9 +45,7 @@ class ProcessInput(object):
             self.__appendIfNotNone(w.ParameterList, Parameterizer.IsWeekday(word, PipelineArgs.Language))
             self.__appendIfNotNone(w.ParameterList, Parameterizer.IsLanguage(word, PipelineArgs.Language))
             self.__appendIfNotNone(w.ParameterList, Parameterizer.IsCurseword(word, PipelineArgs.Language))
-
-            # TODO - more than one word has to be equation
-            self.__appendIfNotNone(w.ParameterList, Parameterizer.IsEquation(word))
+            self.__appendIfNotNone(w.ParameterList, Parameterizer.IsMathematical(word))
             parameterList += list(set(w.ParameterList) - set(parameterList))
 
             w.SynonymList = self.__addToWordList(w.NormalizedWord, w.SynonymList, PipelineArgs.Language)
@@ -60,6 +59,7 @@ class ProcessInput(object):
 
             wordList.append(w)
 
+        self.__appendIfNotNone(parameterList, Parameterizer.IsEquation(PipelineArgs.Normalized))
         PipelineArgs.WordList = wordList
         PipelineArgs.ParameterList = parameterList
 

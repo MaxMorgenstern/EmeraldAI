@@ -9,6 +9,7 @@ class PipelineArgs(BaseObject):
     def __init__(self, input):
         # Original Input
         self.Input = input
+        self.Normalized = input
 
         # Input Language | List of EmeraldAI.Entities.BaseObject.Word objects | List of parameters
         self.Language = None

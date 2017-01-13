@@ -148,6 +148,8 @@ doWork("Guten abend, Wer war Freddy Mercury")
 
 doWork("Was ist drei plus sieben?")
 
+doWork("Was ist 23 plus 12?")
+
 
 
 

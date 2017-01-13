@@ -58,14 +58,14 @@ class Math(object):
             return None
 
 
-    def IsEquation(self, term):
-        results = self.__FindWords.findall(term)
+    def IsEquation(self, sentence):
+        results = self.__FindWords.findall(sentence)
         if(len(results) >= self.__equationThreshold):
             return True
         return False
 
 
-    def IsMathematical(self, word):
+    def IsMathematicalWord(self, word):
         if self.__FindWords.search(word) is not None:
             return True
         return False
@@ -73,4 +73,5 @@ class Math(object):
 
 """
 TODO: add more operations mentioned in the safe_list
+TODO: Line 25 - not only german file! move to config
 """
