@@ -29,9 +29,11 @@ class Math(object):
         self.__FindPattern = re.compile(r'\b(' + keys + r')\b', flags=re.IGNORECASE)
         #self.__FindWords = re.compile(r'\b[a-zA-Z]+\b', flags=re.IGNORECASE)
 
-        values= r''
+        values= '('
         for v in list(set(self.__replaceWordDictionary.values())):
             values += re.escape(v) + "|"
+        values = values.rstrip('|')
+        values += ')|'
 
         self.__FindWords = re.compile(values + r'\b(' + r'[0-9]+|' + keys + r')\b', flags=re.IGNORECASE)
 
