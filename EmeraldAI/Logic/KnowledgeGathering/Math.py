@@ -15,6 +15,9 @@ class Math(object):
         self.__namespace = vars(math).copy()
         self.__namespace['__builtins__'] = None
 
+        # TODO - config
+        self.__equationThreshold = 2
+
         self.__safe_list = ['math', 'acos', 'asin', 'atan', 'atan2', 'ceil', 'cos', 'cosh', 'degrees', 'e', 'exp', 'fabs', 'floor',
                             'fmod', 'frexp', 'hypot', 'ldexp', 'log', 'log10', 'modf', 'pi', 'pow', 'radians', 'sin', 'sinh', 'sqrt', 'tan', 'tanh']
 
@@ -27,15 +30,11 @@ class Math(object):
 
         keys = r'|'.join(self.__replaceWordDictionary.keys())
         self.__FindPattern = re.compile(r'\b(' + keys + r')\b', flags=re.IGNORECASE)
-        #self.__FindWords = re.compile(r'\b[a-zA-Z]+\b', flags=re.IGNORECASE)
 
-        values= '('
+        values= ''
         for v in list(set(self.__replaceWordDictionary.values())):
             values += re.escape(v) + "|"
-        values = values.rstrip('|')
-        values += ')|'
-
-        self.__FindWords = re.compile(values + r'\b(' + r'[0-9]+|' + keys + r')\b', flags=re.IGNORECASE)
+        self.__FindWords = re.compile(values + r'[0-9]+|' + keys, flags=re.IGNORECASE)
 
 
     def CleanTerm(self, term):
@@ -43,8 +42,11 @@ class Math(object):
         term = re.sub("(\d+)[\s.]+(\d+)", r"\1\2", term)
         # replace comma with dot
         term = term.replace(",", ".")
+        # make sure we onky leave mathematical data
+        result = self.__FindWords.findall(term)
+        strippedTerm = " ".join(result)
         #replace words with mathematical symbols
-        result = self.__FindPattern.sub(lambda x: self.__replaceWordDictionary[x.group()], term)
+        result = self.__FindPattern.sub(lambda x: self.__replaceWordDictionary[x.group()], strippedTerm)
         return result
 
 
@@ -57,37 +59,18 @@ class Math(object):
 
 
     def IsEquation(self, term):
-        #t = self.CleanTerm(term)
-
-        z = self.__FindWords.sub(lambda x: "-{0}-".format(x.group()), term)
-        print term, " -  ", z.strip()
-
-        g = self.__FindWords.findall(term)
-        print g
-
-
-
-        if self.__FindPattern.search(term) is not None:
-            #print self.__FindPattern.search(term)
+        results = self.__FindWords.findall(term)
+        if(len(results) >= self.__equationThreshold):
             return True
+        return False
 
-        numberCount = 0
-        wasPreviousNumber = False
-        for char in term:
-            if char.isdigit():
-                if not wasPreviousNumber:
-                    numberCount += 1
-                    wasPreviousNumber = True
-            else:
-                wasPreviousNumber = False
-        if numberCount >= 2:
+
+    def IsMathematical(self, word):
+        if self.__FindWords.search(word) is not None:
             return True
-
         return False
 
 
 """
-TODO: make sure term is equation
 TODO: add more operations mentioned in the safe_list
-TODO: improve is equation - maybe split in in mathematical for single words/terms
 """

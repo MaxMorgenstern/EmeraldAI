@@ -20,7 +20,7 @@ loop = True
 #print m.Calculate("10,5 / 25")
 
 
-print m.IsEquation("Wieviel ist drei plus sieben")	# T
+print m.IsEquation("Wieviel ist drei plus sieben")
 print m.IsEquation("Wieviel ist 3 plus 7")	# T
 print m.IsEquation("Wieviel ist drei und sieben")
 print m.IsEquation("Wer sind die Rolling Stones")
