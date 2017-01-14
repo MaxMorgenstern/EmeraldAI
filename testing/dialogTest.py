@@ -118,38 +118,85 @@ from EmeraldAI.Pipelines.InputProcessing.ProcessInput import ProcessInput
 from EmeraldAI.Pipelines.InputAnalyzer.AnalyzeInput import AnalyzeInput
 from EmeraldAI.Entities.PipelineArgs import PipelineArgs
 
-
 def doWork(inputString):
-    print inputString
+
+    #print("processInput() done --- %s seconds ---" % (time.time() - start_time))
+    #print inputString
     pa = PipelineArgs(inputString)
 
     # THIS SHOULD BE DONE BY THE PIPELINE BEFORE - NOT SPECIFIC TO RESPLVING THE COMMAND
     pa = ProcessInput().Process(pa)
-    print("processInput() done --- %s seconds ---" % (time.time() - start_time))
+    #print("processInput() done --- %s seconds ---" % (time.time() - start_time))
 
     dialogResult = AnalyzeInput().Process(pa)
-    print("--- %s seconds ---" % (time.time() - start_time))
+    #print("AnalyzeInput() done --- %s seconds ---" % (time.time() - start_time))
 
-    print dialogResult.SentenceList
-    print ""
+    #print dialogResult.SentenceList
+    #print ""
 
     #if dialogResult.SentenceList != None and len(dialogResult.SentenceList) > 0:
         #print random.choice(dialogResult.GetSentencesWithHighestValue())
     print dialogResult.GetRandomSentenceWithHighestValue()
 
-    print("--- %s seconds ---" % (time.time() - start_time))
+    #print("--- %s seconds ---" % (time.time() - start_time))
+
+
+def doWorkDyn(inputString):
+
+    #print("processInput() done --- %s seconds ---" % (time.time() - start_time))
+    #print inputString
+    pa = PipelineArgs(inputString)
+
+    # THIS SHOULD BE DONE BY THE PIPELINE BEFORE - NOT SPECIFIC TO RESPLVING THE COMMAND
+    pa = ProcessInput().ProcessAsync(pa)
+    #print("processInput() done --- %s seconds ---" % (time.time() - start_time))
+
+    dialogResult = AnalyzeInput().Process(pa)
+    #print("AnalyzeInput() done --- %s seconds ---" % (time.time() - start_time))
+
+    #print dialogResult.SentenceList
+    #print ""
+
+    #if dialogResult.SentenceList != None and len(dialogResult.SentenceList) > 0:
+        #print random.choice(dialogResult.GetSentencesWithHighestValue())
+    print dialogResult.GetRandomSentenceWithHighestValue()
+
+    #print("--- %s seconds ---" % (time.time() - start_time))
 
 
 
 
+start_time = time.time()
 doWork("Guten Abend Peter")
-
 doWork("Guten abend, Wer war Freddy Mercury")
-
 doWork("Was ist drei plus sieben?")
-
 doWork("Was ist 23 plus 12?")
+doWork("Hallöchen")
+print("END ROW: --- %s seconds ---" % (time.time() - start_time))
 
+start_time = time.time()
+doWorkDyn("Guten Abend Peter")
+doWorkDyn("Guten abend, Wer war Freddy Mercury")
+doWorkDyn("Was ist drei plus sieben?")
+doWorkDyn("Was ist 23 plus 12?")
+doWorkDyn("Hallöchen")
+print("END DYN: --- %s seconds ---" % (time.time() - start_time))
+
+start_time = time.time()
+doWorkDyn("Guten Abend Peter")
+doWorkDyn("Guten abend, Wer war Freddy Mercury")
+doWorkDyn("Was ist drei plus sieben?")
+doWorkDyn("Was ist 23 plus 12?")
+doWorkDyn("Hallöchen")
+print("END DYN: --- %s seconds ---" % (time.time() - start_time))
+
+start_time = time.time()
+doWork("Guten Abend Peter")
+doWork("Guten abend, Wer war Freddy Mercury")
+doWork("Was ist drei plus sieben?")
+doWork("Was ist 23 plus 12?")
+doWork("Hallöchen")
+print("END ROW: --- %s seconds ---" % (time.time() - start_time))
 
 
 

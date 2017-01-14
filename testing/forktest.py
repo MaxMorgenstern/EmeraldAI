@@ -6,6 +6,7 @@ print "go"
 
 import multiprocessing
 from multiprocessing import Queue
+from multiprocessing import Manager
 import sys
 
 
@@ -35,6 +36,31 @@ def non_daemon(q):
         i += 1
     print 'Exiting :', p.name, p.pid
     sys.stdout.flush()
+
+
+def worker(procnum, return_dict):
+    procval = procnum * 10
+    time.sleep(1)
+    return_dict[procnum] = procval
+
+
+if __name__ == '__main__':
+    manager = Manager()
+    return_dict = manager.dict()
+    jobs = []
+    for i in range(5):
+        p = multiprocessing.Process(target=worker, args=(i,return_dict))
+        jobs.append(p)
+        p.start()
+        print i
+    print "for done"
+
+    for proc in jobs:
+        proc.join()
+    print return_dict.values()
+
+
+exit()
 
 if __name__ == '__main__':
     queue = Queue()
