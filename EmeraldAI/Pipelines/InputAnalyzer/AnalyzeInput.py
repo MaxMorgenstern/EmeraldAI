@@ -7,7 +7,7 @@ from EmeraldAI.Logic.Conversation.SentenceResolver import SentenceResolver
 class AnalyzeInput(object):
     __metaclass__ = Singleton
 
-
+    # TODO add async
     def Process(self, PipelineArgs):
 
         sentenceList = {}

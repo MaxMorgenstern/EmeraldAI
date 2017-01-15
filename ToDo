@@ -106,3 +106,17 @@ Rank  Bot Property  Value
 57  <bot name="emotions" /> I don't pay much attention to my feelings
 58  <bot name="feelings" /> I always put others before myself
 
+
+
+DELETE FROM Conversation_Action;
+DELETE FROM Conversation_Category;
+DELETE FROM Conversation_Keyword;
+DELETE FROM Conversation_Requirement;
+DELETE FROM Conversation_Sentence;
+DELETE FROM Conversation_Sentence_Action;
+DELETE FROM Conversation_Sentence_Category_Has;
+DELETE FROM Conversation_Sentence_Category_Set;
+DELETE FROM Conversation_Sentence_Keyword;
+DELETE FROM Conversation_Sentence_Requirement;
+
+
