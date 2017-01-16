@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 from EmeraldAI.Config.Config import *
+from cachetools import cached
 if(Config().Get("Database", "NLPDatabaseType").lower() == "sqlite"):
     from EmeraldAI.Logic.Database.SQlite3 import SQlite3 as db
 elif(Config().Get("Database", "NLPDatabaseType").lower() == "mysql"):
@@ -12,6 +13,7 @@ class Thesaurus(object):
     def __executeQuery(self, query, word):
         return db().Fetchall(query.format(lowerword=word.lower()))
 
+    @cached(cache={})
     def GetSynonymsAndCategory(self, word):
         query = """SELECT term.normalized_word, term.word, term2.word, category.category_name
             FROM Thesaurus_Term term, Thesaurus_Synset synset, Thesaurus_Term term2, Thesaurus_Category_Link category_link, Thesaurus_Category category
@@ -24,6 +26,7 @@ class Thesaurus(object):
             ORDER BY term.word;"""
         return self.__executeQuery(query, word)
 
+    @cached(cache={})
     def GetSynonyms(self, word):
         query = """SELECT term.normalized_word, term.word, term2.word
             FROM Thesaurus_Term term, Thesaurus_Synset synset, Thesaurus_Term term2
@@ -34,6 +37,7 @@ class Thesaurus(object):
             ORDER BY term.word;"""
         return self.__executeQuery(query, word)
 
+    @cached(cache={})
     def GetCategory(self, word):
         query = """SELECT term.normalized_word, term.word, category.category_name
             FROM Thesaurus_Term term, Thesaurus_Synset synset, Thesaurus_Category_Link category_link, Thesaurus_Category category
@@ -44,6 +48,7 @@ class Thesaurus(object):
             AND category_link.category_id = category.id;"""
         return self.__executeQuery(query, word)
 
+    @cached(cache={})
     def GetOpposite(self, word):
         query = """SELECT term.word, term2.word
             FROM Thesaurus_Term term, Thesaurus_Synset synset, Thesaurus_Term term2, Thesaurus_Term_Link term_link

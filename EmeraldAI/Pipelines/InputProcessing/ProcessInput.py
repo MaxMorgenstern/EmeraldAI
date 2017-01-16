@@ -85,7 +85,7 @@ class ProcessInput(object):
         parameterList += list(set(w.ParameterList) - set(parameterList))
 
         w.SynonymList = self.__addToWordList(w.NormalizedWord, w.SynonymList, language)
-        synonyms = Thesaurus().GetSynonyms(w.Word)
+        synonyms = Thesaurus().GetSynonyms(word)
 
         for synonym in synonyms:
             if synonym[0]:

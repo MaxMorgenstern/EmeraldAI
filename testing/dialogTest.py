@@ -195,7 +195,8 @@ doWork("Guten Abend Peter")
 doWork("Guten abend, Wer war Freddy Mercury")
 doWork("Was ist drei plus sieben?")
 doWork("Was ist 23 plus 12?")
-doWork("Hallöchen")
+doWork("Hallöchen, wie geht es dir")
+doWork("Was war gestern abend im Fernsehen")
 print("END ROW: --- %s seconds ---" % (time.time() - start_time))
 
 
