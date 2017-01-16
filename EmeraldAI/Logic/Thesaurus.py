@@ -1,7 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-from EmeraldAI.Config.Config import *
 from cachetools import cached
+from EmeraldAI.Config.Config import *
+from EmeraldAI.Logic.Singleton import Singleton
+
 if(Config().Get("Database", "NLPDatabaseType").lower() == "sqlite"):
     from EmeraldAI.Logic.Database.SQlite3 import SQlite3 as db
 elif(Config().Get("Database", "NLPDatabaseType").lower() == "mysql"):
@@ -9,6 +11,7 @@ elif(Config().Get("Database", "NLPDatabaseType").lower() == "mysql"):
 
 
 class Thesaurus(object):
+    __metaclass__ = Singleton
 
     def __executeQuery(self, query, word):
         return db().Fetchall(query.format(lowerword=word.lower()))
