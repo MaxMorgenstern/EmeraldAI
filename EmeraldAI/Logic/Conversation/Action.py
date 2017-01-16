@@ -3,7 +3,7 @@
 from EmeraldAI.Logic.Singleton import Singleton
 import importlib
 
-class SentenceResolver(object):
+class Action(object):
     __metaclass__ = Singleton
 
     def CreateClass(self, moduleName, className):
@@ -16,14 +16,17 @@ class SentenceResolver(object):
         method = getattr(instance, functionName)
         return method()
 
-    def CallFunction(self, moduleName, className, functionName, arg1, arg2=None, arg3=None):
+    def CallFunction(self, moduleName, className, functionName, arg1=None, arg2=None, arg3=None):
         instance = self.CreateClass(moduleName, className)
         method = getattr(instance, functionName)
 
-        if arg3 not None:
+        if arg3 != None:
             return method(arg1, arg2, arg3)
 
-        if arg2 not None:
+        if arg2 != None:
             return method(arg1, arg2)
 
-        return method(arg1)
+        if arg1 != None:
+            return method(arg1)
+
+        return method()

@@ -163,8 +163,11 @@ def doWorkDyn(inputString):
 
     #print("--- %s seconds ---" % (time.time() - start_time))
 
-
-
+"""
+from EmeraldAI.Logic.Modules import Global
+words_DE = Global.ReadDataFile("Commonwords", "de.txt")
+doWork(" ".join(words_DE))
+"""
 
 start_time = time.time()
 doWork("Guten Abend Peter")

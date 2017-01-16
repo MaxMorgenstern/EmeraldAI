@@ -12,6 +12,23 @@ module_name = "EmeraldAI.Logic.LocationProcessing.WiFiFingerprinting"
 class_name = "WiFiFingerprinting"
 function_name = "PredictLocation"
 
+
+
+from EmeraldAI.Logic.Conversation.Action import Action
+a = Action()
+
+x = a.CallFunction(module_name, class_name, function_name)
+
+instance = a.CreateClass(module_name, class_name)
+
+print x
+percent = 100 / sum(x.values())
+for key, value in x.iteritems():
+    print "{0}: {1:.2f}%".format(instance.GetLocationName(key), (value * percent))
+
+
+exit(1)
+
 """
 module = __import__(module_name)
 print module
