@@ -8,7 +8,7 @@ sys.setdefaultencoding('utf-8')
 
 from EmeraldAI.Logic.SpeechProcessing.Google import *
 from EmeraldAI.Logic.SpeechProcessing.Ivona import *
-from EmeraldAI.Logic.AliceBot import *
+from EmeraldAI.Logic.NLP.AliceBot import *
 
 google = Google()
 ivona = Ivona()

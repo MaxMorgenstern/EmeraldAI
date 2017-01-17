@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-from EmeraldAI.Logic.Modules import NLP
+from EmeraldAI.Logic.NLP import NLP
 from EmeraldAI.Config.Config import *
 from EmeraldAI.Logic.KnowledgeGathering.Math import Math
 

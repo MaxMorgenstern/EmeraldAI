@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import time
 from EmeraldAI.Logic.Singleton import Singleton
-from EmeraldAI.Logic.Conversation.SentenceResolver import SentenceResolver
+from EmeraldAI.Logic.NLP.SentenceResolver import SentenceResolver
 
 class AnalyzeInput(object):
     __metaclass__ = Singleton

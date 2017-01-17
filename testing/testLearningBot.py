@@ -6,12 +6,12 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-from EmeraldAI.Logic.Modules import NLP
+from EmeraldAI.Logic.NLP import NLP
 
 #from EmeraldAI.Logic.SpeechProcessing.Google import *
 #from EmeraldAI.Logic.SpeechProcessing.Ivona import *
-from EmeraldAI.Logic.AliceBot import *
-from EmeraldAI.Logic.Thesaurus import *
+from EmeraldAI.Logic.NLP.AliceBot import *
+from EmeraldAI.Logic.NLP.Thesaurus import *
 
 from EmeraldAI.Entities.Word import Word
 

@@ -31,11 +31,6 @@ https://pypi.python.org/pypi/cachetools
 
 ---
 
-# Input Processing
-  # Language Detection
-  # Sentence + Word Segmentation
-  # Word Tagging + Synonym detection
-  # strip stoppwords
 
 # Input Analyzer
   # Phrase Detection

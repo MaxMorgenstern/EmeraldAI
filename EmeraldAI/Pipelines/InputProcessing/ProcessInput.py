@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 from EmeraldAI.Logic.Modules import NLP
 from EmeraldAI.Entities.Word import Word
-from EmeraldAI.Logic.Thesaurus import *
-from EmeraldAI.Logic.Modules import Parameterizer
+from EmeraldAI.Logic.NLP.Thesaurus import *
+from EmeraldAI.Logic.NLP import Parameterizer
 from EmeraldAI.Logic.Singleton import Singleton
 
 import multiprocessing
