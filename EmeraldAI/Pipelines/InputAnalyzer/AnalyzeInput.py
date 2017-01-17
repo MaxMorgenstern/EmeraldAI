@@ -47,4 +47,6 @@ class AnalyzeInput(object):
 
         PipelineArgs.SentenceList = sentenceList
 
+        # TODO trigger actions
+
         return PipelineArgs
