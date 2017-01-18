@@ -30,10 +30,10 @@ class AnalyzeInput(object):
 
         # TODO - get / build parameter list
         parameterList = {}
-        parameterList["User"] = PipelineArgs.UserName
+        parameterList["User"] = "Unknown"
         parameterList["Time"] = time.strftime("%H%M")
         parameterList["Day"] = time.strftime("%A")
-        parameterList["Category"] = PipelineArgs.Category
+        parameterList["Category"] = "Greeting"
 
         calculationResult = SentenceResolver().CalculateRequirement(sentenceList, parameterList)
         sentenceList = calculationResult["sentenceList"]

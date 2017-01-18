@@ -20,15 +20,16 @@ class PipelineArgs(BaseObject):
         # Input with parameterized data
         self.ParameterizedInput = None
 
-        # Current Category | Current User
-        self.Category = None
-        self.UserName = None
+        # TODO Conversation History
+        self.History = None
 
-        # Response | Response found
-        self.Dialog = None
-        self.DialogFound = False
+        # Response with patameters | Raw response string | Response ID | Response found
+        self.Response = None
+        self.ResponseRaw = None
+        self.ResponseID = None
+        self.ResponseFound = False
 
-        # List of Errors
+        # TODO - List of Errors
         self.Error = None
 
 
@@ -36,9 +37,9 @@ class PipelineArgs(BaseObject):
         if self.SentenceList != None and len(self.SentenceList) > 0:
             highestRanking = max(node.Rating for node in self.SentenceList.values())
             if margin > 0:
-                result = [node.ID for node in self.SentenceList.values() if node.Rating>=(highestRanking-margin)]
+                result = [node for node in self.SentenceList.values() if node.Rating>=(highestRanking-margin)]
             else:
-                result = [node.ID for node in self.SentenceList.values() if node.Rating==highestRanking]
+                result = [node for node in self.SentenceList.values() if node.Rating==highestRanking]
             return result
         return None
 

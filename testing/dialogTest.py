@@ -53,7 +53,7 @@ data=""
 #A;Time:gt1700;Guten Abend {name}.;Greeting;;
 #---
 #Q;;Wer ist {name};;Command;
-#A;;{name} ist {result};;;
+#A;;{inputname} ist {result};;;
 #"""
 
 comparisonValues = ["lt", "gt", "le", "eq", "ge"]
@@ -116,6 +116,7 @@ print("--- %s seconds ---" % (time.time() - start_time))
 
 from EmeraldAI.Pipelines.InputProcessing.ProcessInput import ProcessInput
 from EmeraldAI.Pipelines.InputAnalyzer.AnalyzeInput import AnalyzeInput
+from EmeraldAI.Pipelines.ResponseProcessing.ProcessResponse import ProcessResponse
 from EmeraldAI.Entities.PipelineArgs import PipelineArgs
 
 def doWork(inputString):
@@ -136,7 +137,9 @@ def doWork(inputString):
 
     #if dialogResult.SentenceList != None and len(dialogResult.SentenceList) > 0:
         #print random.choice(dialogResult.GetSentencesWithHighestValue())
-    print dialogResult.GetRandomSentenceWithHighestValue()
+
+    ProcessResponse().Process(dialogResult)
+    #print dialogResult.GetRandomSentenceWithHighestValue().GetSentenceString()
 
     #print("--- %s seconds ---" % (time.time() - start_time))
 
@@ -159,7 +162,9 @@ def doWorkDyn(inputString):
 
     #if dialogResult.SentenceList != None and len(dialogResult.SentenceList) > 0:
         #print random.choice(dialogResult.GetSentencesWithHighestValue())
-    print dialogResult.GetRandomSentenceWithHighestValue()
+
+    ProcessResponse().Process(dialogResult)
+    #print dialogResult.GetRandomSentenceWithHighestValue().GetSentenceString()
 
     #print("--- %s seconds ---" % (time.time() - start_time))
 
@@ -199,7 +204,7 @@ doWork("Guten abend, Wer war Freddy Mercury")
 doWork("Was ist drei plus sieben?")
 doWork("Was ist 23 plus 12?")
 doWork("Hallöchen, wie geht es dir")
-doWork("Was war gestern abend im Fernsehen")
+doWork("Wer war Freddy Mercury")
 print("END ROW: --- %s seconds ---" % (time.time() - start_time))
 
 

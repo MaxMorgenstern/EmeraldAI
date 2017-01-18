@@ -1,7 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 from EmeraldAI.Entities.BaseObject import BaseObject
-
+from EmeraldAI.Config.Config import *
+if(Config().Get("Database", "NLPDatabaseType").lower() == "sqlite"):
+    from EmeraldAI.Logic.Database.SQlite3 import SQlite3 as db
+elif(Config().Get("Database", "NLPDatabaseType").lower() == "mysql"):
+    from EmeraldAI.Logic.Database.MySQL import MySQL as db
 
 class Sentence(BaseObject):
     ID = None
@@ -24,6 +28,7 @@ class Sentence(BaseObject):
         self.SetsCategory = []
         self.Action = None
 
+    # TODO - some better output
     def __repr__(self):
          return "R:{0} L:{1} S:{2}\n".format(self.Rating, len(self.KeywordList), self.OnlyStopwords)
 
@@ -38,3 +43,19 @@ class Sentence(BaseObject):
 
     def AddPriority(self, Rating):
         self.Rating += Rating
+
+    def GetSentenceString(self, formal=True):
+        query = "SELECT Sentence, Formal, Informal FROM Conversation_Sentence WHERE ID = '{0}'"
+        sqlResult = db().Fetchall(query.format(self.ID))
+        for r in sqlResult:
+            if formal:
+                if r[1]:
+                    return r[1]
+                else:
+                    return r[0]
+            else:
+                if r[2]:
+                    return r[2]
+                else:
+                    return r[0]
+        return None
