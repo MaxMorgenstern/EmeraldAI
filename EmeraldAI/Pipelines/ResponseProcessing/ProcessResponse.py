@@ -20,7 +20,10 @@ class ProcessResponse(object):
 
         # TODO
         if sentence.Rating < self._sentenceRatingThreshold:
-            return
+            return PipelineArgs
+
+
+        # TODO - OR instead of returning - fallback to alice (set in config)
 
         # TODO - formal (true / default value) or informal
         PipelineArgs.ResponseRaw = sentence.GetSentenceString()
