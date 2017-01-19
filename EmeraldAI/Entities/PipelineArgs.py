@@ -29,6 +29,9 @@ class PipelineArgs(BaseObject):
         self.ResponseID = None
         self.ResponseFound = False
 
+        # TODO
+        self.SessionID = 0
+
         # TODO - List of Errors
         self.Error = None
 

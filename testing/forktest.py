@@ -15,8 +15,8 @@ sys.setdefaultencoding('utf-8')
 from EmeraldAI.Logic.Singleton import Singleton
 import json
 
-from thread import start_new_thread
-
+#from thread import start_new_thread
+from threading import Thread
 
 class fooo(object):
     __metaclass__ = Singleton
@@ -29,10 +29,10 @@ class fooo(object):
 
 
 
-def heron():
+def exampleFunction():
     y = fooo()
     y.ID += 1
-    print "heron", y.toJSON()
+    print "exampleFunction", y.toJSON()
 
 
 x = fooo()
@@ -40,10 +40,22 @@ x.ID = 1
 x.bar = "Max"
 print x.toJSON()
 
-start_new_thread(heron,())
+"""
+start_new_thread(exampleFunction,())
 time.sleep(1)
-start_new_thread(heron,())
-start_new_thread(heron,())
+start_new_thread(exampleFunction,())
+start_new_thread(exampleFunction,())
+"""
+t1 = Thread(target=exampleFunction, args=())
+t1.start()
+
+time.sleep(1)
+
+t2 = Thread(target=exampleFunction, args=())
+t2.start()
+
+t3 = Thread(target=exampleFunction, args=())
+t3.start()
 
 time.sleep(5)
 

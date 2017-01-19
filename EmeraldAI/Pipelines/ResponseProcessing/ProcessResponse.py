@@ -44,7 +44,7 @@ class ProcessResponse(object):
         for keyword in keywords:
             if keyword in parameterList:
                 replaceword = parameterList[keyword]
-                if replaceword = None or replaceword == "Unknown":
+                if replaceword == None or replaceword == "Unknown":
                     replaceword = ""
                 PipelineArgs.Response = PipelineArgs.Response.replace("{{{0}}}".format(keyword), replaceword)
             else:
