@@ -26,11 +26,14 @@ class ProcessResponse(object):
         # TODO - OR instead of returning - fallback to alice (set in config)
 
         # TODO - formal (true / default value) or informal
-        PipelineArgs.ResponseRaw = sentence.GetSentenceString()
+        formal = True
+        PipelineArgs.ResponseRaw = sentence.GetSentenceString(formal)
         PipelineArgs.ResponseID = sentence.ID
         PipelineArgs.ResponseFound = True
 
         # TODO
+
+
         parameterList = {}
         parameterList["name"] = "Unknown"
         parameterList["input"] = "Hugo"
@@ -41,7 +44,7 @@ class ProcessResponse(object):
         for keyword in keywords:
             if keyword in parameterList:
                 replaceword = parameterList[keyword]
-                if replaceword == "Unknown":
+                if replaceword = None or replaceword == "Unknown":
                     replaceword = ""
                 PipelineArgs.Response = PipelineArgs.Response.replace("{{{0}}}".format(keyword), replaceword)
             else:

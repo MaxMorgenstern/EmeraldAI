@@ -2,12 +2,70 @@
 # -*- coding: utf-8 -*-
 import time
 
-print "go"
-
 import multiprocessing
 from multiprocessing import Queue
 from multiprocessing import Manager
 import sys
+import os
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
+from EmeraldAI.Logic.Singleton import Singleton
+import json
+
+from thread import start_new_thread
+
+
+class fooo(object):
+    __metaclass__ = Singleton
+
+    bar = None
+    ID = 1
+
+    def toJSON(self):
+        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+
+
+
+def heron():
+    y = fooo()
+    y.ID += 1
+    print "heron", y.toJSON()
+
+
+x = fooo()
+x.ID = 1
+x.bar = "Max"
+print x.toJSON()
+
+start_new_thread(heron,())
+time.sleep(1)
+start_new_thread(heron,())
+start_new_thread(heron,())
+
+time.sleep(5)
+
+print x.toJSON()
+
+print "ENDE"
+exit()
+
+
+
+
+
+
+
+class foo(object):
+    __metaclass__ = Singleton
+
+    bar = None
+    ID = 1
+
+    def toJSON(self):
+        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 
 
 def daemon(q):
@@ -40,11 +98,22 @@ def non_daemon(q):
 
 def worker(procnum, return_dict):
     procval = procnum * 10
-    time.sleep(1)
+    time.sleep(2)
+    x = foo()
+    print x.toJSON()
+    time.sleep(3)
+    x.ID += 1
+    print x.toJSON()
     return_dict[procnum] = procval
 
 
 if __name__ == '__main__':
+    test = foo()
+    test.ID = 1
+    test.bar = "Max"
+
+    print test.toJSON()
+
     manager = Manager()
     return_dict = manager.dict()
     jobs = []
@@ -59,8 +128,18 @@ if __name__ == '__main__':
         proc.join()
     print return_dict.values()
 
+    test.ID += 100
+
+    print test.toJSON()
 
 exit()
+
+
+
+
+
+
+
 
 if __name__ == '__main__':
     queue = Queue()
