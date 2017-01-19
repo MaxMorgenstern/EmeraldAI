@@ -4,6 +4,8 @@ from EmeraldAI.Entities.BaseObject import BaseObject
 from EmeraldAI.Logic.Singleton import Singleton
 import datetime
 
+# TODO
+
 class NLPParameter(BaseObject):
     __metaclass__ = Singleton
     # This class is a singleton as we only need one instance across the whole project
