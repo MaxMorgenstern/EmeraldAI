@@ -3,47 +3,37 @@
 import time
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Logic.NLP.SentenceResolver import SentenceResolver
+from EmeraldAI.Entities.NLPParameter import NLPParameter
+from EmeraldAI.Entities.User import User
 
 class AnalyzeInput(object):
     __metaclass__ = Singleton
 
-    # TODO add async
+
     def Process(self, PipelineArgs):
 
         sentenceList = {}
-        parameterList = []
+        wordParameterList = []
 
         for word in PipelineArgs.WordList:
             wordList = "'{0}'".format("', '".join(word.SynonymList))
 
-            #TODO - get user by name
-            isAdmin = 1
+            user = User()
 
-            sentenceList = SentenceResolver().GetSentencesByKeyword(sentenceList, wordList, word.Language, True, isAdmin)
-            sentenceList = SentenceResolver().GetSentencesByKeyword(sentenceList, "'{0}'".format(word.NormalizedWord), word.Language, False, isAdmin)
+            sentenceList = SentenceResolver().GetSentencesByKeyword(sentenceList, wordList, word.Language, True, user.Admin)
+            sentenceList = SentenceResolver().GetSentencesByKeyword(sentenceList, "'{0}'".format(word.NormalizedWord), word.Language, False, user.Admin)
 
-            parameterList += list(set(word.ParameterList) - set(parameterList))
-        #print "Keyword:\t\t", sentenceList
+            wordParameterList += list(set(word.ParameterList) - set(wordParameterList))
 
-        sentenceList = SentenceResolver().GetSentencesByParameter(sentenceList, parameterList, word.Language, isAdmin)
-        #print "Parameter:\t\t", sentenceList, "\t", parameterList
+        sentenceList = SentenceResolver().GetSentencesByParameter(sentenceList, wordParameterList, word.Language, user.Admin)
 
-        # TODO - get / build parameter list
-        parameterList = {}
-        parameterList["User"] = "Unknown"
-        parameterList["Time"] = time.strftime("%H%M")
-        parameterList["Day"] = time.strftime("%A")
-        parameterList["Category"] = "Greeting"
+        parameter = NLPParameter()
 
-        calculationResult = SentenceResolver().CalculateRequirement(sentenceList, parameterList)
+        calculationResult = SentenceResolver().CalculateRequirement(sentenceList, parameter.ParameterList)
         sentenceList = calculationResult["sentenceList"]
-        #print "Calculate Requirement:\t", sentenceList
 
         sentenceList = SentenceResolver().AddSentencePriority(sentenceList)
-        #print "Sentence Priority:\t", sentenceList
-
-        sentenceList = SentenceResolver().CalculateCategory(sentenceList, parameterList["Category"])
-        #print "Calculate Category:\t", sentenceList
+        sentenceList = SentenceResolver().CalculateCategory(sentenceList, parameter.ParameterList["Category"])
 
         PipelineArgs.SentenceList = sentenceList
 

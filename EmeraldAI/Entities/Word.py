@@ -17,5 +17,5 @@ class Word(BaseObject):
         # list of synonyms
         self.SynonymList = []
 
-        # parameters mathing the word
+        # parameters matching the word
         self.ParameterList = []

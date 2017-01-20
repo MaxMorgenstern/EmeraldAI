@@ -119,6 +119,9 @@ from EmeraldAI.Pipelines.InputAnalyzer.AnalyzeInput import AnalyzeInput
 from EmeraldAI.Pipelines.ResponseProcessing.ProcessResponse import ProcessResponse
 from EmeraldAI.Entities.PipelineArgs import PipelineArgs
 
+
+from EmeraldAI.Entities.NLPParameter import NLPParameter
+
 def doWork(inputString):
 
     #print("processInput() done --- %s seconds ---" % (time.time() - start_time))
@@ -138,7 +141,8 @@ def doWork(inputString):
     #if dialogResult.SentenceList != None and len(dialogResult.SentenceList) > 0:
         #print random.choice(dialogResult.GetSentencesWithHighestValue())
 
-    ProcessResponse().Process(dialogResult)
+    result = ProcessResponse().Process(dialogResult)
+    print result.Response
     #print dialogResult.GetRandomSentenceWithHighestValue().GetSentenceString()
 
     #print("--- %s seconds ---" % (time.time() - start_time))
@@ -163,7 +167,8 @@ def doWorkDyn(inputString):
     #if dialogResult.SentenceList != None and len(dialogResult.SentenceList) > 0:
         #print random.choice(dialogResult.GetSentencesWithHighestValue())
 
-    ProcessResponse().Process(dialogResult)
+    result = ProcessResponse().Process(dialogResult)
+    print result.Response
     #print dialogResult.GetRandomSentenceWithHighestValue().GetSentenceString()
 
     #print("--- %s seconds ---" % (time.time() - start_time))
@@ -174,10 +179,18 @@ words_DE = Global.ReadDataFile("Commonwords", "de.txt")
 doWork(" ".join(words_DE))
 """
 
+param = NLPParameter()
+
+param.ParameterList["Name"] = "Max"
+param.ParameterList["User"] = "Max"
+param.ParameterList["Input"] = "Hugo"
+param.ParameterList["Result"] = "ein kleiner Troll"
+
+
 start_time = time.time()
 doWork("Guten Abend Peter")
 doWork("Guten abend, Wer war Freddy Mercury")
-doWork("Was ist drei plus sieben?")
+doWork("Wer war Freddy Mercury")
 doWork("Was ist 23 plus 12?")
 doWork("Hallöchen")
 print("END ROW: --- %s seconds ---" % (time.time() - start_time))

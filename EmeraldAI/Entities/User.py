@@ -11,8 +11,8 @@ class User(BaseObject):
 
     # TODO
 
-    ID = None
-    Name = None
+    ID = 0
+    Name = "Unknown"
     LastName = None
     UsedName = None
 
@@ -28,7 +28,8 @@ class User(BaseObject):
     Trainer = False
     Admin = False
 
-    __init__(self, ID, Name, Formal=True, Trainer=False, Admin=False):
+    """
+    def __init__(self, ID, Name, Formal=True, Trainer=False, Admin=False):
         self.ID = ID
         self.Name = Name
 
@@ -36,3 +37,4 @@ class User(BaseObject):
         self.Trainer = Trainer
         self.Admin = Admin
         # TODO - load data from DB
+    """

@@ -1,10 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 from EmeraldAI.Logic.Singleton import Singleton
+from EmeraldAI.Entities.NLPParameter import NLPParameter
+from EmeraldAI.Entities.User import User
 import re
-
-#todo
-import time
 
 class ProcessResponse(object):
     __metaclass__ = Singleton
@@ -22,33 +21,25 @@ class ProcessResponse(object):
         if sentence.Rating < self._sentenceRatingThreshold:
             return PipelineArgs
 
-
         # TODO - OR instead of returning - fallback to alice (set in config)
 
-        # TODO - formal (true / default value) or informal
-        formal = True
-        PipelineArgs.ResponseRaw = sentence.GetSentenceString(formal)
+        user = User()
+        PipelineArgs.ResponseRaw = sentence.GetSentenceString(user.Formal)
         PipelineArgs.ResponseID = sentence.ID
         PipelineArgs.ResponseFound = True
 
-        # TODO
-
-
-        parameterList = {}
-        parameterList["name"] = "Unknown"
-        parameterList["input"] = "Hugo"
-        parameterList["result"] = "ein kleiner Troll"
+        parameter = NLPParameter()
 
         PipelineArgs.Response = PipelineArgs.ResponseRaw
         keywords = re.findall(r"\{(.*?)\}", PipelineArgs.Response)
         for keyword in keywords:
-            if keyword in parameterList:
-                replaceword = parameterList[keyword]
+            if keyword.title() in parameter.ParameterList:
+                replaceword = parameter.ParameterList[keyword.title()]
                 if replaceword == None or replaceword == "Unknown":
                     replaceword = ""
-                PipelineArgs.Response = PipelineArgs.Response.replace("{{{0}}}".format(keyword), replaceword)
+                PipelineArgs.Response = PipelineArgs.Response.replace("{{{0}}}".format(keyword.lower()), replaceword)
             else:
-                PipelineArgs.Response = PipelineArgs.Response.replace("{{{0}}}".format(keyword), "")
+                PipelineArgs.Response = PipelineArgs.Response.replace("{{{0}}}".format(keyword.lower()), "")
 
 
         # TODO
