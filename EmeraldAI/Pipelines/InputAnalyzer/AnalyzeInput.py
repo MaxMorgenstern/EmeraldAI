@@ -20,12 +20,12 @@ class AnalyzeInput(object):
 
             user = User()
 
-            sentenceList = SentenceResolver().GetSentencesByKeyword(sentenceList, wordList, word.Language, True, user.Admin)
-            sentenceList = SentenceResolver().GetSentencesByKeyword(sentenceList, "'{0}'".format(word.NormalizedWord), word.Language, False, user.Admin)
+            sentenceList = SentenceResolver().GetSentencesByKeyword(sentenceList, wordList, word.Language, True, (user.Admin or user.Trainer))
+            sentenceList = SentenceResolver().GetSentencesByKeyword(sentenceList, "'{0}'".format(word.NormalizedWord), word.Language, False, (user.Admin or user.Trainer))
 
             wordParameterList += list(set(word.ParameterList) - set(wordParameterList))
 
-        sentenceList = SentenceResolver().GetSentencesByParameter(sentenceList, wordParameterList, word.Language, user.Admin)
+        sentenceList = SentenceResolver().GetSentencesByParameter(sentenceList, wordParameterList, word.Language, (user.Admin or user.Trainer))
 
         parameter = NLPParameter()
 

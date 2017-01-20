@@ -23,18 +23,17 @@ class SentenceResolver(object):
         self.__RequirementBonus = Config().GetFloat("SentenceResolver", "RequirementBonus") #1
 
 
-    def GetSentencesByKeyword(self, sentenceList, word, language, isSynonym, isAdmin):
+    def GetSentencesByKeyword(self, sentenceList, word, language, isSynonym, isTrainer):
         query = """SELECT Conversation_Keyword.Stopword, Conversation_Sentence_Keyword.Priority,
                 Conversation_Sentence_Keyword.SentenceID, Conversation_Keyword.Priority
                 FROM Conversation_Keyword, Conversation_Sentence_Keyword, Conversation_Sentence
                 WHERE Conversation_Keyword.ID = Conversation_Sentence_Keyword.KeywordID
                 AND Conversation_Sentence_Keyword.SentenceID = Conversation_Sentence.ID
                 AND Conversation_Sentence.Approved = {0}
-                AND Conversation_Sentence.Disabled = {1}
-                AND Conversation_Keyword.Normalized IN ({2}) AND Conversation_Keyword.Language = '{3}'"""
-        admin = 1 if isAdmin else 1
-
-        sqlResult = db().Fetchall(query.format(admin, '0', word, language))
+                AND Conversation_Sentence.Disabled = 0
+                AND Conversation_Keyword.Normalized IN ({1}) AND Conversation_Keyword.Language = '{2}'"""
+        trainer = 1 if isTrainer else 1
+        sqlResult = db().Fetchall(query.format(trainer, word, language))
         for r in sqlResult:
             stopwordFactor = self.__stopwordFactor if r[0] == 1 else 1
             isStopword = True if r[0] == 1 else False
@@ -47,17 +46,17 @@ class SentenceResolver(object):
 
         return sentenceList
 
-    def GetSentencesByParameter(self, sentenceList, wordParameterList, language, isAdmin):
+    def GetSentencesByParameter(self, sentenceList, wordParameterList, language, isTrainer):
         query = """SELECT Conversation_Keyword.Priority, Conversation_Sentence_Keyword.Priority,
                 Conversation_Sentence_Keyword.SentenceID, Conversation_Keyword.Normalized
                 FROM Conversation_Keyword, Conversation_Sentence_Keyword, Conversation_Sentence
                 WHERE Conversation_Keyword.ID = Conversation_Sentence_Keyword.KeywordID
                 AND Conversation_Sentence_Keyword.SentenceID = Conversation_Sentence.ID
                 AND Conversation_Sentence.Approved = {0}
-                AND Conversation_Sentence.Disabled = {1}
-                AND Conversation_Keyword.Normalized IN ({2}) AND Conversation_Keyword.Language = '{3}'"""
-        admin = 1 if isAdmin else 1
-        sqlResult = db().Fetchall(query.format(admin, '0', "'{" + "}', '{".join(wordParameterList) + "}'", language))
+                AND Conversation_Sentence.Disabled = 0
+                AND Conversation_Keyword.Normalized IN ({1}) AND Conversation_Keyword.Language = '{2}'"""
+        trainer = 1 if isTrainer else 1
+        sqlResult = db().Fetchall(query.format(trainer, "'{" + "}', '{".join(wordParameterList) + "}'", language))
         for r in sqlResult:
             word = "{{{0}}}".format(r[3])
 
