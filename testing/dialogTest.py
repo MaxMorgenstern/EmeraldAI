@@ -115,7 +115,7 @@ print("--- %s seconds ---" % (time.time() - start_time))
 # Resolving #############
 
 from EmeraldAI.Pipelines.InputProcessing.ProcessInput import ProcessInput
-from EmeraldAI.Pipelines.InputAnalyzer.AnalyzeInput import AnalyzeInput
+from EmeraldAI.Pipelines.ScopeAnalyzer.AnalyzeScope import AnalyzeScope
 from EmeraldAI.Pipelines.ResponseProcessing.ProcessResponse import ProcessResponse
 from EmeraldAI.Entities.PipelineArgs import PipelineArgs
 
@@ -132,8 +132,8 @@ def doWork(inputString):
     pa = ProcessInput().Process(pa)
     #print("processInput() done --- %s seconds ---" % (time.time() - start_time))
 
-    dialogResult = AnalyzeInput().Process(pa)
-    #print("AnalyzeInput() done --- %s seconds ---" % (time.time() - start_time))
+    dialogResult = AnalyzeScope().Process(pa)
+    #print("AnalyzeScope() done --- %s seconds ---" % (time.time() - start_time))
 
     #print dialogResult.SentenceList
     #print ""
@@ -158,8 +158,8 @@ def doWorkDyn(inputString):
     pa = ProcessInput().ProcessAsync(pa)
     #print("processInput() done --- %s seconds ---" % (time.time() - start_time))
 
-    dialogResult = AnalyzeInput().Process(pa)
-    #print("AnalyzeInput() done --- %s seconds ---" % (time.time() - start_time))
+    dialogResult = AnalyzeScope().Process(pa)
+    #print("AnalyzeScope() done --- %s seconds ---" % (time.time() - start_time))
 
     #print dialogResult.SentenceList
     #print ""

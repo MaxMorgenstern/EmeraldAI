@@ -16,8 +16,6 @@ class Sentence(BaseObject):
     HasCategory = []
     SetsCategory = []
 
-    Action = None
-
     def __init__(self, ID, Rating, Keyword, IsStopword=True):
         self.ID = ID
         self.Rating = Rating
@@ -26,7 +24,6 @@ class Sentence(BaseObject):
 
         self.HasCategory = []
         self.SetsCategory = []
-        self.Action = None
 
     # TODO - some better output
     def __repr__(self):
@@ -59,3 +56,8 @@ class Sentence(BaseObject):
                 else:
                     return r[0]
         return None
+
+        # TODO
+        def GetAction(self):
+            return ""
+

@@ -3,6 +3,7 @@
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Entities.NLPParameter import NLPParameter
 from EmeraldAI.Entities.User import User
+from EmeraldAI.Config.Config import *
 import re
 
 class ProcessResponse(object):
@@ -23,6 +24,8 @@ class ProcessResponse(object):
             return PipelineArgs
 
         # TODO - OR instead of returning - fallback to alice (set in config)
+
+        # TODO - trigger action
 
         user = User()
         PipelineArgs.ResponseRaw = sentence.GetSentenceString(user.Formal)

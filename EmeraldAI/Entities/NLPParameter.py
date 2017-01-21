@@ -6,7 +6,6 @@ from EmeraldAI.Entities.Bot import Bot
 from datetime import datetime
 
 # TODO
-# TODO - get bot details - from config
 
 class NLPParameter(BaseObject):
     __metaclass__ = Singleton

@@ -5,7 +5,6 @@ from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Config.Config import *
 
 # TODO - add more parameters
-# TODO - variable names - define.
 
 class Bot(BaseObject):
     __metaclass__ = Singleton

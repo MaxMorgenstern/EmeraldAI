@@ -1,3 +1,3 @@
-import InputAnalyzer
+import ScopeAnalyzer
 import InputProcessing
 import ResponseProcessing

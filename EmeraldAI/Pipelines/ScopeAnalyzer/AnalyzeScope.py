@@ -1,12 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import time
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Logic.NLP.SentenceResolver import SentenceResolver
 from EmeraldAI.Entities.NLPParameter import NLPParameter
 from EmeraldAI.Entities.User import User
 
-class AnalyzeInput(object):
+class AnalyzeScope(object):
     __metaclass__ = Singleton
 
 
@@ -36,7 +35,5 @@ class AnalyzeInput(object):
         sentenceList = SentenceResolver().CalculateCategory(sentenceList, parameter.ParameterList["Category"])
 
         PipelineArgs.SentenceList = sentenceList
-
-        # TODO trigger actions
 
         return PipelineArgs
