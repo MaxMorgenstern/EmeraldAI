@@ -22,6 +22,10 @@ CategoryBonus = 1
 RequirementBonus = 1
 
 
+[NLP]
+SentenceRatingThreshold = 2
+
+
 [TextToSpeech]
 AudioPlayer = afplay
 

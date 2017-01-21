@@ -8,6 +8,21 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
+
+
+from EmeraldAI.Entities.Bot import Bot
+from EmeraldAI.Entities.NLPParameter import NLPParameter
+
+b = Bot()
+print b.toDict()
+
+
+nl = NLPParameter()
+print nl.GetParameterList()
+
+exit(1)
+
+
 import subprocess
 import plistlib
 from EmeraldAI.Logic.Database.SQlite3 import SQlite3 as db

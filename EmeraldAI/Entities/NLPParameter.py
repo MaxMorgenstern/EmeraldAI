@@ -2,9 +2,11 @@
 # -*- coding: utf-8 -*-
 from EmeraldAI.Entities.BaseObject import BaseObject
 from EmeraldAI.Logic.Singleton import Singleton
+from EmeraldAI.Entities.Bot import Bot
 from datetime import datetime
 
 # TODO
+# TODO - get bot details - from config
 
 class NLPParameter(BaseObject):
     __metaclass__ = Singleton
@@ -30,6 +32,10 @@ class NLPParameter(BaseObject):
         self.ParameterList["Time"] = datetime.now().strftime("%H%M")
         self.ParameterList["Day"] = datetime.today().strftime("%A")
         self.ParameterList["Category"] = "Greeting"
+
+        # Add Bot Parameter
+        self.ParameterList.update(Bot().toDict())
+
 
     def GetParameterList(self):
         self.ParameterList["Time"] = datetime.now().strftime("%H%M")

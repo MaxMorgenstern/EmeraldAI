@@ -8,29 +8,30 @@ import re
 class ProcessResponse(object):
     __metaclass__ = Singleton
 
-    _sentenceRatingThreshold = 2
+    def __init__(self):
+        self.__sentenceRatingThreshold = Config().GetFloat("NLP", "SentenceRatingThreshold") # 2
 
     def Process(self, PipelineArgs):
         sentence = PipelineArgs.GetRandomSentenceWithHighestValue()
 
-        # TODO
+        # TODO - no sentence found
         if sentence == None:
             return PipelineArgs
 
-        # TODO
-        if sentence.Rating < self._sentenceRatingThreshold:
+        # TODO - no sentence above the minimum threshold
+        if sentence.Rating < self.__sentenceRatingThreshold:
             return PipelineArgs
 
         # TODO - OR instead of returning - fallback to alice (set in config)
 
         user = User()
         PipelineArgs.ResponseRaw = sentence.GetSentenceString(user.Formal)
+        PipelineArgs.Response = PipelineArgs.ResponseRaw
         PipelineArgs.ResponseID = sentence.ID
         PipelineArgs.ResponseFound = True
 
         parameter = NLPParameter()
 
-        PipelineArgs.Response = PipelineArgs.ResponseRaw
         keywords = re.findall(r"\{(.*?)\}", PipelineArgs.Response)
         for keyword in keywords:
             if keyword.title() in parameter.ParameterList:
