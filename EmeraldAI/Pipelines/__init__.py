@@ -1,3 +1,5 @@
 import ScopeAnalyzer
 import InputProcessing
 import ResponseProcessing
+import SpeechToTextProcessing
+import TextToSpeechProcessing

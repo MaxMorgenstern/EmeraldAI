@@ -26,9 +26,13 @@ RequirementBonus = 1
 SentenceRatingThreshold = 2
 
 
+[SpeechToText]
+Provider = Google
+
+
 [TextToSpeech]
 AudioPlayer = afplay
-
+Provider = Ivona
 Microphone =
 
 MicrosoftVoiceGender = Female
