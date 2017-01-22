@@ -16,6 +16,7 @@ class ProcessResponse(object):
         sentence = PipelineArgs.GetRandomSentenceWithHighestValue()
 
         # TODO - no sentence found
+        # TODO - fallback to AIML if set in config
         if sentence == None:
             return PipelineArgs
 

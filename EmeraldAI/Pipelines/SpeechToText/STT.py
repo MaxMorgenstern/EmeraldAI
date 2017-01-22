@@ -6,12 +6,12 @@ from EmeraldAI.Logic.SpeechProcessing.Microsoft import *
 from EmeraldAI.Logic.SpeechProcessing.Wit import *
 from EmeraldAI.Config.Config import *
 
-class ProcessSTT(object):
+class STT(object):
     __metaclass__ = Singleton
 
 
     def __init__(self):
-        self.__sttProvider = Config().GetFloat("SpeechToText", "Provider") # Google
+        self.__sttProvider = Config().Get("SpeechToText", "Provider") # Google
 
     def Process(self):
         if(self.__sttProvider.lower() == "google"):

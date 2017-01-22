@@ -1,5 +1,7 @@
 Just a messy list with things to do
 
+- !!! Training Pipeline !!!
+
 - Add Unit Tests
 
 - Add Logging
@@ -27,20 +29,8 @@ https://pypi.python.org/pypi/cachetools
 
 # EN aiml reference https://code.google.com/archive/p/aiml-en-us-foundation-alice/
 
----
+- multi language support without config change
 
-
-# Input Analyzer
-  # Phrase Detection
-  # Pattern Detection
-  # Context Pipeline
-
-# Response Processing
-  # Answer Pipeline
-    # Answer selection
-    # ELIZA fallback
-  # Customize Answer
-  # Train Conversation
 
 ---
 
