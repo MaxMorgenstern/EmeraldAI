@@ -24,53 +24,53 @@ class SentenceResolver(object):
 
 
     def GetSentencesByKeyword(self, sentenceList, word, language, isSynonym, isTrainer):
-        query = """SELECT Conversation_Keyword.Stopword, Conversation_Sentence_Keyword.Priority,
-                Conversation_Sentence_Keyword.SentenceID, Conversation_Keyword.Priority
+        query = """SELECT DISTINCT Conversation_Sentence_Keyword.SentenceID, Conversation_Keyword.Stopword,
+                Conversation_Sentence_Keyword.Priority, Conversation_Keyword.Priority
                 FROM Conversation_Keyword, Conversation_Sentence_Keyword, Conversation_Sentence
                 WHERE Conversation_Keyword.ID = Conversation_Sentence_Keyword.KeywordID
                 AND Conversation_Sentence_Keyword.SentenceID = Conversation_Sentence.ID
-                AND Conversation_Sentence.Approved = {0}
+                AND Conversation_Sentence.Approved >= {0}
                 AND Conversation_Sentence.Disabled = 0
                 AND Conversation_Keyword.Normalized IN ({1}) AND Conversation_Keyword.Language = '{2}'"""
-        trainer = 1 if isTrainer else 1
+        trainer = 0 if isTrainer else 1
         sqlResult = db().Fetchall(query.format(trainer, word, language))
         for r in sqlResult:
-            stopwordFactor = self.__stopwordFactor if r[0] == 1 else 1
-            isStopword = True if r[0] == 1 else False
+            stopwordFactor = self.__stopwordFactor if r[1] == 1 else 1
+            isStopword = True if r[1] == 1 else False
             synonymFactor = self.__synonymFactor if isSynonym else 1
 
-            if r[2] in sentenceList:
-                sentenceList[r[2]].AddKeyword((r[3] + synonymFactor * stopwordFactor * r[1]), word, isStopword)
+            if r[0] in sentenceList:
+                sentenceList[r[0]].AddKeyword((r[3] + synonymFactor * stopwordFactor * r[2]), word, isStopword)
             else:
-                sentenceList[r[2]] = Sentence(r[2], (r[3] + synonymFactor * stopwordFactor * r[1]), word, isStopword)
+                sentenceList[r[0]] = Sentence(r[0], (r[3] + synonymFactor * stopwordFactor * r[2]), word, isStopword)
 
         return sentenceList
 
     def GetSentencesByParameter(self, sentenceList, wordParameterList, language, isTrainer):
-        query = """SELECT Conversation_Keyword.Priority, Conversation_Sentence_Keyword.Priority,
-                Conversation_Sentence_Keyword.SentenceID, Conversation_Keyword.Normalized
+        query = """SELECT DISTINCT Conversation_Sentence_Keyword.SentenceID, Conversation_Keyword.Priority,
+                Conversation_Sentence_Keyword.Priority, Conversation_Keyword.Normalized
                 FROM Conversation_Keyword, Conversation_Sentence_Keyword, Conversation_Sentence
                 WHERE Conversation_Keyword.ID = Conversation_Sentence_Keyword.KeywordID
                 AND Conversation_Sentence_Keyword.SentenceID = Conversation_Sentence.ID
-                AND Conversation_Sentence.Approved = {0}
+                AND Conversation_Sentence.Approved >= {0}
                 AND Conversation_Sentence.Disabled = 0
                 AND Conversation_Keyword.Normalized IN ({1}) AND Conversation_Keyword.Language = '{2}'"""
-        trainer = 1 if isTrainer else 1
+        trainer = 0 if isTrainer else 1
         sqlResult = db().Fetchall(query.format(trainer, "'{" + "}', '{".join(wordParameterList) + "}'", language))
         for r in sqlResult:
             word = "{{{0}}}".format(r[3])
 
-            if r[2] in sentenceList:
+            if r[0] in sentenceList:
                 # if only stop-keywords present and threshold reached
-                if sentenceList[r[2]].OnlyStopwords and sentenceList[r[2]].Rating >= self.__parameterStopwordThreshold:
-                    sentenceList[r[2]].AddKeyword((r[0] + self.__parameterFactor * r[1] * self.__stopwordFactor), word)
+                if sentenceList[r[0]].OnlyStopwords and sentenceList[r[0]].Rating >= self.__parameterStopwordThreshold:
+                    sentenceList[r[0]].AddKeyword((r[1] + self.__parameterFactor * r[2] * self.__stopwordFactor), word)
 
                 # if there are normal keywords present
-                if not sentenceList[r[2]].OnlyStopwords:
-                    sentenceList[r[2]].AddKeyword((r[0] + self.__parameterFactor * r[1]), word)
+                if not sentenceList[r[0]].OnlyStopwords:
+                    sentenceList[r[0]].AddKeyword((r[1] + self.__parameterFactor * r[2]), word)
             # sentence not in list by now
             else:
-                sentenceList[r[2]] = Sentence(r[2], (self.__parameterFactor * r[1] * self.__parameterFactorNoKeyword), word)
+                sentenceList[r[0]] = Sentence(r[0], (self.__parameterFactor * r[2] * self.__parameterFactorNoKeyword), word)
 
         return sentenceList
 

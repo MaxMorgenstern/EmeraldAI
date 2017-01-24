@@ -15,11 +15,11 @@ class AnalyzeScope(object):
         wordParameterList = []
 
         for word in PipelineArgs.WordList:
-            wordList = "'{0}'".format("', '".join(word.SynonymList))
 
             user = User()
-
-            sentenceList = SentenceResolver().GetSentencesByKeyword(sentenceList, wordList, word.Language, True, (user.Admin or user.Trainer))
+            if(len(word.SynonymList) > 0):
+                wordList = "'{0}'".format("', '".join(word.SynonymList))
+                sentenceList = SentenceResolver().GetSentencesByKeyword(sentenceList, wordList, word.Language, True, (user.Admin or user.Trainer))
             sentenceList = SentenceResolver().GetSentencesByKeyword(sentenceList, "'{0}'".format(word.NormalizedWord), word.Language, False, (user.Admin or user.Trainer))
 
             wordParameterList += list(set(word.ParameterList) - set(wordParameterList))
