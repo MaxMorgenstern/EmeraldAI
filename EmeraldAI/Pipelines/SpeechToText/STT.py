@@ -5,6 +5,7 @@ from EmeraldAI.Logic.SpeechProcessing.Google import *
 from EmeraldAI.Logic.SpeechProcessing.Microsoft import *
 from EmeraldAI.Logic.SpeechProcessing.Wit import *
 from EmeraldAI.Config.Config import *
+from EmeraldAI.Entities.PipelineArgs import PipelineArgs
 
 class STT(object):
     __metaclass__ = Singleton

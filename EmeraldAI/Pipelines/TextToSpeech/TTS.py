@@ -6,7 +6,7 @@ from EmeraldAI.Logic.SpeechProcessing.Ivona import *
 from EmeraldAI.Logic.SpeechProcessing.Microsoft import *
 from EmeraldAI.Config.Config import *
 
-class ProcessSTT(object):
+class TTS(object):
     __metaclass__ = Singleton
 
 

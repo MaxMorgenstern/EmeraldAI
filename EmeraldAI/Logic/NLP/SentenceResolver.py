@@ -141,7 +141,7 @@ class SentenceResolver(object):
             for r in sqlResult:
                 sentenceList[sentenceID].SetsCategory.append(r[0])
 
-        if category in sentenceList[sentenceID].HasCategory:
-            sentenceList[sentenceID].AddPriority(self.__categoryBonus)
+            if category in sentenceList[sentenceID].HasCategory:
+                sentenceList[sentenceID].AddPriority(self.__categoryBonus)
 
         return sentenceList
