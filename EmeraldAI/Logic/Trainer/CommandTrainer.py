@@ -9,6 +9,8 @@ if(Config().Get("Database", "NLPDatabaseType").lower() == "sqlite"):
 elif(Config().Get("Database", "NLPDatabaseType").lower() == "mysql"):
     from EmeraldAI.Logic.Database.MySQL import MySQL as db
 
+# TODO - include at dialog trainer
+
 class CommandTrainer(object):
     __metaclass__ = Singleton
 
