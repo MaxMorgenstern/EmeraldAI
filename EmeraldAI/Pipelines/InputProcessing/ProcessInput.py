@@ -72,11 +72,9 @@ class ProcessInput(object):
         w.IsStopword = word not in cleanWordSegments
         w.NormalizedWord = NLP.Normalize(word, language)
 
-        isLastname = Parameterizer.IsLastname(word)
-        isFirstname = Parameterizer.IsFirstname(word)
-        self.__appendIfNotNone(w.ParameterList, isLastname)
-        self.__appendIfNotNone(w.ParameterList, isFirstname)
-        self.__appendIfNotNone(w.ParameterList, (isLastname or isFirstname))
+        self.__appendIfNotNone(w.ParameterList, Parameterizer.IsLastname(word))
+        self.__appendIfNotNone(w.ParameterList, Parameterizer.IsFirstname(word))
+        self.__appendIfNotNone(w.ParameterList, Parameterizer.IsName(word))
         self.__appendIfNotNone(w.ParameterList, Parameterizer.IsBotname(word))
         self.__appendIfNotNone(w.ParameterList, Parameterizer.IsWeekday(word, language))
         self.__appendIfNotNone(w.ParameterList, Parameterizer.IsLanguage(word, language))
