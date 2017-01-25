@@ -7,31 +7,30 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 from EmeraldAI.Pipelines.SpeechToText.STT import STT
-from EmeraldAI.Pipelines.TextToSpeech.TTS import TTS
 from EmeraldAI.Pipelines.InputProcessing.ProcessInput import ProcessInput
 from EmeraldAI.Pipelines.ScopeAnalyzer.AnalyzeScope import AnalyzeScope
 from EmeraldAI.Pipelines.ResponseProcessing.ProcessResponse import ProcessResponse
-
-from EmeraldAI.Entities.PipelineArgs import PipelineArgs
-
-"""
-TODO: Fix this on ProcessInput call if data comes from STT
-EmeraldAI/Logic/Modules/NLP.py:44: UnicodeWarning: Unicode equal comparison failed to convert both arguments to Unicode - interpreting them as being unequal
-"""
+from EmeraldAI.Pipelines.TextToSpeech.TTS import TTS
+from EmeraldAI.Pipelines.Trainer.Trainer import Trainer
 
 loopTerminator = False
 
 while not loopTerminator:
-	data = STT().Process()
-	if(data == None):
+	pipelineArgs = STT().Process()
+	if(pipelineArgs == None):
 		continue
 
-	data = ProcessInput().Process(data)
+	print "We got: ", pipelineArgs.Input
 
-	data = AnalyzeScope().Process(data)
+	pipelineArgs = ProcessInput().ProcessAsync(pipelineArgs)
 
-	data = ProcessResponse().Process(data)
+	pipelineArgs = AnalyzeScope().Process(pipelineArgs)
 
-	data = TTS().Process(data)
+	pipelineArgs = ProcessResponse().Process(pipelineArgs)
 
-	print data.toJSON()
+	pipelineArgs = TTS().Process(pipelineArgs)
+
+	trainerResult = Trainer().Process(pipelineArgs)
+
+	print "Trainer Result: ", trainerResult
+	print "#####"

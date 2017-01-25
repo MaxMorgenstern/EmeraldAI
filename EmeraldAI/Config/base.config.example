@@ -26,6 +26,10 @@ RequirementBonus = 1
 SentenceRatingThreshold = 2
 
 
+[Trainer]
+Enabled = True
+
+
 [SpeechToText]
 Provider = Google
 

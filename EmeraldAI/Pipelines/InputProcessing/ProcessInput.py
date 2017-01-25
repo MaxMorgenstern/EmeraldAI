@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-from EmeraldAI.Logic.Modules import NLP
+from EmeraldAI.Logic.NLP import NLP
 from EmeraldAI.Entities.Word import Word
 from EmeraldAI.Logic.NLP.Thesaurus import *
 from EmeraldAI.Logic.NLP import Parameterizer
@@ -64,7 +64,6 @@ class ProcessInput(object):
         self.__appendIfNotNone(parameterList, Parameterizer.IsEquation(PipelineArgs.Normalized))
         PipelineArgs.WordList = wordList
         PipelineArgs.ParameterList = parameterList
-
         return PipelineArgs
 
     def __processWorker(self, word, language, returnList, parameterList, cleanWordSegments):

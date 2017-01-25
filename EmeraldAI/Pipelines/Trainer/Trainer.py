@@ -12,6 +12,9 @@ class Trainer(object):
         self.__trainData = Config().GetBoolean("Trainer", "Enabled") # True
 
     def Process(self, PipelineArgs):
+    	if not self.__trainData:
+    		return False
+
     	# TODO
     	return True
 
