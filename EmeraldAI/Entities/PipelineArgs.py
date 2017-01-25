@@ -38,7 +38,7 @@ class PipelineArgs(BaseObject):
 
 
     def GetSentencesWithHighestValue(self, margin=0):
-        if self.SentenceList != None and len(self.SentenceList) > 0:
+        if self.SentenceList != None and self.SentenceList:
             highestRanking = max(node.Rating for node in self.SentenceList.values())
             if margin > 0:
                 result = [node for node in self.SentenceList.values() if node.Rating>=(highestRanking-margin)]
@@ -48,4 +48,7 @@ class PipelineArgs(BaseObject):
         return None
 
     def GetRandomSentenceWithHighestValue(self, margin=0):
-        return random.choice(self.GetSentencesWithHighestValue(margin))
+        result = self.GetSentencesWithHighestValue(margin)
+        if(result != None):
+            return random.choice(result)
+        return None
