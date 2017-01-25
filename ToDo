@@ -31,6 +31,10 @@ https://pypi.python.org/pypi/cachetools
 
 - multi language support without config change
 
+- /EmeraldAI/Logic/NLP/NLP.py:47: UnicodeWarning: Unicode equal comparison failed to convert both arguments to Unicode - interpreting them as being unequal
+- return [x for x in wordlist if x not in stopwords]
+
+- fix toJSON() issue
 
 ---
 

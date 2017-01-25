@@ -24,6 +24,7 @@ RequirementBonus = 1
 
 [NLP]
 SentenceRatingThreshold = 2
+AliceAsFallback = True
 
 
 [Trainer]
