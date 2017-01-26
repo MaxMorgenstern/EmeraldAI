@@ -49,22 +49,32 @@ class ProcessInput(object):
         wordSegments = NLP.WordSegmentation(PipelineArgs.Input)
         cleanWordSegments = NLP.RemoveStopwords(wordSegments, PipelineArgs.Language)
 
-        wordList = Manager().list()
-        parameterList = Manager().list()
+        managerWordList = Manager().list()
+        managerParameterList = Manager().list()
         jobs = []
 
         for word in wordSegments:
-            p = multiprocessing.Process(target=self.__processWorker, args=(word, PipelineArgs.Language ,wordList, parameterList, cleanWordSegments))
+            p = multiprocessing.Process(target=self.__processWorker, args=(word, PipelineArgs.Language ,managerWordList, managerParameterList, cleanWordSegments))
             jobs.append(p)
             p.start()
 
         for proc in jobs:
             proc.join()
 
-        self.__appendIfNotNone(parameterList, Parameterizer.IsEquation(PipelineArgs.Normalized))
+        self.__appendIfNotNone(managerParameterList, Parameterizer.IsEquation(PipelineArgs.Normalized))
+
+        wordList = []
+        for w in managerWordList:
+            wordList.append(w)
+
+        parameterList = []
+        for w in managerParameterList:
+            parameterList.append(w)
+
         PipelineArgs.WordList = wordList
         PipelineArgs.ParameterList = parameterList
         return PipelineArgs
+
 
     def __processWorker(self, word, language, returnList, parameterList, cleanWordSegments):
         w = Word(word, language)
