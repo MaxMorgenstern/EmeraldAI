@@ -21,13 +21,10 @@ class ProcessResponse(object):
     def Process(self, PipelineArgs):
         sentence = PipelineArgs.GetRandomSentenceWithHighestValue()
         responseFound = True
-        # TODO - no sentence found
-        # TODO - fallback to AIML if set in config
+
         if sentence == None or sentence.Rating < self.__sentenceRatingThreshold:
             responseFound = False
 
-
-        # TODO - OR instead of returning - fallback to alice (set in config)
 
         # TODO - trigger action
         if responseFound:
@@ -51,9 +48,7 @@ class ProcessResponse(object):
 
         elif not responseFound and self.__aliceAsFallback:
             PipelineArgs.Response  = self.__alice.GetResponse(PipelineArgs.Input)
-            PipelineArgs.ResponseID = -1
             PipelineArgs.ResponseFound = True
+            PipelineArgs.TrainConversation = False
 
-        # TODO
-        # customize
         return PipelineArgs

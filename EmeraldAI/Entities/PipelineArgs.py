@@ -30,6 +30,8 @@ class PipelineArgs(BaseObject):
         self.ResponseFound = False
         self.ResponseAudio = None
 
+        self.TrainConversation = True
+
         # TODO
         self.SessionID = 0
 
