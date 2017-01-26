@@ -3,6 +3,7 @@
 import os
 import sys
 import platform
+import codecs
 
 RootPath = os.path.dirname(os.path.dirname(os.path.abspath(sys.argv[0]))).rstrip(os.sep) + os.sep
 EmeraldPath = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))).rstrip(os.sep) + os.sep
@@ -16,4 +17,4 @@ class OperatingSystem():
 def ReadDataFile(foldername, filename):
     script_dir = EmeraldPath + \
         "Data" + os.sep + foldername + os.sep + filename
-    return [line.rstrip('\n').rstrip('\r') for line in open(script_dir)]
+    return [line.rstrip('\n').rstrip('\r') for line in codecs.open(script_dir, encoding='utf-8')]
