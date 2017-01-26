@@ -13,24 +13,30 @@ from EmeraldAI.Pipelines.ResponseProcessing.ProcessResponse import ProcessRespon
 from EmeraldAI.Pipelines.TextToSpeech.TTS import TTS
 from EmeraldAI.Pipelines.Trainer.Trainer import Trainer
 
-loopTerminator = False
+if __name__ == "__main__":
 
-while not loopTerminator:
-	pipelineArgs = STT().Process()
-	if(pipelineArgs == None):
-		continue
+    loopTerminator = False
+    try:
+        while not loopTerminator:
+            pipelineArgs = STT().Process()
+            if(pipelineArgs == None):
+                continue
 
-	print "We got: ", pipelineArgs.Input
+            print "We got:", pipelineArgs.Input
 
-	pipelineArgs = ProcessInput().ProcessAsync(pipelineArgs)
+            pipelineArgs = ProcessInput().ProcessAsync(pipelineArgs)
 
-	pipelineArgs = AnalyzeScope().Process(pipelineArgs)
+            pipelineArgs = AnalyzeScope().Process(pipelineArgs)
 
-	pipelineArgs = ProcessResponse().Process(pipelineArgs)
+            pipelineArgs = ProcessResponse().Process(pipelineArgs)
 
-	pipelineArgs = TTS().Process(pipelineArgs)
+            pipelineArgs = TTS().Process(pipelineArgs)
 
-	trainerResult = Trainer().Process(pipelineArgs)
+            trainerResult = Trainer().Process(pipelineArgs)
 
-	print "Trainer Result: ", trainerResult
-	print "#####"
+            print pipelineArgs.toJSON()
+            print "Trainer Result: ", trainerResult
+
+    except KeyboardInterrupt:
+        print "End"
+
