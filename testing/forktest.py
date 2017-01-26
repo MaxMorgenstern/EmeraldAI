@@ -47,22 +47,45 @@ start_new_thread(exampleFunction,())
 start_new_thread(exampleFunction,())
 """
 t1 = Thread(target=exampleFunction, args=())
+t1.setDaemon(True)
 t1.start()
 
 time.sleep(1)
 
 t2 = Thread(target=exampleFunction, args=())
+t2.setDaemon(True)
 t2.start()
 
 t3 = Thread(target=exampleFunction, args=())
+t3.setDaemon(True)
 t3.start()
 
 time.sleep(5)
 
+print "---"
+
 print x.toJSON()
 
 print "ENDE"
+t1.join()
+t2.join()
+t3.join()
+
 exit()
+
+"""
+while len(threads) > 0:
+    try:
+        # Join all threads using a timeout so it doesn't block
+        # Filter out threads which have been joined or are None
+        threads = [t.join(1) for t in threads if t is not None and t.isAlive()]
+    except KeyboardInterrupt:
+        print "Ctrl-c received! Sending kill to threads..."
+        for t in threads:
+            t.kill_received = True
+
+"""
+
 
 
 
