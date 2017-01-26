@@ -57,7 +57,12 @@ class Sentence(BaseObject):
                     return r[0]
         return None
 
-        # TODO
-        def GetAction(self):
-            return ""
-
+    def GetAction(self):
+        query = """SELECT Conversation_Action.*
+            FROM Conversation_Sentence_Action, Conversation_Action
+            WHERE Conversation_Sentence_Action.ActionID = Conversation_Action.ID
+            AND Conversation_Sentence_Action.SentenceID = '{0}'"""
+        sqlResult = db().Fetchall(query.format(self.ID))
+        for r in sqlResult:
+            return {'Name':r[0], 'Module':r[1], 'Class':r[2], 'Function':r[3]}
+        return None
