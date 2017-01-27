@@ -38,6 +38,7 @@ class NLPParameter(BaseObject):
 
     def GetParameterList(self):
         self.ParameterList["Time"] = datetime.now().strftime("%H%M")
+        self.ParameterList["Day"] = datetime.today().strftime("%A")
         return self.ParameterList
 
 

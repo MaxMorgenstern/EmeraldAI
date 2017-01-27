@@ -26,13 +26,13 @@ class AnalyzeScope(object):
 
         sentenceList = SentenceResolver().GetSentencesByParameter(sentenceList, wordParameterList, PipelineArgs.Language, (user.Admin or user.Trainer))
 
-        parameter = NLPParameter()
+        parameterList = NLPParameter().GetParameterList()
 
-        calculationResult = SentenceResolver().CalculateRequirement(sentenceList, parameter.ParameterList)
+        calculationResult = SentenceResolver().CalculateRequirement(sentenceList, parameterList)
         sentenceList = calculationResult["sentenceList"]
 
         sentenceList = SentenceResolver().AddSentencePriority(sentenceList)
-        sentenceList = SentenceResolver().CalculateCategory(sentenceList, parameter.ParameterList["Category"])
+        sentenceList = SentenceResolver().CalculateCategory(sentenceList, parameterList["Category"])
 
         PipelineArgs.SentenceList = sentenceList
 

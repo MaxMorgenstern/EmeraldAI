@@ -5,6 +5,7 @@ from EmeraldAI.Entities.NLPParameter import NLPParameter
 from EmeraldAI.Entities.User import User
 from EmeraldAI.Config.Config import *
 from EmeraldAI.Logic.NLP.AliceBot import *
+from EmeraldAI.Logic.Modules import Action
 import re
 
 class ProcessResponse(object):
@@ -20,13 +21,11 @@ class ProcessResponse(object):
 
     def Process(self, PipelineArgs):
         sentence = PipelineArgs.GetRandomSentenceWithHighestValue()
-        responseFound = True
 
+        responseFound = True
         if sentence == None or sentence.Rating < self.__sentenceRatingThreshold:
             responseFound = False
 
-
-        # TODO - trigger action
         if responseFound:
             user = User()
             PipelineArgs.ResponseRaw = sentence.GetSentenceString(user.Formal)
@@ -34,12 +33,20 @@ class ProcessResponse(object):
             PipelineArgs.ResponseID = sentence.ID
             PipelineArgs.ResponseFound = True
 
-            parameter = NLPParameter()
+            parameterList = NLPParameter().GetParameterList()
+
+
+            # TODO - trigger action
+            sentenceAction = sentence.GetAction()
+            if sentenceAction != None and len(sentenceAction["Module"]) > 0:
+                print sentenceAction
+                actionResult = Action.CallFunction(sentenceAction["Module"], sentenceAction["Class"], sentenceAction["Function"])
+
 
             keywords = re.findall(r"\{(.*?)\}", PipelineArgs.Response)
             for keyword in keywords:
-                if keyword.title() in parameter.ParameterList:
-                    replaceword = parameter.ParameterList[keyword.title()]
+                if keyword.title() in parameterList:
+                    replaceword = parameterList[keyword.title()]
                     if replaceword == None or replaceword == "Unknown":
                         replaceword = ""
                     PipelineArgs.Response = PipelineArgs.Response.replace("{{{0}}}".format(keyword.lower()), replaceword)
