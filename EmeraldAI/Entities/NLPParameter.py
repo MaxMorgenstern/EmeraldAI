@@ -50,7 +50,7 @@ class NLPParameter(BaseObject):
         self.Created = datetime.now()
         self.Updated = datetime.now()
 
-        self.ParameterList = []
+        self.ParameterList = {}
         self.Input = None
         self.Result = None
 
