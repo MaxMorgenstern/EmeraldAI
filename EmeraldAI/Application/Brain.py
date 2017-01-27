@@ -13,8 +13,7 @@ from EmeraldAI.Pipelines.ResponseProcessing.ProcessResponse import ProcessRespon
 from EmeraldAI.Pipelines.TextToSpeech.TTS import TTS
 from EmeraldAI.Pipelines.Trainer.Trainer import Trainer
 
-if __name__ == "__main__":
-
+def RunBrain():
     loopTerminator = False
     try:
         while not loopTerminator:
@@ -40,3 +39,6 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print "End"
 
+
+if __name__ == "__main__":
+    RunBrain()
