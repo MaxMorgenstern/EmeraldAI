@@ -96,7 +96,11 @@ class Predictor(object):
         print "numfolds"
 
     def LoadDataset(self):
-        return load_model(self.__getModelName())
+        try:
+            return load_model(self.__getModelName())
+        except:
+            print "[Error] The given model could not be loaded"
+            return None
 
     def PredictPerson(self, camera, detectorFunction=None, model=None):
         predictorApp = self.GetPredictor(camera, detectorFunction, model)
@@ -105,9 +109,9 @@ class Predictor(object):
     def GetPredictor(self, camera, detectorFunction=None, model=None):
         if(model == None):
             model = self.LoadDataset()
-        if not isinstance(model, ExtendedPredictableModel):
+        if model == None or not isinstance(model, ExtendedPredictableModel):
             print "[Error] The given model is not of type '%s'." % "ExtendedPredictableModel"
-            return
+            return None
 
         return PredictorApp(model, camera, detectorFunction)
 
