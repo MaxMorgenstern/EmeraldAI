@@ -9,12 +9,11 @@ class User(BaseObject):
     __metaclass__ = Singleton
     # This class is a singleton as we only need one instance across the whole project, the currently active user
 
-    # TODO
-
-    ID = 0
     Name = "Unknown"
     LastName = None
-    UsedName = None
+    FirstName = None
+
+    cvTag = None
 
     Gender = "Male"
     Birthday = None
@@ -28,13 +27,6 @@ class User(BaseObject):
     Trainer = False
     Admin = False
 
-    """
-    def __init__(self, ID, Name, Formal=True, Trainer=False, Admin=False):
-        self.ID = ID
-        self.Name = Name
+    def SetUserByCVTag(self, cvTag):
+        self.cvTag = cvTag
 
-        self.Formal = Formal
-        self.Trainer = Trainer
-        self.Admin = Admin
-        # TODO - load data from DB
-    """

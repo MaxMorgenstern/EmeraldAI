@@ -20,6 +20,7 @@ from EmeraldAI.Logic.External.facerec.serialization import save_model, load_mode
 from EmeraldAI.Logic.External.facerec.helper.common import *
 from EmeraldAI.Logic.External.facerec.helper.video import *
 
+# TODO - put variables into config - eg __probeTreshhold
 
 class ExtendedPredictableModel(PredictableModel):
 
@@ -165,9 +166,7 @@ class PredictorApp(object):
             if(probeCount > self.__probeTreshhold):
                 break
 
-        sortedList = sorted(self.__predicted.items(),
-                            key=operator.itemgetter(1), reverse=True)
-        return sortedList
+        return self.__predicted
 
     def runVisual(self):
         displayTick = 0
