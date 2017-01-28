@@ -93,6 +93,7 @@ class Predictor(object):
         save_model(self.__getModelName(), model)
 
     def TestModel(self):
+        # TODO
         print "numfolds"
 
     def LoadDataset(self):

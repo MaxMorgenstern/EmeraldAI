@@ -65,6 +65,10 @@ MySQLHost = 127.0.0.1
 
 
 [ComputerVision]
+CameraWidth = 640
+CameraHeight = 360
+CameraID = 0
+
 HaarcascadeFaceFrontal = haarcascade_frontalface_alt2.xml
 HaarcascadeFaceProfile = haarcascade_profileface.xml
 

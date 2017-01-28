@@ -8,34 +8,33 @@ sys.setdefaultencoding('utf-8')
 
 from EmeraldAI.Logic.ComputerVision.Predictor import *
 from EmeraldAI.Logic.ComputerVision.Detector import *
+from EmeraldAI.Config.Config import *
 from EmeraldAI.Entities.User import User
 
-
-from collections import Counter
+#from collections import Counter
 
 def GetHighestResult(resultList):
-    sortedList = sorted(resultList.items(),
-                        key=operator.itemgetter(1), reverse=True)
+    sortedList = sorted(resultList.items(), key=operator.itemgetter(1), reverse=True)
     return sortedList[0]
 
 
 def RunFaceDetection():
-    # TODO - dynamic via config
-    camera = cv2.VideoCapture(0)
-    ret = camera.set(3, 640)
-    ret = camera.set(4, 360)
+    camera = cv2.VideoCapture(Config().GetInt("ComputerVision", "CameraID"))
+    ret = camera.set(3, Config().GetInt("ComputerVision", "CameraWidth"))
+    ret = camera.set(4, Config().GetInt("ComputerVision", "CameraHeight"))
 
-    p = Predictor()
-    # TODO - if not created create - or on regular base
-    #p.CreateDataset()
-    predictor = p.GetPredictor(camera, Detector().DetectFaceFrontal)
+    pred = Predictor()
+
+    predictorObject = pred.GetPredictor(camera, Detector().DetectFaceFrontal)
+    if predictorObject == None:
+        pred.CreateDataset()
+        predictorObject = pred.GetPredictor(camera, Detector().DetectFaceFrontal)
 
     previousResult = None
-
     while True:
-        detectionResult = predictor.run()
-        #detectionResult = predictor.runVisual()
+        detectionResult = predictorObject.run()
         if(detectionResult != None and len(detectionResult)):
+            """
             # ToDo - check if this is a plausible way of doing it
             if previousResult != None:
                 combinedResult = (Counter(previousResult) + Counter(detectionResult))
@@ -47,13 +46,19 @@ def RunFaceDetection():
             print "Current Best Guess",  GetHighestResult(detectionResult)
             print ""
             print "---"
+            """
 
-            # TODO - get details of user + write to user class
-            User().SetUserByCVTag(GetHighestResult(detectionResult)[0])
+            bestCVMatch = GetHighestResult(detectionResult)
+            if bestCVMatch[0] != None and bestCVMatch[0] != "Unknown" and bestCVMatch[0] != "NotKnown":
+                print "set CV Tag", bestCVMatch
+                User().SetUserByCVTag(bestCVMatch[0])
 
 
-            previousResult = detectionResult.copy()
+            #previousResult = detectionResult.copy()
 
 
 if __name__ == "__main__":
-    RunFaceDetection()
+    try:
+        RunFaceDetection()
+    except KeyboardInterrupt:
+        print "End"

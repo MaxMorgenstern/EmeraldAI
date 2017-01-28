@@ -15,30 +15,32 @@ from EmeraldAI.Pipelines.Trainer.Trainer import Trainer
 
 def RunBrain():
     loopTerminator = False
-    try:
-        while not loopTerminator:
-            pipelineArgs = STT().Process()
-            if(pipelineArgs == None):
-                continue
 
-            print "We got:", pipelineArgs.Input
+    while not loopTerminator:
+        pipelineArgs = STT().Process()
+        if(pipelineArgs == None):
+            continue
 
-            pipelineArgs = ProcessInput().ProcessAsync(pipelineArgs)
+        print "We got:", pipelineArgs.Input
 
-            pipelineArgs = AnalyzeScope().Process(pipelineArgs)
+        pipelineArgs = ProcessInput().ProcessAsync(pipelineArgs)
 
-            pipelineArgs = ProcessResponse().Process(pipelineArgs)
+        pipelineArgs = AnalyzeScope().Process(pipelineArgs)
 
-            pipelineArgs = TTS().Process(pipelineArgs)
+        pipelineArgs = ProcessResponse().Process(pipelineArgs)
 
-            trainerResult = Trainer().Process(pipelineArgs)
+        pipelineArgs = TTS().Process(pipelineArgs)
 
-            print pipelineArgs.toJSON()
-            print "Trainer Result: ", trainerResult
+        trainerResult = Trainer().Process(pipelineArgs)
 
-    except KeyboardInterrupt:
-        print "End"
+        print pipelineArgs.toJSON()
+        print "Trainer Result: ", trainerResult
+
+
 
 
 if __name__ == "__main__":
-    RunBrain()
+    try:
+        RunBrain()
+    except KeyboardInterrupt:
+        print "End"
