@@ -1,10 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import sqlite3 as lite
+from cachetools import cached
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Logic.Modules import Global
 from EmeraldAI.Config.Config import *
-
 
 class SQlite3(object):
     __metaclass__ = Singleton
@@ -20,7 +20,7 @@ class SQlite3(object):
         con.text_factory = str
         return con
 
-
+    @cached(cache={})
     def Execute(self, sql, args=None):
         return self.ExecuteDB(self.__Database, sql, args)
 
@@ -36,6 +36,7 @@ class SQlite3(object):
         except lite.IntegrityError:
             return None
 
+    @cached(cache={})
     def Fetchall(self, sql, args=None):
         return self.FetchallDB(self.__Database, sql, args)
 

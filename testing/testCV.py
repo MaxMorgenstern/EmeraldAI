@@ -69,7 +69,7 @@ def img_name(img_num):
     }
     return switcher.get(img_num, "nothing")
 
-img_num = max_img_num
+img_num = int(max_img_num)
 
 """
 while img_num < 11:

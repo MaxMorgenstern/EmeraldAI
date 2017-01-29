@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-from EmeraldAI.Logic.Modules import NLP
+from EmeraldAI.Logic.NLP import NLP
 from EmeraldAI.Config.Config import *
 from EmeraldAI.Logic.KnowledgeGathering.Math import Math
 
@@ -14,6 +14,7 @@ Empty = None
 Firstname = "firstname"
 Lastname = "lastname"
 Name = "name"
+Mathematical = "mathematical"
 Equation = "equation"
 Botname = "botname"
 
@@ -38,8 +39,13 @@ def IsName(word):
         return Name
     return Empty
 
-def IsEquation(word):
-    if(Math().IsEquation(word)):
+def IsMathematical(word):
+    if(Math().IsMathematicalWord(word)):
+        return Mathematical
+    return Empty
+
+def IsEquation(sentence):
+    if(Math().IsEquation(sentence)):
         return Equation
     return Empty
 

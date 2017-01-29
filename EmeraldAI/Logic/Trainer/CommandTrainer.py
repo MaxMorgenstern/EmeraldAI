@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-from EmeraldAI.Logic.Modules import NLP
+from EmeraldAI.Logic.NLP import NLP
 from EmeraldAI.Config.Config import *
 from EmeraldAI.Logic.Singleton import Singleton
 
@@ -8,6 +8,8 @@ if(Config().Get("Database", "NLPDatabaseType").lower() == "sqlite"):
     from EmeraldAI.Logic.Database.SQlite3 import SQlite3 as db
 elif(Config().Get("Database", "NLPDatabaseType").lower() == "mysql"):
     from EmeraldAI.Logic.Database.MySQL import MySQL as db
+
+# TODO - include at dialog trainer
 
 class CommandTrainer(object):
     __metaclass__ = Singleton
@@ -44,3 +46,4 @@ class CommandTrainer(object):
         print "New pattern created: '{0}'".format(Pattern)
         return True
 
+# OBSOLETE!

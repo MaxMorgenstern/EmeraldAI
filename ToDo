@@ -1,10 +1,10 @@
 Just a messy list with things to do
 
+- !!! Training Pipeline !!!
+
 - Add Unit Tests
 
 - Add Logging
-
-- Add Base file to call
 
 - clean unused thesaurus fields - add language tag
 - thesaurus_DE to custom file so we can use more languages
@@ -22,27 +22,16 @@ Just a messy list with things to do
 - https://github.com/Uberi/speech_recognition/blob/master/examples/background_listening.py
 - https://github.com/Uberi/speech_recognition/blob/03ec480ad831f9e7b7787858d2511e6e42880811/reference/library-reference.rst
 
+- add boot sequence in order to cache stopwords + common words about 200 - 300 should be cached
+https://pypi.python.org/pypi/cachetools
+
+- add formal <-> informal sentence converter
+
 # EN aiml reference https://code.google.com/archive/p/aiml-en-us-foundation-alice/
 
----
+- multi language support without config change
 
-# Input Processing
-  # Language Detection
-  # Sentence + Word Segmentation
-  # Word Tagging + Synonym detection
-  # strip stoppwords
-
-# Input Analyzer
-  # Phrase Detection
-  # Pattern Detection
-  # Context Pipeline
-
-# Response Processing
-  # Answer Pipeline
-    # Answer selection
-    # ELIZA fallback
-  # Customize Answer
-  # Train Conversation
+- use more of def __repr__(self): and def __str__(self): -- like in sentence entity
 
 ---
 
@@ -105,4 +94,18 @@ Rank  Bot Property  Value
 56  <bot name="ethics" /> I am always trying to stop fights
 57  <bot name="emotions" /> I don't pay much attention to my feelings
 58  <bot name="feelings" /> I always put others before myself
+
+
+
+DELETE FROM Conversation_Action;
+DELETE FROM Conversation_Category;
+DELETE FROM Conversation_Keyword;
+DELETE FROM Conversation_Requirement;
+DELETE FROM Conversation_Sentence;
+DELETE FROM Conversation_Sentence_Action;
+DELETE FROM Conversation_Sentence_Category_Has;
+DELETE FROM Conversation_Sentence_Category_Set;
+DELETE FROM Conversation_Sentence_Keyword;
+DELETE FROM Conversation_Sentence_Requirement;
+
 

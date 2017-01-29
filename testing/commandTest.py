@@ -31,10 +31,10 @@ print("--- %s seconds ---" % (time.time() - start_time))
 # Resolving #############
 from collections import Counter
 
-from EmeraldAI.Logic.Modules import NLP
+from EmeraldAI.Logic.NLP import NLP
 from EmeraldAI.Entities.Word import Word
-from EmeraldAI.Logic.Thesaurus import *
-from EmeraldAI.Logic.Modules import Parameterizer
+from EmeraldAI.Logic.NLP.Thesaurus import *
+from EmeraldAI.Logic.NLP import Parameterizer
 
 if(Config().Get("Database", "NLPDatabaseType").lower() == "sqlite"):
     from EmeraldAI.Logic.Database.SQlite3 import SQlite3 as db

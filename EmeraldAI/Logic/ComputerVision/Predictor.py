@@ -20,6 +20,7 @@ from EmeraldAI.Logic.External.facerec.serialization import save_model, load_mode
 from EmeraldAI.Logic.External.facerec.helper.common import *
 from EmeraldAI.Logic.External.facerec.helper.video import *
 
+# TODO - put variables into config - eg __probeTreshhold
 
 class ExtendedPredictableModel(PredictableModel):
 
@@ -92,10 +93,15 @@ class Predictor(object):
         save_model(self.__getModelName(), model)
 
     def TestModel(self):
+        # TODO
         print "numfolds"
 
     def LoadDataset(self):
-        return load_model(self.__getModelName())
+        try:
+            return load_model(self.__getModelName())
+        except:
+            print "[Error] The given model could not be loaded"
+            return None
 
     def PredictPerson(self, camera, detectorFunction=None, model=None):
         predictorApp = self.GetPredictor(camera, detectorFunction, model)
@@ -104,9 +110,9 @@ class Predictor(object):
     def GetPredictor(self, camera, detectorFunction=None, model=None):
         if(model == None):
             model = self.LoadDataset()
-        if not isinstance(model, ExtendedPredictableModel):
+        if model == None or not isinstance(model, ExtendedPredictableModel):
             print "[Error] The given model is not of type '%s'." % "ExtendedPredictableModel"
-            return
+            return None
 
         return PredictorApp(model, camera, detectorFunction)
 
@@ -165,9 +171,7 @@ class PredictorApp(object):
             if(probeCount > self.__probeTreshhold):
                 break
 
-        sortedList = sorted(self.__predicted.items(),
-                            key=operator.itemgetter(1), reverse=True)
-        return sortedList
+        return self.__predicted
 
     def runVisual(self):
         displayTick = 0

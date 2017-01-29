@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import mysql.connector
+from cachetools import cached
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Config.Config import *
 
@@ -20,7 +21,7 @@ class MySQL(object):
     def GetDB(self, database, user="root", passwd=None, host="127.0.0.1"):
         return mysql.connector.connect(user=user, password=passwd, host=host, database=database)
 
-
+    @cached(cache={})
     def Execute(self, sql):
         return self.ExecuteDB(self.__Database, sql)
 
@@ -29,7 +30,7 @@ class MySQL(object):
         cur.execute(sql)
         return cur
 
-
+    @cached(cache={})
     def Fetchall(self, sql, index=None):
         return self.FetchallDB(self.__Database, sql, index)
 

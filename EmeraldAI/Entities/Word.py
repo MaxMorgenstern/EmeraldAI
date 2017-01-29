@@ -14,9 +14,8 @@ class Word(BaseObject):
         self.NormalizedWord = None
         self.IsStopword = False
 
-        # priority | list of synonyms
-        self.Priority = 1
+        # list of synonyms
         self.SynonymList = []
 
-        # parameters mathing the word
+        # parameters matching the word
         self.ParameterList = []
