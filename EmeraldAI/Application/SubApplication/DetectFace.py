@@ -11,6 +11,12 @@ from EmeraldAI.Logic.ComputerVision.Detector import *
 from EmeraldAI.Config.Config import *
 from EmeraldAI.Entities.User import User
 
+# TODO - check if this works in thread
+import sys
+visual = False
+if len(sys.argv) > 1 and str(sys.argv[1]) == "visual":
+    visual = True
+
 #from collections import Counter
 
 def GetHighestResult(resultList):
@@ -32,7 +38,10 @@ def RunFaceDetection():
 
     previousResult = None
     while True:
-        detectionResult = predictorObject.run()
+        if visual:
+            detectionResult = predictorObject.runVisual()
+        else:
+            detectionResult = predictorObject.run()
         if(detectionResult != None and len(detectionResult)):
             """
             # ToDo - check if this is a plausible way of doing it

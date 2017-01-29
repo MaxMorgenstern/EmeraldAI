@@ -41,6 +41,7 @@ class ProcessResponse(object):
             if sentenceAction != None and len(sentenceAction["Module"]) > 0:
                 print sentenceAction
                 actionResult = Action.CallFunction(sentenceAction["Module"], sentenceAction["Class"], sentenceAction["Function"])
+                # TODO - append to parameter list
 
 
             keywords = re.findall(r"\{(.*?)\}", PipelineArgs.Response)
