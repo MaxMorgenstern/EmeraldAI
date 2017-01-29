@@ -39,9 +39,9 @@ def RunFaceDetection():
     previousResult = None
     while True:
         if visual:
-            detectionResult = predictorObject.runVisual()
+            detectionResult = predictorObject.RunVisual()
         else:
-            detectionResult = predictorObject.run()
+            detectionResult = predictorObject.Run()
         if(detectionResult != None and len(detectionResult)):
             """
             # ToDo - check if this is a plausible way of doing it
