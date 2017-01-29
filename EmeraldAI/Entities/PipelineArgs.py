@@ -21,7 +21,7 @@ class PipelineArgs(BaseObject):
         self.ParameterizedInput = None
 
         # TODO Conversation History
-        self.History = None
+        self.History = []
 
         # Response with patameters | Raw response string | Response ID | Response found
         self.Response = None
@@ -36,7 +36,7 @@ class PipelineArgs(BaseObject):
         self.SessionID = 0
 
         # TODO - List of Errors
-        self.Error = None
+        self.Error = []
 
 
     def GetSentencesWithHighestValue(self, margin=0):
