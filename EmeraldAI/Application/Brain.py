@@ -13,6 +13,9 @@ from EmeraldAI.Pipelines.ResponseProcessing.ProcessResponse import ProcessRespon
 from EmeraldAI.Pipelines.TextToSpeech.TTS import TTS
 from EmeraldAI.Pipelines.Trainer.Trainer import Trainer
 
+from threading import Thread
+import SubApplication.DetectFace as DF
+
 def RunBrain():
     loopTerminator = False
 
@@ -40,7 +43,13 @@ def RunBrain():
 
 
 if __name__ == "__main__":
+    #faceThread = Thread(target=DF.RunFaceDetection, args=())
+    #faceThread.setDaemon(True)
+    #faceThread.start()
+
     try:
         RunBrain()
     except KeyboardInterrupt:
+
+        #faceThread.join()
         print "End"
