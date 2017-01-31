@@ -34,7 +34,7 @@ class User(BaseObject):
         return self.CVTag
 
     def SetUserByCVTag(self, cvTag, deepProcess=True):
-        if cvTag == None:
+        if cvTag == None or self.CVTag == cvTag:
             return
 
         self.CVTag = cvTag
@@ -51,7 +51,7 @@ class User(BaseObject):
         return self.Name
 
     def SetUserByName(self, name, deepProcess=True):
-        if name == None:
+        if name == None or self.Name == name:
             return
 
         self.Name = name
