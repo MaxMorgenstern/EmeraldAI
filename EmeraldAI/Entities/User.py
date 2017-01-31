@@ -10,7 +10,7 @@ class User(BaseObject):
     __metaclass__ = Singleton
     # This class is a singleton as we only need one instance across the whole project, the currently active user
 
-    __cvTag = None
+    CVTag = None
 
     Name = "Unknown"
     LastName = None
@@ -30,11 +30,14 @@ class User(BaseObject):
 
     Updated = None
 
+    def GetCVTag(self):
+        return self.CVTag
+
     def SetUserByCVTag(self, cvTag, deepProcess=True):
         if cvTag == None:
             return
 
-        self.__cvTag = cvTag
+        self.CVTag = cvTag
         if not deepProcess:
             return
 
@@ -42,6 +45,22 @@ class User(BaseObject):
         self.Name = cvTag
 
         self.Updated = datetime.now().strftime("%H%M")
+        #######
 
-    def GetCVTag(self):
-        return self.__cvTag
+    def GetName(self):
+        return self.Name
+
+    def SetUserByName(self, name, deepProcess=True):
+        if name == None:
+            return
+
+        self.Name = name
+
+        if not deepProcess:
+            return
+
+        # TODO - get details from DB
+        self.Name = cvTag
+
+        self.Updated = datetime.now().strftime("%H%M")
+        #######

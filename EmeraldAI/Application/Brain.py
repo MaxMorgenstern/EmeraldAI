@@ -22,7 +22,7 @@ import SubApplication.DetectFace as DF
 BaseManager.register('User', User)
 manager = BaseManager()
 manager.start()
-userInstance = manager.User()
+CVUserInstance = manager.User()
 
 def RunBrain():
     loopTerminator = False
@@ -35,7 +35,7 @@ def RunBrain():
         print "We got:", pipelineArgs.Input
 
         # Get References from Processes
-        User().SetUserByCVTag(userInstance.GetCVTag())
+        User().SetUserByCVTag(CVUserInstance.GetCVTag())
 
         pipelineArgs = ProcessInput().ProcessAsync(pipelineArgs)
 
@@ -49,14 +49,14 @@ def RunBrain():
 
         print "Pipeline Args", pipelineArgs.toJSON()
         print "Main User", User().toJSON()
-        print "CV User", userInstance.toJSON()
+        print "CV User", CVUserInstance.toJSON()
         print "Trainer Result: ", trainerResult
 
 
 
 
 if __name__ == "__main__":
-    faceThread = Process(target=DF.RunFaceDetection, args=[userInstance])
+    faceThread = Process(target=DF.RunFaceDetection, args=[CVUserInstance])
     faceThread.start()
 
     try:
