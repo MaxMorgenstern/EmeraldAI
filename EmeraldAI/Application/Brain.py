@@ -12,9 +12,17 @@ from EmeraldAI.Pipelines.ScopeAnalyzer.AnalyzeScope import AnalyzeScope
 from EmeraldAI.Pipelines.ResponseProcessing.ProcessResponse import ProcessResponse
 from EmeraldAI.Pipelines.TextToSpeech.TTS import TTS
 from EmeraldAI.Pipelines.Trainer.Trainer import Trainer
+from EmeraldAI.Entities.User import User
 
-from threading import Thread
+from multiprocessing import Process, Manager
+from multiprocessing.managers import BaseManager
+
 import SubApplication.DetectFace as DF
+
+BaseManager.register('User', User)
+manager = BaseManager()
+manager.start()
+userInstance = manager.User()
 
 def RunBrain():
     loopTerminator = False
@@ -26,6 +34,9 @@ def RunBrain():
 
         print "We got:", pipelineArgs.Input
 
+        # Get References from Processes
+        User().SetUserByCVTag(userInstance.GetCVTag())
+
         pipelineArgs = ProcessInput().ProcessAsync(pipelineArgs)
 
         pipelineArgs = AnalyzeScope().Process(pipelineArgs)
@@ -36,20 +47,19 @@ def RunBrain():
 
         trainerResult = Trainer().Process(pipelineArgs)
 
-        print pipelineArgs.toJSON()
+        print "Pipeline Args", pipelineArgs.toJSON()
+        print "Main User", User().toJSON()
+        print "CV User", userInstance.toJSON()
         print "Trainer Result: ", trainerResult
 
 
 
 
 if __name__ == "__main__":
-    #faceThread = Thread(target=DF.RunFaceDetection, args=())
-    #faceThread.setDaemon(True)
-    #faceThread.start()
+    faceThread = Process(target=DF.RunFaceDetection, args=[userInstance])
+    faceThread.start()
 
     try:
         RunBrain()
     except KeyboardInterrupt:
-
-        #faceThread.join()
         print "End"

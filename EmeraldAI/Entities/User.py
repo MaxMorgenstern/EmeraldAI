@@ -30,9 +30,18 @@ class User(BaseObject):
 
     Updated = None
 
-    def SetUserByCVTag(self, cvTag):
+    def SetUserByCVTag(self, cvTag, deepProcess=True):
+        if cvTag == None:
+            return
+
         self.__cvTag = cvTag
+        if not deepProcess:
+            return
+
         # TODO - get details from DB
+        self.Name = cvTag
 
         self.Updated = datetime.now().strftime("%H%M")
 
+    def GetCVTag(self):
+        return self.__cvTag

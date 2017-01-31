@@ -24,7 +24,7 @@ def GetHighestResult(resultList):
     return sortedList[0]
 
 
-def RunFaceDetection():
+def RunFaceDetection(passedUser):
     camera = cv2.VideoCapture(Config().GetInt("ComputerVision", "CameraID"))
     ret = camera.set(3, Config().GetInt("ComputerVision", "CameraWidth"))
     ret = camera.set(4, Config().GetInt("ComputerVision", "CameraHeight"))
@@ -38,6 +38,7 @@ def RunFaceDetection():
 
     previousResult = None
     while True:
+        print "RunFaceDetection() while..."
         if visual:
             detectionResult = predictorObject.RunVisual()
         else:
@@ -60,7 +61,7 @@ def RunFaceDetection():
             bestCVMatch = GetHighestResult(detectionResult)
             if bestCVMatch[0] != None and bestCVMatch[0] != "Unknown" and bestCVMatch[0] != "NotKnown":
                 print "set CV Tag", bestCVMatch
-                User().SetUserByCVTag(bestCVMatch[0])
+                passedUser.SetUserByCVTag(bestCVMatch[0], False)
 
 
             #previousResult = detectionResult.copy()
@@ -68,6 +69,7 @@ def RunFaceDetection():
 
 if __name__ == "__main__":
     try:
-        RunFaceDetection()
+        u = User()
+        RunFaceDetection(u)
     except KeyboardInterrupt:
         print "End"

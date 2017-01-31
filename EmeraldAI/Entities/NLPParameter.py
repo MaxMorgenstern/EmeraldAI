@@ -4,6 +4,7 @@ from EmeraldAI.Entities.BaseObject import BaseObject
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Entities.Bot import Bot
 from datetime import datetime
+from EmeraldAI.Entities.User import User
 
 # TODO
 
@@ -41,6 +42,8 @@ class NLPParameter(BaseObject):
         self.ParameterList["Day"] = datetime.today().strftime("%A")
 
         # TODO - update user parameter
+        self.ParameterList["Name"] = User().Name
+        self.ParameterList["User"] = self.ParameterList["Name"]
 
         return self.ParameterList
 
