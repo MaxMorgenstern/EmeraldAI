@@ -2,6 +2,9 @@ Just a messy list with things to do
 
 - !!! Training Pipeline !!!
 
+- import of database uses only one setting NLPDatabaseType
+	- update to more common name
+
 - Add Unit Tests
 
 - Add Logging

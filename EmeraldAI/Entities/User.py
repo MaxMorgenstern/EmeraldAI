@@ -4,7 +4,11 @@ from EmeraldAI.Entities.BaseObject import BaseObject
 from EmeraldAI.Logic.Singleton import Singleton
 from datetime import datetime
 
-# TODO
+from EmeraldAI.Config.Config import *
+if(Config().Get("Database", "NLPDatabaseType").lower() == "sqlite"):
+    from EmeraldAI.Logic.Database.SQlite3 import SQlite3 as db
+elif(Config().Get("Database", "NLPDatabaseType").lower() == "mysql"):
+    from EmeraldAI.Logic.Database.MySQL import MySQL as db
 
 class User(BaseObject):
     __metaclass__ = Singleton
@@ -16,11 +20,11 @@ class User(BaseObject):
     LastName = None
     FirstName = None
 
-    Gender = "Male"
     Birthday = None
-
     LastSeen = None
     LastSpokenTo = None
+
+    Gender = "male"
 
     Properties = []
 
@@ -41,11 +45,24 @@ class User(BaseObject):
         if not deepProcess:
             return
 
-        # TODO - get details from DB
-        self.Name = cvTag
+        query = """SELECT * FROM Person WHERE CVTag = '{0}'"""
+        sqlResult = db().Fetchall(query.format(cvTag))
+        for r in sqlResult:
+            self.Name = r[1]
+            self.LastName = r[2]
+            self.FirstName = r[3]
+
+            self.Birthday = r[5]
+            self.LastSeen = r[6]
+            self.LastSpokenTo = r[7]
+            self.Gender = r[8]
+
+            self.Formal = r[9].lower() == "formal"
+            self.Trainer = r[10] == 1
+            self.Admin = r[11] == 1
+            continue
 
         self.Updated = datetime.now().strftime("%H%M")
-        #######
 
     def GetName(self):
         return self.Name
@@ -55,12 +72,23 @@ class User(BaseObject):
             return
 
         self.Name = name
-
         if not deepProcess:
             return
 
-        # TODO - get details from DB
-        self.Name = cvTag
+        query = """SELECT * FROM Person WHERE Name = '{0}'"""
+        sqlResult = db().Fetchall(query.format(name))
+        for r in sqlResult:
+            self.LastName = r[2]
+            self.FirstName = r[3]
+
+            self.Birthday = r[5]
+            self.LastSeen = r[6]
+            self.LastSpokenTo = r[7]
+            self.Gender = r[8]
+
+            self.Formal = r[9].lower() == "formal"
+            self.Trainer = r[10] == 1
+            self.Admin = r[11] == 1
+            continue
 
         self.Updated = datetime.now().strftime("%H%M")
-        #######
