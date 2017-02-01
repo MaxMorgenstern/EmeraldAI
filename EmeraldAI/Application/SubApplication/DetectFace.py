@@ -11,7 +11,6 @@ from EmeraldAI.Logic.ComputerVision.Detector import *
 from EmeraldAI.Config.Config import *
 from EmeraldAI.Entities.User import User
 
-# TODO - check if this works in thread
 import sys
 visual = False
 if len(sys.argv) > 1 and str(sys.argv[1]) == "visual":

@@ -4,9 +4,9 @@ from EmeraldAI.Logic.NLP import NLP
 from EmeraldAI.Config.Config import *
 from EmeraldAI.Logic.Singleton import Singleton
 
-if(Config().Get("Database", "NLPDatabaseType").lower() == "sqlite"):
+if(Config().Get("Database", "ConversationDatabaseType").lower() == "sqlite"):
     from EmeraldAI.Logic.Database.SQlite3 import SQlite3 as db
-elif(Config().Get("Database", "NLPDatabaseType").lower() == "mysql"):
+elif(Config().Get("Database", "ConversationDatabaseType").lower() == "mysql"):
     from EmeraldAI.Logic.Database.MySQL import MySQL as db
 
 # TODO - include at dialog trainer

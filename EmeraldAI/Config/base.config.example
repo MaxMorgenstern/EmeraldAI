@@ -57,8 +57,11 @@ IvonaSecretKey =
 [Database]
 NLPDatabaseType = sqlite
 ThesaurusDatabaseType = sqlite
+ConversationDatabaseType = sqlite
+UserDatabaseType = sqlite
 
 SQliteDatabase = brain
+
 MySQLDatabase =
 MySQLPassword =
 MySQLHost = 127.0.0.1

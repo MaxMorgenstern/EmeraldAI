@@ -5,9 +5,9 @@ from EmeraldAI.Logic.Singleton import Singleton
 from datetime import datetime
 
 from EmeraldAI.Config.Config import *
-if(Config().Get("Database", "NLPDatabaseType").lower() == "sqlite"):
+if(Config().Get("Database", "UserDatabaseType").lower() == "sqlite"):
     from EmeraldAI.Logic.Database.SQlite3 import SQlite3 as db
-elif(Config().Get("Database", "NLPDatabaseType").lower() == "mysql"):
+elif(Config().Get("Database", "UserDatabaseType").lower() == "mysql"):
     from EmeraldAI.Logic.Database.MySQL import MySQL as db
 
 class User(BaseObject):
