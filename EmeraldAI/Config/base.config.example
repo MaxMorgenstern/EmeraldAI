@@ -20,6 +20,7 @@ ParameterStopwordThreshold = 1.5
 
 CategoryBonus = 1
 RequirementBonus = 1
+ActionBonus = 1.5
 
 
 [NLP]

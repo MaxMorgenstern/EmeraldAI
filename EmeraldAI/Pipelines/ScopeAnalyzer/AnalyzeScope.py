@@ -27,10 +27,10 @@ class AnalyzeScope(object):
         sentenceList = SentenceResolver().GetSentencesByParameter(sentenceList, wordParameterList, PipelineArgs.Language, (user.Admin or user.Trainer))
 
         parameterList = NLPParameter().GetParameterList()
-
         calculationResult = SentenceResolver().CalculateRequirement(sentenceList, parameterList)
         sentenceList = calculationResult["sentenceList"]
 
+        sentenceList = SentenceResolver().AddActionBonus(sentenceList)
         sentenceList = SentenceResolver().AddSentencePriority(sentenceList)
         sentenceList = SentenceResolver().CalculateCategory(sentenceList, parameterList["Category"])
 

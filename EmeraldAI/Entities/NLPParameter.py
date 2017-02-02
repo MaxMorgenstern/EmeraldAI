@@ -20,8 +20,8 @@ class NLPParameter(BaseObject):
     ParameterList = {}
 
     # Input and Result for actions
-    Input = None
-    Result = None
+    ActionInput = None
+    ActionResult = None
 
     def __init__(self):
         self.Created = datetime.now()
@@ -57,15 +57,18 @@ class NLPParameter(BaseObject):
         self.Updated = datetime.now()
 
         self.ParameterList = {}
+        self.ParameterList["User"] = "Unknown"
+        self.ParameterList["Name"] = "Unknown"
+
         self.Input = None
         self.Result = None
 
     def SetInput(self, input):
-        self.Input = input
+        self.ActionInput = input
         self.ParameterList["Input"] = input
         self.Updated = datetime.now()
 
     def SetResult(self, result):
-        self.Result = result
+        self.ActionResult = result
         self.ParameterList["Result"] = result
         self.Updated = datetime.now()

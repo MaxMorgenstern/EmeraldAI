@@ -21,6 +21,7 @@ class SentenceResolver(object):
 
         self.__categoryBonus = Config().GetFloat("SentenceResolver", "CategoryBonus") #1
         self.__RequirementBonus = Config().GetFloat("SentenceResolver", "RequirementBonus") #1
+        self.__ActionBonus = Config().GetFloat("SentenceResolver", "ActionBonus") #1.5
 
 
     def GetSentencesByKeyword(self, sentenceList, word, language, isSynonym, isTrainer):
@@ -72,6 +73,18 @@ class SentenceResolver(object):
             else:
                 sentenceList[r[0]] = Sentence(r[0], (self.__parameterFactor * r[2] * self.__parameterFactorNoKeyword), word)
 
+        return sentenceList
+
+    def AddActionBonus(self, sentenceList):
+        query = """SELECT Conversation_Action.ID
+            FROM Conversation_Sentence_Action, Conversation_Action
+            WHERE Conversation_Sentence_Action.ActionID = Conversation_Action.ID
+            AND Conversation_Sentence_Action.SentenceID = '{0}'"""
+
+        for sentenceID, value in sentenceList.iteritems():
+            sqlResult = db().Fetchall(query.format(sentenceID))
+            for r in sqlResult:
+                sentenceList[sentenceID].AddPriority(self.__ActionBonus)
         return sentenceList
 
 

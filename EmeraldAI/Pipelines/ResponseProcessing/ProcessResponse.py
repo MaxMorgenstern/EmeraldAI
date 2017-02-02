@@ -33,16 +33,15 @@ class ProcessResponse(object):
             PipelineArgs.ResponseID = sentence.ID
             PipelineArgs.ResponseFound = True
 
-            parameterList = NLPParameter().GetParameterList()
-
-
-            # TODO - trigger action
             sentenceAction = sentence.GetAction()
             if sentenceAction != None and len(sentenceAction["Module"]) > 0:
-                print sentenceAction
-                actionResult = Action.CallFunction(sentenceAction["Module"], sentenceAction["Class"], sentenceAction["Function"])
-                # TODO - append to parameter list
+                result = Action.CallFunction(sentenceAction["Module"], sentenceAction["Class"], sentenceAction["Function"], PipelineArgs)
+                # TODO: add result to NLPPArameter ... also set the input parameter
+                # maybe extend result to multiple sub results
+                #NLPParameter().SetInput()
+                #NLPParameter().SetResult()
 
+            parameterList = NLPParameter().GetParameterList()
 
             keywords = re.findall(r"\{(.*?)\}", PipelineArgs.Response)
             for keyword in keywords:
