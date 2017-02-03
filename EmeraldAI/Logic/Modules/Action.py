@@ -2,18 +2,18 @@
 # -*- coding: utf-8 -*-
 import importlib
 
-def CreateClass(self, moduleName, className):
+def CreateClass(moduleName, className):
     module = importlib.import_module(moduleName)
     MyClass = getattr(module, className)
     return MyClass()
 
-def CallMethod(self, moduleName, className, functionName):
-    instance = self.CreateClass(moduleName, className)
+def CallMethod(moduleName, className, functionName):
+    instance = CreateClass(moduleName, className)
     method = getattr(instance, functionName)
     return method()
 
-def CallFunction(self, moduleName, className, functionName, arg1=None, arg2=None, arg3=None):
-    instance = self.CreateClass(moduleName, className)
+def CallFunction(moduleName, className, functionName, arg1=None, arg2=None, arg3=None):
+    instance = CreateClass(moduleName, className)
     method = getattr(instance, functionName)
 
     if arg3 != None:
