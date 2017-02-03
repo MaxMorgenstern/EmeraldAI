@@ -26,7 +26,7 @@ class SentenceResolver(object):
 
     def GetSentencesByKeyword(self, sentenceList, word, language, isSynonym, isTrainer):
         query = """SELECT DISTINCT Conversation_Sentence_Keyword.SentenceID, Conversation_Keyword.Stopword,
-                Conversation_Sentence_Keyword.Priority, Conversation_Keyword.Priority
+                Conversation_Sentence_Keyword.Priority, Conversation_Keyword.Priority, Conversation_Keyword.Normalized
                 FROM Conversation_Keyword, Conversation_Sentence_Keyword, Conversation_Sentence
                 WHERE Conversation_Keyword.ID = Conversation_Sentence_Keyword.KeywordID
                 AND Conversation_Sentence_Keyword.SentenceID = Conversation_Sentence.ID
@@ -41,9 +41,9 @@ class SentenceResolver(object):
             synonymFactor = self.__synonymFactor if isSynonym else 1
 
             if r[0] in sentenceList:
-                sentenceList[r[0]].AddKeyword((r[3] + synonymFactor * stopwordFactor * r[2]), word, isStopword)
+                sentenceList[r[0]].AddKeyword((r[3] + synonymFactor * stopwordFactor * r[2]), r[4], isStopword)
             else:
-                sentenceList[r[0]] = Sentence(r[0], (r[3] + synonymFactor * stopwordFactor * r[2]), word, isStopword)
+                sentenceList[r[0]] = Sentence(r[0], (r[3] + synonymFactor * stopwordFactor * r[2]), r[4], isStopword)
 
         return sentenceList
 
@@ -79,7 +79,7 @@ class SentenceResolver(object):
         query = """SELECT Conversation_Action.ID
             FROM Conversation_Sentence_Action, Conversation_Action
             WHERE Conversation_Sentence_Action.ActionID = Conversation_Action.ID
-            AND Conversation_Sentence_Action.SentenceID = '{0}'"""
+            AND Conversation_Sentence_Action.SentenceID = '{0}' LIMIT 1"""
 
         for sentenceID, value in sentenceList.iteritems():
             sqlResult = db().Fetchall(query.format(sentenceID))
