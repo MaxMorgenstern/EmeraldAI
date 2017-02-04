@@ -24,7 +24,7 @@ class SentenceResolver(object):
         self.__ActionBonus = Config().GetFloat("SentenceResolver", "ActionBonus") #1.5
 
 
-    def GetSentencesByKeyword(self, sentenceList, word, language, isSynonym, isTrainer):
+    def GetSentencesByKeyword(self, sentenceList, word, baseWord, language, isSynonym, isTrainer):
         query = """SELECT DISTINCT Conversation_Sentence_Keyword.SentenceID, Conversation_Keyword.Stopword,
                 Conversation_Sentence_Keyword.Priority, Conversation_Keyword.Priority, Conversation_Keyword.Normalized
                 FROM Conversation_Keyword, Conversation_Sentence_Keyword, Conversation_Sentence
@@ -44,6 +44,8 @@ class SentenceResolver(object):
                 sentenceList[r[0]].AddKeyword((r[3] + synonymFactor * stopwordFactor * r[2]), r[4], isStopword)
             else:
                 sentenceList[r[0]] = Sentence(r[0], (r[3] + synonymFactor * stopwordFactor * r[2]), r[4], isStopword)
+
+            sentenceList[r[0]].AddBaseword(baseWord)
 
         return sentenceList
 

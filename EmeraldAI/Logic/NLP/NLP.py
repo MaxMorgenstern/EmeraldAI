@@ -66,3 +66,10 @@ def IsLastname(input):
     normalizedInput = Normalize(input, "all")
     result = db().Fetchall("SELECT * FROM NLP_Lastname WHERE Lastname = '{0}'".format(normalizedInput.title()))
     return len(result) > 0
+
+def TrimBasewords(PipelineArgs):
+    inputString = PipelineArgs.Normalized
+    sentence = PipelineArgs.SentenceList[PipelineArgs.ResponseID]
+    for word in sentence.BasewordList:
+        inputString = inputString.replace(word, "")
+    return inputString.strip()

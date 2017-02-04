@@ -37,6 +37,8 @@ https://pypi.python.org/pypi/cachetools
 
 - entity functions: move out in helper classes
 
+- Action: how to get the "wildcard" so the action can handle the text
+
 ---
 
 Rank  Bot Property  Value
