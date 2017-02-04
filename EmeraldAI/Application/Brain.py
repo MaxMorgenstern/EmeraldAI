@@ -28,6 +28,7 @@ def RunBrain():
     loopTerminator = False
 
     while not loopTerminator:
+        print "RunBrain() while..."
         pipelineArgs = STT().Process()
         if(pipelineArgs == None):
             continue
@@ -56,10 +57,10 @@ def RunBrain():
 
 
 if __name__ == "__main__":
-    faceThread = Process(target=DF.RunFaceDetection, args=[CVUserInstance])
-    faceThread.start()
-
     try:
+        faceThread = Process(target=DF.RunFaceDetection, args=[CVUserInstance])
+        faceThread.start()
+
         RunBrain()
     except KeyboardInterrupt:
         print "End"

@@ -5,6 +5,8 @@ import sys
 import platform
 import codecs
 
+from cachetools import cached
+
 RootPath = os.path.dirname(os.path.dirname(os.path.abspath(sys.argv[0]))).rstrip(os.sep) + os.sep
 EmeraldPath = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))).rstrip(os.sep) + os.sep
 OS = platform.system().lower()  # darwin (=osx) - windows - linux
@@ -14,6 +16,8 @@ class OperatingSystem():
     Windows = "windows"
     OSX = "darwin"
 
+
+@cached(cache={})
 def ReadDataFile(foldername, filename, utf8=True):
     script_dir = EmeraldPath + "Data" + os.sep + foldername + os.sep + filename
     if utf8:

@@ -19,7 +19,6 @@ class ProcessResponse(object):
         self.__alice = AliceBot(self.__language_2letter_cc)
 
 
-
     def Process(self, PipelineArgs):
         sentence = PipelineArgs.GetRandomSentenceWithHighestValue()
 
@@ -37,12 +36,7 @@ class ProcessResponse(object):
 
             sentenceAction = sentence.GetAction()
             if sentenceAction != None and len(sentenceAction["Module"]) > 0:
-
                 actionResult = Action.CallFunction(sentenceAction["Module"], sentenceAction["Class"], sentenceAction["Function"], PipelineArgs)
-                print "ProcessResponse() ActionResult", actionResult
-
-                # TODO: add result to NLPPArameter ... also set the input parameter
-                # maybe extend result to multiple sub results
                 NLPParameter().SetInput(actionResult["Input"])
                 NLPParameter().SetResult(actionResult["Result"])
 
