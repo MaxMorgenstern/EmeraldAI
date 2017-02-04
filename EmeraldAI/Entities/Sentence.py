@@ -13,6 +13,8 @@ class Sentence(BaseObject):
     KeywordList = []
     OnlyStopwords = True
 
+    BasewordList = []
+
     HasCategory = []
     SetsCategory = []
 
@@ -21,6 +23,8 @@ class Sentence(BaseObject):
         self.Rating = Rating
         self.KeywordList = [Keyword]
         self.OnlyStopwords = IsStopword
+
+        self.BasewordList = []
 
         self.HasCategory = []
         self.SetsCategory = []
@@ -31,6 +35,9 @@ class Sentence(BaseObject):
 
     def __str__(self):
          return "R:{0} L:{1} S:{2}\n".format(self.Rating, len(self.KeywordList), self.OnlyStopwords)
+
+    def AddBaseword(self, Baseword):
+        self.BasewordList.append(Baseword)
 
     def AddKeyword(self, Rating, Keyword, IsStopword=True):
         self.Rating += Rating
@@ -58,7 +65,8 @@ class Sentence(BaseObject):
         return None
 
     def GetAction(self):
-        query = """SELECT Conversation_Action.*
+        query = """SELECT Conversation_Action.Name, Conversation_Action.Module,
+            Conversation_Action.Class, Conversation_Action.Function
             FROM Conversation_Sentence_Action, Conversation_Action
             WHERE Conversation_Sentence_Action.ActionID = Conversation_Action.ID
             AND Conversation_Sentence_Action.SentenceID = '{0}'"""

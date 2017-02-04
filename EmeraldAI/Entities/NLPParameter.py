@@ -63,9 +63,9 @@ class NLPParameter(BaseObject):
         self.Input = None
         self.Result = None
 
-    def SetInput(self, input):
-        self.ActionInput = input
-        self.ParameterList["Input"] = input
+    def SetInput(self, inputString):
+        self.ActionInput = inputString
+        self.ParameterList["Input"] = inputString
         self.Updated = datetime.now()
 
     def SetResult(self, result):

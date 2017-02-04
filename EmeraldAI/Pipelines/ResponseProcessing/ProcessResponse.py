@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Entities.NLPParameter import NLPParameter
+from EmeraldAI.Logic.NLP import NLP
 from EmeraldAI.Entities.User import User
 from EmeraldAI.Config.Config import *
 from EmeraldAI.Logic.NLP.AliceBot import *
@@ -32,14 +33,18 @@ class ProcessResponse(object):
             PipelineArgs.Response = PipelineArgs.ResponseRaw
             PipelineArgs.ResponseID = sentence.ID
             PipelineArgs.ResponseFound = True
+            PipelineArgs.InputWithoutBasewords = NLP.TrimBasewords(PipelineArgs)
 
             sentenceAction = sentence.GetAction()
             if sentenceAction != None and len(sentenceAction["Module"]) > 0:
-                result = Action.CallFunction(sentenceAction["Module"], sentenceAction["Class"], sentenceAction["Function"], PipelineArgs)
+
+                actionResult = Action.CallFunction(sentenceAction["Module"], sentenceAction["Class"], sentenceAction["Function"], PipelineArgs)
+                print "ProcessResponse() ActionResult", actionResult
+
                 # TODO: add result to NLPPArameter ... also set the input parameter
                 # maybe extend result to multiple sub results
-                #NLPParameter().SetInput()
-                #NLPParameter().SetResult()
+                NLPParameter().SetInput(actionResult["Input"])
+                NLPParameter().SetResult(actionResult["Result"])
 
             parameterList = NLPParameter().GetParameterList()
 

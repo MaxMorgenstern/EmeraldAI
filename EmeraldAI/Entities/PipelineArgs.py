@@ -10,6 +10,7 @@ class PipelineArgs(BaseObject):
         # Original Input
         self.Input = input
         self.Normalized = input
+        self.InputWithoutBasewords = None
 
         # Input Language | List of EmeraldAI.Entities.BaseObject.Word objects | List of parameters
         self.Language = None
