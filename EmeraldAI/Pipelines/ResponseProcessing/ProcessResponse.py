@@ -33,6 +33,7 @@ class ProcessResponse(object):
             PipelineArgs.ResponseID = sentence.ID
             PipelineArgs.ResponseFound = True
             PipelineArgs.InputWithoutBasewords = NLP.TrimBasewords(PipelineArgs)
+            # TODO  NLP.TrimStopwords(PipelineArgs.InputWithoutBasewords, PipelineArgs.Language)
 
             sentenceAction = sentence.GetAction()
             if sentenceAction != None and len(sentenceAction["Module"]) > 0:

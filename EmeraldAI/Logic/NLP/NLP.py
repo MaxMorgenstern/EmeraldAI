@@ -39,12 +39,15 @@ def WordSegmentation(input, extended=False):
 
     return segmentationRegex.findall(input)
 
+def GetStopwords(language):
+    return Global.ReadDataFile("Stopwords", "{0}.txt".format(language.upper()))
+
 def RemoveStopwords(wordlist, language):
-    stopwords = Global.ReadDataFile("Stopwords", "{0}.txt".format(language.upper()))
+    stopwords = GetStopwords(language)
     return [x for x in wordlist if x not in stopwords]
 
 def IsStopword(word, language):
-    stopwords = Global.ReadDataFile("Stopwords", "{0}.txt".format(language.upper()))
+    stopwords = GetStopwords(language)
     return word in stopwords
 
 def Normalize(input, language):
@@ -73,3 +76,12 @@ def TrimBasewords(PipelineArgs):
     for word in sentence.BasewordList:
         inputString = inputString.replace(word, "")
     return inputString.strip()
+
+def TrimStopwords(input, language):
+    stopwords = GetStopwords(language)
+    inputwords = input.split()
+
+    resultwords  = [word for word in inputwords if word.lower() not in stopwords]
+    result = ' '.join(resultwords)
+
+    return result
