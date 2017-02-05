@@ -6,10 +6,12 @@ CountryCode4Letter = de-DE
 Language = de
 
 
+# ----------------------
 [Bot]
 Name = Johnny
 
 
+# ----------------------
 [SentenceResolver]
 SynonymFactor = 0.5
 StopwordFactor = 0.5
@@ -23,19 +25,23 @@ RequirementBonus = 1
 ActionBonus = 1.5
 
 
+# ----------------------
 [NLP]
 SentenceRatingThreshold = 2
 AliceAsFallback = True
 
 
+# ----------------------
 [Trainer]
 Enabled = True
 
 
+# ----------------------
 [SpeechToText]
 Provider = Google
 
 
+# ----------------------
 [TextToSpeech]
 AudioPlayer = afplay
 Provider = Ivona
@@ -55,6 +61,7 @@ IvonaAccessKey =
 IvonaSecretKey =
 
 
+# ----------------------
 [Database]
 NLPDatabaseType = sqlite
 ThesaurusDatabaseType = sqlite
@@ -68,6 +75,7 @@ MySQLPassword =
 MySQLHost = 127.0.0.1
 
 
+# ----------------------
 [ComputerVision]
 CameraWidth = 640
 CameraHeight = 360
@@ -84,5 +92,21 @@ HaarcascadeEyes = haarcascade_eye.xml
 HaarcascadeEyesGlasses = haarcascade_eye_tree_eyeglasses.xml
 
 
+# ----------------------
 [Weather]
 OWMAPIKey =
+
+
+# ----------------------
+#       ACTIONS
+# ----------------------
+[Action.Wikipedia]
+Name = Wikipedia
+Module = EmeraldAI.Logic.Actions.WikipediaAction
+Class = WikipediaAction
+Function = ProcessArticle
+
+MinCharBeforeTrim = 200
+MaxCharToNewLine = 300
+
+

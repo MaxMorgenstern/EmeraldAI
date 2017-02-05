@@ -2,23 +2,29 @@
 # -*- coding: utf-8 -*-
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Logic.KnowledgeGathering.Wikipedia import Wikipedia as wiki
-import textwrap
+from EmeraldAI.Config.Config import *
 
 class WikipediaAction(object):
     __metaclass__ = Singleton
 
-    # TODO - move to config
     __minCharBeforeTrim = 200
-    __maxCharBeforeTrim = 300
+    __maxCharToNewLine = 300
+
+    def __init__(self):
+        self.__minCharBeforeTrim = Config().GetInt("Action.Wikipedia", "MinCharBeforeTrim") # 200
+        self.__maxCharToNewLine = Config().GetInt("Action.Wikipedia", "MaxCharToNewLine") # 300
 
 
     def ProcessArticle(self, PipelineArgs):
         result = wiki().GetSummary(PipelineArgs.InputWithoutBasewords)
 
+        # TODO - on no result trim stopwords and try again
+        # TODO - no result at all response
+
         dotIndex = result.find('.', self.__minCharBeforeTrim)
         newLineIndex = result.find('n\\', self.__minCharBeforeTrim)
 
-        if(newLineIndex > 0 and newLineIndex <= self.__maxCharBeforeTrim):
+        if(newLineIndex > 0 and newLineIndex <= self.__maxCharToNewLine):
             trimmedResult = result[:newLineIndex+1]
         elif(dotIndex > 0):
             trimmedResult = result[:dotIndex+1]
