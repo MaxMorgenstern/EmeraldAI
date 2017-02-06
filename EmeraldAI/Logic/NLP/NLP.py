@@ -83,5 +83,4 @@ def TrimStopwords(input, language):
 
     resultwords  = [word for word in inputwords if word.lower() not in stopwords]
     result = ' '.join(resultwords)
-
     return result
