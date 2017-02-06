@@ -16,10 +16,15 @@ class WikipediaAction(object):
 
 
     def ProcessArticle(self, PipelineArgs):
-        result = wiki().GetSummary(PipelineArgs.InputWithoutBasewords)
+        result = wiki().GetSummary(PipelineArgs.BasewordTrimmedInput)
+        inputString = PipelineArgs.BasewordTrimmedInput
 
-        # TODO - on no result trim stopwords and try again
-        # TODO - no result at all response
+        if result == None or len(result) == 0:
+            result = wiki().GetSummary(PipelineArgs.FullyTrimmedInput)
+            inputString = PipelineArgs.FullyTrimmedInput
+
+        if result == None or len(result) == 0:
+            return {'Input':inputString, 'Result':None, 'ResultType':'Error'}
 
         dotIndex = result.find('.', self.__minCharBeforeTrim)
         newLineIndex = result.find('n\\', self.__minCharBeforeTrim)
@@ -31,8 +36,8 @@ class WikipediaAction(object):
         else:
             trimmedResult = result
 
-        return {'Input':PipelineArgs.InputWithoutBasewords, 'Result':trimmedResult, 'ResultType':'string'}
+        return {'Input':inputString, 'Result':trimmedResult, 'ResultType':'string'}
 
     def ProcessImages(self, PipelineArgs):
-        result = wiki().GetImages(PipelineArgs.InputWithoutBasewords)
-        return {'Input':PipelineArgs.InputWithoutBasewords, 'Result':result, 'ResultType':'image'}
+        result = wiki().GetImages(PipelineArgs.BasewordTrimmedInput)
+        return {'Input':PipelineArgs.BasewordTrimmedInput, 'Result':result, 'ResultType':'image'}

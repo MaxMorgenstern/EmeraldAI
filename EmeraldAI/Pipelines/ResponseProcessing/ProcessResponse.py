@@ -32,12 +32,16 @@ class ProcessResponse(object):
             PipelineArgs.Response = PipelineArgs.ResponseRaw
             PipelineArgs.ResponseID = sentence.ID
             PipelineArgs.ResponseFound = True
-            PipelineArgs.InputWithoutBasewords = NLP.TrimBasewords(PipelineArgs)
-            # TODO  NLP.TrimStopwords(PipelineArgs.InputWithoutBasewords, PipelineArgs.Language)
+            PipelineArgs.BasewordTrimmedInput = NLP.TrimBasewords(PipelineArgs)
+            PipelineArgs.FullyTrimmedInput = NLP.TrimStopwords(PipelineArgs.BasewordTrimmedInput, PipelineArgs.Language)
 
             sentenceAction = sentence.GetAction()
             if sentenceAction != None and len(sentenceAction["Module"]) > 0:
                 actionResult = Action.CallFunction(sentenceAction["Module"], sentenceAction["Class"], sentenceAction["Function"], PipelineArgs)
+
+                # TODO handle error
+                # return {'Input':inputString, 'Result':None, 'ResultType':'Error'}
+
                 NLPParameter().SetInput(actionResult["Input"])
                 NLPParameter().SetResult(actionResult["Result"])
 
