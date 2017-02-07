@@ -1,5 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+import itertools
+
 from EmeraldAI.Logic.NLP import NLP
 from EmeraldAI.Config.Config import *
 from EmeraldAI.Logic.Singleton import Singleton
@@ -19,21 +21,14 @@ class Requirement(object):
         self.Comparison = Comparison
         self.Value = Value
 
-class Action(object):
-    Name = None
-    Module = None
-    Class = None
-    Function = None
-
-    def __init__(self, Name, Module, Class, Function):
-        self.Name = Name
-        self.Module = Module
-        self.Class = Class
-        self.Function = Function
-
-
 class DialogTrainer(object):
     __metaclass__ = Singleton
+
+    __comparisonValues = ["lt", "gt", "le", "eq", "ge"]
+    __csvColCount = 6
+
+    def __groupSeparator(self, line):
+        return line=='\n'
 
     def SaveKeyword(self, Word, Language):
         isStopword = 0
@@ -81,8 +76,10 @@ class DialogTrainer(object):
         return keywordList
 
 
-    # TODO: ensure we don't train sentences multiple times
-    def TrainSentence(self, Sentence, Language, KeywordList, RequirementObjectList, HasCategoryList, SetCategoryList, ActionName):
+    # TODO - train incomplete sentence - put in for review
+
+
+    def TrainFullSentence(self, Sentence, Language, KeywordList, RequirementObjectList, HasCategoryList, SetCategoryList, ActionName):
         # Train Keywords of response
         self.TrainKeywords(Sentence, Language)
 
@@ -108,7 +105,6 @@ class DialogTrainer(object):
             # create requirement if it does not exist - or get ID
             requirementID = self.SaveRequirement(requirement.Name)
             # Link requirement - sentence
-
             if(requirement.Comparison == None):
                 query = "INSERT INTO Conversation_Sentence_Requirement ('SentenceID', 'RequirementID', 'Value') Values ('{0}', '{1}', '{2}')".format(sentenceID, requirementID, requirement.Value)
             else:
@@ -135,13 +131,65 @@ class DialogTrainer(object):
 
 
         if(ActionName != None and len(ActionName) > 1):
-            # create follow up action if it does not exist - or get ID
-            #actionID = self.SaveAction(FollowUpActionObject.Name, FollowUpActionObject.Module, FollowUpActionObject.Class, FollowUpActionObject.Function)
             # Link follow up action - sentence
             query = "SELECT ID FROM Conversation_Action WHERE Name = '{0}'".format(ActionName)
-            actionID = db().Fetchall(query)[0][0]
-            query = "INSERT INTO Conversation_Sentence_Action ('SentenceID', 'ActionID') Values ('{0}', '{1}')".format(sentenceID, actionID)
-            db().Execute(query)
+            actionIDRow = db().Fetchall(query)
+            print actionIDRow
+            if len(actionIDRow) > 0:
+                query = "INSERT INTO Conversation_Sentence_Action ('SentenceID', 'ActionID') Values ('{0}', '{1}')".format(sentenceID, actionIDRow[0][0])
+                db().Execute(query)
 
         return True
+
+    def TrainCSV(self, data, language):
+        qlist = []
+        for key, group in itertools.groupby(data, self.__groupSeparator):
+
+            line = ''.join(str(e) for e in group)
+            line = line.strip()
+            if (len(line) > 1):
+
+                # on empty line reset
+                if(line == ";;;;;"):
+                    qlist = []
+                    continue
+
+                splitLine = line.split(";")
+                if(len(splitLine) == self.__csvColCount):
+                    qa = splitLine[0]
+                    req = splitLine[1]
+                    sent = splitLine[2]
+                    hasC = splitLine[3]
+                    setC = splitLine[4]
+                    act = splitLine[5]
+
+                    # Question
+                    if(qa == "Q"):
+                        qlist += list(set(self.TrainKeywords(sent, language)) - set(qlist))
+
+                    # Response
+                    if(qa == "A"):
+                        requirementObjectList = []
+                        for r in req.split("|"):
+                            if(len(r) > 2):
+                                temp = r.split(":")
+
+                                rName = temp[0]
+                                if (temp[1][0:2] not in self.__comparisonValues):
+                                    rComparison = None
+                                    rValue = temp[1]
+                                else:
+                                    rComparison = temp[1][0:2]
+                                    rValue = temp[1][2:]
+                                requirementObjectList.append(Requirement(rName, rComparison, rValue))
+
+                        hasCategoryList = []
+                        for h in hasC.split("|"):
+                            hasCategoryList.append(h)
+
+                        setCategoryList = []
+                        for s in setC.split("|"):
+                            setCategoryList.append(s)
+
+                        self.TrainFullSentence(sent, language, qlist, requirementObjectList, hasCategoryList, setCategoryList, act)
 

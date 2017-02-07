@@ -14,10 +14,6 @@ Just a messy list with things to do
 
 - add notes to classes and modules - description
 
-- strip unused facerec data
-
-- Singleton check - convert all classes to singleton which need to be - config?
-
 - test http://cmusphinx.sourceforge.net/
 
 - https://github.com/Uberi/speech_recognition/blob/master/examples/background_listening.py
@@ -36,9 +32,8 @@ https://pypi.python.org/pypi/cachetools
 
 - update user last seen and last spoken to
 
-- entity functions: move out in helper classes
-
-- Action: how to get the "wildcard" so the action can handle the text
+- more testing with profiles
+	python -m cProfile -s cumtime script.py
 
 ---
 
