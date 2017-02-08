@@ -26,6 +26,8 @@ class AnalyzeScope(object):
 
         sentenceList = SentenceResolver().GetSentencesByParameter(sentenceList, wordParameterList, PipelineArgs.Language, (user.Admin or user.Trainer))
 
+        # TODO - add word parameter list to global NLPParameter
+
         parameterList = NLPParameter().GetParameterList()
         calculationResult = SentenceResolver().CalculateRequirement(sentenceList, parameterList)
         sentenceList = calculationResult["sentenceList"]

@@ -35,6 +35,13 @@ https://pypi.python.org/pypi/cachetools
 - more testing with profiles
 	python -m cProfile -s cumtime script.py
 
+- remove singleton from user class + create shared user class for use in CV
+
+- NLPParameter list - use SetInput instead of writing to the variables : ProcessInput.py
+
+- Handle Wildcard Parameter (*) in Q
+- Set Category
+
 ---
 
 Rank  Bot Property  Value

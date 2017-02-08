@@ -42,6 +42,10 @@ class NLPParameter(BaseObject):
         self.ParameterList["Day"] = datetime.today().strftime("%A")
 
         # TODO - update user parameter
+        # UserType
+        #
+        # Update Bot Parameters
+        # BotStatus
         self.ParameterList["Name"] = User().Name
         self.ParameterList["User"] = self.ParameterList["Name"]
 
