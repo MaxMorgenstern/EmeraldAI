@@ -114,6 +114,13 @@ class SentenceResolver(object):
             sqlResult = db().Fetchall(query.format(sentenceID))
             for r in sqlResult:
                 requirementName = r[2].title()
+
+                if requirementName not in parameterList:
+                    # TODO log error
+                    #print "SentenceResolver Line 120: Requirement missing in list:", requirementName
+                    deleteList.append(sentenceID)
+                    continue
+
                 if r[0] == None:
                     if parameterList[requirementName] != r[1]:
                         deleteList.append(sentenceID)
