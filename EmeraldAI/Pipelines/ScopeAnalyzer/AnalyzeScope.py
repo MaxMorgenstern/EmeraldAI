@@ -25,12 +25,14 @@ class AnalyzeScope(object):
             wordParameterList += list(set(word.ParameterList) - set(wordParameterList))
 
         sentenceList = SentenceResolver().GetSentencesByParameter(sentenceList, wordParameterList, PipelineArgs.Language, (user.Admin or user.Trainer))
-
-        # TODO - add word parameter list to global NLPParameter
+        NLPParameter().UpdateParameter("Wordtype", wordParameterList)
 
         parameterList = NLPParameter().GetParameterList()
         calculationResult = SentenceResolver().CalculateRequirement(sentenceList, parameterList)
         sentenceList = calculationResult["sentenceList"]
+
+        # TODO enable and disable in config
+        sentenceList = SentenceResolver().RemoveLowPrioritySentences(sentenceList)
 
         sentenceList = SentenceResolver().AddActionBonus(sentenceList)
         sentenceList = SentenceResolver().AddSentencePriority(sentenceList)

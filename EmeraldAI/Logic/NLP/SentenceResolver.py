@@ -117,12 +117,14 @@ class SentenceResolver(object):
 
                 if requirementName not in parameterList:
                     # TODO log error
-                    #print "SentenceResolver Line 120: Requirement missing in list:", requirementName
+                    print "SentenceResolver Line 120: Requirement missing in list:", requirementName
                     deleteList.append(sentenceID)
                     continue
 
                 if r[0] == None:
-                    if parameterList[requirementName] != r[1]:
+                    if type(parameterList[requirementName]) == list and r[1].lower() not in parameterList[requirementName]:
+                        deleteList.append(sentenceID)
+                    elif type(parameterList[requirementName]) == str and parameterList[requirementName].lower() != r[1].lower():
                         deleteList.append(sentenceID)
                     else:
                         sentenceList[sentenceID].AddPriority(self.__RequirementBonus)
@@ -166,4 +168,22 @@ class SentenceResolver(object):
             if category in sentenceList[sentenceID].HasCategory:
                 sentenceList[sentenceID].AddPriority(self.__categoryBonus)
 
+        return sentenceList
+
+
+    def RemoveLowPrioritySentences(self, sentenceList):
+        # TODO move to config
+        minSentenceCount = 5
+        priorityThreshold = 1.5
+        if(len(sentenceList) >= minSentenceCount):
+            highestRanking = max(node.Rating for node in sentenceList.values())
+            lowestRanking = min(node.Rating for node in sentenceList.values())
+            dynamicThreshold = (lowestRanking * 3 + highestRanking + priorityThreshold) / 5
+
+            usedThreshold = priorityThreshold if priorityThreshold > dynamicThreshold else dynamicThreshold
+            print "RemoveLowPrioritySentences", highestRanking, lowestRanking, dynamicThreshold, usedThreshold
+            if highestRanking > usedThreshold:
+                deleteResult = [node for node in sentenceList.values() if node.Rating <= usedThreshold]
+                for d in list(set(deleteResult)):
+                    del sentenceList[d.ID]
         return sentenceList
