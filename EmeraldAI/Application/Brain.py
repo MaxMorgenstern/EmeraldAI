@@ -58,8 +58,8 @@ def RunBrain():
 
 if __name__ == "__main__":
     try:
-        faceThread = Process(target=DF.RunFaceDetection, args=[CVUserInstance])
-        faceThread.start()
+        #faceThread = Process(target=DF.RunFaceDetection, args=[CVUserInstance])
+        #faceThread.start()
 
         RunBrain()
     except KeyboardInterrupt:

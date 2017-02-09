@@ -66,8 +66,8 @@ Q;;Wekche Sprachen kannst du sprechen;;Question|Language;
 A;;Ich verstehe folgende Sprachen: {botlanguages};Question|Language;;
 ;;;;;
 Q;;*;;;
-A;Type:Curseword;Und Sie erwarten nun dass ich darauf reagiere?;;;EndConversation
-A;Type:Curseword;Haben Sie sonst noch etwas dass Sie los werden wollen?;;;EndConversation
+A;WordType:Curseword;Und Sie erwarten nun dass ich darauf reagiere?;;;EndConversation
+A;WordType:Curseword;Haben Sie sonst noch etwas dass Sie los werden wollen?;;;EndConversation
 ;;;;;
 Q;;Mein Name ist {firstname}{lastname};;Name;
 Q;;Ich heiße {firstname}{lastname};;Name;
@@ -76,9 +76,9 @@ Q;;Ich bin {firstname}{lastname};;Name;
 Q;;{firstname};;Name;
 Q;;{lastname};;Name;
 Q;;{firstname}{lastname};;Name;
-A;Type:Firstname;Hallo {firstname};Name;;StoreName
-A;Type:Firstname|Type:Lastname;Hallo {nametitle}{fullname};Name;;StoreName
-A;Type:Lastname;Hallo {nametitle}{lastname};Name;;StoreName
+A;WordType:Firstname;Hallo {firstname};Name;;StoreName
+A;WordType:Firstname|WordType:Lastname;Hallo {nametitle}{fullname};Name;;StoreName
+A;WordType:Lastname;Hallo {nametitle}{lastname};Name;;StoreName
 ;;;;;
 Q;;Wie geht es dir?;;Wellbeing|Question;
 Q;;Wie ist dein aktueller Status?;;Wellbeing|Question;

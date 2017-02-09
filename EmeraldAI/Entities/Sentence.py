@@ -31,10 +31,10 @@ class Sentence(BaseObject):
 
     # TODO - some better output
     def __repr__(self):
-         return "R:{0} L:{1} S:{2}\n".format(self.Rating, len(self.KeywordList), self.OnlyStopwords)
+         return "ID:{0} R:{1} L:{2} S:{3}\n".format(self.ID, self.Rating, len(self.KeywordList), self.OnlyStopwords)
 
     def __str__(self):
-         return "R:{0} L:{1} S:{2}\n".format(self.Rating, len(self.KeywordList), self.OnlyStopwords)
+         return "ID:{0} R:{1} L:{2} S:{3}\n".format(self.ID, self.Rating, len(self.KeywordList), self.OnlyStopwords)
 
     def AddBaseword(self, Baseword):
         self.BasewordList.append(Baseword)
