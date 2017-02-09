@@ -23,6 +23,9 @@ class SentenceResolver(object):
         self.__RequirementBonus = Config().GetFloat("SentenceResolver", "RequirementBonus") #1
         self.__ActionBonus = Config().GetFloat("SentenceResolver", "ActionBonus") #1.5
 
+        self.__MinSentenceCountForRemoval = Config().GetFloat("SentenceResolver", "MinSentenceCountForRemoval") #5
+        self.__RemoveSentenceBelowThreshold = Config().GetFloat("SentenceResolver", "RemoveSentenceBelowThreshold") #1.5
+
 
     def GetSentencesByKeyword(self, sentenceList, word, baseWord, language, isSynonym, isTrainer):
         query = """SELECT DISTINCT Conversation_Sentence_Keyword.SentenceID, Conversation_Keyword.Stopword,
@@ -171,17 +174,18 @@ class SentenceResolver(object):
         return sentenceList
 
 
-    def RemoveLowPrioritySentences(self, sentenceList):
-        # TODO move to config
-        minSentenceCount = 5
-        priorityThreshold = 1.5
-        if(len(sentenceList) >= minSentenceCount):
+    def RemoveLowPrioritySentences(self, sentenceList, useDynamicThreshold=False):
+        priorityThreshold = self.__RemoveSentenceBelowThreshold
+        if(len(sentenceList) >= self.__MinSentenceCountForRemoval):
             highestRanking = max(node.Rating for node in sentenceList.values())
-            lowestRanking = min(node.Rating for node in sentenceList.values())
-            dynamicThreshold = (lowestRanking * 3 + highestRanking + priorityThreshold) / 5
 
-            usedThreshold = priorityThreshold if priorityThreshold > dynamicThreshold else dynamicThreshold
-            print "RemoveLowPrioritySentences", highestRanking, lowestRanking, dynamicThreshold, usedThreshold
+            if useDynamicThreshold:
+                lowestRanking = min(node.Rating for node in sentenceList.values())
+                dynamicThreshold = (lowestRanking * 3 + highestRanking + priorityThreshold) / 5
+                usedThreshold = priorityThreshold if priorityThreshold > dynamicThreshold else dynamicThreshold
+            else:
+                usedThreshold = priorityThreshold
+
             if highestRanking > usedThreshold:
                 deleteResult = [node for node in sentenceList.values() if node.Rating <= usedThreshold]
                 for d in list(set(deleteResult)):

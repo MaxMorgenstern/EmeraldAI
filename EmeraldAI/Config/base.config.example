@@ -24,6 +24,8 @@ CategoryBonus = 1
 RequirementBonus = 1
 ActionBonus = 1.5
 
+MinSentenceCountForRemoval = 5
+RemoveSentenceBelowThreshold = 1.5
 
 # ----------------------
 [NLP]
@@ -110,3 +112,9 @@ MinCharBeforeTrim = 200
 MaxCharToNewLine = 300
 
 
+# ----------------------
+#      PIPELINES
+# ----------------------
+[Pipeline.ScopeAnalyzer]
+RemoveLowPrioritySentencesBeforeRequirement = False
+RemoveLowPrioritySentencesAfterRequirement = True

@@ -87,6 +87,14 @@ A;UserType:Admin|BotStatus:eq1;Meine Batterie ist bei {botbattery}. Folgender Ei
 A;UserType:Admin|BotStatus:gt1;Meine Batterie ist bei {botbattery}. Folgende Einträge stind im Status Log: {botstatus};Wellbeing|Question;;
 """
 
+data = """Q;;Wer ist {firstname}{lastname};;Question;
+Q;;Wer war {firstname}{lastname};;Question;
+Q;;Wer war {firstname}{lastname};;Question;
+Q;;Was ist *;;Question;
+Q;;Was war *;;Question;
+A;;{result};Question;;Wikipedia
+"""
+
 dt.TrainCSV(data, language)
 print("--- %s seconds ---" % (time.time() - start_time))
 

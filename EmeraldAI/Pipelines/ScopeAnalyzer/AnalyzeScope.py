@@ -4,10 +4,14 @@ from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Logic.NLP.SentenceResolver import SentenceResolver
 from EmeraldAI.Entities.NLPParameter import NLPParameter
 from EmeraldAI.Entities.User import User
+from EmeraldAI.Config.Config import *
 
 class AnalyzeScope(object):
     __metaclass__ = Singleton
 
+    def __init__(self):
+        self.__RemoveBeforeRequirementCalculation = Config().GetBoolean("Pipeline.ScopeAnalyzer", "RemoveLowPrioritySentencesBeforeRequirement") #False
+        self.__RemoveAfterRequirementCalculation = Config().GetBoolean("Pipeline.ScopeAnalyzer", "RemoveLowPrioritySentencesAfterRequirement") #False
 
     def Process(self, PipelineArgs):
 
@@ -27,12 +31,17 @@ class AnalyzeScope(object):
         sentenceList = SentenceResolver().GetSentencesByParameter(sentenceList, wordParameterList, PipelineArgs.Language, (user.Admin or user.Trainer))
         NLPParameter().UpdateParameter("Wordtype", wordParameterList)
 
+        if self.__RemoveBeforeRequirementCalculation:
+            sentenceList = SentenceResolver().RemoveLowPrioritySentences(sentenceList)
+
+        #TODO remove stopword only
+
         parameterList = NLPParameter().GetParameterList()
         calculationResult = SentenceResolver().CalculateRequirement(sentenceList, parameterList)
         sentenceList = calculationResult["sentenceList"]
 
-        # TODO enable and disable in config
-        sentenceList = SentenceResolver().RemoveLowPrioritySentences(sentenceList)
+        if self.__RemoveAfterRequirementCalculation:
+            sentenceList = SentenceResolver().RemoveLowPrioritySentences(sentenceList, True)
 
         sentenceList = SentenceResolver().AddActionBonus(sentenceList)
         sentenceList = SentenceResolver().AddSentencePriority(sentenceList)
