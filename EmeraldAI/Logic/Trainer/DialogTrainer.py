@@ -26,6 +26,7 @@ class DialogTrainer(object):
 
     __comparisonValues = ["lt", "gt", "le", "eq", "ge"]
     __csvColCount = 6
+    __csvActionColCount = 4
 
     def __groupSeparator(self, line):
         return line=='\n'
@@ -140,6 +141,21 @@ class DialogTrainer(object):
                 db().Execute(query)
 
         return True
+
+    def TrainActionCSV(self, data, language):
+        for key, group in itertools.groupby(data, self.__groupSeparator):
+
+            line = ''.join(str(e) for e in group)
+            line = line.strip()
+            if (len(line) > 1):
+                splitLine = line.split(";")
+                if(len(splitLine) == self.__csvActionColCount):
+                    name = splitLine[0]
+                    moduleName = splitLine[1]
+                    className = splitLine[2]
+                    functionName = splitLine[3]
+
+                    # TODO
 
     def TrainCSV(self, data, language):
         qlist = []
