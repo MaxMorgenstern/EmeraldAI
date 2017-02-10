@@ -11,6 +11,7 @@ class Wikipedia(object):
     def __init__(self):
         wikipedia.set_lang(Config().Get("DEFAULT", "CountryCode2Letter"))
 
+
     def GetSummary(self, term, fallback = True, trimBrackets=True):
         summary = None
         try:
