@@ -77,11 +77,16 @@ class DialogTrainer(object):
         return keywordList
 
 
-    # TODO - train incomplete sentence - put in for review
+    # TODO - train incomplete sentence - put in for revie
+    # maybe change KW list to old sentence
+    def TrainSentence(self, Sentence, Language, KeywordList):
+        # Train Keywords of sentence
+        self.TrainKeywords(Sentence, Language)
+
 
 
     def TrainFullSentence(self, Sentence, Language, KeywordList, RequirementObjectList, HasCategoryList, SetCategoryList, ActionName):
-        # Train Keywords of response
+        # Train Keywords of sentence
         self.TrainKeywords(Sentence, Language)
 
         # save sentence
@@ -142,9 +147,9 @@ class DialogTrainer(object):
 
         return True
 
+
     def TrainActionCSV(self, data, language):
         for key, group in itertools.groupby(data, self.__groupSeparator):
-
             line = ''.join(str(e) for e in group)
             line = line.strip()
             if (len(line) > 1):
@@ -155,12 +160,12 @@ class DialogTrainer(object):
                     className = splitLine[2]
                     functionName = splitLine[3]
 
-                    # TODO
+                    self.SaveAction(name, moduleName, className, functionName)
+
 
     def TrainCSV(self, data, language):
         qlist = []
         for key, group in itertools.groupby(data, self.__groupSeparator):
-
             line = ''.join(str(e) for e in group)
             line = line.strip()
             if (len(line) > 1):
