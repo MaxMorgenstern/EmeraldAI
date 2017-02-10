@@ -3,6 +3,7 @@
 import subprocess
 import plistlib
 import itertools
+import json
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Logic.Modules import Global
 from EmeraldAI.Entities.Hotspot import Hotspot
@@ -16,6 +17,8 @@ class WiFiFingerprinting(object):
     __windowsCall = "netsh wlan show network"
     __linuxCall = "iwlist scan | egrep 'Cell |Quality|ESSID'"
 
+    __OnionOmega2Call = """ubus call onion wifi-scan '{"device":"ra0"}' | egrep 'ssid|bssid|signalStrength'"""
+
     def GetWiFiList(self):
         if(Global.OS == Global.OperatingSystem.Windows):
             return self.GetWiFiListWindows()
@@ -25,6 +28,19 @@ class WiFiFingerprinting(object):
 
         if(Global.OS == Global.OperatingSystem.OSX):
             return self.GetWiFiListOSX()
+
+
+    def GetWiFiListOnionOmega2(self):
+        proc = subprocess.Popen([self.__OnionOmega2Call], stdout=subprocess.PIPE, shell=True)
+        (out, err) = proc.communicate()
+
+        returnList = []
+
+        jObject =json.loads(out)
+        for i in jObject['results']:
+            returnList.append(Hotspot(i["bssid"], i["ssid"], i["signalStrength"]))
+
+        return returnList
 
 
     def GetWiFiListWindows(self):
