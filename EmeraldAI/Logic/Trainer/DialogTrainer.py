@@ -66,8 +66,7 @@ class DialogTrainer(object):
             actionID = db().Fetchall(query)[0][0]
         return actionID
 
-
-    def TrainKeywords(self, Sentence, Language):
+    def SaveKeywordsFromSentence(self, Sentence, Language):
         keywordList = []
         wordSegments = NLP.WordSegmentation(Sentence, True)
         for word in wordSegments:
@@ -76,36 +75,45 @@ class DialogTrainer(object):
                 keywordList.append(keywordID)
         return keywordList
 
-
-    # TODO - train incomplete sentence - put in for revie
-    # maybe change KW list to old sentence
-    def TrainSentence(self, Sentence, Language, KeywordList):
-        # Train Keywords of sentence
-        self.TrainKeywords(Sentence, Language)
-
-
-
-    def TrainFullSentence(self, Sentence, Language, KeywordList, RequirementObjectList, HasCategoryList, SetCategoryList, ActionName):
-        # Train Keywords of sentence
-        self.TrainKeywords(Sentence, Language)
-
-        # save sentence
-        query = "INSERT INTO Conversation_Sentence ('Sentence', 'Language', 'Source', 'Approved') Values ('{0}', '{1}', '{2}', '{3}')".format(Sentence, Language, "Trainer", "1")
+    def SaveSentence(self, Sentence, Language, UserName, Approved = 0):
+        query = "INSERT INTO Conversation_Sentence ('Sentence', 'Language', 'Source', 'Approved') Values ('{0}', '{1}', '{2}', '{3}')".format(Sentence, Language, UserName, 0)
         sentenceID = db().Execute(query)
         if(sentenceID == None):
             query = "SELECT ID FROM Conversation_Sentence WHERE Sentence = '{0}'".format(Sentence)
             sentenceID = db().Fetchall(query)[0][0]
+        return sentenceID
 
-
-        # link keyword - sentence
+    def LinkKeywordAndSentence(self, KeywordList, Language, SentenceID)
         for keyword in KeywordList:
             if(type(keyword) == int):
                 keywordID = keyword
             else:
                 keywordID = self.SaveKeyword(keyword, Language)
-            query = "INSERT INTO Conversation_Sentence_Keyword ('KeywordID', 'SentenceID') Values ('{0}', '{1}')".format(keywordID, sentenceID)
+            query = "INSERT INTO Conversation_Sentence_Keyword ('KeywordID', 'SentenceID') Values ('{0}', '{1}')".format(keywordID, SentenceID)
             db().Execute(query)
 
+
+    def TrainSentence(self, OutputSentence, ResponseSentence, Language, UserName):
+        # Train Keywords of both sentences
+        outputKeywords = self.SaveKeywordsFromSentence(OutputSentence, Language)
+        responseKeywords = self.SaveKeywordsFromSentence(ResponseSentence, Language)
+
+        # save sentence
+        sentenceID = self.SaveSentence(ResponseSentence, Language, UserName)
+
+        # link keywords to sentence
+        self.LinkKeywordAndSentence(outputKeywords, Language, sentenceID)
+
+
+    def TrainFullSentence(self, Sentence, Language, KeywordList, RequirementObjectList, HasCategoryList, SetCategoryList, ActionName):
+        # Train Keywords of sentence
+        self.SaveKeywordsFromSentence(Sentence, Language)
+
+        # save sentence
+        sentenceID = self.SaveSentence(Sentence, Language, "Trainer", "1")
+
+        # link keywords to sentence
+        self.LinkKeywordAndSentence(KeywordList, Language, sentenceID)
 
         for requirement in RequirementObjectList:
             # create requirement if it does not exist - or get ID
@@ -186,7 +194,7 @@ class DialogTrainer(object):
 
                     # Question
                     if(qa == "Q"):
-                        qlist += list(set(self.TrainKeywords(sent, language)) - set(qlist))
+                        qlist += list(set(self.SaveKeywordsFromSentence(sent, language)) - set(qlist))
 
                     # Response
                     if(qa == "A"):
