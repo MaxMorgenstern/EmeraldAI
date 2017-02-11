@@ -46,7 +46,7 @@ class NLPParameter(BaseObject):
         #
         # Update Bot Parameters
         # BotStatus
-        self.ParameterList["Name"] = User().Name
+        self.ParameterList["Name"] = User().GetName()
         self.ParameterList["User"] = self.ParameterList["Name"]
 
         return self.ParameterList

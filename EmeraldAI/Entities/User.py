@@ -37,6 +37,18 @@ class User(BaseObject):
     def GetCVTag(self):
         return self.CVTag
 
+    def GetName(self):
+        if self.Formal:
+            if self.Gender.lower() == "female":
+                nameWrapper =  Config().Get("DEFAULT", "FormalFormOfAddressFemale")
+            else:
+                nameWrapper = Config().Get("DEFAULT", "FormalFormOfAddressMale")
+            return nameWrapper.format(self.LastName)
+
+        if not self.Name:
+            return self.FirstName
+        return self.Name
+
     def SetUserByCVTag(self, cvTag, deepProcess=True):
         if cvTag == None or self.CVTag == cvTag:
             return
@@ -45,27 +57,7 @@ class User(BaseObject):
         if not deepProcess:
             return
 
-        query = """SELECT * FROM Person WHERE CVTag = '{0}'"""
-        sqlResult = db().Fetchall(query.format(cvTag))
-        for r in sqlResult:
-            self.Name = r[1]
-            self.LastName = r[2]
-            self.FirstName = r[3]
-
-            self.Birthday = r[5]
-            self.LastSeen = r[6]
-            self.LastSpokenTo = r[7]
-            self.Gender = r[8]
-
-            self.Formal = r[9].lower() == "formal"
-            self.Trainer = r[10] == 1
-            self.Admin = r[11] == 1
-            continue
-
-        self.Updated = datetime.now().strftime("%H%M")
-
-    def GetName(self):
-        return self.Name
+        self.__setUser("SELECT * FROM Person WHERE CVTag = '{0}'")
 
     def SetUserByName(self, name, deepProcess=True):
         if name == None or self.Name == name:
@@ -75,7 +67,9 @@ class User(BaseObject):
         if not deepProcess:
             return
 
-        query = """SELECT * FROM Person WHERE Name = '{0}'"""
+        self.__setUser("SELECT * FROM Person WHERE Name = '{0}'")
+
+    def __setUser(self, query):
         sqlResult = db().Fetchall(query.format(name))
         for r in sqlResult:
             self.LastName = r[2]
