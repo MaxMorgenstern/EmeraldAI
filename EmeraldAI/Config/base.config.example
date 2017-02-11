@@ -5,6 +5,9 @@ CountryCode2Letter = de
 CountryCode4Letter = de-DE
 Language = de
 
+FormalFormOfAddressMale = Herr {0}
+FormalFormOfAddressFemale = Frau {0}
+
 
 # ----------------------
 [Bot]
@@ -27,6 +30,7 @@ ActionBonus = 1.5
 MinSentenceCountForRemoval = 5
 RemoveSentenceBelowThreshold = 1.5
 
+
 # ----------------------
 [NLP]
 SentenceRatingThreshold = 2
@@ -36,6 +40,8 @@ AliceAsFallback = True
 # ----------------------
 [Trainer]
 Enabled = True
+CsvColumnCount = 6
+CsvActionColumnCount = 4
 
 
 # ----------------------

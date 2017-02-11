@@ -25,8 +25,10 @@ class DialogTrainer(object):
     __metaclass__ = Singleton
 
     __comparisonValues = ["lt", "gt", "le", "eq", "ge"]
-    __csvColCount = 6
-    __csvActionColCount = 4
+
+    def __init__(self):
+        self.__csvColCount = Config().GetInt("Trainer", "CsvColumnCount")
+        self.__csvActionColCount = Config().GetInt("Trainer", "CsvActionColumnCount")
 
     def __groupSeparator(self, line):
         return line=='\n'
