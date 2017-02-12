@@ -6,8 +6,6 @@ from EmeraldAI.Entities.Bot import Bot
 from datetime import datetime
 from EmeraldAI.Entities.User import User
 
-# TODO
-
 class NLPParameter(BaseObject):
     __metaclass__ = Singleton
     # This class is a singleton as we only need one instance across the whole project
@@ -27,25 +25,26 @@ class NLPParameter(BaseObject):
         self.Created = datetime.now()
         self.Updated = datetime.now()
 
-        self.ParameterList["User"] = "Unknown"
-        self.ParameterList["Name"] = "Unknown"
         self.ParameterList["Time"] = datetime.now().strftime("%H%M")
         self.ParameterList["Day"] = datetime.today().strftime("%A")
         self.ParameterList["Category"] = "Greeting"
 
         # Add Bot Parameter
-        self.ParameterList.update(Bot().toDict())
+        self.ParameterList.update(Bot().toDict("Bot"))
+        # Add User Parameter
+        self.ParameterList.update(User().toDict("User"))
+        self.ParameterList["Name"] = "Unknown"
+        self.ParameterList["User"] = "Unknown"
 
 
     def GetParameterList(self):
         self.ParameterList["Time"] = datetime.now().strftime("%H%M")
         self.ParameterList["Day"] = datetime.today().strftime("%A")
 
-        # TODO - update user parameter
-        # UserType
-        #
-        # Update Bot Parameters
-        # BotStatus
+        # Update Bot Parameter
+        self.ParameterList.update(Bot().toDict("Bot"))
+        # Update User Parameter
+        self.ParameterList.update(User().toDict("User"))
         self.ParameterList["Name"] = User().GetName()
         self.ParameterList["User"] = self.ParameterList["Name"]
 
@@ -56,16 +55,23 @@ class NLPParameter(BaseObject):
         self.ParameterList[key] = value
         self.Updated = datetime.now()
 
+
     def Reset(self):
         self.Created = datetime.now()
         self.Updated = datetime.now()
 
         self.ParameterList = {}
-        self.ParameterList["User"] = "Unknown"
+
+        # Add Bot Parameter
+        self.ParameterList.update(Bot().toDict("Bot"))
+        # Add User Parameter
+        self.ParameterList.update(User().toDict("User"))
         self.ParameterList["Name"] = "Unknown"
+        self.ParameterList["User"] = "Unknown"
 
         self.Input = None
         self.Result = None
+
 
     def SetInput(self, inputString):
         self.ActionInput = inputString
