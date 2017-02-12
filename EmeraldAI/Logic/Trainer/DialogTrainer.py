@@ -85,7 +85,7 @@ class DialogTrainer(object):
             sentenceID = db().Fetchall(query)[0][0]
         return sentenceID
 
-    def LinkKeywordAndSentence(self, KeywordList, Language, SentenceID)
+    def LinkKeywordAndSentence(self, KeywordList, Language, SentenceID):
         for keyword in KeywordList:
             if(type(keyword) == int):
                 keywordID = keyword

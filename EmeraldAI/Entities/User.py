@@ -38,16 +38,18 @@ class User(BaseObject):
         return self.CVTag
 
     def GetName(self):
-        if self.Formal:
+        if self.Formal and self.LastName:
             if self.Gender.lower() == "female":
                 nameWrapper =  Config().Get("DEFAULT", "FormalFormOfAddressFemale")
             else:
                 nameWrapper = Config().Get("DEFAULT", "FormalFormOfAddressMale")
             return nameWrapper.format(self.LastName)
 
-        if not self.Name:
+        elif not self.Name and self.FirstName:
             return self.FirstName
-        return self.Name
+        elif self.Name:
+            return self.Name
+        return None
 
     def SetUserByCVTag(self, cvTag, deepProcess=True):
         if cvTag == None or self.CVTag == cvTag:
