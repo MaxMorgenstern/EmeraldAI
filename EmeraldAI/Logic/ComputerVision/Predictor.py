@@ -77,14 +77,12 @@ class Predictor(object):
         datasetPath = Global.EmeraldPath + "Data" + os.sep + "ComputerVisionData" + os.sep
         imageSize = self.__getImageSize()
 
-        [images, labels, subject_names] = self.__readImages(
-            datasetPath, imageSize)
+        [images, labels, subject_names] = self.__readImages(datasetPath, imageSize)
         # Zip us a {label, name} dict from the given data:
         list_of_labels = list(xrange(max(labels) + 1))
         subject_dictionary = dict(zip(list_of_labels, subject_names))
         # Get the model we want to compute:
-        model = self.__getModel(image_size=imageSize,
-                                subject_names=subject_dictionary)
+        model = self.__getModel(image_size=imageSize, subject_names=subject_dictionary)
 
         print "CreateDataset..."
         # Compute the model:
@@ -105,7 +103,7 @@ class Predictor(object):
 
     def PredictPerson(self, camera, detectorFunction=None, model=None):
         predictorApp = self.GetPredictor(camera, detectorFunction, model)
-        return predictorApp.run()
+        return predictorApp.Run()
 
     def GetPredictor(self, camera, detectorFunction=None, model=None):
         if(model == None):
@@ -137,7 +135,7 @@ class PredictorApp(object):
         else:
             self.__predicted[key] = (self.__maxDistance - distance) / 10
 
-    def run(self):
+    def Run(self):
         self.__predicted = {}
         probeCount = 0
         timeout = time.time() + self.__timeout
@@ -173,7 +171,7 @@ class PredictorApp(object):
 
         return self.__predicted
 
-    def runVisual(self):
+    def RunVisual(self):
         displayTick = 0
         probeCount = 0
         while True:

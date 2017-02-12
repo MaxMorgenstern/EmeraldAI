@@ -4,6 +4,7 @@ from EmeraldAI.Entities.BaseObject import BaseObject
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Entities.Bot import Bot
 from datetime import datetime
+from EmeraldAI.Entities.User import User
 
 # TODO
 
@@ -19,8 +20,8 @@ class NLPParameter(BaseObject):
     ParameterList = {}
 
     # Input and Result for actions
-    Input = None
-    Result = None
+    ActionInput = None
+    ActionResult = None
 
     def __init__(self):
         self.Created = datetime.now()
@@ -41,6 +42,12 @@ class NLPParameter(BaseObject):
         self.ParameterList["Day"] = datetime.today().strftime("%A")
 
         # TODO - update user parameter
+        # UserType
+        #
+        # Update Bot Parameters
+        # BotStatus
+        self.ParameterList["Name"] = User().GetName()
+        self.ParameterList["User"] = self.ParameterList["Name"]
 
         return self.ParameterList
 
@@ -54,15 +61,18 @@ class NLPParameter(BaseObject):
         self.Updated = datetime.now()
 
         self.ParameterList = {}
+        self.ParameterList["User"] = "Unknown"
+        self.ParameterList["Name"] = "Unknown"
+
         self.Input = None
         self.Result = None
 
-    def SetInput(self, input):
-        self.Input = input
-        self.ParameterList["Input"] = input
+    def SetInput(self, inputString):
+        self.ActionInput = inputString
+        self.ParameterList["Input"] = inputString
         self.Updated = datetime.now()
 
     def SetResult(self, result):
-        self.Result = result
+        self.ActionResult = result
         self.ParameterList["Result"] = result
         self.Updated = datetime.now()

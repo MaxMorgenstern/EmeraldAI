@@ -1,1 +1,1 @@
-__all__ = ["CommandTrainer", "DialogTrainer"]
+__all__ = ["DialogTrainer"]

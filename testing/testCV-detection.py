@@ -18,10 +18,10 @@ ret = camera.set(4, 360)
 p = Predictor()
 # p.CreateDataset()
 predictor = p.GetPredictor(camera, Detector().DetectFaceFrontal)
-predictor.runVisual()
+#predictor.RunVisual()
 exit(0)
 while True:
-    detectionResult = predictor.run()
+    detectionResult = predictor.Run()
     if(detectionResult != None and len(detectionResult)):
         print detectionResult
         print "Best guess" + detectionResult[0][0]

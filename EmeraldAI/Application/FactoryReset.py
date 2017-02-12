@@ -21,6 +21,6 @@ DELETE FROM Conversation_Sentence_Category_Has;
 DELETE FROM Conversation_Sentence_Category_Set;
 DELETE FROM Conversation_Sentence_Keyword;
 DELETE FROM Conversation_Sentence_Requirement;
-
+...
 
 """

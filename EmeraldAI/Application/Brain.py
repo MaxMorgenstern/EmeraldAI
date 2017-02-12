@@ -12,16 +12,31 @@ from EmeraldAI.Pipelines.ScopeAnalyzer.AnalyzeScope import AnalyzeScope
 from EmeraldAI.Pipelines.ResponseProcessing.ProcessResponse import ProcessResponse
 from EmeraldAI.Pipelines.TextToSpeech.TTS import TTS
 from EmeraldAI.Pipelines.Trainer.Trainer import Trainer
+from EmeraldAI.Entities.User import User
+
+from multiprocessing import Process, Manager
+from multiprocessing.managers import BaseManager
+
+import SubApplication.DetectFace as DF
+
+BaseManager.register('User', User)
+manager = BaseManager()
+manager.start()
+CVUserInstance = manager.User()
 
 def RunBrain():
     loopTerminator = False
 
     while not loopTerminator:
+        print "RunBrain() while..."
         pipelineArgs = STT().Process()
         if(pipelineArgs == None):
             continue
 
         print "We got:", pipelineArgs.Input
+
+        # Get References from Processes
+        User().SetUserByCVTag(CVUserInstance.GetCVTag())
 
         pipelineArgs = ProcessInput().ProcessAsync(pipelineArgs)
 
@@ -33,7 +48,9 @@ def RunBrain():
 
         trainerResult = Trainer().Process(pipelineArgs)
 
-        print pipelineArgs.toJSON()
+        print "Pipeline Args", pipelineArgs.toJSON()
+        print "Main User", User().toJSON()
+        print "CV User", CVUserInstance.toJSON()
         print "Trainer Result: ", trainerResult
 
 
@@ -41,6 +58,9 @@ def RunBrain():
 
 if __name__ == "__main__":
     try:
+        faceThread = Process(target=DF.RunFaceDetection, args=[CVUserInstance])
+        faceThread.start()
+
         RunBrain()
     except KeyboardInterrupt:
         print "End"

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Entities.NLPParameter import NLPParameter
+from EmeraldAI.Logic.NLP import NLP
 from EmeraldAI.Entities.User import User
 from EmeraldAI.Config.Config import *
 from EmeraldAI.Logic.NLP.AliceBot import *
@@ -18,7 +19,6 @@ class ProcessResponse(object):
         self.__alice = AliceBot(self.__language_2letter_cc)
 
 
-
     def Process(self, PipelineArgs):
         sentence = PipelineArgs.GetRandomSentenceWithHighestValue()
 
@@ -32,17 +32,20 @@ class ProcessResponse(object):
             PipelineArgs.Response = PipelineArgs.ResponseRaw
             PipelineArgs.ResponseID = sentence.ID
             PipelineArgs.ResponseFound = True
+            PipelineArgs.BasewordTrimmedInput = NLP.TrimBasewords(PipelineArgs)
+            PipelineArgs.FullyTrimmedInput = NLP.TrimStopwords(PipelineArgs.BasewordTrimmedInput, PipelineArgs.Language)
 
-            parameterList = NLPParameter().GetParameterList()
-
-
-            # TODO - trigger action
             sentenceAction = sentence.GetAction()
             if sentenceAction != None and len(sentenceAction["Module"]) > 0:
-                print sentenceAction
-                actionResult = Action.CallFunction(sentenceAction["Module"], sentenceAction["Class"], sentenceAction["Function"])
-                # TODO - append to parameter list
+                actionResult = Action.CallFunction(sentenceAction["Module"], sentenceAction["Class"], sentenceAction["Function"], PipelineArgs)
 
+                # TODO handle error
+                # return {'Input':inputString, 'Result':None, 'ResultType':'Error'}
+
+                NLPParameter().SetInput(actionResult["Input"])
+                NLPParameter().SetResult(actionResult["Result"])
+
+            parameterList = NLPParameter().GetParameterList()
 
             keywords = re.findall(r"\{(.*?)\}", PipelineArgs.Response)
             for keyword in keywords:

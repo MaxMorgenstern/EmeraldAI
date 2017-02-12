@@ -1,6 +1,7 @@
 Just a messy list with things to do
 
 - !!! Training Pipeline !!!
+- !!! Initial Conversation on User detection !!!
 
 - Add Unit Tests
 
@@ -12,10 +13,6 @@ Just a messy list with things to do
 - logging config - log location
 
 - add notes to classes and modules - description
-
-- strip unused facerec data
-
-- Singleton check - convert all classes to singleton which need to be - config?
 
 - test http://cmusphinx.sourceforge.net/
 
@@ -32,6 +29,18 @@ https://pypi.python.org/pypi/cachetools
 - multi language support without config change
 
 - use more of def __repr__(self): and def __str__(self): -- like in sentence entity
+
+- update user last seen and last spoken to
+
+- more testing with profiles
+	python -m cProfile -s cumtime script.py
+
+- remove singleton from user class + create shared user class for use in CV
+
+- NLPParameter list - use SetInput instead of writing to the variables : ProcessInput.py
+
+- Handle Wildcard Parameter (*) in Q
+- Set Category
 
 ---
 
@@ -107,5 +116,5 @@ DELETE FROM Conversation_Sentence_Category_Has;
 DELETE FROM Conversation_Sentence_Category_Set;
 DELETE FROM Conversation_Sentence_Keyword;
 DELETE FROM Conversation_Sentence_Requirement;
-
+...
 

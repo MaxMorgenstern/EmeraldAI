@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 from EmeraldAI.Entities.BaseObject import BaseObject
 from EmeraldAI.Config.Config import *
-if(Config().Get("Database", "NLPDatabaseType").lower() == "sqlite"):
+if(Config().Get("Database", "ConversationDatabaseType").lower() == "sqlite"):
     from EmeraldAI.Logic.Database.SQlite3 import SQlite3 as db
-elif(Config().Get("Database", "NLPDatabaseType").lower() == "mysql"):
+elif(Config().Get("Database", "ConversationDatabaseType").lower() == "mysql"):
     from EmeraldAI.Logic.Database.MySQL import MySQL as db
 
 class Sentence(BaseObject):
@@ -12,6 +12,8 @@ class Sentence(BaseObject):
     Rating = 0
     KeywordList = []
     OnlyStopwords = True
+
+    BasewordList = []
 
     HasCategory = []
     SetsCategory = []
@@ -22,15 +24,20 @@ class Sentence(BaseObject):
         self.KeywordList = [Keyword]
         self.OnlyStopwords = IsStopword
 
+        self.BasewordList = []
+
         self.HasCategory = []
         self.SetsCategory = []
 
     # TODO - some better output
     def __repr__(self):
-         return "R:{0} L:{1} S:{2}\n".format(self.Rating, len(self.KeywordList), self.OnlyStopwords)
+         return "ID:{0} R:{1} L:{2} S:{3}\n".format(self.ID, self.Rating, len(self.KeywordList), self.OnlyStopwords)
 
     def __str__(self):
-         return "R:{0} L:{1} S:{2}\n".format(self.Rating, len(self.KeywordList), self.OnlyStopwords)
+         return "ID:{0} R:{1} L:{2} S:{3}\n".format(self.ID, self.Rating, len(self.KeywordList), self.OnlyStopwords)
+
+    def AddBaseword(self, Baseword):
+        self.BasewordList.append(Baseword)
 
     def AddKeyword(self, Rating, Keyword, IsStopword=True):
         self.Rating += Rating
@@ -58,7 +65,8 @@ class Sentence(BaseObject):
         return None
 
     def GetAction(self):
-        query = """SELECT Conversation_Action.*
+        query = """SELECT Conversation_Action.Name, Conversation_Action.Module,
+            Conversation_Action.Class, Conversation_Action.Function
             FROM Conversation_Sentence_Action, Conversation_Action
             WHERE Conversation_Sentence_Action.ActionID = Conversation_Action.ID
             AND Conversation_Sentence_Action.SentenceID = '{0}'"""
