@@ -30,6 +30,8 @@ ActionBonus = 1.5
 MinSentenceCountForRemoval = 5
 RemoveSentenceBelowThreshold = 1.5
 
+MinNonStopwordSentences = 2
+
 
 # ----------------------
 [NLP]
@@ -124,3 +126,4 @@ MaxCharToNewLine = 300
 [Pipeline.ScopeAnalyzer]
 RemoveLowPrioritySentencesBeforeRequirement = False
 RemoveLowPrioritySentencesAfterRequirement = True
+RemoveStopwordOnlySentences = True

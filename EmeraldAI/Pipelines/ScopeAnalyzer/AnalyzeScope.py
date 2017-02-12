@@ -11,7 +11,8 @@ class AnalyzeScope(object):
 
     def __init__(self):
         self.__RemoveBeforeRequirementCalculation = Config().GetBoolean("Pipeline.ScopeAnalyzer", "RemoveLowPrioritySentencesBeforeRequirement") #False
-        self.__RemoveAfterRequirementCalculation = Config().GetBoolean("Pipeline.ScopeAnalyzer", "RemoveLowPrioritySentencesAfterRequirement") #False
+        self.__RemoveAfterRequirementCalculation = Config().GetBoolean("Pipeline.ScopeAnalyzer", "RemoveLowPrioritySentencesAfterRequirement") #True
+        self.__RemoveStopwordOnlySentences = Config().GetBoolean("Pipeline.ScopeAnalyzer", "RemoveStopwordOnlySentences") #True
 
     def Process(self, PipelineArgs):
 
@@ -31,10 +32,11 @@ class AnalyzeScope(object):
         sentenceList = SentenceResolver().GetSentencesByParameter(sentenceList, wordParameterList, PipelineArgs.Language, (user.Admin or user.Trainer))
         NLPParameter().UpdateParameter("Wordtype", wordParameterList)
 
+        if self.__RemoveStopwordOnlySentences:
+            sentenceList = SentenceResolver().RemoveStopwordOnlySentences(sentenceList)
+
         if self.__RemoveBeforeRequirementCalculation:
             sentenceList = SentenceResolver().RemoveLowPrioritySentences(sentenceList)
-
-        #TODO remove stopword only
 
         parameterList = NLPParameter().GetParameterList()
         calculationResult = SentenceResolver().CalculateRequirement(sentenceList, parameterList)

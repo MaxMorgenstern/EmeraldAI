@@ -26,6 +26,8 @@ class SentenceResolver(object):
         self.__MinSentenceCountForRemoval = Config().GetFloat("SentenceResolver", "MinSentenceCountForRemoval") #5
         self.__RemoveSentenceBelowThreshold = Config().GetFloat("SentenceResolver", "RemoveSentenceBelowThreshold") #1.5
 
+        self.__MinNonStopwordSentences = Config().GetFloat("SentenceResolver", "MinNonStopwordSentences") #1
+
 
     def GetSentencesByKeyword(self, sentenceList, word, baseWord, language, isSynonym, isTrainer):
         query = """SELECT DISTINCT Conversation_Sentence_Keyword.SentenceID, Conversation_Keyword.Stopword,
@@ -124,6 +126,8 @@ class SentenceResolver(object):
                     deleteList.append(sentenceID)
                     continue
 
+                # TODO - true false
+                # TODO - not X
                 if r[0] == None:
                     if type(parameterList[requirementName]) == list and r[1].lower() not in parameterList[requirementName]:
                         deleteList.append(sentenceID)
@@ -190,4 +194,15 @@ class SentenceResolver(object):
                 deleteResult = [node for node in sentenceList.values() if node.Rating <= usedThreshold]
                 for d in list(set(deleteResult)):
                     del sentenceList[d.ID]
+        return sentenceList
+
+
+    def RemoveStopwordOnlySentences(self, sentenceList):
+        minNonStopwordSentences = self.__MinNonStopwordSentences
+        minNonStopwordSentences = minNonStopwordSentences if minNonStopwordSentences > 0 else 1
+
+        stopwordSentences = [node for node in sentenceList.values() if node.OnlyStopwords]
+        if(len(sentenceList) - minNonStopwordSentences >= stopwordSentences):
+            for d in list(set(deleteList)):
+                del sentenceList[d.ID]
         return sentenceList
