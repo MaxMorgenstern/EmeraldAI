@@ -38,8 +38,8 @@ class AnalyzeScope(object):
         if self.__RemoveBeforeRequirementCalculation:
             sentenceList = SentenceResolver().RemoveLowPrioritySentences(sentenceList)
 
-        parameterList = NLPParameter().GetParameterList()
-        calculationResult = SentenceResolver().CalculateRequirement(sentenceList, parameterList)
+        nlpParameterDict = NLPParameter().GetParameterDictionary()
+        calculationResult = SentenceResolver().CalculateRequirement(sentenceList, nlpParameterDict)
         sentenceList = calculationResult["sentenceList"]
 
         if self.__RemoveAfterRequirementCalculation:
@@ -47,7 +47,7 @@ class AnalyzeScope(object):
 
         sentenceList = SentenceResolver().AddActionBonus(sentenceList)
         sentenceList = SentenceResolver().AddSentencePriority(sentenceList)
-        sentenceList = SentenceResolver().CalculateCategory(sentenceList, parameterList["Category"])
+        sentenceList = SentenceResolver().CalculateCategory(sentenceList, nlpParameterDict["Category"])
 
         PipelineArgs.SentenceList = sentenceList
 

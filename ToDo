@@ -1,6 +1,5 @@
 Just a messy list with things to do
 
-- !!! Training Pipeline !!!
 - !!! Initial Conversation on User detection !!!
 
 - Add Unit Tests
@@ -37,15 +36,10 @@ https://pypi.python.org/pypi/cachetools
 
 - remove singleton from user class + create shared user class for use in CV
 
-- NLPParameter list - use SetInput instead of writing to the variables : ProcessInput.py
-
 - Handle Wildcard Parameter (*) in Q
 - Set Category
 
-- TODO rename NLPParameter --> ParameterList to PArameterDictionary
-- also consider making it case insensitive --> http://stackoverflow.com/questions/2082152/case-insensitive-dictionary
-
-- append pipeline args to history and clear - maybe separate history class
+- check pypy - http://pypy.org/download.html
 
 ---
 

@@ -18,7 +18,7 @@ print b.toDict()
 
 
 nl = NLPParameter()
-print nl.GetParameterList()
+print nl.GetParameterDictionary()
 
 exit(1)
 

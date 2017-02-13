@@ -129,7 +129,7 @@ def doWork(inputString):
         #print random.choice(dialogResult.GetSentencesWithHighestValue())
 
     result = ProcessResponse().Process(dialogResult)
-    print result.Response
+    print inputString, "  -  ", result.Response
     #print dialogResult.GetRandomSentenceWithHighestValue().GetSentenceString()
 
     #print("--- %s seconds ---" % (time.time() - start_time))
@@ -155,7 +155,7 @@ def doWorkDyn(inputString):
         #print random.choice(dialogResult.GetSentencesWithHighestValue())
 
     result = ProcessResponse().Process(dialogResult)
-    print result.Response
+    print inputString, "  -  ", result.Response
     #print dialogResult.GetRandomSentenceWithHighestValue().GetSentenceString()
 
     #print("--- %s seconds ---" % (time.time() - start_time))
@@ -168,11 +168,13 @@ doWork(" ".join(words_DE))
 
 param = NLPParameter()
 
-param.ParameterList["Name"] = "Max"
-param.ParameterList["User"] = "Max"
-param.ParameterList["Input"] = "Hugo"
-param.ParameterList["Result"] = "ein kleiner Troll"
+param.ParameterDictionary["Name"] = "Max"
+param.ParameterDictionary["User"] = "Max"
+param.ParameterDictionary["Input"] = "Hugo"
+param.ParameterDictionary["Result"] = "ein kleiner Troll"
 
+
+doWork("Query Warmup")
 
 start_time = time.time()
 doWork("Guten Abend Peter")

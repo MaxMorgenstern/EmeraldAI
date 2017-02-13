@@ -45,12 +45,12 @@ class ProcessResponse(object):
                 NLPParameter().SetInput(actionResult["Input"])
                 NLPParameter().SetResult(actionResult["Result"])
 
-            parameterList = NLPParameter().GetParameterList()
+            nlpParameterDict = NLPParameter().GetParameterDictionary()
 
             keywords = re.findall(r"\{(.*?)\}", PipelineArgs.Response)
             for keyword in keywords:
-                if keyword.title() in parameterList:
-                    replaceword = parameterList[keyword.title()]
+                if keyword.title() in nlpParameterDict:
+                    replaceword = nlpParameterDict[keyword.title()]
                     if replaceword == None or replaceword == "Unknown":
                         replaceword = ""
                     PipelineArgs.Response = PipelineArgs.Response.replace("{{{0}}}".format(keyword.lower()), replaceword)

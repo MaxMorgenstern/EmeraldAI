@@ -150,7 +150,6 @@ class DialogTrainer(object):
             # Link follow up action - sentence
             query = "SELECT ID FROM Conversation_Action WHERE Name = '{0}'".format(ActionName)
             actionIDRow = db().Fetchall(query)
-            print actionIDRow
             if len(actionIDRow) > 0:
                 query = "INSERT INTO Conversation_Sentence_Action ('SentenceID', 'ActionID') Values ('{0}', '{1}')".format(sentenceID, actionIDRow[0][0])
                 db().Execute(query)

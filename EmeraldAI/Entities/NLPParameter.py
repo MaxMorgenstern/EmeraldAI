@@ -15,7 +15,7 @@ class NLPParameter(BaseObject):
     Updated = None
 
     # List of all parameters used during NLP
-    ParameterList = {}
+    ParameterDictionary = {}
 
     # Input and Result for actions
     ActionInput = None
@@ -25,34 +25,34 @@ class NLPParameter(BaseObject):
         self.Created = datetime.now()
         self.Updated = datetime.now()
 
-        self.ParameterList["Time"] = datetime.now().strftime("%H%M")
-        self.ParameterList["Day"] = datetime.today().strftime("%A")
-        self.ParameterList["Category"] = "Greeting"
+        self.ParameterDictionary["Time"] = datetime.now().strftime("%H%M")
+        self.ParameterDictionary["Day"] = datetime.today().strftime("%A")
+        self.ParameterDictionary["Category"] = "Greeting"
 
         # Add Bot Parameter
-        self.ParameterList.update(Bot().toDict("Bot"))
+        self.ParameterDictionary.update(Bot().toDict("Bot"))
         # Add User Parameter
-        self.ParameterList.update(User().toDict("User"))
-        self.ParameterList["Name"] = "Unknown"
-        self.ParameterList["User"] = "Unknown"
+        self.ParameterDictionary.update(User().toDict("User"))
+        self.ParameterDictionary["Name"] = "Unknown"
+        self.ParameterDictionary["User"] = "Unknown"
 
 
-    def GetParameterList(self):
-        self.ParameterList["Time"] = datetime.now().strftime("%H%M")
-        self.ParameterList["Day"] = datetime.today().strftime("%A")
+    def GetParameterDictionary(self):
+        self.ParameterDictionary["Time"] = datetime.now().strftime("%H%M")
+        self.ParameterDictionary["Day"] = datetime.today().strftime("%A")
 
         # Update Bot Parameter
-        self.ParameterList.update(Bot().toDict("Bot"))
+        self.ParameterDictionary.update(Bot().toDict("Bot"))
         # Update User Parameter
-        self.ParameterList.update(User().toDict("User"))
-        self.ParameterList["Name"] = User().GetName()
-        self.ParameterList["User"] = self.ParameterList["Name"]
+        self.ParameterDictionary.update(User().toDict("User"))
+        self.ParameterDictionary["Name"] = User().GetName()
+        self.ParameterDictionary["User"] = self.ParameterDictionary["Name"]
 
-        return self.ParameterList
+        return self.ParameterDictionary
 
 
     def UpdateParameter(self, key, value):
-        self.ParameterList[key] = value
+        self.ParameterDictionary[key] = value
         self.Updated = datetime.now()
 
 
@@ -60,14 +60,14 @@ class NLPParameter(BaseObject):
         self.Created = datetime.now()
         self.Updated = datetime.now()
 
-        self.ParameterList = {}
+        self.ParameterDictionary = {}
 
         # Add Bot Parameter
-        self.ParameterList.update(Bot().toDict("Bot"))
+        self.ParameterDictionary.update(Bot().toDict("Bot"))
         # Add User Parameter
-        self.ParameterList.update(User().toDict("User"))
-        self.ParameterList["Name"] = "Unknown"
-        self.ParameterList["User"] = "Unknown"
+        self.ParameterDictionary.update(User().toDict("User"))
+        self.ParameterDictionary["Name"] = "Unknown"
+        self.ParameterDictionary["User"] = "Unknown"
 
         self.Input = None
         self.Result = None
@@ -75,10 +75,10 @@ class NLPParameter(BaseObject):
 
     def SetInput(self, inputString):
         self.ActionInput = inputString
-        self.ParameterList["Input"] = inputString
+        self.ParameterDictionary["Input"] = inputString
         self.Updated = datetime.now()
 
     def SetResult(self, result):
         self.ActionResult = result
-        self.ParameterList["Result"] = result
+        self.ParameterDictionary["Result"] = result
         self.Updated = datetime.now()
