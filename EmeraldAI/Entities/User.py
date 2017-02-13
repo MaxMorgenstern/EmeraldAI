@@ -61,7 +61,7 @@ class User(BaseObject):
         if not deepProcess:
             return
 
-        self.__setUser("SELECT * FROM Person WHERE CVTag = '{0}'")
+        self.__setUser("SELECT * FROM Person WHERE CVTag = '{0}'", cvTag)
 
     def SetUserByName(self, name, deepProcess=True):
         if name == None or self.Name == name:
@@ -71,11 +71,12 @@ class User(BaseObject):
         if not deepProcess:
             return
 
-        self.__setUser("SELECT * FROM Person WHERE Name = '{0}'")
+        self.__setUser("SELECT * FROM Person WHERE Name = '{0}'", name)
 
-    def __setUser(self, query):
+    def __setUser(self, query, name):
         sqlResult = db().Fetchall(query.format(name))
         for r in sqlResult:
+            self.Name = r[1]
             self.LastName = r[2]
             self.FirstName = r[3]
 
