@@ -44,6 +44,9 @@ https://pypi.python.org/pypi/cachetools
 
 - TODO rename NLPParameter --> ParameterList to PArameterDictionary
 - also consider making it case insensitive --> http://stackoverflow.com/questions/2082152/case-insensitive-dictionary
+
+- append pipeline args to history and clear - maybe separate history class
+
 ---
 
 Rank  Bot Property  Value
