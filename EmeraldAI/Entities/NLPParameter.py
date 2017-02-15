@@ -35,6 +35,7 @@ class NLPParameter(BaseObject):
         self.ParameterDictionary.update(User().toDict("User"))
         self.ParameterDictionary["Name"] = "Unknown"
         self.ParameterDictionary["User"] = "Unknown"
+        self.ParameterDictionary["Usertype"] = "User"
 
 
     def GetParameterDictionary(self):
@@ -47,7 +48,12 @@ class NLPParameter(BaseObject):
         self.ParameterDictionary.update(User().toDict("User"))
         self.ParameterDictionary["Name"] = User().GetName()
         self.ParameterDictionary["User"] = self.ParameterDictionary["Name"]
-
+        userType = "User"
+        if(User().Trainer):
+            userType = "Trainer"
+        if(User().Admin):
+            userType = "Admin"
+        self.ParameterDictionary["Usertype"] = userType
         return self.ParameterDictionary
 
 
