@@ -38,9 +38,9 @@ formatter=fileFormatter
 args=('logfile.log',)
 
 [formatter_consoleFormatter]
-format=%(asctime)s %(levelname)s - %(name)s: %(message)s
+format=%(asctime)s %(levelname)s: %(message)s
 datefmt=%Y-%m-%d %H:%M:%S
 
 [formatter_fileFormatter]
-format=%(asctime)s %(levelname)s - %(name)s: %(message)s
+format=%(asctime)s %(levelname)s: %(message)s
 datefmt=%Y-%m-%d %H:%M:%S

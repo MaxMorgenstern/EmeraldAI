@@ -35,11 +35,11 @@ https://pypi.python.org/pypi/cachetools
 	python -m cProfile -s cumtime script.py
 
 - remove singleton from user class + create shared user class for use in CV
+- or add a user instance to context
 
 - Handle Wildcard Parameter (*) in Q
 - Set Category
 
-- check pypy - http://pypy.org/download.html
 
 ---
 
