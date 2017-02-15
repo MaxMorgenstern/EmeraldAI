@@ -33,8 +33,6 @@ class Logger(object):
 class FileLogger(Logger):
     __metaclass__ = Singleton
 
-    logger = None
-
     def __init__(self):
         logging.config.fileConfig(Global.EmeraldPath + "Config" + os.sep + "logging.config")
         self.logger = logging.getLogger("FileLogger")
@@ -43,16 +41,12 @@ class FileLogger(Logger):
 class ConsoleLogger(Logger):
     __metaclass__ = Singleton
 
-    logger = None
-
     def __init__(self):
         logging.config.fileConfig(Global.EmeraldPath + "Config" + os.sep + "logging.config")
         self.logger = logging.getLogger("ConsoleLogger")
 
 class BaseLogger(Logger):
     __metaclass__ = Singleton
-
-    logger = None
 
     def __init__(self):
         logging.config.fileConfig(Global.EmeraldPath + "Config" + os.sep + "logging.config")

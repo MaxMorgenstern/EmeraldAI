@@ -7,7 +7,7 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 reload(sys)
 sys.setdefaultencoding('utf-8')
-
+"""
 from EmeraldAI.Config.Config import *
 
 male =  Config().Get("DEFAULT", "FormalFormOfAddressMale")
@@ -15,7 +15,7 @@ female = Config().Get("DEFAULT", "FormalFormOfAddressFemale")
 
 print male.format("Porzelt")
 print female.format("Porzelt")
-
+"""
 
 
 from EmeraldAI.Logic.Logger import *
