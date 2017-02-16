@@ -9,6 +9,7 @@ elif(Config().Get("Database", "NLPDatabaseType").lower() == "mysql"):
     from EmeraldAI.Logic.Database.MySQL import MySQL as db
 
 
+# This is just to distinguish between german and english
 def DetectLanguage(input):
     # 207 most common words in germen + hallo = 208
     words_DE = Global.ReadDataFile("Commonwords", "de.txt")

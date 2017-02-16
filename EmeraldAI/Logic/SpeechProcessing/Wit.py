@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import speech_recognition as sr
 from EmeraldAI.Config.Config import *
+from EmeraldAI.Logic.Logger import *
 
 
 class Wit(object):
@@ -35,25 +36,12 @@ class Wit(object):
             try:
                 data = self.__recognizer.recognize_wit(
                     self.__audio, key=self.__apiKey, language=self.__language_4letter_cc, show_all=False)
-            except sr.UnknownValueError:
-                print("Wit.ai could not understand audio")
+            except sr.UnknownValueError as e:
+                FileLogger().Warn("Wit.ai Line 39: Could not understand audio: {0}".format(e))
             except sr.RequestError as e:
-                print(
-                    "Could not request results from Wit.ai service; {0}".format(e))
+                FileLogger().Warn("Wit.ai Line 41: Could not request results from Wit.ai service: {0}".format(e))
 
             return data
 
     def GetAvailiabeMicrophones(self):
         return sr.Microphone().list_microphone_names()
-
-
-"""
-
-TODO:
-
-log instead of print
-
-
-pip install SpeechRecognition
-
-"""

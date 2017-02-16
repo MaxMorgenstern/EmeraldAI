@@ -7,7 +7,11 @@ import json
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Logic.Modules import Global
 from EmeraldAI.Entities.Hotspot import Hotspot
-from EmeraldAI.Logic.Database.SQlite3 import SQlite3 as db
+from EmeraldAI.Config.Config import *
+if(Config().Get("Database", "WiFiFingerprintDatabaseType").lower() == "sqlite"):
+    from EmeraldAI.Logic.Database.SQlite3 import SQlite3 as db
+elif(Config().Get("Database", "WiFiFingerprintDatabaseType").lower() == "mysql"):
+    from EmeraldAI.Logic.Database.MySQL import MySQL as db
 
 
 class WiFiFingerprinting(object):
@@ -16,7 +20,6 @@ class WiFiFingerprinting(object):
     __osxCall = "/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -s -x"
     __windowsCall = "netsh wlan show network"
     __linuxCall = "iwlist scan | egrep 'Cell |Quality|ESSID'"
-
     __OnionOmega2Call = """ubus call onion wifi-scan '{"device":"ra0"}' | egrep 'ssid|bssid|signalStrength'"""
 
     def GetWiFiList(self):
@@ -30,6 +33,7 @@ class WiFiFingerprinting(object):
             return self.GetWiFiListOSX()
 
 
+    # This needs to be calles separately as the Onion Omega2 is a linux wihout iwlist option
     def GetWiFiListOnionOmega2(self):
         proc = subprocess.Popen([self.__OnionOmega2Call], stdout=subprocess.PIPE, shell=True)
         (out, err) = proc.communicate()

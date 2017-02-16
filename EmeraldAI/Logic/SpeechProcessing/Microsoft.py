@@ -6,6 +6,7 @@ import os
 import re
 from EmeraldAI.Logic.Modules import Global
 from EmeraldAI.Config.Config import *
+from EmeraldAI.Logic.Logger import *
 
 
 class Microsoft(object):
@@ -57,7 +58,6 @@ class Microsoft(object):
         conn = httplib.HTTPSConnection(__AccessTokenHost)
         conn.request("POST", path, params, headers)
         response = conn.getresponse()
-    #  print(response.status, response.reason)
 
         data = response.read()
         conn.close()
@@ -108,11 +108,10 @@ class Microsoft(object):
             try:
                 data = self.__recognizer.recognize_bing(
                     self.__audio, key=self.__apiKey, language=__language_4letter_cc, show_all=False)
-            except sr.UnknownValueError:
-                print("Microsoft Bing Voice Recognition could not understand audio")
+            except sr.UnknownValueError as e:
+                FileLogger().Warn("Microsoft Line 112: Microsoft Bing Voice Recognition could not understand audio: {0}".format(e))
             except sr.RequestError as e:
-                print(
-                    "Could not request results from Microsoft Bing Voice Recognition service; {0}".format(e))
+                FileLogger().Warn("Microsoft Line 114: Could not request results from Microsoft Bing Voice Recognition service: {0}".format(e))
 
             return data
 
@@ -126,13 +125,7 @@ class Microsoft(object):
         return sr.Microphone().list_microphone_names()
 
 """
-todo try catch
-
-
-pip install SpeechRecognition
-
 Speak:
-
 https://www.microsoft.com/cognitive-services/en-us/Speech-api/documentation/API-Reference-REST/BingVoiceOutput
 
 Locale  Gender  Service name mapping
