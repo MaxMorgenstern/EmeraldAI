@@ -29,13 +29,6 @@ class Sentence(BaseObject):
         self.HasCategory = []
         self.SetsCategory = []
 
-    # TODO - some better output
-    def __repr__(self):
-         return "ID:{0} R:{1} L:{2} S:{3}\n".format(self.ID, self.Rating, len(self.KeywordList), self.OnlyStopwords)
-
-    def __str__(self):
-         return "ID:{0} R:{1} L:{2} S:{3}\n".format(self.ID, self.Rating, len(self.KeywordList), self.OnlyStopwords)
-
     def AddBaseword(self, Baseword):
         self.BasewordList.append(Baseword)
 
@@ -74,3 +67,9 @@ class Sentence(BaseObject):
         for r in sqlResult:
             return {'Name':r[0], 'Module':r[1], 'Class':r[2], 'Function':r[3]}
         return None
+
+    def __repr__(self):
+         return "Rating:{0}".format(self.Rating)
+
+    def __str__(self):
+         return "Rating:{0}".format(self.Rating)

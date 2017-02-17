@@ -35,7 +35,6 @@ class User(BaseObject):
 
         self.Updated = None
 
-
     def GetCVTag(self):
         return self.CVTag
 
@@ -91,3 +90,9 @@ class User(BaseObject):
             continue
 
         self.Updated = datetime.now().strftime("%H%M")
+
+    def __repr__(self):
+         return "Name:{0}".format(self.GetName())
+
+    def __str__(self):
+         return "Name:{0}".format(self.GetName())

@@ -19,3 +19,9 @@ class Word(BaseObject):
 
         # parameters matching the word
         self.ParameterList = []
+
+    def __repr__(self):
+         return "{0} ({1})".format(self.Word, len(self.SynonymList))
+
+    def __str__(self):
+         return "{0} ({1})".format(self.Word, len(self.SynonymList))

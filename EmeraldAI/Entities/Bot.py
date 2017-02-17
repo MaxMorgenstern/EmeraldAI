@@ -12,3 +12,9 @@ class Bot(BaseObject):
 
     def __init__(self):
         self.Name = Config().Get("Bot", "Name")
+
+    def __repr__(self):
+         return "{0}".format(self.Name)
+
+    def __str__(self):
+         return "{0}".format(self.Name)
