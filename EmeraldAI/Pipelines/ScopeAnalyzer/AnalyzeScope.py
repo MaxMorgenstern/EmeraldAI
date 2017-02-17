@@ -5,6 +5,7 @@ from EmeraldAI.Logic.NLP.SentenceResolver import SentenceResolver
 from EmeraldAI.Entities.NLPParameter import NLPParameter
 from EmeraldAI.Entities.User import User
 from EmeraldAI.Config.Config import *
+from EmeraldAI.Logic.Logger import *
 
 class AnalyzeScope(object):
     __metaclass__ = Singleton
@@ -15,7 +16,7 @@ class AnalyzeScope(object):
         self.__RemoveStopwordOnlySentences = Config().GetBoolean("Pipeline.ScopeAnalyzer", "RemoveStopwordOnlySentences") #True
 
     def Process(self, PipelineArgs):
-
+        FileLogger().Info("AnalyzeScope, Process()")
         sentenceList = {}
         wordParameterList = []
 
@@ -51,4 +52,5 @@ class AnalyzeScope(object):
 
         PipelineArgs.SentenceList = sentenceList
 
+        FileLogger().Info("AnalyzeScope, Process(), SentenceList: {0}".format(PipelineArgs.SentenceList))
         return PipelineArgs

@@ -5,6 +5,7 @@ from EmeraldAI.Config.Config import *
 from EmeraldAI.Entities.User import User
 from EmeraldAI.Logic.Trainer.DialogTrainer import *
 from EmeraldAI.Entities.Context import Context
+from EmeraldAI.Logic.Logger import *
 
 
 class Trainer(object):
@@ -21,8 +22,7 @@ class Trainer(object):
     	if len(Context().History) == 0:
     		return False
 
+        FileLogger().Info("Trainer, Process(), Train Sentence")
     	DialogTrainer().TrainSentence(Context().History[-1].Response, PipelineArgs.Normalized, PipelineArgs.Language, User().Name)
 
     	return True
-
-

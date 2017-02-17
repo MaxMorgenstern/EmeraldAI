@@ -10,6 +10,7 @@ import time
 
 from EmeraldAI.Logic.Modules import Global
 from EmeraldAI.Logic.ComputerVision.Detector import *
+from EmeraldAI.Logic.Logger import *
 
 from EmeraldAI.Logic.External.facerec.model import PredictableModel
 from EmeraldAI.Logic.External.facerec.feature import Fisherfaces
@@ -169,8 +170,10 @@ class PredictorApp(object):
             if(probeCount > self.__probeTreshhold):
                 break
 
+        FileLogger().Info("CV Predictor, PredictorApp().Run(), Predicted: {0}".format(self.__predicted))
         return self.__predicted
 
+    # TODO - different way - more like the non visual
     def RunVisual(self):
         displayTick = 0
         probeCount = 0

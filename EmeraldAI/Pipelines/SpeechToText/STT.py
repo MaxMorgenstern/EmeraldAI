@@ -6,6 +6,7 @@ from EmeraldAI.Logic.SpeechProcessing.Microsoft import *
 from EmeraldAI.Logic.SpeechProcessing.Wit import *
 from EmeraldAI.Config.Config import *
 from EmeraldAI.Entities.PipelineArgs import PipelineArgs
+from EmeraldAI.Logic.Logger import *
 
 class STT(object):
     __metaclass__ = Singleton
@@ -15,6 +16,8 @@ class STT(object):
         self.__sttProvider = Config().Get("SpeechToText", "Provider") # Google
 
     def Process(self):
+        FileLogger().Info("STT, Process(), Provider: {0}".format(self.__sttProvider))
+
         if(self.__sttProvider.lower() == "google"):
             data = Google().Listen()
 
@@ -27,4 +30,5 @@ class STT(object):
         if(len(data) == 0):
             return None
 
+        FileLogger().Info("STT, Process(), Input Data: {0}".format(data))
         return PipelineArgs(data)
