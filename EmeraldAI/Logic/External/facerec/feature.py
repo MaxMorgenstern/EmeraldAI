@@ -185,7 +185,6 @@ class Fisherfaces(AbstractFeature):
         # turn into numpy representation
         if(XC==None):
           XC = asColumnMatrix(X)
-        print "XC calculated"
         y = np.asarray(y)
         # gather some statistics about the dataset
         n = len(y)

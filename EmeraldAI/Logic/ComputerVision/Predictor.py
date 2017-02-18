@@ -62,9 +62,9 @@ class Predictor(object):
                             X.append(np.asarray(im, dtype=np.uint8))
                             y.append(c)
                         except IOError, (errno, strerror):
-                            print "I/O error({0}): {1}".format(errno, strerror)
+                            FileLogger().Warn("CV Predictor, __readImages(): I/O error({0}): {1}".format(errno, strerror))
                         except:
-                            print "Unexpected error:", sys.exc_info()[0]
+                            FileLogger().Warn("CV Predictor, __readImages(): Unexpected error: {0}".format(sys.exc_info()[0]))
                             raise
                 c = c + 1
         return [X, y, folder_names]
@@ -85,7 +85,7 @@ class Predictor(object):
         # Get the model we want to compute:
         model = self.__getModel(image_size=imageSize, subject_names=subject_dictionary)
 
-        print "CreateDataset..."
+        FileLogger().Info("CV Predictor, CreateDataset(): CreateDataset...")
         # Compute the model:
         model.compute(images, labels)
         # And save the model, which uses Pythons pickle module:
@@ -93,13 +93,13 @@ class Predictor(object):
 
     def TestModel(self):
         # TODO
-        print "numfolds"
+        FileLogger().Info("CV Predictor, TestModel(): Test model...")
 
     def LoadDataset(self):
         try:
             return load_model(self.__getModelName())
         except:
-            print "[Error] The given model could not be loaded"
+            FileLogger().Error("CV Predictor, LoadDataset(): The given model could not be loaded")
             return None
 
     def PredictPerson(self, camera, detectorFunction=None, model=None):
@@ -110,7 +110,7 @@ class Predictor(object):
         if(model == None):
             model = self.LoadDataset()
         if model == None or not isinstance(model, ExtendedPredictableModel):
-            print "[Error] The given model is not of type '%s'." % "ExtendedPredictableModel"
+            FileLogger().Error("CV Predictor, GetPredictor(): [Error] The given model is not of type '%s'." % "ExtendedPredictableModel")
             return None
 
         return PredictorApp(model, camera, detectorFunction)
@@ -218,7 +218,7 @@ class PredictorApp(object):
             ch = cv2.waitKey(10)
             if ch == 32:
                 self.__predicted.clear()
-                print "prediction cleared"
+                FileLogger().Info("CV Predictor, PredictorApp().RunVisual(): Prediction cleared")
                 displayTick = 0
                 probeCount = 0
 
@@ -229,9 +229,10 @@ class PredictorApp(object):
             if(len(self.__predicted) > 0 and probeCount > 5 and displayTick % 30 == 0):
                 sortedList = sorted(self.__predicted.items(),
                                     key=operator.itemgetter(1), reverse=True)
-                print sortedList
-                print "Probe Count " + str(probeCount)
+                FileLogger().Info("CV Predictor, PredictorApp().RunVisual(): Probe Count{0}, List{1}".format(str(probeCount), sortedList))
+
                 if(probeCount > 20):
-                    print "This is: " + sortedList[0][0]
+                    FileLogger().Info("CV Predictor, PredictorApp().RunVisual(): Best guess: {0}".format(sortedList[0][0]))
+
 
             displayTick += 1
