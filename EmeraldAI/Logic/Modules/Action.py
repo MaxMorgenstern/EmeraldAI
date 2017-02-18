@@ -14,7 +14,7 @@ def CallMethod(moduleName, className, functionName):
     return method()
 
 def CallFunction(moduleName, className, functionName, arg1=None, arg2=None, arg3=None):
-    ileLogger().Info("Action called: {0}, {1}, {2}".format(moduleName, className, functionName))
+    FileLogger().Info("Action called: {0}, {1}, {2}".format(moduleName, className, functionName))
     instance = CreateClass(moduleName, className)
     method = getattr(instance, functionName)
 

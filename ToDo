@@ -4,8 +4,6 @@ Just a messy list with things to do
 
 - Add Unit Tests
 
-- Add Logging
-
 - clean unused thesaurus fields - add language tag
 - thesaurus_DE to custom file so we can use more languages
 
@@ -26,8 +24,6 @@ https://pypi.python.org/pypi/cachetools
 # EN aiml reference https://code.google.com/archive/p/aiml-en-us-foundation-alice/
 
 - multi language support without config change
-
-- use more of def __repr__(self): and def __str__(self): -- like in sentence entity
 
 - update user last seen and last spoken to
 
