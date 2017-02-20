@@ -1,6 +1,7 @@
 Just a messy list with things to do
 
 - !!! Initial Conversation on User detection !!!
+- check is an observer pattern should be used
 
 - Add Unit Tests
 
@@ -29,6 +30,7 @@ Just a messy list with things to do
 - Handle Wildcard Parameter (*) in Q
 - Set Category
 
+- Add ROS classes and massenging
 
 # EN aiml reference https://code.google.com/archive/p/aiml-en-us-foundation-alice/
 
