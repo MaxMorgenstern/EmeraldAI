@@ -103,6 +103,13 @@ HaarcascadeEyes = haarcascade_eye.xml
 HaarcascadeEyesGlasses = haarcascade_eye_tree_eyeglasses.xml
 
 
+[ComputerVision.Predictor]
+ImageSize = 100x100
+MaxPredictionDistance = 150
+PredictionTimeout = 5
+PredictionThreshold = 50
+
+
 # ----------------------
 [Weather]
 OWMAPIKey =

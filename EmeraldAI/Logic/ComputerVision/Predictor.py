@@ -11,6 +11,7 @@ import time
 from EmeraldAI.Logic.Modules import Global
 from EmeraldAI.Logic.ComputerVision.Detector import *
 from EmeraldAI.Logic.Logger import *
+from EmeraldAI.Config.Config import *
 
 from EmeraldAI.Logic.External.facerec.model import PredictableModel
 from EmeraldAI.Logic.External.facerec.feature import Fisherfaces
@@ -20,8 +21,6 @@ from EmeraldAI.Logic.External.facerec.validation import KFoldCrossValidation
 from EmeraldAI.Logic.External.facerec.serialization import save_model, load_model
 from EmeraldAI.Logic.External.facerec.helper.common import *
 from EmeraldAI.Logic.External.facerec.helper.video import *
-
-# TODO - put variables into config - eg __probeTreshhold
 
 class ExtendedPredictableModel(PredictableModel):
 
@@ -35,7 +34,7 @@ class Predictor(object):
 
     def __getImageSize(self, size=None):
         if(size == None):
-            size = "100x100"
+            size = Config().Get("ComputerVision.Predictor", "ImageSize") # 100x100
         return (int(size.split("x")[0]), int(size.split("x")[1]))
 
     def __getModel(self, image_size, subject_names):
@@ -125,10 +124,11 @@ class PredictorApp(object):
             detectorFunction = self.__detector.DetectFaceFrontal
         self.__detectorFunction = detectorFunction
         self.__cam = camera
-        self.__maxDistance = 150
+        self.__maxDistance = Config().GetInt("ComputerVision.Predictor", "MaxPredictionDistance") # 150
         self.__predicted = {}
-        self.__timeout = 5
-        self.__probeTreshhold = 50  # after 10 detections return
+        self.__timeout = Config().GetInt("ComputerVision.Predictor", "PredictionTimeout") # 5 econds
+        # after x detections return
+        self.__probeTreshhold = Config().GetInt("ComputerVision.Predictor", "PredictionThreshold") # 50
 
     def AddPrediction(self, key, distance):
         if(self.__predicted.has_key(key)):

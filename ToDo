@@ -7,8 +7,6 @@ Just a messy list with things to do
 - clean unused thesaurus fields - add language tag
 - thesaurus_DE to custom file so we can use more languages
 
-- logging config - log location
-
 - add notes to classes and modules - description
 
 - test http://cmusphinx.sourceforge.net/
@@ -16,12 +14,7 @@ Just a messy list with things to do
 - https://github.com/Uberi/speech_recognition/blob/master/examples/background_listening.py
 - https://github.com/Uberi/speech_recognition/blob/03ec480ad831f9e7b7787858d2511e6e42880811/reference/library-reference.rst
 
-- add boot sequence in order to cache stopwords + common words about 200 - 300 should be cached
-https://pypi.python.org/pypi/cachetools
-
 - add formal <-> informal sentence converter
-
-# EN aiml reference https://code.google.com/archive/p/aiml-en-us-foundation-alice/
 
 - multi language support without config change
 
@@ -36,6 +29,8 @@ https://pypi.python.org/pypi/cachetools
 - Handle Wildcard Parameter (*) in Q
 - Set Category
 
+
+# EN aiml reference https://code.google.com/archive/p/aiml-en-us-foundation-alice/
 
 ---
 
