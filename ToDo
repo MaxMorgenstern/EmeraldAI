@@ -110,3 +110,22 @@ DELETE FROM Conversation_Sentence_Keyword;
 DELETE FROM Conversation_Sentence_Requirement;
 ...
 
+
+
+
+
+
+Modules that need to be installed:
+via pip:
+cachetools
+SpeechRecognition
+pyowm 					# Open weather
+wikipedia
+
+
+
+cv2 					# Computer Vision
+sudo apt-get install python-opencv
+
+
+
