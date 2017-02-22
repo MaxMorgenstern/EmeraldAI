@@ -105,7 +105,7 @@ class WiFiFingerprinting(object):
                 if line.startswith("Quality"):
                     signalDetails = line.split("  ", 1)
                     #signal = (signalDetails[0].split("=", 1)[1].replace("/100", "")) # quality
-                    signal = (signalDetails[1].split("=", 1)[1].replace("/100", "")) # signal level
+                    signal = (signalDetails[1].split("=", 1)[1].replace("/100", "").replace(" dBm", "")) # signal level
 
                 if(ssid != None and bssid != None and signal != None):
                     returnList.append(Hotspot(bssid, ssid, signal))
