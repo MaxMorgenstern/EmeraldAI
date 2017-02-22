@@ -120,9 +120,10 @@ class WiFiFingerprinting(object):
         (out, err) = proc.communicate()
 
         returnList = []
-        wifilist = plistlib.readPlistFromString(out)
-        for wifi in wifilist:
-            returnList.append(Hotspot(wifi["BSSID"], wifi["SSID_STR"], (wifi["RSSI"] - wifi["NOISE"]), wifi["RSSI"], wifi["NOISE"]))
+        if len(out) > 1:
+            wifilist = plistlib.readPlistFromString(out)
+            for wifi in wifilist:
+                returnList.append(Hotspot(wifi["BSSID"], wifi["SSID_STR"], (wifi["RSSI"] - wifi["NOISE"]), wifi["RSSI"], wifi["NOISE"]))
 
         return returnList
 
