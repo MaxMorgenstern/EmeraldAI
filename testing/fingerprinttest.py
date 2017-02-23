@@ -16,7 +16,7 @@ wfl = fp.GetWiFiList()
 print len(wfl)
 
 for w in wfl:
-	print w.BSSID + " - " + w.SSID
+    print w.BSSID + " - " + w.SSID
 
 while True:
 	x = fp.PredictLocation()
