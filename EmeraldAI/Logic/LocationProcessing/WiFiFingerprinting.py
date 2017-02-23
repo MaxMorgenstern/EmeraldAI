@@ -105,7 +105,7 @@ class WiFiFingerprinting(object):
                 if line.startswith("Quality"):
                     signalDetails = line.split("  ", 1)
                     #signal = (signalDetails[0].split("=", 1)[1].replace("/100", "")) # quality
-                    signal = (signalDetails[1].split("=", 1)[1].replace("/100", "")) # signal level
+                    signal = (signalDetails[1].split("=", 1)[1].replace("/100", "").replace(" dBm", "")) # signal level
 
                 if(ssid != None and bssid != None and signal != None):
                     returnList.append(Hotspot(bssid, ssid, signal))
@@ -120,9 +120,10 @@ class WiFiFingerprinting(object):
         (out, err) = proc.communicate()
 
         returnList = []
-        wifilist = plistlib.readPlistFromString(out)
-        for wifi in wifilist:
-            returnList.append(Hotspot(wifi["BSSID"], wifi["SSID_STR"], (wifi["RSSI"] - wifi["NOISE"]), wifi["RSSI"], wifi["NOISE"]))
+        if len(out) > 1:
+            wifilist = plistlib.readPlistFromString(out)
+            for wifi in wifilist:
+                returnList.append(Hotspot(wifi["BSSID"], wifi["SSID_STR"], (wifi["RSSI"] - wifi["NOISE"]), wifi["RSSI"], wifi["NOISE"]))
 
         return returnList
 

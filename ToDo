@@ -121,7 +121,16 @@ cachetools
 SpeechRecognition
 pyowm 					# Open weather
 wikipedia
-
+numpy
+scipy
+	matplotlib
+	ipython
+	jupyter
+	pandas
+	sympy
+	nose
+sklearn
+future
 
 
 cv2 					# Computer Vision
