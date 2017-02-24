@@ -1,7 +1,7 @@
 Just a messy list with things to do
 
 - !!! Initial Conversation on User detection !!!
-- check is an observer pattern should be used
+- check is an observer pattern should be used or if we can trigger by watching ROS nodes
 
 - Add Unit Tests
 
