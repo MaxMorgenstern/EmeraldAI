@@ -19,7 +19,7 @@ class WiFiFingerprinting(object):
 
     __osxCall = "/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -s -x"
     __windowsCall = "netsh wlan show network"
-    __linuxCall = "iwlist scan | egrep 'Cell |Quality|ESSID'"
+    __linuxCall = "sudo iwlist scan | egrep 'Cell |Quality|ESSID'"
     __OnionOmega2Call = """ubus call onion wifi-scan '{"device":"ra0"}' | egrep 'ssid|bssid|signalStrength'"""
 
     def GetWiFiList(self):
@@ -108,7 +108,7 @@ class WiFiFingerprinting(object):
                     signal = (signalDetails[1].split("=", 1)[1].replace("/100", "").replace(" dBm", "")) # signal level
 
                 if(ssid != None and bssid != None and signal != None):
-                    returnList.append(Hotspot(bssid, ssid, signal))
+                    returnList.append(Hotspot(bssid, ssid, abs(signal)))
                     ssid = None
                     signal = None
 
@@ -134,12 +134,16 @@ class WiFiFingerprinting(object):
 
     def GetLocationID(self, name):
         location = db().Fetchall("SELECT ID FROM Fingerprint_Position WHERE Name = '{0}'".format(name))
-        return location[0][0]
+        if len(location > 0):
+            return location[0][0]
+        return None
 
 
     def GetLocationName(self, id):
         location = db().Fetchall("SELECT Name FROM Fingerprint_Position WHERE ID = '{0}'".format(id))
-        return location[0][0]
+        if len(location > 0):
+            return location[0][0]
+        return None
 
 
     def PredictLocation(self):

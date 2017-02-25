@@ -138,3 +138,6 @@ sudo apt-get install python-opencv
 
 
 
+add iwlist to sudo "vi sudoers"
+
+
