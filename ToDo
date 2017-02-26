@@ -34,6 +34,11 @@ Just a messy list with things to do
 
 # EN aiml reference https://code.google.com/archive/p/aiml-en-us-foundation-alice/
 
+- Multiple Machine ROS:
+export ROS_MASTER_URI=http://url:11311
+export ROS_IP=1.2.3.4
+- http://wiki.ros.org/ROS/Tutorials/MultipleMachines
+
 ---
 
 Rank  Bot Property  Value
@@ -131,6 +136,7 @@ scipy
 	nose
 sklearn
 future
+pyaudio
 
 
 cv2 					# Computer Vision
