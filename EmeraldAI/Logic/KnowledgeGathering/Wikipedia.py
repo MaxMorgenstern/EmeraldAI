@@ -4,6 +4,7 @@ import wikipedia
 import re
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Config.Config import *
+from EmeraldAI.Logic.Logger import *
 
 class Wikipedia(object):
     __metaclass__ = Singleton
@@ -19,7 +20,7 @@ class Wikipedia(object):
                 #wikipedia.summary(query, sentences=0, chars=0, auto_suggest=True, redirect=True)
                 summary = wikipedia.summary(term.title(), 0, 0, False, True)
             except wikipedia.exceptions.DisambiguationError as e:
-                # TODO log exception
+                FileLogger().Error("Wikipedia Line 22: DisambiguationError: {0}".format(e))
                 if fallback:
                     topics = wikipedia.search(e.options[0])
                     for i, topic in enumerate(topics):
@@ -33,7 +34,7 @@ class Wikipedia(object):
                 summary = re.sub("[\(\[].*?[\)\]] ", "", summary)
             return summary
         except Exception as e:
-            # TODO log exception
+            FileLogger().Error("Wikipedia Line 36: Exception: {0}".format(e))
             return None
 
 

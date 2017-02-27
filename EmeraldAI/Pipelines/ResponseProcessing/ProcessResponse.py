@@ -7,6 +7,7 @@ from EmeraldAI.Entities.User import User
 from EmeraldAI.Config.Config import *
 from EmeraldAI.Logic.NLP.AliceBot import *
 from EmeraldAI.Logic.Modules import Action
+from EmeraldAI.Logic.Logger import *
 import re
 
 class ProcessResponse(object):
@@ -21,6 +22,7 @@ class ProcessResponse(object):
 
     def Process(self, PipelineArgs):
         sentence = PipelineArgs.GetRandomSentenceWithHighestValue()
+        FileLogger().Info("ProcessResponse, Process(), Sentence: ID:{0} {1}".format(sentence.ID, sentence))
 
         responseFound = True
         if sentence == None or sentence.Rating < self.__sentenceRatingThreshold:
@@ -37,6 +39,7 @@ class ProcessResponse(object):
 
             sentenceAction = sentence.GetAction()
             if sentenceAction != None and len(sentenceAction["Module"]) > 0:
+                FileLogger().Info("ProcessResponse, Process(), Call Action: {0}, {1}, {2}".format(sentenceAction["Module"], sentenceAction["Class"], sentenceAction["Function"]))
                 actionResult = Action.CallFunction(sentenceAction["Module"], sentenceAction["Class"], sentenceAction["Function"], PipelineArgs)
 
                 # TODO handle error
@@ -45,12 +48,12 @@ class ProcessResponse(object):
                 NLPParameter().SetInput(actionResult["Input"])
                 NLPParameter().SetResult(actionResult["Result"])
 
-            parameterList = NLPParameter().GetParameterList()
+            nlpParameterDict = NLPParameter().GetParameterDictionary()
 
             keywords = re.findall(r"\{(.*?)\}", PipelineArgs.Response)
             for keyword in keywords:
-                if keyword.title() in parameterList:
-                    replaceword = parameterList[keyword.title()]
+                if keyword.title() in nlpParameterDict:
+                    replaceword = nlpParameterDict[keyword.title()]
                     if replaceword == None or replaceword == "Unknown":
                         replaceword = ""
                     PipelineArgs.Response = PipelineArgs.Response.replace("{{{0}}}".format(keyword.lower()), replaceword)
@@ -62,4 +65,5 @@ class ProcessResponse(object):
             PipelineArgs.ResponseFound = True
             PipelineArgs.TrainConversation = False
 
+        FileLogger().Info("ProcessResponse, Process(), Response: {0}".format(PipelineArgs.Response))
         return PipelineArgs

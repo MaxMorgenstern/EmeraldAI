@@ -5,6 +5,7 @@ from EmeraldAI.Entities.Word import Word
 from EmeraldAI.Logic.NLP.Thesaurus import *
 from EmeraldAI.Logic.NLP import Parameterizer
 from EmeraldAI.Logic.Singleton import Singleton
+from EmeraldAI.Logic.Logger import *
 
 import multiprocessing
 from multiprocessing import Manager
@@ -24,6 +25,7 @@ class ProcessInput(object):
 
 
     def Process(self, PipelineArgs):
+        FileLogger().Info("ProcessInput, Process(): {0}".format(PipelineArgs.Input))
         PipelineArgs.Language = NLP.DetectLanguage(PipelineArgs.Input)
         PipelineArgs.Normalized = NLP.Normalize(PipelineArgs.Input, PipelineArgs.Language)
 
@@ -39,10 +41,14 @@ class ProcessInput(object):
         self.__appendIfNotNone(parameterList, Parameterizer.IsEquation(PipelineArgs.Normalized))
         PipelineArgs.WordList = wordList
         PipelineArgs.ParameterList = parameterList
+
+        FileLogger().Info("ProcessInput, Process(), Wordlist: {0}".format(PipelineArgs.WordList))
+        FileLogger().Info("ProcessInput, Process(), ParameterList: {0}".format(PipelineArgs.ParameterList))
         return PipelineArgs
 
 
     def ProcessAsync(self, PipelineArgs):
+        FileLogger().Info("ProcessInput, ProcessAsync(): {0}".format(PipelineArgs.Input))
         PipelineArgs.Language = NLP.DetectLanguage(PipelineArgs.Input)
         PipelineArgs.Normalized = NLP.Normalize(PipelineArgs.Input, PipelineArgs.Language)
 
@@ -73,6 +79,9 @@ class ProcessInput(object):
 
         PipelineArgs.WordList = wordList
         PipelineArgs.ParameterList = parameterList
+
+        FileLogger().Info("ProcessInput, ProcessAsync(), Wordlist: {0}".format(PipelineArgs.WordList))
+        FileLogger().Info("ProcessInput, ProcessAsync(), ParameterList: {0}".format(PipelineArgs.ParameterList))
         return PipelineArgs
 
 

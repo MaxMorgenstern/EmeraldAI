@@ -10,6 +10,8 @@ import time
 
 from EmeraldAI.Logic.Modules import Global
 from EmeraldAI.Logic.ComputerVision.Detector import *
+from EmeraldAI.Logic.Logger import *
+from EmeraldAI.Config.Config import *
 
 from EmeraldAI.Logic.External.facerec.model import PredictableModel
 from EmeraldAI.Logic.External.facerec.feature import Fisherfaces
@@ -19,8 +21,6 @@ from EmeraldAI.Logic.External.facerec.validation import KFoldCrossValidation
 from EmeraldAI.Logic.External.facerec.serialization import save_model, load_model
 from EmeraldAI.Logic.External.facerec.helper.common import *
 from EmeraldAI.Logic.External.facerec.helper.video import *
-
-# TODO - put variables into config - eg __probeTreshhold
 
 class ExtendedPredictableModel(PredictableModel):
 
@@ -34,7 +34,7 @@ class Predictor(object):
 
     def __getImageSize(self, size=None):
         if(size == None):
-            size = "100x100"
+            size = Config().Get("ComputerVision.Predictor", "ImageSize") # 100x100
         return (int(size.split("x")[0]), int(size.split("x")[1]))
 
     def __getModel(self, image_size, subject_names):
@@ -61,9 +61,9 @@ class Predictor(object):
                             X.append(np.asarray(im, dtype=np.uint8))
                             y.append(c)
                         except IOError, (errno, strerror):
-                            print "I/O error({0}): {1}".format(errno, strerror)
+                            FileLogger().Warn("CV Predictor, __readImages(): I/O error({0}): {1}".format(errno, strerror))
                         except:
-                            print "Unexpected error:", sys.exc_info()[0]
+                            FileLogger().Warn("CV Predictor, __readImages(): Unexpected error: {0}".format(sys.exc_info()[0]))
                             raise
                 c = c + 1
         return [X, y, folder_names]
@@ -84,7 +84,7 @@ class Predictor(object):
         # Get the model we want to compute:
         model = self.__getModel(image_size=imageSize, subject_names=subject_dictionary)
 
-        print "CreateDataset..."
+        FileLogger().Info("CV Predictor, CreateDataset(): CreateDataset...")
         # Compute the model:
         model.compute(images, labels)
         # And save the model, which uses Pythons pickle module:
@@ -92,13 +92,13 @@ class Predictor(object):
 
     def TestModel(self):
         # TODO
-        print "numfolds"
+        FileLogger().Info("CV Predictor, TestModel(): Test model...")
 
     def LoadDataset(self):
         try:
             return load_model(self.__getModelName())
         except:
-            print "[Error] The given model could not be loaded"
+            FileLogger().Error("CV Predictor, LoadDataset(): The given model could not be loaded")
             return None
 
     def PredictPerson(self, camera, detectorFunction=None, model=None):
@@ -109,7 +109,7 @@ class Predictor(object):
         if(model == None):
             model = self.LoadDataset()
         if model == None or not isinstance(model, ExtendedPredictableModel):
-            print "[Error] The given model is not of type '%s'." % "ExtendedPredictableModel"
+            FileLogger().Error("CV Predictor, GetPredictor(): [Error] The given model is not of type '%s'." % "ExtendedPredictableModel")
             return None
 
         return PredictorApp(model, camera, detectorFunction)
@@ -124,10 +124,11 @@ class PredictorApp(object):
             detectorFunction = self.__detector.DetectFaceFrontal
         self.__detectorFunction = detectorFunction
         self.__cam = camera
-        self.__maxDistance = 150
+        self.__maxDistance = Config().GetInt("ComputerVision.Predictor", "MaxPredictionDistance") # 150
         self.__predicted = {}
-        self.__timeout = 5
-        self.__probeTreshhold = 50  # after 10 detections return
+        self.__timeout = Config().GetInt("ComputerVision.Predictor", "PredictionTimeout") # 5 econds
+        # after x detections return
+        self.__probeTreshhold = Config().GetInt("ComputerVision.Predictor", "PredictionThreshold") # 50
 
     def AddPrediction(self, key, distance):
         if(self.__predicted.has_key(key)):
@@ -169,8 +170,10 @@ class PredictorApp(object):
             if(probeCount > self.__probeTreshhold):
                 break
 
+        FileLogger().Info("CV Predictor, PredictorApp().Run(), Predicted: {0}".format(self.__predicted))
         return self.__predicted
 
+    # TODO - different way - more like the non visual
     def RunVisual(self):
         displayTick = 0
         probeCount = 0
@@ -215,7 +218,7 @@ class PredictorApp(object):
             ch = cv2.waitKey(10)
             if ch == 32:
                 self.__predicted.clear()
-                print "prediction cleared"
+                FileLogger().Info("CV Predictor, PredictorApp().RunVisual(): Prediction cleared")
                 displayTick = 0
                 probeCount = 0
 
@@ -226,9 +229,10 @@ class PredictorApp(object):
             if(len(self.__predicted) > 0 and probeCount > 5 and displayTick % 30 == 0):
                 sortedList = sorted(self.__predicted.items(),
                                     key=operator.itemgetter(1), reverse=True)
-                print sortedList
-                print "Probe Count " + str(probeCount)
+                FileLogger().Info("CV Predictor, PredictorApp().RunVisual(): Probe Count{0}, List{1}".format(str(probeCount), sortedList))
+
                 if(probeCount > 20):
-                    print "This is: " + sortedList[0][0]
+                    FileLogger().Info("CV Predictor, PredictorApp().RunVisual(): Best guess: {0}".format(sortedList[0][0]))
+
 
             displayTick += 1

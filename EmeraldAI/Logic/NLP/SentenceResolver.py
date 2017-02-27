@@ -3,6 +3,7 @@
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Entities.Sentence import Sentence
 from EmeraldAI.Config.Config import *
+from EmeraldAI.Logic.Logger import *
 if(Config().Get("Database", "ConversationDatabaseType").lower() == "sqlite"):
     from EmeraldAI.Logic.Database.SQlite3 import SQlite3 as db
 elif(Config().Get("Database", "ConversationDatabaseType").lower() == "mysql"):
@@ -121,13 +122,10 @@ class SentenceResolver(object):
                 requirementName = r[2].title()
 
                 if requirementName not in parameterList:
-                    # TODO log error
-                    print "SentenceResolver Line 120: Requirement missing in list:", requirementName
+                    FileLogger().Error("SentenceResolver Line 124: Requirement missing in list: {0}".format(requirementName))
                     deleteList.append(sentenceID)
                     continue
 
-                # TODO - true false
-                # TODO - not X
                 if r[0] == None:
                     if type(parameterList[requirementName]) == list and r[1].lower() not in parameterList[requirementName]:
                         deleteList.append(sentenceID)
@@ -142,6 +140,8 @@ class SentenceResolver(object):
                     if r[0] == "le" and not parameterList[requirementName] <= r[1]:
                         deleteList.append(sentenceID)
                     if r[0] == "eq" and not parameterList[requirementName] == r[1]:
+                        deleteList.append(sentenceID)
+                    if r[0] == "neq" and not parameterList[requirementName] != r[1]:
                         deleteList.append(sentenceID)
                     if r[0] == "ge" and not parameterList[requirementName] >= r[1]:
                         deleteList.append(sentenceID)

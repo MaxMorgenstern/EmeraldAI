@@ -4,6 +4,7 @@ import logging
 import logging.config
 import os
 from EmeraldAI.Logic.Modules import Global
+from EmeraldAI.Logic.Singleton import Singleton
 
 
 class Logger(object):
@@ -27,6 +28,29 @@ class Logger(object):
 
     def Critical(self, data):
         self.logger.critical(data)
+
+
+class FileLogger(Logger):
+    __metaclass__ = Singleton
+
+    def __init__(self):
+        logging.config.fileConfig(Global.EmeraldPath + "Config" + os.sep + "logging.config")
+        self.logger = logging.getLogger("FileLogger")
+
+
+class ConsoleLogger(Logger):
+    __metaclass__ = Singleton
+
+    def __init__(self):
+        logging.config.fileConfig(Global.EmeraldPath + "Config" + os.sep + "logging.config")
+        self.logger = logging.getLogger("ConsoleLogger")
+
+class BaseLogger(Logger):
+    __metaclass__ = Singleton
+
+    def __init__(self):
+        logging.config.fileConfig(Global.EmeraldPath + "Config" + os.sep + "logging.config")
+        self.logger = logging.getLogger("root")
 
 
 """

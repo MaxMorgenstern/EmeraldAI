@@ -11,7 +11,7 @@ from EmeraldAI.Entities.User import User
 class Context(BaseObject):
     __metaclass__ = Singleton
 
-    def __init__(self)
+    def __init__(self):
         self.Category = "Greeting"    # Current Category
 
         self.Status = "inactive"    # current status if the robot is busy or not
@@ -26,4 +26,4 @@ class Context(BaseObject):
         self.Location = None
         self.Mode = "Live" # Live or Training ...
 
-        self.History = None # list of historical...
+        self.History = [] # list of historical pipeline args

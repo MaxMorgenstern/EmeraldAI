@@ -5,6 +5,7 @@ import itertools
 from EmeraldAI.Logic.NLP import NLP
 from EmeraldAI.Config.Config import *
 from EmeraldAI.Logic.Singleton import Singleton
+from EmeraldAI.Logic.Logger import *
 
 if(Config().Get("Database", "ConversationDatabaseType").lower() == "sqlite"):
     from EmeraldAI.Logic.Database.SQlite3 import SQlite3 as db
@@ -106,6 +107,8 @@ class DialogTrainer(object):
         # link keywords to sentence
         self.LinkKeywordAndSentence(outputKeywords, Language, sentenceID)
 
+        FileLogger().Info("DialogTrainer: User sentence trained: {0}".format(ResponseSentence))
+
 
     def TrainFullSentence(self, Sentence, Language, KeywordList, RequirementObjectList, HasCategoryList, SetCategoryList, ActionName):
         # Train Keywords of sentence
@@ -150,11 +153,11 @@ class DialogTrainer(object):
             # Link follow up action - sentence
             query = "SELECT ID FROM Conversation_Action WHERE Name = '{0}'".format(ActionName)
             actionIDRow = db().Fetchall(query)
-            print actionIDRow
             if len(actionIDRow) > 0:
                 query = "INSERT INTO Conversation_Sentence_Action ('SentenceID', 'ActionID') Values ('{0}', '{1}')".format(sentenceID, actionIDRow[0][0])
                 db().Execute(query)
 
+        FileLogger().Info("DialogTrainer: Full sentence trained: {0}".format(Sentence))
         return True
 
 

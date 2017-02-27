@@ -13,6 +13,7 @@ from EmeraldAI.Pipelines.ResponseProcessing.ProcessResponse import ProcessRespon
 from EmeraldAI.Pipelines.TextToSpeech.TTS import TTS
 from EmeraldAI.Pipelines.Trainer.Trainer import Trainer
 from EmeraldAI.Entities.User import User
+from EmeraldAI.Entities.Context import Context
 
 from multiprocessing import Process, Manager
 from multiprocessing.managers import BaseManager
@@ -47,6 +48,8 @@ def RunBrain():
         pipelineArgs = TTS().Process(pipelineArgs)
 
         trainerResult = Trainer().Process(pipelineArgs)
+
+        Context().History.append(pipelineArgs)
 
         print "Pipeline Args", pipelineArgs.toJSON()
         print "Main User", User().toJSON()

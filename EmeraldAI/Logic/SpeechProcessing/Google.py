@@ -6,6 +6,7 @@ import re
 from gtts import gTTS
 from EmeraldAI.Logic.Modules import Global
 from EmeraldAI.Config.Config import *
+from EmeraldAI.Logic.Logger import *
 
 
 class Google(object):
@@ -72,11 +73,10 @@ class Google(object):
             try:
                 data = self.__recognizer.recognize_google(
                     self.__audio, key=self.__apiKey, language=self.__language_4letter_cc, show_all=False)
-            except sr.UnknownValueError:
-                print("Google Speech Recognition could not understand audio")
+            except sr.UnknownValueError as e:
+                FileLogger().Warn("Google Line 75: Google Speech Recognition could not understand audio: {0}".format(e))
             except sr.RequestError as e:
-                print(
-                    "Could not request results from Google Speech Recognition service; {0}".format(e))
+                FileLogger().Warn("Google Line 77: Could not request results from Google Speech Recognition service: {0}".format(e))
 
             return data
 
@@ -93,11 +93,6 @@ class Google(object):
 """
 
 TODO:
-
-log instead of print
-
-
-the same for microsoft:
 energy_threshold
 The recognizer tries to recognize speech even when I’m not speaking.
 Try increasing the recognizer_instance.energy_threshold property.

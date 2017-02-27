@@ -6,8 +6,6 @@ from EmeraldAI.Entities.Bot import Bot
 from datetime import datetime
 from EmeraldAI.Entities.User import User
 
-# TODO
-
 class NLPParameter(BaseObject):
     __metaclass__ = Singleton
     # This class is a singleton as we only need one instance across the whole project
@@ -17,7 +15,7 @@ class NLPParameter(BaseObject):
     Updated = None
 
     # List of all parameters used during NLP
-    ParameterList = {}
+    ParameterDictionary = {}
 
     # Input and Result for actions
     ActionInput = None
@@ -27,52 +25,66 @@ class NLPParameter(BaseObject):
         self.Created = datetime.now()
         self.Updated = datetime.now()
 
-        self.ParameterList["User"] = "Unknown"
-        self.ParameterList["Name"] = "Unknown"
-        self.ParameterList["Time"] = datetime.now().strftime("%H%M")
-        self.ParameterList["Day"] = datetime.today().strftime("%A")
-        self.ParameterList["Category"] = "Greeting"
+        self.ParameterDictionary["Time"] = datetime.now().strftime("%H%M")
+        self.ParameterDictionary["Day"] = datetime.today().strftime("%A")
+        self.ParameterDictionary["Category"] = "Greeting"
 
         # Add Bot Parameter
-        self.ParameterList.update(Bot().toDict())
+        self.ParameterDictionary.update(Bot().toDict("Bot"))
+        # Add User Parameter
+        self.ParameterDictionary.update(User().toDict("User"))
+        self.ParameterDictionary["Name"] = "Unknown"
+        self.ParameterDictionary["User"] = "Unknown"
+        self.ParameterDictionary["Usertype"] = "User"
 
 
-    def GetParameterList(self):
-        self.ParameterList["Time"] = datetime.now().strftime("%H%M")
-        self.ParameterList["Day"] = datetime.today().strftime("%A")
+    def GetParameterDictionary(self):
+        self.ParameterDictionary["Time"] = datetime.now().strftime("%H%M")
+        self.ParameterDictionary["Day"] = datetime.today().strftime("%A")
 
-        # TODO - update user parameter
-        # UserType
-        #
-        # Update Bot Parameters
-        # BotStatus
-        self.ParameterList["Name"] = User().GetName()
-        self.ParameterList["User"] = self.ParameterList["Name"]
-
-        return self.ParameterList
+        # Update Bot Parameter
+        self.ParameterDictionary.update(Bot().toDict("Bot"))
+        # Update User Parameter
+        self.ParameterDictionary.update(User().toDict("User"))
+        self.ParameterDictionary["Name"] = User().GetName()
+        self.ParameterDictionary["User"] = self.ParameterDictionary["Name"]
+        userType = "User"
+        if(User().Trainer):
+            userType = "Trainer"
+        if(User().Admin):
+            userType = "Admin"
+        self.ParameterDictionary["Usertype"] = userType
+        return self.ParameterDictionary
 
 
     def UpdateParameter(self, key, value):
-        self.ParameterList[key] = value
+        self.ParameterDictionary[key] = value
         self.Updated = datetime.now()
+
 
     def Reset(self):
         self.Created = datetime.now()
         self.Updated = datetime.now()
 
-        self.ParameterList = {}
-        self.ParameterList["User"] = "Unknown"
-        self.ParameterList["Name"] = "Unknown"
+        self.ParameterDictionary = {}
+
+        # Add Bot Parameter
+        self.ParameterDictionary.update(Bot().toDict("Bot"))
+        # Add User Parameter
+        self.ParameterDictionary.update(User().toDict("User"))
+        self.ParameterDictionary["Name"] = "Unknown"
+        self.ParameterDictionary["User"] = "Unknown"
 
         self.Input = None
         self.Result = None
 
+
     def SetInput(self, inputString):
         self.ActionInput = inputString
-        self.ParameterList["Input"] = inputString
+        self.ParameterDictionary["Input"] = inputString
         self.Updated = datetime.now()
 
     def SetResult(self, result):
         self.ActionResult = result
-        self.ParameterList["Result"] = result
+        self.ParameterDictionary["Result"] = result
         self.Updated = datetime.now()

@@ -1,16 +1,12 @@
 Just a messy list with things to do
 
-- !!! Training Pipeline !!!
 - !!! Initial Conversation on User detection !!!
+- check is an observer pattern should be used or if we can trigger by watching ROS nodes
 
 - Add Unit Tests
 
-- Add Logging
-
 - clean unused thesaurus fields - add language tag
 - thesaurus_DE to custom file so we can use more languages
-
-- logging config - log location
 
 - add notes to classes and modules - description
 
@@ -19,16 +15,9 @@ Just a messy list with things to do
 - https://github.com/Uberi/speech_recognition/blob/master/examples/background_listening.py
 - https://github.com/Uberi/speech_recognition/blob/03ec480ad831f9e7b7787858d2511e6e42880811/reference/library-reference.rst
 
-- add boot sequence in order to cache stopwords + common words about 200 - 300 should be cached
-https://pypi.python.org/pypi/cachetools
-
 - add formal <-> informal sentence converter
 
-# EN aiml reference https://code.google.com/archive/p/aiml-en-us-foundation-alice/
-
 - multi language support without config change
-
-- use more of def __repr__(self): and def __str__(self): -- like in sentence entity
 
 - update user last seen and last spoken to
 
@@ -36,11 +25,19 @@ https://pypi.python.org/pypi/cachetools
 	python -m cProfile -s cumtime script.py
 
 - remove singleton from user class + create shared user class for use in CV
-
-- NLPParameter list - use SetInput instead of writing to the variables : ProcessInput.py
+- or add a user instance to context
 
 - Handle Wildcard Parameter (*) in Q
 - Set Category
+
+- Add ROS classes and massenging
+
+# EN aiml reference https://code.google.com/archive/p/aiml-en-us-foundation-alice/
+
+- Multiple Machine ROS:
+export ROS_MASTER_URI=http://url:11311
+export ROS_IP=1.2.3.4
+- http://wiki.ros.org/ROS/Tutorials/MultipleMachines
 
 ---
 
@@ -117,4 +114,36 @@ DELETE FROM Conversation_Sentence_Category_Set;
 DELETE FROM Conversation_Sentence_Keyword;
 DELETE FROM Conversation_Sentence_Requirement;
 ...
+
+
+
+
+
+
+Modules that need to be installed:
+via pip:
+cachetools
+SpeechRecognition
+pyowm 					# Open weather
+wikipedia
+numpy
+scipy
+	matplotlib
+	ipython
+	jupyter
+	pandas
+	sympy
+	nose
+sklearn
+future
+pyaudio
+
+
+cv2 					# Computer Vision
+sudo apt-get install python-opencv
+
+
+
+add iwlist to sudo "vi sudoers"
+
 

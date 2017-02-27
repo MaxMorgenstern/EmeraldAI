@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import importlib
+from EmeraldAI.Logic.Logger import *
 
 def CreateClass(moduleName, className):
     module = importlib.import_module(moduleName)
@@ -13,6 +14,7 @@ def CallMethod(moduleName, className, functionName):
     return method()
 
 def CallFunction(moduleName, className, functionName, arg1=None, arg2=None, arg3=None):
+    FileLogger().Info("Action called: {0}, {1}, {2}".format(moduleName, className, functionName))
     instance = CreateClass(moduleName, className)
     method = getattr(instance, functionName)
 

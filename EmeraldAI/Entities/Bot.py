@@ -11,4 +11,10 @@ class Bot(BaseObject):
     # This class is a singleton as we only need one instance across the whole project, the currently active user
 
     def __init__(self):
-        self.BotName = Config().Get("Bot", "Name")
+        self.Name = Config().Get("Bot", "Name")
+
+    def __repr__(self):
+         return "{0}".format(self.Name)
+
+    def __str__(self):
+         return "{0}".format(self.Name)

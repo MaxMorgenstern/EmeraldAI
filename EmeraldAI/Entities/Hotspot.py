@@ -21,3 +21,9 @@ class Hotspot(BaseObject):
         if(ScanningOS == None):
             ScanningOS = Global.OS
         self.ScanningOS = ScanningOS
+
+    def __repr__(self):
+         return "{0} {1}".format(self.BSSID, self.SSID)
+
+    def __str__(self):
+         return "{0} {1}".format(self.BSSID, self.SSID)

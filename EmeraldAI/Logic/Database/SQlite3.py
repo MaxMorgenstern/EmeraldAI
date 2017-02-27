@@ -5,6 +5,7 @@ from cachetools import cached
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Logic.Modules import Global
 from EmeraldAI.Config.Config import *
+from EmeraldAI.Logic.Logger import *
 
 class SQlite3(object):
     __metaclass__ = Singleton
@@ -33,7 +34,8 @@ class SQlite3(object):
                 cur.execute(sql)
             db.commit()
             return cur.lastrowid
-        except lite.IntegrityError:
+        except lite.IntegrityError as e:
+            FileLogger().Error("SQlite3 Line 37: IntegrityError: {0}".format(e))
             return None
 
     @cached(cache={})

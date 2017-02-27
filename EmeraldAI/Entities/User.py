@@ -14,25 +14,26 @@ class User(BaseObject):
     __metaclass__ = Singleton
     # This class is a singleton as we only need one instance across the whole project, the currently active user
 
-    CVTag = None
+    def __init__(self):
+        self.CVTag = None
 
-    Name = "Unknown"
-    LastName = None
-    FirstName = None
+        self.Name = "Unknown"
+        self.LastName = None
+        self.FirstName = None
 
-    Birthday = None
-    LastSeen = None
-    LastSpokenTo = None
+        self.Birthday = None
+        self.LastSeen = None
+        self.LastSpokenTo = None
 
-    Gender = "male"
+        self.Gender = "male"
 
-    Properties = []
+        self.Properties = []
 
-    Formal = True
-    Trainer = False
-    Admin = False
+        self.Formal = True
+        self.Trainer = False
+        self.Admin = False
 
-    Updated = None
+        self.Updated = None
 
     def GetCVTag(self):
         return self.CVTag
@@ -59,7 +60,7 @@ class User(BaseObject):
         if not deepProcess:
             return
 
-        self.__setUser("SELECT * FROM Person WHERE CVTag = '{0}'")
+        self.__setUser("SELECT * FROM Person WHERE CVTag = '{0}'", cvTag)
 
     def SetUserByName(self, name, deepProcess=True):
         if name == None or self.Name == name:
@@ -69,11 +70,12 @@ class User(BaseObject):
         if not deepProcess:
             return
 
-        self.__setUser("SELECT * FROM Person WHERE Name = '{0}'")
+        self.__setUser("SELECT * FROM Person WHERE Name = '{0}'", name)
 
-    def __setUser(self, query):
+    def __setUser(self, query, name):
         sqlResult = db().Fetchall(query.format(name))
         for r in sqlResult:
+            self.Name = r[1]
             self.LastName = r[2]
             self.FirstName = r[3]
 
@@ -88,3 +90,9 @@ class User(BaseObject):
             continue
 
         self.Updated = datetime.now().strftime("%H%M")
+
+    def __repr__(self):
+         return "Name:{0}".format(self.GetName())
+
+    def __str__(self):
+         return "Name:{0}".format(self.GetName())

@@ -7,7 +7,11 @@ import json
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Logic.Modules import Global
 from EmeraldAI.Entities.Hotspot import Hotspot
-from EmeraldAI.Logic.Database.SQlite3 import SQlite3 as db
+from EmeraldAI.Config.Config import *
+if(Config().Get("Database", "WiFiFingerprintDatabaseType").lower() == "sqlite"):
+    from EmeraldAI.Logic.Database.SQlite3 import SQlite3 as db
+elif(Config().Get("Database", "WiFiFingerprintDatabaseType").lower() == "mysql"):
+    from EmeraldAI.Logic.Database.MySQL import MySQL as db
 
 
 class WiFiFingerprinting(object):
@@ -15,8 +19,7 @@ class WiFiFingerprinting(object):
 
     __osxCall = "/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -s -x"
     __windowsCall = "netsh wlan show network"
-    __linuxCall = "iwlist scan | egrep 'Cell |Quality|ESSID'"
-
+    __linuxCall = "sudo iwlist scan | egrep 'Cell |Quality|ESSID'"
     __OnionOmega2Call = """ubus call onion wifi-scan '{"device":"ra0"}' | egrep 'ssid|bssid|signalStrength'"""
 
     def GetWiFiList(self):
@@ -30,6 +33,7 @@ class WiFiFingerprinting(object):
             return self.GetWiFiListOSX()
 
 
+    # This needs to be calles separately as the Onion Omega2 is a linux wihout iwlist option
     def GetWiFiListOnionOmega2(self):
         proc = subprocess.Popen([self.__OnionOmega2Call], stdout=subprocess.PIPE, shell=True)
         (out, err) = proc.communicate()
@@ -101,10 +105,10 @@ class WiFiFingerprinting(object):
                 if line.startswith("Quality"):
                     signalDetails = line.split("  ", 1)
                     #signal = (signalDetails[0].split("=", 1)[1].replace("/100", "")) # quality
-                    signal = (signalDetails[1].split("=", 1)[1].replace("/100", "")) # signal level
+                    signal = (signalDetails[1].split("=", 1)[1].replace("/100", "").replace(" dBm", "")) # signal level
 
                 if(ssid != None and bssid != None and signal != None):
-                    returnList.append(Hotspot(bssid, ssid, signal))
+                    returnList.append(Hotspot(bssid, ssid, abs(signal)))
                     ssid = None
                     signal = None
 
@@ -116,9 +120,10 @@ class WiFiFingerprinting(object):
         (out, err) = proc.communicate()
 
         returnList = []
-        wifilist = plistlib.readPlistFromString(out)
-        for wifi in wifilist:
-            returnList.append(Hotspot(wifi["BSSID"], wifi["SSID_STR"], (wifi["RSSI"] - wifi["NOISE"]), wifi["RSSI"], wifi["NOISE"]))
+        if len(out) > 1:
+            wifilist = plistlib.readPlistFromString(out)
+            for wifi in wifilist:
+                returnList.append(Hotspot(wifi["BSSID"], wifi["SSID_STR"], (wifi["RSSI"] - wifi["NOISE"]), wifi["RSSI"], wifi["NOISE"]))
 
         return returnList
 
@@ -129,12 +134,16 @@ class WiFiFingerprinting(object):
 
     def GetLocationID(self, name):
         location = db().Fetchall("SELECT ID FROM Fingerprint_Position WHERE Name = '{0}'".format(name))
-        return location[0][0]
+        if len(location > 0):
+            return location[0][0]
+        return None
 
 
     def GetLocationName(self, id):
         location = db().Fetchall("SELECT Name FROM Fingerprint_Position WHERE ID = '{0}'".format(id))
-        return location[0][0]
+        if len(location > 0):
+            return location[0][0]
+        return None
 
 
     def PredictLocation(self):
@@ -166,7 +175,7 @@ class WiFiFingerprinting(object):
         if not isinstance( location, ( int, long ) ):
             location = self.GetLocationID(location)
 
-        query = "INSERT INTO Fingerprint_WiFi ('BSSID', 'SSID', 'RSSI', 'Noise', 'Indicator') Values ('{0}','{1}','{2}','{3}','{4}');".format(wifi.BSSID, wifi.SSID, wifi.RSSI, wifi.NOISE, wifi.Indicator)
+        query = "INSERT INTO Fingerprint_WiFi ('BSSID', 'SSID', 'RSSI', 'Noise', 'Indicator') Values ('{0}','{1}','{2}','{3}','{4}');".format(wifi.BSSID, wifi.SSID, wifi.RSSI, wifi.Noise, wifi.Indicator)
         wifientry = db().Execute(query)
 
         query = "INSERT INTO Fingerprint_Position_WiFi ('PositionID', 'WiFiID') VALUES ('{0}','{1}');".format(location, wifientry)

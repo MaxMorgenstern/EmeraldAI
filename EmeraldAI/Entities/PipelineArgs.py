@@ -22,9 +22,6 @@ class PipelineArgs(BaseObject):
         # Input with parameterized data
         self.ParameterizedInput = None
 
-        # TODO Conversation History
-        self.History = []
-
         # Response with patameters | Raw response string | Response ID | Response found
         self.Response = None
         self.ResponseRaw = None

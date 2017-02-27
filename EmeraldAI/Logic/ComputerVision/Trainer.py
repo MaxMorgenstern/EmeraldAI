@@ -6,6 +6,7 @@ import cv2
 from EmeraldAI.Logic.Modules import Global
 from EmeraldAI.Logic.ComputerVision.Detector import *
 
+# TODO: CaptureFace most likely needs to be updated for the all over application
 
 class Trainer(object):
 
@@ -25,7 +26,6 @@ class Trainer(object):
     def __checkEnterPressedOSXLinux(self):
         if select.select([sys.stdin, ], [], [], 0.0)[0]:
             input_char = sys.stdin.read(1)
-            print(input_char)
             return input_char.lower() == "\n"
         return False
 
@@ -33,7 +33,6 @@ class Trainer(object):
         import msvcrt
         if msvcrt.kbhit():
             key = msvcrt.getch()
-            print key
             return (key == "\r")
         return False
 
