@@ -14,66 +14,82 @@ ros::NodeHandle nh;
 
 void messageCb( const std_msgs::String& incoming_msg )
 {
-    String data = incoming_msg.data; 
-    String dataType = data.substring(0,1);
-    String dataContent = data.substring(2);
-    if(dataType == "D")
-    {
-        if(dataContent == "273") // UP
-        {
-            analogWrite(motorPin1_speed, 255);
-            analogWrite(motorPin1_1, 255);
-            analogWrite(motorPin1_2, 0);
-            analogWrite(motorPin2_speed, 255);
-            analogWrite(motorPin2_1, 255);
-            analogWrite(motorPin2_2, 0);
-        }
-        else if(dataContent == "274") // DOWN
-        {
-            analogWrite(motorPin1_speed, 255);
-            analogWrite(motorPin1_1, 0);
-            analogWrite(motorPin1_2, 255);
-            analogWrite(motorPin2_speed, 255);
-            analogWrite(motorPin2_1, 0);
-            analogWrite(motorPin2_2, 255);
-        }
-        else if(dataContent == "275") // RIGHT
-        {
-            analogWrite(motorPin1_speed, 255);
-            analogWrite(motorPin1_1, 255);
-            analogWrite(motorPin1_2, 0);
-        }
-        else if(dataContent == "276") // LEFT
-        {
-            analogWrite(motorPin2_speed, 255);
-            analogWrite(motorPin2_1, 255);
-            analogWrite(motorPin2_2, 0);        
-        }
+    String data = incoming_msg.data;
 
-        /*
-        analogWrite(motorPin1_speed, 255);
-        analogWrite(motorPin1_1, 255);
-        analogWrite(motorPin1_2, 0);
-        analogWrite(motorPin2_speed, 255);
-        analogWrite(motorPin2_1, 255);
-        analogWrite(motorPin2_2, 0);
-        */
+    if(data == "0") // No movement
+    {
+        SetMotor(motorPin1_speed, motorPin1_1, motorPin1_2, 0, true);
+        SetMotor(motorPin2_speed, motorPin2_1, motorPin2_2, 0, true);
+    }
+    else if(data == "1") // Right
+    {
+        SetMotor(motorPin1_speed, motorPin1_1, motorPin1_2, 255, true);
+        SetMotor(motorPin2_speed, motorPin2_1, motorPin2_2, 0, true);
+    }
+    else if(data == "2") // Left
+    {
+        SetMotor(motorPin1_speed, motorPin1_1, motorPin1_2, 0, true);
+        SetMotor(motorPin2_speed, motorPin2_1, motorPin2_2, 255, true);
+    }
+    else if(data == "4") // Down
+    {
+        SetMotor(motorPin1_speed, motorPin1_1, motorPin1_2, 255, false);
+        SetMotor(motorPin2_speed, motorPin2_1, motorPin2_2, 255, false);
+    }
+    else if(data == "8") // Up
+    {
+        SetMotor(motorPin1_speed, motorPin1_1, motorPin1_2, 255, true);
+        SetMotor(motorPin2_speed, motorPin2_1, motorPin2_2, 255, true);
+    }
+    else if(data == "5") // Down Right
+    {
+        SetMotor(motorPin1_speed, motorPin1_1, motorPin1_2, 255, false);
+        SetMotor(motorPin2_speed, motorPin2_1, motorPin2_2, 126, false);
+    }
+    else if(data == "6") // Down Left
+    {
+        SetMotor(motorPin1_speed, motorPin1_1, motorPin1_2, 126, false);
+        SetMotor(motorPin2_speed, motorPin2_1, motorPin2_2, 255, false);
+    }
+    else if(data == "9") // Up Right
+    {
+        SetMotor(motorPin1_speed, motorPin1_1, motorPin1_2, 255, true);
+        SetMotor(motorPin2_speed, motorPin2_1, motorPin2_2, 126, true);
+    }
+    else if(data == "10") // Up Left
+    {
+        SetMotor(motorPin1_speed, motorPin1_1, motorPin1_2, 126, true);
+        SetMotor(motorPin2_speed, motorPin2_1, motorPin2_2, 255, true);
+    }
+    else // ERROR --> STOP
+    {
+        SetMotor(motorPin1_speed, motorPin1_1, motorPin1_2, 0, true);
+        SetMotor(motorPin2_speed, motorPin2_1, motorPin2_2, 0, true);
+    }
+}
+
+void SetMotor(int pinSpeed, int pin1, int pin2, int speed, bool forward)
+{
+    analogWrite(pinSpeed, speed);
+    if (forward)
+    {
+        analogWrite(pin1, 0);
+        analogWrite(pin2, 255);
+    }
+    else
+    {
+        analogWrite(pin1, 255);
+        analogWrite(pin2, 0);
     }
 
-    if(dataType == "U")
+    if (speed == 0)
     {
-        analogWrite(motorPin1_speed, 0);
-        analogWrite(motorPin1_1, 0);
-        analogWrite(motorPin1_2, 0);
-        analogWrite(motorPin2_speed, 0);
-        analogWrite(motorPin2_1, 0);
-        analogWrite(motorPin2_2, 0);
-    }   
+        analogWrite(pin1, 0);
+        analogWrite(pin2, 0);
+    }
 }
 
 ros::Subscriber<std_msgs::String> sub("to_arduino", &messageCb );
-
-
 
 void setup()
 {
