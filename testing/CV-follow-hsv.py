@@ -8,15 +8,19 @@ import numpy as np
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 reload(sys)
 sys.setdefaultencoding('utf-8')
+#from EmeraldAI.Logic.ComputerVision.Trainer import *
+#from EmeraldAI.Logic.ComputerVision.Detector import *
+
+#myCV = Trainer()
+#myDect = Detector()
 
 boundaries = [
-    # Yellow
-    #([17, 100, 100], [50, 200, 200]),
-    # RED
-    ([17, 15, 100], [50, 56, 200]),
-    ([0, 0, 40], [30, 20, 90]),
-    ([35, 75, 125], [45, 90, 240]),
-    ([60, 50, 120], [100, 75, 145])
+    ([0, 100, 100], [15, 255, 255]),
+    ([350, 100, 100], [360, 255, 255]),
+    ([0, 100, 50], [15, 255, 255]),
+    ([350, 100, 50], [360, 255, 255]),
+    ([0, 50, 50], [15, 255, 255]),
+    ([350, 50, 50], [360, 255, 255])
 ]
 # yellow - RGB: 
 # 127 143 71
@@ -39,24 +43,17 @@ boundaries = [
 # 
 
 
-camera = cv2.VideoCapture(0)
-
-ret = camera.set(3, 320)
-ret = camera.set(4, 240)
+camera = cv2.VideoCapture(1)
+#ret = camera.set(3, 640)
+#ret = camera.set(4, 360)
 
 while True:
     if (camera.isOpened() != 0):
         ret, image = camera.read()
         if image != None:
-
-            #width, height = cv2.cv.GetSize(image)
-            height, width = image.shape[:2]
-
-
-            cropped = image[height/2:height, 0:width]
-            # Crop from x, y, w, h -> 100, 200, 300, 400
-            # NOTE: its img[y: y + h, x: x + w] and *not* img[x: x + w, y: y + h]
-
+            hsvImage = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+            #cv2.imshow('Video', image)
+            #cv2.imshow('Gray', grayImage)
             globalMask = None
             for (lower, upper) in boundaries:
                 # create NumPy arrays from the boundaries
@@ -65,7 +62,7 @@ while True:
              
                 # find the colors within the specified boundaries and apply
                 # the mask
-                mask = cv2.inRange(image, lower, upper)
+                mask = cv2.inRange(hsvImage, lower, upper)
                 #output = cv2.bitwise_and(image, image, mask = mask)
                 if globalMask == None:
                     globalMask = mask
@@ -73,21 +70,12 @@ while True:
                     globalMask += mask
          
 
-            output = cv2.bitwise_and(image, image, mask = cv2.GaussianBlur(globalMask, (5, 5), 0))
-            thresh = cv2.threshold(output, 60, 255, cv2.THRESH_BINARY)[1]
-            thresh = cv2.cvtColor(thresh, cv2.COLOR_BGR2GRAY)
-            cont = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-            
-            if len(cont[0]) > 0:
-                c = max(cont[0], key=cv2.contourArea)   
-                cv2.drawContours(image, [c], -1, (0, 255, 255), 2)
-
+            output = cv2.bitwise_and(image, image, mask = globalMask)
+                
             # show the images
-            #cv2.imshow("output", output)
-            #cv2.imshow("thresh", thresh)
+            cv2.imshow("output", output)
             #cv2.imshow("mask", mask)
             cv2.imshow("image", image)
-            cv2.imshow("cropped", cropped)
             #cv2.imshow("images", np.hstack([image, globalMask]))
 
             #gray = cv2.cvtColor(output, cv2.COLOR_BGR2GRAY)
