@@ -18,7 +18,7 @@ boundaries = [
     ([35, 75, 125], [45, 90, 240]),
     ([60, 50, 120], [100, 75, 145])
 ]
-# yellow - RGB: 
+# yellow - RGB:
 # 127 143 71
 # 103 114 47
 # 107 110 45
@@ -36,7 +36,7 @@ boundaries = [
 # 233 90 117
 # 135 82 41
 # 227 63 25
-# 
+#
 
 
 camera = cv2.VideoCapture(0)
@@ -48,12 +48,9 @@ while True:
     if (camera.isOpened() != 0):
         ret, image = camera.read()
         if image != None:
-
-            #width, height = cv2.cv.GetSize(image)
             height, width = image.shape[:2]
 
-
-            cropped = image[height/2:height, 0:width]
+            #image = image[height/2:height, 0:width].copy()
             # Crop from x, y, w, h -> 100, 200, 300, 400
             # NOTE: its img[y: y + h, x: x + w] and *not* img[x: x + w, y: y + h]
 
@@ -62,7 +59,7 @@ while True:
                 # create NumPy arrays from the boundaries
                 lower = np.array(lower, dtype = "uint8")
                 upper = np.array(upper, dtype = "uint8")
-             
+
                 # find the colors within the specified boundaries and apply
                 # the mask
                 mask = cv2.inRange(image, lower, upper)
@@ -71,30 +68,38 @@ while True:
                     globalMask = mask
                 else:
                     globalMask += mask
-         
+
 
             output = cv2.bitwise_and(image, image, mask = cv2.GaussianBlur(globalMask, (5, 5), 0))
             thresh = cv2.threshold(output, 60, 255, cv2.THRESH_BINARY)[1]
             thresh = cv2.cvtColor(thresh, cv2.COLOR_BGR2GRAY)
             cont = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-            
-            if len(cont[0]) > 0:
-                c = max(cont[0], key=cv2.contourArea)   
-                cv2.drawContours(image, [c], -1, (0, 255, 255), 2)
 
-            # show the images
-            #cv2.imshow("output", output)
-            #cv2.imshow("thresh", thresh)
-            #cv2.imshow("mask", mask)
+            contSize = 0
+            contObject = None
+            for c in cont[0]:
+                cS = cv2.contourArea(c)
+                M = cv2.moments(c)
+                if M["m00"] != 0 and cS > contSize:
+                    contSize = cS
+                    contObject = c
+
+            contourThreshold = 150
+
+            if contSize >= contourThreshold and contObject != None:
+                # compute the center of the contour
+                M = cv2.moments(contObject)
+
+                cX = int(M["m10"] / M["m00"])
+                cY = int(M["m01"] / M["m00"])
+
+                cv2.circle(image, (cX, cY), 7, (255, 255, 255), -1)
+                cv2.putText(image, str(cX) + " - " + str(contSize), (cX - 10, cY - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
+
+                pointsToMode = (width/2 - cX)
+                cv2.putText(image, str(pointsToMode), (width/2, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
+
             cv2.imshow("image", image)
-            cv2.imshow("cropped", cropped)
-            #cv2.imshow("images", np.hstack([image, globalMask]))
-
-            #gray = cv2.cvtColor(output, cv2.COLOR_BGR2GRAY)
-            #blurred = cv2.GaussianBlur(gray, (5, 5), 0)
-            #thresh = cv2.threshold(blurred, 60, 255, cv2.THRESH_BINARY)[1]
-            #cv2.imshow("thresh", thresh)
-
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
