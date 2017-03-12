@@ -83,50 +83,48 @@ def GetCenterOffset(camera, crop, boundaries, contourThreshold, visual = False):
 
 def PublishToArduino(publisher, motor1, motor2, rate):
     val = '{}|{}'.format(motor1, motor2)
-    pub.publish(val)
+    publisher.publish(val)
     rate.sleep()
 
-def ResetRevertAndRotate():
-    _revertAndRotate = False
-    _revertAndRotateState = None
-    _revertAndRotateProcess = 0
-    _revertAndRotateIteration = 1
+def ResetRevertAndRotate(revertAndRotate, revertAndRotateState, revertAndRotateProcess, revertAndRotateIteration):
+    revertAndRotate = False
+    revertAndRotateState = None
+    revertAndRotateProcess = 0
+    revertAndRotateIteration = 1
 
-def RevertAndRotate():
+def RevertAndRotate(publisher, rate, revertAndRotate, revertAndRotateState, revertAndRotateProcess, revertAndRotateIteration):
     stepsPerProcess = 10
 
-    if _revertAndRotateState == None:
-        _revertAndRotateState = RevertRotateState.Revert
+    if revertAndRotateState == None:
+        revertAndRotateState = RevertRotateState.Revert
 
-    if _revertAndRotateState == RevertRotateState.Revert:
-        PublishToArduino(_publisher, -50, -50, _rate)
-        _revertAndRotateProcess += 1
+    if revertAndRotateState == RevertRotateState.Revert:
+        PublishToArduino(publisher, -50, -50, rate)
+        revertAndRotateProcess += 1
 
-        if _revertAndRotateProcess * _revertAndRotateIteration > stepsPerProcess:
-            _revertAndRotateState = RevertRotateState.RotateLeft
-            _revertAndRotateProcess = 0
-
-
-    if _revertAndRotateState == RevertRotateState.RotateLeft:
-        PublishToArduino(_publisher, -50, 50, _rate)
-        _revertAndRotateProcess += 1
-
-        if _revertAndRotateProcess * _revertAndRotateIteration > stepsPerProcess:
-            _revertAndRotateState = RevertRotateState.RotateRight
-            _revertAndRotateProcess = 0
-
-    if _revertAndRotateState == RevertRotateState.RotateRight:
-        PublishToArduino(_publisher, 50, -50, _rate)
-        _revertAndRotateProcess += 1
-
-        if _revertAndRotateProcess * _revertAndRotateIteration > stepsPerProcess:
-            _revertAndRotateState = RevertRotateState.Revert
-            _revertAndRotateProcess = 0
-            _revertAndRotateIteration += 1
+        if revertAndRotateProcess > stepsPerProcess * revertAndRotateIteration:
+            revertAndRotateState = RevertRotateState.RotateLeft
+            revertAndRotateProcess = 0
 
 
-    if _revertAndRotateState == RevertRotateState.Done:
-        ResetRevertAndRotate()
+    if revertAndRotateState == RevertRotateState.RotateLeft:
+        PublishToArduino(publisher, -50, 50, rate)
+        revertAndRotateProcess += 1
+
+        if revertAndRotateProcess > stepsPerProcess * revertAndRotateIteration:
+            revertAndRotateState = RevertRotateState.RotateRight
+            revertAndRotateProcess = 0
+
+    if revertAndRotateState == RevertRotateState.RotateRight:
+        PublishToArduino(publisher, 50, -50, rate)
+        revertAndRotateProcess += 1
+
+        if revertAndRotateProcess > stepsPerProcess * revertAndRotateIteration:
+            revertAndRotateState = RevertRotateState.Revert
+            revertAndRotateProcess = 0
+            revertAndRotateIteration += 1
+
+    return revertAndRotate, revertAndRotateState, revertAndRotateProcess, revertAndRotateIteration
 
 
 ##########
@@ -167,9 +165,16 @@ if _camResize:
 
 while True:
     if _revertAndRotate:
-        RevertAndRotate()
+        _revertAndRotate, _revertAndRotateState, _revertAndRotateProcess, _revertAndRotateIteration = RevertAndRotate(_publisher, _rate, _revertAndRotate, _revertAndRotateState, _revertAndRotateProcess, _revertAndRotateIteration)
 
-    elif (cam.isOpened() != 0):
+        if _revertAndRotateState == RevertRotateState.Done:
+            _revertAndRotate = False
+            _revertAndRotateState = None
+            _revertAndRotateProcess = 0
+            _revertAndRotateIteration = 1
+
+
+    if (cam.isOpened() != 0):
         offset = GetCenterOffset(cam, False, _boundaries, _contourThreshold, True)
 
         if offset == None:
@@ -178,28 +183,34 @@ while True:
 
 
         elif offset >= _leftThreshold:
-            correction = (100 / abs(_cameraWidth/2) * abs(offset))
+            correction = 100 - (100 / abs(_cameraWidth/2) * abs(offset))
             PublishToArduino(_publisher, 100, correction, _rate)
             print "we drive to the left - need to correct to right", correction
-            ResetRevertAndRotate()
-
+            _revertAndRotate = False
+            _revertAndRotateState = None
+            _revertAndRotateProcess = 0
+            _revertAndRotateIteration = 1
 
         elif offset <= _rightThreshold:
-            correction = (100 / abs(_cameraWidth/2) * abs(offset))
+            correction = 100 - (100 / abs(_cameraWidth/2) * abs(offset))
             PublishToArduino(_publisher, correction, 100, _rate)
             print "we drive to the right - need to correct to left", correction
-            ResetRevertAndRotate()
-
+            _revertAndRotate = False
+            _revertAndRotateState = None
+            _revertAndRotateProcess = 0
+            _revertAndRotateIteration = 1
 
         elif offset > _rightThreshold and offset < _leftThreshold:
             PublishToArduino(_publisher, 100, 100, _rate)
             print "in tollerance drive straight"
-            ResetRevertAndRotate()
+            _revertAndRotate = False
+            _revertAndRotateState = None
+            _revertAndRotateProcess = 0
+            _revertAndRotateIteration = 1
 
         else:
             print "ERROR!"
             _revertAndRotate = True
-
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
