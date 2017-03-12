@@ -6,10 +6,19 @@ import os
 import cv2
 import re
 import numpy as np
+from enum import Enum
+import rospy
+from std_msgs.msg import String
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
+
+class RevertRotateState(Enum):
+    Revert = 0
+    RotateLeft = 1
+    RotateRight = 2
+    Done = 3
 
 
 def GetCenterOffset(camera, crop, boundaries, contourThreshold, visual = False):
@@ -72,10 +81,55 @@ def GetCenterOffset(camera, crop, boundaries, contourThreshold, visual = False):
 
     return pointsToMove
 
+def PublishToArduino(publisher, motor1, motor2, rate):
+    val = '{}|{}'.format(motor1, motor2)
+    pub.publish(val)
+    rate.sleep()
+
+def ResetRevertAndRotate():
+    _revertAndRotate = False
+    _revertAndRotateState = None
+    _revertAndRotateProcess = 0
+    _revertAndRotateIteration = 1
+
+def RevertAndRotate():
+    stepsPerProcess = 10
+
+    if _revertAndRotateState == None:
+        _revertAndRotateState = RevertRotateState.Revert
+
+    if _revertAndRotateState == RevertRotateState.Revert:
+        PublishToArduino(_publisher, -50, -50, _rate)
+        _revertAndRotateProcess += 1
+
+        if _revertAndRotateProcess * _revertAndRotateIteration > stepsPerProcess:
+            _revertAndRotateState = RevertRotateState.RotateLeft
+            _revertAndRotateProcess = 0
 
 
+    if _revertAndRotateState == RevertRotateState.RotateLeft:
+        PublishToArduino(_publisher, -50, 50, _rate)
+        _revertAndRotateProcess += 1
+
+        if _revertAndRotateProcess * _revertAndRotateIteration > stepsPerProcess:
+            _revertAndRotateState = RevertRotateState.RotateRight
+            _revertAndRotateProcess = 0
+
+    if _revertAndRotateState == RevertRotateState.RotateRight:
+        PublishToArduino(_publisher, 50, -50, _rate)
+        _revertAndRotateProcess += 1
+
+        if _revertAndRotateProcess * _revertAndRotateIteration > stepsPerProcess:
+            _revertAndRotateState = RevertRotateState.Revert
+            _revertAndRotateProcess = 0
+            _revertAndRotateIteration += 1
 
 
+    if _revertAndRotateState == RevertRotateState.Done:
+        ResetRevertAndRotate()
+
+
+##########
 
 _boundaries = [
     ([17, 15, 100], [50, 56, 200]),
@@ -93,6 +147,15 @@ _camResize = True
 _leftThreshold = 10
 _rightThreshold = -10
 
+_revertAndRotate = False # revert and rotate triggered
+_revertAndRotateState = None # State
+_revertAndRotateProcess = 0 # Process in percent
+_revertAndRotateIteration = 1 # number of iterations since lost of track
+
+
+_publisher = rospy.Publisher('to_arduino', String, queue_size=10)
+rospy.init_node('cv_sender', anonymous=True)
+_rate = rospy.Rate(10) # 10hz
 
 cam = cv2.VideoCapture(_cameraID)
 
@@ -103,20 +166,40 @@ if _camResize:
 
 
 while True:
-    if (cam.isOpened() != 0):
+    if _revertAndRotate:
+        RevertAndRotate()
+
+    elif (cam.isOpened() != 0):
         offset = GetCenterOffset(cam, False, _boundaries, _contourThreshold, True)
 
         if offset == None:
-            print "we lost track - turn around"
+            print "we lost track - drive a bit back + turn around"
+            _revertAndRotate = True
+
 
         elif offset >= _leftThreshold:
-            print "we drive to the left - need to correct to right", (100 / abs(_cameraWidth/2) * abs(offset))
+            correction = (100 / abs(_cameraWidth/2) * abs(offset))
+            PublishToArduino(_publisher, 100, correction, _rate)
+            print "we drive to the left - need to correct to right", correction
+            ResetRevertAndRotate()
+
 
         elif offset <= _rightThreshold:
-            print "we drive to the right - need to correct to left", (100 / abs(_cameraWidth/2) * abs(offset))
+            correction = (100 / abs(_cameraWidth/2) * abs(offset))
+            PublishToArduino(_publisher, correction, 100, _rate)
+            print "we drive to the right - need to correct to left", correction
+            ResetRevertAndRotate()
 
-        else: # -10 to 10
-            print "drive straight - go on"
+
+        elif offset > _rightThreshold and offset < _leftThreshold:
+            PublishToArduino(_publisher, 100, 100, _rate)
+            print "in tollerance drive straight"
+            ResetRevertAndRotate()
+
+        else:
+            print "ERROR!"
+            _revertAndRotate = True
+
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
