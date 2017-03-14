@@ -14,6 +14,7 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 
+
 class RevertRotateState(Enum):
     Revert = 0
     RotateLeft = 1
@@ -82,7 +83,8 @@ def GetCenterOffset(camera, crop, boundaries, contourThreshold, visual = False):
     return pointsToMove
 
 def PublishToArduino(publisher, motor1, motor2, rate):
-    val = '{}|{}'.format(motor1, motor2)
+    val = '{:.2f}|{:.2f}'.format(motor1, motor2)
+    print val
     publisher.publish(val)
     rate.sleep()
 
@@ -136,7 +138,7 @@ _boundaries = [
     ([60, 50, 120], [100, 75, 145])
 ]
 
-_cameraID = 0
+_cameraID = 1
 _cameraWidth = 320
 _cameraHeigt = 240
 _contourThreshold = 150
@@ -166,7 +168,7 @@ if _camResize:
 while True:
     if _revertAndRotate:
         _revertAndRotate, _revertAndRotateState, _revertAndRotateProcess, _revertAndRotateIteration = RevertAndRotate(_publisher, _rate, _revertAndRotate, _revertAndRotateState, _revertAndRotateProcess, _revertAndRotateIteration)
-
+        
         if _revertAndRotateState == RevertRotateState.Done:
             _revertAndRotate = False
             _revertAndRotateState = None
@@ -184,7 +186,7 @@ while True:
 
         elif offset >= _leftThreshold:
             correction = 100 - (100 / abs(_cameraWidth/2) * abs(offset))
-            PublishToArduino(_publisher, 100, correction, _rate)
+            PublishToArduino(_publisher, correction, 100, _rate)
             print "we drive to the left - need to correct to right", correction
             _revertAndRotate = False
             _revertAndRotateState = None
@@ -193,7 +195,7 @@ while True:
 
         elif offset <= _rightThreshold:
             correction = 100 - (100 / abs(_cameraWidth/2) * abs(offset))
-            PublishToArduino(_publisher, correction, 100, _rate)
+            PublishToArduino(_publisher, 100, correction, _rate)
             print "we drive to the right - need to correct to left", correction
             _revertAndRotate = False
             _revertAndRotateState = None
