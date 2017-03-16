@@ -8,13 +8,32 @@ int motorPin1_speed = 5;
 
 int motorPin2_1 = 10;
 int motorPin2_2 = 11;
-int motorPin2_speed = 4;
+int motorPin2_speed = 6;
+
+int globalSpeedInit = 255;
+int globalSpeedMin = 50;
+int globalSpeedMax = 70;
+
+
+int targetSpeedLeft = 0;
+int targetSpeedRight = 0;
+
+int currentSpeedLeft = 0;
+int currentSpeedRight = 0;
+
+bool leftForward = true;
+bool rightForward = true;
+
+int messageTTLInit = 10;
+int messageTTL = 0;
 
 ros::NodeHandle nh;
 
 
 void messageCb( const std_msgs::String& incoming_msg )
 {
+    messageTTL = messageTTLInit;
+
     String data = incoming_msg.data;
 
     int splitPos = data.indexOf('|');
@@ -29,29 +48,21 @@ void messageCb( const std_msgs::String& incoming_msg )
     rightData.toCharArray(buffer, 10);
     float rightValue = atof(buffer);
     
-    bool leftForward = true;
-    if (leftValue < 0)
-    {
-      leftForward = false;
-    }
-    
-    bool rightForward = true;
-    if (rightValue < 0)
-    {
-      rightForward = false;
-    }
-    
-    SetMotor(motorPin1_speed, motorPin1_1, motorPin1_2, int(255 * leftValue / 100), leftForward);
-    SetMotor(motorPin2_speed, motorPin2_1, motorPin2_2, int(255 * rightValue / 100), rightForward);
 
+    leftForward = (leftValue >= 0);
+    rightForward = (rightValue >= 0);
+    
+    targetSpeedLeft = abs((globalSpeedMax - globalSpeedMin) * leftValue / 100);
+    targetSpeedLeft += (targetSpeedLeft != 0) ? globalSpeedMin : 0;
+    
+    targetSpeedRight = abs((globalSpeedMax - globalSpeedMin) * rightValue / 100);
+    targetSpeedRight += (targetSpeedRight != 0) ? globalSpeedMin : 0;
 }
 
 
 
-
-// Invert forward
 void SetMotor(int pinSpeed, int pin1, int pin2, int speed, bool forward)
-{
+{   
     analogWrite(pinSpeed, speed);
     if (!forward)
     {
@@ -89,6 +100,31 @@ void setup()
 
 void loop()
 {
+    if (currentSpeedLeft == 0 && targetSpeedLeft > 0)
+    {
+        SetMotor(motorPin1_speed, motorPin1_1, motorPin1_2, globalSpeedInit, leftForward);
+    }
+    
+    if (currentSpeedRight == 0 && targetSpeedRight > 0)
+    {
+        SetMotor(motorPin2_speed, motorPin2_1, motorPin2_2, globalSpeedInit, leftForward);
+    }
+
+    if (currentSpeedLeft == 0 && targetSpeedLeft > 0 || currentSpeedRight == 0 && targetSpeedRight > 0 )
+    {
+        delay(10);
+    }
+
+    messageTTL--;
+    if (messageTTL <= 0)
+    {
+        targetSpeedLeft = 0;
+        targetSpeedRight = 0;
+    }
+
+    SetMotor(motorPin1_speed, motorPin1_1, motorPin1_2, targetSpeedLeft, leftForward);
+    SetMotor(motorPin2_speed, motorPin2_1, motorPin2_2, targetSpeedRight, rightForward);
+
     nh.spinOnce();
-    delay(200); 
+    delay(100); 
 }

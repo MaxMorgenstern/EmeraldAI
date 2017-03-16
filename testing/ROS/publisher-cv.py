@@ -15,11 +15,11 @@ sys.setdefaultencoding('utf-8')
 
 
 
-class RevertRotateState(Enum):
-    Revert = 0
-    RotateLeft = 1
-    RotateRight = 2
-    Done = 3
+#class RevertRotateState(Enum):
+#    Revert = 0
+#    RotateLeft = 1
+#    RotateRight = 2
+#    Done = 3
 
 
 def GetCenterOffset(camera, crop, boundaries, contourThreshold, visual = False):
@@ -88,45 +88,45 @@ def PublishToArduino(publisher, motor1, motor2, rate):
     publisher.publish(val)
     rate.sleep()
 
-def ResetRevertAndRotate(revertAndRotate, revertAndRotateState, revertAndRotateProcess, revertAndRotateIteration):
-    revertAndRotate = False
-    revertAndRotateState = None
-    revertAndRotateProcess = 0
-    revertAndRotateIteration = 1
+#def ResetRevertAndRotate(revertAndRotate, revertAndRotateState, revertAndRotateProcess, revertAndRotateIteration):
+#    revertAndRotate = False
+#    revertAndRotateState = None
+#    revertAndRotateProcess = 0
+#    revertAndRotateIteration = 1
 
-def RevertAndRotate(publisher, rate, revertAndRotate, revertAndRotateState, revertAndRotateProcess, revertAndRotateIteration):
-    stepsPerProcess = 10
-
-    if revertAndRotateState == None:
-        revertAndRotateState = RevertRotateState.Revert
-
-    if revertAndRotateState == RevertRotateState.Revert:
-        PublishToArduino(publisher, -50, -50, rate)
-        revertAndRotateProcess += 1
-
-        if revertAndRotateProcess > stepsPerProcess * revertAndRotateIteration:
-            revertAndRotateState = RevertRotateState.RotateLeft
-            revertAndRotateProcess = 0
-
-
-    if revertAndRotateState == RevertRotateState.RotateLeft:
-        PublishToArduino(publisher, -50, 50, rate)
-        revertAndRotateProcess += 1
-
-        if revertAndRotateProcess > stepsPerProcess * revertAndRotateIteration:
-            revertAndRotateState = RevertRotateState.RotateRight
-            revertAndRotateProcess = 0
-
-    if revertAndRotateState == RevertRotateState.RotateRight:
-        PublishToArduino(publisher, 50, -50, rate)
-        revertAndRotateProcess += 1
-
-        if revertAndRotateProcess > stepsPerProcess * revertAndRotateIteration:
-            revertAndRotateState = RevertRotateState.Revert
-            revertAndRotateProcess = 0
-            revertAndRotateIteration += 1
-
-    return revertAndRotate, revertAndRotateState, revertAndRotateProcess, revertAndRotateIteration
+#def RevertAndRotate(publisher, rate, revertAndRotate, revertAndRotateState, revertAndRotateProcess, revertAndRotateIteration):
+#    stepsPerProcess = 10
+#
+#    if revertAndRotateState == None:
+#        revertAndRotateState = RevertRotateState.Revert
+#
+#    if revertAndRotateState == RevertRotateState.Revert:
+#        PublishToArduino(publisher, -50, -50, rate)
+#        revertAndRotateProcess += 1
+#
+#        if revertAndRotateProcess > stepsPerProcess * revertAndRotateIteration:
+#            revertAndRotateState = RevertRotateState.RotateLeft
+#            revertAndRotateProcess = 0
+#
+#
+#    if revertAndRotateState == RevertRotateState.RotateLeft:
+#        PublishToArduino(publisher, -50, 50, rate)
+#        revertAndRotateProcess += 1
+#
+#        if revertAndRotateProcess > stepsPerProcess * revertAndRotateIteration:
+#            revertAndRotateState = RevertRotateState.RotateRight
+#            revertAndRotateProcess = 0
+#
+#    if revertAndRotateState == RevertRotateState.RotateRight:
+#        PublishToArduino(publisher, 50, -50, rate)
+#        revertAndRotateProcess += 1
+#
+#        if revertAndRotateProcess > stepsPerProcess * revertAndRotateIteration:
+#            revertAndRotateState = RevertRotateState.Revert
+#            revertAndRotateProcess = 0
+#            revertAndRotateIteration += 1
+#
+#    return revertAndRotate, revertAndRotateState, revertAndRotateProcess, revertAndRotateIteration
 
 
 ##########
@@ -138,7 +138,7 @@ _boundaries = [
     ([60, 50, 120], [100, 75, 145])
 ]
 
-_cameraID = 1
+_cameraID = 0
 _cameraWidth = 320
 _cameraHeigt = 240
 _contourThreshold = 150
@@ -147,10 +147,10 @@ _camResize = True
 _leftThreshold = 10
 _rightThreshold = -10
 
-_revertAndRotate = False # revert and rotate triggered
-_revertAndRotateState = None # State
-_revertAndRotateProcess = 0 # Process in percent
-_revertAndRotateIteration = 1 # number of iterations since lost of track
+#_revertAndRotate = False # revert and rotate triggered
+#_revertAndRotateState = None # State
+#_revertAndRotateProcess = 0 # Process in percent
+#_revertAndRotateIteration = 1 # number of iterations since lost of track
 
 
 _publisher = rospy.Publisher('to_arduino', String, queue_size=10)
@@ -166,53 +166,55 @@ if _camResize:
 
 
 while True:
-    if _revertAndRotate:
-        _revertAndRotate, _revertAndRotateState, _revertAndRotateProcess, _revertAndRotateIteration = RevertAndRotate(_publisher, _rate, _revertAndRotate, _revertAndRotateState, _revertAndRotateProcess, _revertAndRotateIteration)
-        
-        if _revertAndRotateState == RevertRotateState.Done:
-            _revertAndRotate = False
-            _revertAndRotateState = None
-            _revertAndRotateProcess = 0
-            _revertAndRotateIteration = 1
+#    if _revertAndRotate:
+#        _revertAndRotate, _revertAndRotateState, _revertAndRotateProcess, _revertAndRotateIteration = RevertAndRotate(_publisher, _rate, _revertAndRotate, _revertAndRotateState, _revertAndRotateProcess, _revertAndRotateIteration)
+#        
+#        if _revertAndRotateState == RevertRotateState.Done:
+#            _revertAndRotate = False
+#            _revertAndRotateState = None
+#            _revertAndRotateProcess = 0
+#            _revertAndRotateIteration = 1
 
 
     if (cam.isOpened() != 0):
         offset = GetCenterOffset(cam, False, _boundaries, _contourThreshold, True)
 
         if offset == None:
-            print "we lost track - drive a bit back + turn around"
-            _revertAndRotate = True
+#            print "we lost track - stop"
+            PublishToArduino(_publisher, 0, 0, _rate)
+#            _revertAndRotate = True
 
 
         elif offset >= _leftThreshold:
             correction = 100 - (100 / abs(_cameraWidth/2) * abs(offset))
             PublishToArduino(_publisher, correction, 100, _rate)
-            print "we drive to the left - need to correct to right", correction
-            _revertAndRotate = False
-            _revertAndRotateState = None
-            _revertAndRotateProcess = 0
-            _revertAndRotateIteration = 1
+#            print "we drive to the left - need to correct to right", correction
+#            _revertAndRotate = False
+#            _revertAndRotateState = None
+#            _revertAndRotateProcess = 0
+#            _revertAndRotateIteration = 1
 
         elif offset <= _rightThreshold:
             correction = 100 - (100 / abs(_cameraWidth/2) * abs(offset))
             PublishToArduino(_publisher, 100, correction, _rate)
-            print "we drive to the right - need to correct to left", correction
-            _revertAndRotate = False
-            _revertAndRotateState = None
-            _revertAndRotateProcess = 0
-            _revertAndRotateIteration = 1
+#            print "we drive to the right - need to correct to left", correction
+#            _revertAndRotate = False
+#            _revertAndRotateState = None
+#            _revertAndRotateProcess = 0
+#            _revertAndRotateIteration = 1
 
         elif offset > _rightThreshold and offset < _leftThreshold:
             PublishToArduino(_publisher, 100, 100, _rate)
-            print "in tollerance drive straight"
-            _revertAndRotate = False
-            _revertAndRotateState = None
-            _revertAndRotateProcess = 0
-            _revertAndRotateIteration = 1
+#            print "in tollerance drive straight"
+#            _revertAndRotate = False
+#            _revertAndRotateState = None
+#            _revertAndRotateProcess = 0
+#            _revertAndRotateIteration = 1
 
         else:
             print "ERROR!"
-            _revertAndRotate = True
+            PublishToArduino(_publisher, 0, 0, _rate)
+#            _revertAndRotate = True
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
