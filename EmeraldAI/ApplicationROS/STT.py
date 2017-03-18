@@ -15,7 +15,7 @@ def RunTTS():
     pub = rospy.Publisher('to_brain', String, queue_size=10)
     rospy.init_node('STT_node', anonymous=True)
     rate = rospy.Rate(10) # 10hz
-    
+
     while True:
         rate.sleep()
         data = STT().Process(False)
