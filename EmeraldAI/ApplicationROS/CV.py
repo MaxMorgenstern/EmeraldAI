@@ -17,11 +17,6 @@ visual = False
 if len(sys.argv) > 1 and str(sys.argv[1]) == "visual":
     visual = True
 
-
-def GetHighestResult(resultList):
-    sortedList = sorted(resultList.items(), key=operator.itemgetter(1), reverse=True)
-    return sortedList[0]
-
 def RunCV():
     #pub = rospy.Publisher('to_brain', String, queue_size=10)
     #rospy.init_node('CV_node', anonymous=True)
@@ -46,7 +41,10 @@ def RunCV():
             detectionResult = predictorObject.RunVisual()
         else:
             detectionResult = predictorObject.Run()
+        detectionResult = pred.RemoveUnknownPredictions(detectionResult)
+
         if(detectionResult != None and len(detectionResult)):
+
             """
             # ToDo - check if this is a plausible way of doing it
             if previousResult != None:
@@ -61,7 +59,8 @@ def RunCV():
             print "---"
             """
 
-            bestCVMatch = GetHighestResult(detectionResult)
+
+            bestCVMatch = pred.GetHighestResult(detectionResult)
             if bestCVMatch[0] != None and bestCVMatch[0] != "Unknown" and bestCVMatch[0] != "NotKnown":
                 #rospy.loginfo("CV|{0}".format(data))
                 #pub.publish("CV|{0}".format(data))
