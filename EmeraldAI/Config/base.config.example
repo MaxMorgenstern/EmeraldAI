@@ -12,6 +12,11 @@ FormalFormOfAddressFemale = Frau {0}
 # ----------------------
 [Bot]
 Name = Johnny
+Languages = Deutsch
+Gender = Männlich
+BuildDate = 20.10.2016
+Developer = Maximilian Porzelt
+Origin = Alzenau, Deutschland
 
 
 # ----------------------
