@@ -54,13 +54,13 @@ CsvActionColumnCount = 4
 # ----------------------
 [SpeechToText]
 Provider = Google
+Microphone =
 
 
 # ----------------------
 [TextToSpeech]
 AudioPlayer = afplay
 Provider = Ivona
-Microphone =
 
 MicrosoftVoiceGender = Female
 MicrosoftVoiceName = Microsoft Server Speech Text to Speech Voice (de-DE, Hedda)

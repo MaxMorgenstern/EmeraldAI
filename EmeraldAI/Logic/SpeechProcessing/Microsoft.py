@@ -33,7 +33,7 @@ class Microsoft(object):
 
 
         microphoneID = None
-        microphoneName = Config().Get("TextToSpeech", "Microphone")
+        microphoneName = Config().Get("SpeechToText", "Microphone")
         for i, microphone_name in enumerate(sr.Microphone().list_microphone_names()):
             if microphone_name == microphoneName:
                 microphoneID = i
