@@ -81,6 +81,7 @@ class Predictor(object):
         # Zip us a {label, name} dict from the given data:
         list_of_labels = list(xrange(max(labels) + 1))
         subject_dictionary = dict(zip(list_of_labels, subject_names))
+        print subject_dictionary
         # Get the model we want to compute:
         model = self.__getModel(image_size=imageSize, subject_names=subject_dictionary)
 
@@ -114,6 +115,15 @@ class Predictor(object):
 
         return PredictorApp(model, camera, detectorFunction)
 
+    def RemoveUnknownPredictions(self, resultDict):
+        for k in resultDict.keys():
+          if k.startswith('NotKnown') or k == "Unknown":
+            resultDict.pop(k)
+        return resultDict
+
+    def GetHighestResult(aelf, resultDict):
+        sortedDict = sorted(resultDict.items(), key=operator.itemgetter(1), reverse=True)
+        return sortedDict[0]
 
 class PredictorApp(object):
 
@@ -233,6 +243,8 @@ class PredictorApp(object):
 
                 if(probeCount > 20):
                     FileLogger().Info("CV Predictor, PredictorApp().RunVisual(): Best guess: {0}".format(sortedList[0][0]))
+                    return self.__predicted
+
 
 
             displayTick += 1

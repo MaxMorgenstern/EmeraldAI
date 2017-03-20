@@ -3,8 +3,8 @@ import rospy
 from std_msgs.msg import String
 
 def callback(data):
-    rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
-
+    rospy.loginfo(rospy.get_caller_id() + " I heard %s", data.data)
+    
 def subscriber():
 
     # In ROS, nodes are uniquely named. If two nodes with the same
@@ -14,7 +14,7 @@ def subscriber():
     # run simultaneously.
     rospy.init_node('subscriber_node_name_without_slash', anonymous=True)
 
-    rospy.Subscriber("topic_name", String, callback)
+    rospy.Subscriber("from_arduino", String, callback)
 
     # spin() simply keeps python from exiting until this node is stopped
     rospy.spin()

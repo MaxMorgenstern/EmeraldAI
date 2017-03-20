@@ -41,7 +41,7 @@ def WordSegmentation(input, extended=False):
     return segmentationRegex.findall(input)
 
 def GetStopwords(language):
-    return Global.ReadDataFile("Stopwords", "{0}.txt".format(language.upper()))
+    return Global.ReadDataFile("Stopwords", "{0}.txt".format(language.lower()))
 
 def RemoveStopwords(wordlist, language):
     stopwords = GetStopwords(language)

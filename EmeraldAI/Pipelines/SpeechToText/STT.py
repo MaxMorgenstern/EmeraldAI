@@ -15,7 +15,7 @@ class STT(object):
     def __init__(self):
         self.__sttProvider = Config().Get("SpeechToText", "Provider") # Google
 
-    def Process(self):
+    def Process(self, returnPipelineArgs = True):
         FileLogger().Info("STT, Process(), Provider: {0}".format(self.__sttProvider))
 
         if(self.__sttProvider.lower() == "google"):
@@ -31,4 +31,6 @@ class STT(object):
             return None
 
         FileLogger().Info("STT, Process(), Input Data: {0}".format(data))
-        return PipelineArgs(data)
+        if(returnPipelineArgs):
+            return PipelineArgs(data)
+        return data
