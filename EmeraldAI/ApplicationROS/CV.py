@@ -6,8 +6,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-#import rospy
-#from std_msgs.msg import String
+import rospy
+from std_msgs.msg import String
 
 from EmeraldAI.Logic.ComputerVision.Predictor import *
 from EmeraldAI.Logic.ComputerVision.Detector import *
@@ -18,9 +18,9 @@ if len(sys.argv) > 1 and str(sys.argv[1]) == "visual":
     visual = True
 
 def RunCV():
-    #pub = rospy.Publisher('to_brain', String, queue_size=10)
-    #rospy.init_node('CV_node', anonymous=True)
-    #rate = rospy.Rate(10) # 10hz
+    pub = rospy.Publisher('to_brain', String, queue_size=10)
+    rospy.init_node('CV_node', anonymous=True)
+    rate = rospy.Rate(10) # 10hz
 
     camera = cv2.VideoCapture(Config().GetInt("ComputerVision", "CameraID"))
     ret = camera.set(3, Config().GetInt("ComputerVision", "CameraWidth"))
@@ -36,7 +36,7 @@ def RunCV():
 
     previousResult = None
     while True:
-        #rate.sleep()
+        rate.sleep()
         if visual:
             detectionResult = predictorObject.RunVisual()
         else:
@@ -62,8 +62,8 @@ def RunCV():
 
             bestCVMatch = pred.GetHighestResult(detectionResult)
             if bestCVMatch[0] != None and bestCVMatch[0] != "Unknown" and bestCVMatch[0] != "NotKnown":
-                #rospy.loginfo("CV|{0}".format(data))
-                #pub.publish("CV|{0}".format(data))
+                rospy.loginfo("CV|{0}".format(data))
+                pub.publish("CV|{0}".format(data))
                 print bestCVMatch[0]
 
 
