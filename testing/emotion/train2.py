@@ -59,8 +59,8 @@ def predict(cv_image, model):
     if len(faces) > 0:
         cropped = to_grayscale(crop_faces(cv_image, faces))
         resized = cv2.resize(cropped, (350,350))
-
         prediction = model.predict(resized)
+
         result = {
             'face': {
                 'name': EMOTIONS[prediction[0]],
@@ -89,10 +89,14 @@ model.load(MODEL_FILE)
 while True:
     ret, image = camera.read()
 
-    cv2.imshow("image", image)
-
     prediction = predict(image, model)
+
     if (prediction != None):
-        print prediction
+        #print prediction
+        coords = prediction['face']['coords']
+        textStr = "{} - {}".format(prediction['face']['name'], prediction['face']['distance'])
+        print textStr
+        cv2.rectangle(image, (int(coords['x']), int(coords['y'])), (int(coords['x']) + int(coords['width']), int(coords['y']) + int(coords['height'])), (0, 0, 255), 1)
+        cv2.putText(image, textStr, (int(coords['x']) - 10, int(coords['y']) - 10), cv2.FONT_HERSHEY_PLAIN, 0.5, (0, 0, 255), 1)
 
-
+    cv2.imshow("image", image)
