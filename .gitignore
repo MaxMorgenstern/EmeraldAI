@@ -231,3 +231,5 @@ EmeraldAI/Data/SqliteDB/brain.sqlite
 
 EmeraldAI/Data/ComputerVisionData/myModel.pkl
 EmeraldAI/Data/ComputerVisionData/Archiv.zip
+
+testing/emotion/dataset/*
