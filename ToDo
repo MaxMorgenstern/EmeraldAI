@@ -48,6 +48,12 @@ LUIS: https://blogs.msdn.microsoft.com/benjaminperkins/2016/11/21/most-common-ch
 
 - microphone and camera selector - for config
 
+- deployment script
+	* checkout git Release branch into seperate folder
+	* run unit tests
+	* stop current processes
+	* if all pass copy files to live folder
+	* start processes again
 
 ---
 

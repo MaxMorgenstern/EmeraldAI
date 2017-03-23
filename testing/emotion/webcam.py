@@ -7,9 +7,8 @@ class ComputerVision(object):
 
     def __init__(self):
 
-        self.__imageDir = "webcam"
-
         self.__ModelFile = "myModel.mdl"
+        self.__DictionaryFile = "myDict.npy"
 
         self.__resizeWidth = 350
         self.__resizeHeight = 350
@@ -20,38 +19,40 @@ class ComputerVision(object):
         self.__frontalFace4 = cv2.CascadeClassifier("haarcascade_frontalface_alt_tree.xml")
         self.__frontalFace5 = cv2.CascadeClassifier("haarcascade_profileface.xml")
 
+        self.__RecognizerModel = cv2.createFisherFaceRecognizer()
+        self.__RecognizerDictionary = {}
+
 
     def __toGrayscale(self, img):
         gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
         #gray = cv2.equalizeHist(gray)
         return gray
 
+    # todo - this only crops one face
     def __cropFaces(self, img, faces):
         for face in faces:
             x, y, h, w = [result for result in face]
             return img[y:y+h,x:x+w]
 
-    def __saveImg(self, img, emotion, filenumber):
+    def __saveImg(self, img, directory, imagetype, filenumber):
         try:
             out = cv2.resize(img, (self.__resizeWidth, self.__resizeHeight)) #Resize face so all images have same size
-            cv2.imwrite("%s/%s/%s.jpg" %(self.__imageDir, emotion, filenumber), out) #Write image
+            cv2.imwrite("%s/%s/%s.jpg" %(directory, imagetype, filenumber), out) #Write image
         except:
            pass #If error, pass file
 
-    def __loadImages(self):
+    def __loadImages(self, directory):
         training_data = []
         training_labels = []
         training_labels_dict = {}
 
-        for dirname, dirnames, filenames in os.walk(self.__imageDir):
+        for dirname, dirnames, filenames in os.walk(directory):
             for subdirname in dirnames:
                 subject_path = os.path.join(dirname, subdirname)
                 for filename in os.listdir(subject_path):
                     if(not filename.startswith('.')):
                         try:
-                            print os.path.join(subject_path, filename)
                             image = cv2.imread(os.path.join(subject_path, filename), cv2.IMREAD_GRAYSCALE)
-
                             training_data.append(image)
 
                             if (subdirname not in training_labels_dict):
@@ -64,6 +65,10 @@ class ComputerVision(object):
                         except:
                             print "Error"
         return training_data, np.asarray(training_labels), training_labels_dict
+
+    def __ensureDirectoryExists(self, directory):
+        if not os.path.exists(directory):
+            os.makedirs(directory)
 
     def DetectSingleFace(self, img):
         face = self.__frontalFace.detectMultiScale(img, scaleFactor=1.3, minNeighbors=4, minSize=(5, 5), flags=cv2.CASCADE_SCALE_IMAGE)
@@ -105,15 +110,49 @@ class ComputerVision(object):
             bestResult = face5
         return bestResult
 
-    def TrainModel(self):
-        images, labels, labelDict = self.__loadImages()
-        model = cv2.createFisherFaceRecognizer()
-        model.train(images, labels)
-        model.save(self.__ModelFile)
+    def TrainModel(self, directory):
+        images, labels, labelDict = self.__loadImages(directory)
+        self.__RecognizerModel.train(images, labels)
+        self.__RecognizerDictionary = labelDict
 
-        #TODO - save labelDict
+        # TODO... place in "directory"
+        self.__RecognizerModel.save(self.__ModelFile)
+        np.save(self.__DictionaryFile, labelDict)
+
+    def LoadModel(self, directory):
+        # TODO ...load from "directory"
+        self.__RecognizerModel.load(self.__ModelFile)
+        self.__RecognizerDictionary = np.load(self.__DictionaryFile).item()
 
 
+    #todo
+    def Predict(self, cv_image, model, dictionary):
+        faces = self.DetectSingleFace(cv_image)
+        result = None
+        if len(faces) > 0:
+            cropped = self.__toGrayscale(self.__cropFaces(cv_image, faces))
+            resized = cv2.resize(cropped, (self.__resizeWidth, self.__resizeHeight))
+
+            prediction = model.predict(resized)
+
+            result = {
+                'face': {
+                    'name': dictionary[prediction[0]],
+                    'id': prediction[0],
+                    'distance': prediction[1],
+                    'coords': {
+                        'x': str(faces[0][0]),
+                        'y': str(faces[0][1]),
+                        'width': str(faces[0][2]),
+                        'height': str(faces[0][3])
+                    }
+                }
+            }
+        return result
+
+
+
+ComputerVision().TrainModel("webcam")
 
 """
 
