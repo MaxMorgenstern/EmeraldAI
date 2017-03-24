@@ -10,6 +10,8 @@ class ComputerVision(object):
         self.__ModelFile = "myModel.mdl"
         self.__DictionaryFile = "myDict.npy"
 
+        self._DatasetBasePath = os.path.dirname(os.path.abspath(__file__)) +  os.sep + "ComputerVisionData"
+
         self.__resizeWidth = 350
         self.__resizeHeight = 350
 
@@ -25,74 +27,77 @@ class ComputerVision(object):
 
     def __toGrayscale(self, img):
         gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-        #gray = cv2.equalizeHist(gray)
         return gray
 
-    # todo - this only crops one face
     def __cropFaces(self, img, faces):
+        faceImages = []
         for face in faces:
             x, y, h, w = [result for result in face]
-            return img[y:y+h,x:x+w]
+            faceImages.append(img[y:y+h,x:x+w])
+        return faceImages
 
-    def __saveImg(self, img, directory, imagetype, filenumber):
+    def __saveImg(self, img, imagetype, filenumber):
         try:
+            self.__ensureDirectoryExists(self._DatasetBasePath + os.sep + imagetype)
             out = cv2.resize(img, (self.__resizeWidth, self.__resizeHeight)) #Resize face so all images have same size
-            cv2.imwrite("%s/%s/%s.jpg" %(directory, imagetype, filenumber), out) #Write image
+
+            # TODO
+            cv2.imwrite("%s/%s/%s.jpg" %(self._DatasetBasePath, imagetype, filenumber), out) #Write image
         except:
            pass #If error, pass file
 
-    def __loadImages(self, directory):
-        training_data = []
-        training_labels = []
-        training_labels_dict = {}
+    def __loadImages(self, modelType):
+        trainingData = []
+        trainingLabels = []
+        trainingLabelsDict = {}
 
-        for dirname, dirnames, filenames in os.walk(directory):
+        for dirname, dirnames, filenames in os.walk(self._DatasetBasePath + os.sep + modelType):
             for subdirname in dirnames:
-                subject_path = os.path.join(dirname, subdirname)
-                for filename in os.listdir(subject_path):
+                subjectPath = os.path.join(dirname, subdirname)
+                for filename in os.listdir(subjectPath):
                     if(not filename.startswith('.')):
                         try:
-                            image = cv2.imread(os.path.join(subject_path, filename), cv2.IMREAD_GRAYSCALE)
-                            training_data.append(image)
+                            image = cv2.imread(os.path.join(subjectPath, filename), cv2.IMREAD_GRAYSCALE)
+                            trainingData.append(image)
 
-                            if (subdirname not in training_labels_dict):
-                                training_labels_dict[subdirname] = len(training_labels_dict)
-                            labelID = training_labels_dict[subdirname]
+                            if (subdirname not in trainingLabelsDict):
+                                trainingLabelsDict[subdirname] = len(trainingLabelsDict)
+                            labelID = trainingLabelsDict[subdirname]
 
-                            training_labels.append(labelID)
+                            trainingLabels.append(labelID)
                         except IOError, (errno, strerror):
                             print "IOError"
                         except:
                             print "Error"
-        return training_data, np.asarray(training_labels), training_labels_dict
+        return trainingData, np.asarray(trainingLabels), trainingLabelsDict
 
     def __ensureDirectoryExists(self, directory):
         if not os.path.exists(directory):
             os.makedirs(directory)
 
-    def DetectSingleFace(self, img):
+    def DetectFaceFast(self, img):
         face = self.__frontalFace.detectMultiScale(img, scaleFactor=1.3, minNeighbors=4, minSize=(5, 5), flags=cv2.CASCADE_SCALE_IMAGE)
         if len(face) > 0:
-            return face[0]
+            return face
 
         face2 = self.__frontalFace2.detectMultiScale(img, scaleFactor=1.3, minNeighbors=4, minSize=(5, 5), flags=cv2.CASCADE_SCALE_IMAGE)
         if len(face2) > 0:
-            return face2[0]
+            return face2
 
         face3 = self.__frontalFace3.detectMultiScale(img, scaleFactor=1.3, minNeighbors=4, minSize=(5, 5), flags=cv2.CASCADE_SCALE_IMAGE)
         if len(face3) > 0:
-            return face3[0]
+            return face3
 
         face4 = self.__frontalFace4.detectMultiScale(img, scaleFactor=1.3, minNeighbors=4, minSize=(5, 5), flags=cv2.CASCADE_SCALE_IMAGE)
         if len(face4) > 0:
-            return face4[0]
+            return face4
 
         face5 = self.__frontalFace5.detectMultiScale(img, scaleFactor=1.3, minNeighbors=4, minSize=(5, 5), flags=cv2.CASCADE_SCALE_IMAGE)
         if len(face5) > 0:
-            return face[0]
+            return face
         return []
 
-    def DetectAllFace(self, img):
+    def DetectFaceBest(self, img):
         face = self.__frontalFace.detectMultiScale(img, scaleFactor=1.3, minNeighbors=4, minSize=(5, 5), flags=cv2.CASCADE_SCALE_IMAGE)
         face2 = self.__frontalFace2.detectMultiScale(img, scaleFactor=1.3, minNeighbors=4, minSize=(5, 5), flags=cv2.CASCADE_SCALE_IMAGE)
         face3 = self.__frontalFace3.detectMultiScale(img, scaleFactor=1.3, minNeighbors=4, minSize=(5, 5), flags=cv2.CASCADE_SCALE_IMAGE)
@@ -110,51 +115,60 @@ class ComputerVision(object):
             bestResult = face5
         return bestResult
 
-    def TrainModel(self, directory):
-        images, labels, labelDict = self.__loadImages(directory)
+    def TrainModel(self, modelType):
+        images, labels, labelDict = self.__loadImages(modelType)
         self.__RecognizerModel.train(images, labels)
         self.__RecognizerDictionary = labelDict
 
-        # TODO... place in "directory"
-        self.__RecognizerModel.save(self.__ModelFile)
-        np.save(self.__DictionaryFile, labelDict)
+        path = self._DatasetBasePath + os.sep + modelType + os.sep
+        self.__RecognizerModel.save(path + self.__ModelFile)
+        np.save(path + self.__DictionaryFile, labelDict)
+        print labelDict
 
-    def LoadModel(self, directory):
-        # TODO ...load from "directory"
-        self.__RecognizerModel.load(self.__ModelFile)
-        self.__RecognizerDictionary = np.load(self.__DictionaryFile).item()
+    def LoadModel(self, modelType):
+        path = self._DatasetBasePath + os.sep + modelType + os.sep
+        self.__RecognizerModel.load(path + self.__ModelFile)
+        self.__RecognizerDictionary = np.load(path + self.__DictionaryFile).item()
+
+        return self.__RecognizerModel, self.__RecognizerDictionary
 
 
     #todo
-    def Predict(self, cv_image, model, dictionary):
-        faces = self.DetectSingleFace(cv_image)
-        result = None
+    def Predict(self, image, model, dictionary):
+        faces = self.DetectFaceBest(image)
+        result = []
         if len(faces) > 0:
-            cropped = self.__toGrayscale(self.__cropFaces(cv_image, faces))
-            resized = cv2.resize(cropped, (self.__resizeWidth, self.__resizeHeight))
+            croppedFaceImages = self.__cropFaces(image, faces)
+            for croppedImage in croppedFaceImages:
 
-            prediction = model.predict(resized)
+                resized = cv2.resize(self.__toGrayscale(croppedImage), (self.__resizeWidth, self.__resizeHeight))
 
-            result = {
-                'face': {
-                    'name': dictionary[prediction[0]],
-                    'id': prediction[0],
-                    'distance': prediction[1],
-                    'coords': {
-                        'x': str(faces[0][0]),
-                        'y': str(faces[0][1]),
-                        'width': str(faces[0][2]),
-                        'height': str(faces[0][3])
+                prediction = model.predict(resized)
+
+                result.append({
+                    'face': {
+                        'id': len(result)+1,
+                        'value': dictionary.keys()[dictionary.values().index(prediction[0])],
+                        'rawvalue': prediction[0],
+                        'distance': prediction[1],
+                        'coords': {
+                            'x': str(faces[0][0]),
+                            'y': str(faces[0][1]),
+                            'width': str(faces[0][2]),
+                            'height': str(faces[0][3])
+                        }
                     }
-                }
-            }
+                })
         return result
 
 
+#ComputerVision().TrainModel("mood")
+#exit()
 
-ComputerVision().TrainModel("webcam")
+cv = ComputerVision()
 
-"""
+model, dictionary = cv.LoadModel("mood")
+
 
 camera = cv2.VideoCapture(0)
 ret = camera.set(3, 640)
@@ -165,8 +179,12 @@ count = 0
 while True:
     ret, image = camera.read()
 
-    faces = detect_faces(image)
+    result = cv.Predict(image, model, dictionary)
+    print result
+    print ""
+    print ""
 
+"""
     if len(faces) > 0:
 
         cropped = to_grayscale(crop_faces(image, faces))
