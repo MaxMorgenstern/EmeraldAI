@@ -1,6 +1,7 @@
 import cv2
 import glob
 import os
+import re
 import numpy as np
 
 class ComputerVision(object):
@@ -11,6 +12,7 @@ class ComputerVision(object):
         self.__DictionaryFile = "myDict.npy"
 
         self._DatasetBasePath = os.path.dirname(os.path.abspath(__file__)) +  os.sep + "ComputerVisionData"
+        self.__TempCVFolder = "Temp"
 
         self.__resizeWidth = 350
         self.__resizeHeight = 350
@@ -36,13 +38,15 @@ class ComputerVision(object):
             faceImages.append(img[y:y+h,x:x+w])
         return faceImages
 
-    def __saveImg(self, img, imagetype, filenumber):
+    def __saveImg(self, img, datasetName, imageType, fileName):
         try:
-            self.__ensureDirectoryExists(self._DatasetBasePath + os.sep + imagetype)
+            self.__ensureDirectoryExists(self._DatasetBasePath + os.sep + datasetName)
+            self.__ensureDirectoryExists(self._DatasetBasePath + os.sep + datasetName + os.sep + imageType)
+
             out = cv2.resize(img, (self.__resizeWidth, self.__resizeHeight)) #Resize face so all images have same size
 
             # TODO
-            cv2.imwrite("%s/%s/%s.jpg" %(self._DatasetBasePath, imagetype, filenumber), out) #Write image
+            cv2.imwrite("%s/%s/%s/%s.jpg" %(self._DatasetBasePath, datasetName, imageType, fileName), out) #Write image
         except:
            pass #If error, pass file
 
@@ -74,6 +78,16 @@ class ComputerVision(object):
     def __ensureDirectoryExists(self, directory):
         if not os.path.exists(directory):
             os.makedirs(directory)
+
+    def __getHighestImageID(self, datasetName, imageType):
+        maxImgNum = 0
+        for root, dirs, filenames in os.walk(self._DatasetBasePath + os.sep + datasetName + os.sep + imageType):
+            for f in filenames:
+                tmpNum = re.findall('\d+|$', f)[0]
+                if(len(tmpNum) > 0 and int(tmpNum) > maxImgNum):
+                    maxImgNum = int(tmpNum)
+        return int(maxImgNum)
+
 
     def DetectFaceFast(self, img):
         face = self.__frontalFace.detectMultiScale(img, scaleFactor=1.3, minNeighbors=4, minSize=(5, 5), flags=cv2.CASCADE_SCALE_IMAGE)
@@ -123,7 +137,6 @@ class ComputerVision(object):
         path = self._DatasetBasePath + os.sep + modelType + os.sep
         self.__RecognizerModel.save(path + self.__ModelFile)
         np.save(path + self.__DictionaryFile, labelDict)
-        print labelDict
 
     def LoadModel(self, modelType):
         path = self._DatasetBasePath + os.sep + modelType + os.sep
@@ -161,11 +174,24 @@ class ComputerVision(object):
                 })
         return result
 
+    def TakeFaceImage(self, image, imageType):
+        faces = self.DetectFaceFast(image)
+        if len(faces) > 0:
+            croppedFaceImages = self.__cropFaces(image, faces)
+            for croppedImage in croppedFaceImages:
+                resizedImage = cv2.resize(self.__toGrayscale(croppedImage), (self.__resizeWidth, self.__resizeHeight))
 
-#ComputerVision().TrainModel("mood")
-#exit()
+                fileName = str(self.__getHighestImageID(self.__TempCVFolder, imageType) + 1)
+                self.__saveImg(resizedImage, self.__TempCVFolder, imageType, fileName)
+
+    def LimitImagesInFolder(self, amount):
+        return "TODO"
 
 cv = ComputerVision()
+
+#cv.TrainModel("mood")
+#exit()
+
 
 model, dictionary = cv.LoadModel("mood")
 
@@ -178,6 +204,8 @@ count = 0
 
 while True:
     ret, image = camera.read()
+
+    #cv.TakeFaceImage(image, "normal")
 
     result = cv.Predict(image, model, dictionary)
     print result
