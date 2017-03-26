@@ -55,6 +55,8 @@ LUIS: https://blogs.msdn.microsoft.com/benjaminperkins/2016/11/21/most-common-ch
 	* if all pass copy files to live folder
 	* start processes again
 
+- use os.path.join(x, y,...) instead of os.sep
+
 ---
 
 Rank  Bot Property  Value

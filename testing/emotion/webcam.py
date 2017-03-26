@@ -6,6 +6,9 @@ import numpy as np
 import platform
 import time
 
+
+# TODO --> os.path.join
+
 class ComputerVision(object):
 
     def __init__(self):
@@ -13,8 +16,9 @@ class ComputerVision(object):
         self.__ModelFile = "myModel.mdl"
         self.__DictionaryFile = "myDict.npy"
 
-        self.__DatasetBasePath = os.path.dirname(os.path.abspath(__file__)) +  os.sep + "ComputerVisionData"
+        self.__DatasetBasePath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ComputerVisionData")
         self.__TempCVFolder = "Temp"
+        self.__DisabledFileFolder = "Disabled"
 
         self.__ImageLimit = 100
 
@@ -44,8 +48,8 @@ class ComputerVision(object):
 
     def __saveImg(self, img, datasetName, imageType, fileName):
         try:
-            self.__ensureDirectoryExists(self.__DatasetBasePath + os.sep + datasetName)
-            self.__ensureDirectoryExists(self.__DatasetBasePath + os.sep + datasetName + os.sep + imageType)
+            self.__ensureDirectoryExists(os.path.join(self.__DatasetBasePath, datasetName))
+            self.__ensureDirectoryExists(os.path.join(self.__DatasetBasePath, datasetName, imageType))
 
             out = cv2.resize(img, (self.__resizeWidth, self.__resizeHeight)) #Resize face so all images have same size
 
@@ -59,7 +63,7 @@ class ComputerVision(object):
         trainingLabels = []
         trainingLabelsDict = {}
 
-        for dirname, dirnames, filenames in os.walk(self.__DatasetBasePath + os.sep + datasetName):
+        for dirname, dirnames, filenames in os.walk(os.path.join(self.__DatasetBasePath, datasetName)):
             for subdirname in dirnames:
                 subjectPath = os.path.join(dirname, subdirname)
                 for filename in os.listdir(subjectPath):
@@ -85,7 +89,7 @@ class ComputerVision(object):
 
     def __getHighestImageID(self, datasetName, imageType):
         maxImgNum = 0
-        for root, dirs, filenames in os.walk(self.__DatasetBasePath + os.sep + datasetName + os.sep + imageType):
+        for root, dirs, filenames in os.walk(os.path.join(self.__DatasetBasePath, datasetName, imageType)):
             for f in filenames:
                 tmpNum = re.findall('\d+|$', f)[0]
                 if(len(tmpNum) > 0 and int(tmpNum) > maxImgNum):
@@ -138,13 +142,13 @@ class ComputerVision(object):
         self.__RecognizerModel.train(images, labels)
         self.__RecognizerDictionary = labelDict
 
-        path = self.__DatasetBasePath + os.sep + datasetName + os.sep
-        self.__RecognizerModel.save(path + self.__ModelFile)
+        path = os.path.join(self.__DatasetBasePath, datasetName)
+        self.__RecognizerModel.save(os.path.join(path, self.__ModelFile))
         np.save(path + self.__DictionaryFile, labelDict)
 
     def LoadModel(self, datasetName):
-        path = self.__DatasetBasePath + os.sep + datasetName + os.sep
-        self.__RecognizerModel.load(path + self.__ModelFile)
+        path = os.path.join(self.__DatasetBasePath, datasetName)
+        self.__RecognizerModel.load(os.path.join(path, self.__ModelFile))
         self.__RecognizerDictionary = np.load(path + self.__DictionaryFile).item()
 
         return self.__RecognizerModel, self.__RecognizerDictionary
@@ -194,15 +198,18 @@ class ComputerVision(object):
         if amount == None:
             amount = self.__ImageLimit
 
-        for dirname, dirnames, filenames in os.walk(self.__DatasetBasePath + os.sep + datasetName):
+        for dirname, dirnames, filenames in os.walk(os.path.join(self.__DatasetBasePath, datasetName)):
             for subdirname in dirnames:
                 subjectPath = os.path.join(dirname, subdirname)
                 dirContent = os.listdir(subjectPath)
                 if len(dirContent) > amount:
+                    filesToDeactivate = len(dirContent) - amount
                     for filename in dirContent:
-                        print time.ctime(self.__getCreationDate(filename))
+                        print time.ctime(self.__getCreationDate(os.path.join(subjectPath, filename)))
+                        # TODO
 
-
+    def __disableFile(self, filePath, fileName):
+        os.rename(os.path.join(filePath, fileName), os.path.join(filePath, self.__DisabledFileFolder, fileName))
 
     def __getCreationDate(self, filePath):
         if platform.system() == 'Windows':
