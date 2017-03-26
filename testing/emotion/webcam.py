@@ -3,6 +3,8 @@ import glob
 import os
 import re
 import numpy as np
+import platform
+import time
 
 class ComputerVision(object):
 
@@ -11,8 +13,10 @@ class ComputerVision(object):
         self.__ModelFile = "myModel.mdl"
         self.__DictionaryFile = "myDict.npy"
 
-        self._DatasetBasePath = os.path.dirname(os.path.abspath(__file__)) +  os.sep + "ComputerVisionData"
+        self.__DatasetBasePath = os.path.dirname(os.path.abspath(__file__)) +  os.sep + "ComputerVisionData"
         self.__TempCVFolder = "Temp"
+
+        self.__ImageLimit = 100
 
         self.__resizeWidth = 350
         self.__resizeHeight = 350
@@ -40,22 +44,22 @@ class ComputerVision(object):
 
     def __saveImg(self, img, datasetName, imageType, fileName):
         try:
-            self.__ensureDirectoryExists(self._DatasetBasePath + os.sep + datasetName)
-            self.__ensureDirectoryExists(self._DatasetBasePath + os.sep + datasetName + os.sep + imageType)
+            self.__ensureDirectoryExists(self.__DatasetBasePath + os.sep + datasetName)
+            self.__ensureDirectoryExists(self.__DatasetBasePath + os.sep + datasetName + os.sep + imageType)
 
             out = cv2.resize(img, (self.__resizeWidth, self.__resizeHeight)) #Resize face so all images have same size
 
             # TODO
-            cv2.imwrite("%s/%s/%s/%s.jpg" %(self._DatasetBasePath, datasetName, imageType, fileName), out) #Write image
+            cv2.imwrite("%s/%s/%s/%s.jpg" %(self.__DatasetBasePath, datasetName, imageType, fileName), out) #Write image
         except:
            pass #If error, pass file
 
-    def __loadImages(self, modelType):
+    def __loadImages(self, datasetName):
         trainingData = []
         trainingLabels = []
         trainingLabelsDict = {}
 
-        for dirname, dirnames, filenames in os.walk(self._DatasetBasePath + os.sep + modelType):
+        for dirname, dirnames, filenames in os.walk(self.__DatasetBasePath + os.sep + datasetName):
             for subdirname in dirnames:
                 subjectPath = os.path.join(dirname, subdirname)
                 for filename in os.listdir(subjectPath):
@@ -81,7 +85,7 @@ class ComputerVision(object):
 
     def __getHighestImageID(self, datasetName, imageType):
         maxImgNum = 0
-        for root, dirs, filenames in os.walk(self._DatasetBasePath + os.sep + datasetName + os.sep + imageType):
+        for root, dirs, filenames in os.walk(self.__DatasetBasePath + os.sep + datasetName + os.sep + imageType):
             for f in filenames:
                 tmpNum = re.findall('\d+|$', f)[0]
                 if(len(tmpNum) > 0 and int(tmpNum) > maxImgNum):
@@ -129,17 +133,17 @@ class ComputerVision(object):
             bestResult = face5
         return bestResult
 
-    def TrainModel(self, modelType):
-        images, labels, labelDict = self.__loadImages(modelType)
+    def TrainModel(self, datasetName):
+        images, labels, labelDict = self.__loadImages(datasetName)
         self.__RecognizerModel.train(images, labels)
         self.__RecognizerDictionary = labelDict
 
-        path = self._DatasetBasePath + os.sep + modelType + os.sep
+        path = self.__DatasetBasePath + os.sep + datasetName + os.sep
         self.__RecognizerModel.save(path + self.__ModelFile)
         np.save(path + self.__DictionaryFile, labelDict)
 
-    def LoadModel(self, modelType):
-        path = self._DatasetBasePath + os.sep + modelType + os.sep
+    def LoadModel(self, datasetName):
+        path = self.__DatasetBasePath + os.sep + datasetName + os.sep
         self.__RecognizerModel.load(path + self.__ModelFile)
         self.__RecognizerDictionary = np.load(path + self.__DictionaryFile).item()
 
@@ -184,14 +188,41 @@ class ComputerVision(object):
                 fileName = str(self.__getHighestImageID(self.__TempCVFolder, imageType) + 1)
                 self.__saveImg(resizedImage, self.__TempCVFolder, imageType, fileName)
 
-    def LimitImagesInFolder(self, amount):
-        return "TODO"
+
+
+    def LimitImagesInFolder(self, datasetName, amount=None):
+        if amount == None:
+            amount = self.__ImageLimit
+
+        for dirname, dirnames, filenames in os.walk(self.__DatasetBasePath + os.sep + datasetName):
+            for subdirname in dirnames:
+                subjectPath = os.path.join(dirname, subdirname)
+                dirContent = os.listdir(subjectPath)
+                if len(dirContent) > amount:
+                    for filename in dirContent:
+                        print time.ctime(self.__getCreationDate(filename))
+
+
+
+    def __getCreationDate(self, filePath):
+        if platform.system() == 'Windows':
+            return os.path.getctime(filePath)
+        else:
+            stat = os.stat(filePath)
+            try:
+                return stat.st_birthtime
+            except AttributeError:
+                return stat.st_mtime
+
 
 cv = ComputerVision()
 
 #cv.TrainModel("mood")
 #exit()
 
+
+cv.LimitImagesInFolder("mood", 10)
+exit()
 
 model, dictionary = cv.LoadModel("mood")
 
