@@ -144,17 +144,15 @@ class ComputerVision(object):
 
         path = os.path.join(self.__DatasetBasePath, datasetName)
         self.__RecognizerModel.save(os.path.join(path, self.__ModelFile))
-        np.save(path + self.__DictionaryFile, labelDict)
+        np.save(os.path.join(path, self.__DictionaryFile), labelDict)
 
     def LoadModel(self, datasetName):
         path = os.path.join(self.__DatasetBasePath, datasetName)
         self.__RecognizerModel.load(os.path.join(path, self.__ModelFile))
-        self.__RecognizerDictionary = np.load(path + self.__DictionaryFile).item()
+        self.__RecognizerDictionary = np.load(os.path.join(path, self.__DictionaryFile)).item()
 
         return self.__RecognizerModel, self.__RecognizerDictionary
 
-
-    #todo
     def Predict(self, image, model, dictionary):
         faces = self.DetectFaceBest(image)
         result = []
@@ -182,18 +180,27 @@ class ComputerVision(object):
                 })
         return result
 
-    def TakeFaceImage(self, image, imageType):
+    def TakeFaceImage(self, image, imageType, datasetName=None):
+        if datasetName == None:
+            datasetName = self.__TempCVFolder
         faces = self.DetectFaceFast(image)
         if len(faces) > 0:
             croppedFaceImages = self.__cropFaces(image, faces)
             for croppedImage in croppedFaceImages:
                 resizedImage = cv2.resize(self.__toGrayscale(croppedImage), (self.__resizeWidth, self.__resizeHeight))
 
-                fileName = str(self.__getHighestImageID(self.__TempCVFolder, imageType) + 1)
-                self.__saveImg(resizedImage, self.__TempCVFolder, imageType, fileName)
+                fileName = str(self.__getHighestImageID(datasetName, imageType) + 1)
+                self.__saveImg(resizedImage, datasetName, imageType, fileName)
 
 
 
+    # TODO
+    def PredictStream(self, image, model, dictionary, threshold, timeout):
+        prediction = self.__Predict(image, model, dictionary)
+
+
+
+    # TODO
     def LimitImagesInFolder(self, datasetName, amount=None):
         if amount == None:
             amount = self.__ImageLimit
@@ -206,7 +213,7 @@ class ComputerVision(object):
                     filesToDeactivate = len(dirContent) - amount
                     for filename in dirContent:
                         print time.ctime(self.__getCreationDate(os.path.join(subjectPath, filename)))
-                        # TODO
+
 
     def __disableFile(self, filePath, fileName):
         os.rename(os.path.join(filePath, fileName), os.path.join(filePath, self.__DisabledFileFolder, fileName))
@@ -228,8 +235,8 @@ cv = ComputerVision()
 #exit()
 
 
-cv.LimitImagesInFolder("mood", 10)
-exit()
+#cv.LimitImagesInFolder("mood", 10)
+#exit()
 
 model, dictionary = cv.LoadModel("mood")
 
@@ -246,9 +253,12 @@ while True:
     #cv.TakeFaceImage(image, "normal")
 
     result = cv.Predict(image, model, dictionary)
-    print result
-    print ""
-    print ""
+    if(len(result) > 0):
+        #print result
+        print ""
+        print ""
+        print result[0]['face']['value'], " - ", result[0]['face']['distance']
+
 
 """
     if len(faces) > 0:
