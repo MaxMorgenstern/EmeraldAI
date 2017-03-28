@@ -6,9 +6,6 @@ import numpy as np
 import platform
 import time
 
-
-# TODO --> os.path.join
-
 class ComputerVision(object):
 
     def __init__(self):
@@ -22,8 +19,12 @@ class ComputerVision(object):
 
         self.__ImageLimit = 100
 
-        self.__resizeWidth = 350
-        self.__resizeHeight = 350
+        self.__ResizeWidth = 350
+        self.__ResizeHeight = 350
+
+        self.__PredictionTimeout = 5
+        self.__PredictStreamTimeout = 0
+
 
         self.__frontalFace = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
         self.__frontalFace2 = cv2.CascadeClassifier("haarcascade_frontalface_alt2.xml")
@@ -51,7 +52,7 @@ class ComputerVision(object):
             self.__ensureDirectoryExists(os.path.join(self.__DatasetBasePath, datasetName))
             self.__ensureDirectoryExists(os.path.join(self.__DatasetBasePath, datasetName, imageType))
 
-            out = cv2.resize(img, (self.__resizeWidth, self.__resizeHeight)) #Resize face so all images have same size
+            out = cv2.resize(img, (self.__ResizeWidth, self.__ResizeHeight)) #Resize face so all images have same size
 
             # TODO
             cv2.imwrite("%s/%s/%s/%s.jpg" %(self.__DatasetBasePath, datasetName, imageType, fileName), out) #Write image
@@ -160,7 +161,7 @@ class ComputerVision(object):
             croppedFaceImages = self.__cropFaces(image, faces)
             for croppedImage in croppedFaceImages:
 
-                resized = cv2.resize(self.__toGrayscale(croppedImage), (self.__resizeWidth, self.__resizeHeight))
+                resized = cv2.resize(self.__toGrayscale(croppedImage), (self.__ResizeWidth, self.__ResizeHeight))
 
                 prediction = model.predict(resized)
 
@@ -187,7 +188,7 @@ class ComputerVision(object):
         if len(faces) > 0:
             croppedFaceImages = self.__cropFaces(image, faces)
             for croppedImage in croppedFaceImages:
-                resizedImage = cv2.resize(self.__toGrayscale(croppedImage), (self.__resizeWidth, self.__resizeHeight))
+                resizedImage = cv2.resize(self.__toGrayscale(croppedImage), (self.__ResizeWidth, self.__ResizeHeight))
 
                 fileName = str(self.__getHighestImageID(datasetName, imageType) + 1)
                 self.__saveImg(resizedImage, datasetName, imageType, fileName)
@@ -195,8 +196,22 @@ class ComputerVision(object):
 
 
     # TODO
-    def PredictStream(self, image, model, dictionary, threshold, timeout):
-        prediction = self.__Predict(image, model, dictionary)
+    def PredictStream(self, image, model, dictionary, threshold, timeout=None):
+        if timeout == None:
+            timeout = self.__PredictionTimeout
+
+        if time.time() > self.__PredictStreamTimeout:
+            self.__PredictStreamTimeout = time.time() + timeout
+            # TODO: whipe data
+
+        # IF distance > maxDistance --> unknown
+
+        prediction = self.Predict(image, model, dictionary)
+        for p in prediction:
+            print p['face']['value'], p['face']['distance']
+            # TODO - more than one --> notify or prediction array
+
+        return prediction
 
 
 
@@ -231,6 +246,7 @@ class ComputerVision(object):
 
 cv = ComputerVision()
 
+
 #cv.TrainModel("mood")
 #exit()
 
@@ -252,7 +268,8 @@ while True:
 
     #cv.TakeFaceImage(image, "normal")
 
-    result = cv.Predict(image, model, dictionary)
+    #result = cv.Predict(image, model, dictionary)
+    result = cv.PredictStream(image, model, dictionary, 100)
     if(len(result) > 0):
         #print result
         print ""
