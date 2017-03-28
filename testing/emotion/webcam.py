@@ -24,7 +24,8 @@ class ComputerVision(object):
 
         self.__PredictionTimeout = 5
         self.__PredictStreamTimeout = 0
-
+        self.__PredictStreamMaxDistance = 500
+        self.__PredictStreamResult = {}
 
         self.__frontalFace = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
         self.__frontalFace2 = cv2.CascadeClassifier("haarcascade_frontalface_alt2.xml")
@@ -202,16 +203,32 @@ class ComputerVision(object):
 
         if time.time() > self.__PredictStreamTimeout:
             self.__PredictStreamTimeout = time.time() + timeout
-            # TODO: whipe data
+            self.__PredictStreamResult = {}
 
-        # IF distance > maxDistance --> unknown
 
         prediction = self.Predict(image, model, dictionary)
         for p in prediction:
             print p['face']['value'], p['face']['distance']
+
+            if int(p['face']['distance']) > self.__PredictStreamMaxDistance:
+                self.__addPrediction("Unknown", (int(p['face']['distance']) - self.__PredictStreamMaxDistance))
+            else:
+                self.__addPrediction(p['face']['value'], int(p['face']['distance']))
+
             # TODO - more than one --> notify or prediction array
 
-        return prediction
+        return self.__PredictStreamResult
+
+
+
+    def __addPrediction(self, key, distance):
+        if(self.__PredictStreamResult.has_key(key)):
+            self.__PredictStreamResult[key] += (self.__PredictStreamMaxDistance - distance) / 10
+        else:
+            self.__PredictStreamResult[key] = (self.__PredictStreamMaxDistance - distance) / 10
+
+
+
 
 
 
@@ -228,7 +245,6 @@ class ComputerVision(object):
                     filesToDeactivate = len(dirContent) - amount
                     for filename in dirContent:
                         print time.ctime(self.__getCreationDate(os.path.join(subjectPath, filename)))
-
 
     def __disableFile(self, filePath, fileName):
         os.rename(os.path.join(filePath, fileName), os.path.join(filePath, self.__DisabledFileFolder, fileName))
@@ -271,10 +287,10 @@ while True:
     #result = cv.Predict(image, model, dictionary)
     result = cv.PredictStream(image, model, dictionary, 100)
     if(len(result) > 0):
-        #print result
-        print ""
-        print ""
-        print result[0]['face']['value'], " - ", result[0]['face']['distance']
+        print result
+        #print ""
+        #print ""
+        #print result[0]['face']['value'], " - ", result[0]['face']['distance']
 
 
 """
