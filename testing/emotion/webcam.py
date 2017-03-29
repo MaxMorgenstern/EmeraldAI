@@ -201,10 +201,18 @@ class ComputerVision(object):
         if timeout == None:
             timeout = self.__PredictionTimeout
 
+        reachedTimeout = False
         if time.time() > self.__PredictStreamTimeout:
             self.__PredictStreamTimeout = time.time() + timeout
             self.__PredictStreamResult = {}
+            reachedTimeout = True
 
+
+
+        """
+        for id, obj in enumerate(objects):
+            fields.append(('id_is_' + id, obj))
+        """
 
         prediction = self.Predict(image, model, dictionary)
         for p in prediction:
@@ -217,7 +225,12 @@ class ComputerVision(object):
 
             # TODO - more than one --> notify or prediction array
 
-        return self.__PredictStreamResult
+            # TODO - if threshold reached...
+            reachedThreshold = False
+            if 0 > threshold:
+                reachedThreshold = True
+
+        return self.__PredictStreamResult, reachedThreshold, reachedTimeout
 
 
 
@@ -245,6 +258,8 @@ class ComputerVision(object):
                     filesToDeactivate = len(dirContent) - amount
                     for filename in dirContent:
                         print time.ctime(self.__getCreationDate(os.path.join(subjectPath, filename)))
+                        #...
+                        #self.__disableFile(subjectPath, filename)
 
     def __disableFile(self, filePath, fileName):
         os.rename(os.path.join(filePath, fileName), os.path.join(filePath, self.__DisabledFileFolder, fileName))
@@ -285,7 +300,7 @@ while True:
     #cv.TakeFaceImage(image, "normal")
 
     #result = cv.Predict(image, model, dictionary)
-    result = cv.PredictStream(image, model, dictionary, 100)
+    result, thresholdReached, timeoutReached = cv.PredictStream(image, model, dictionary, 100)
     if(len(result) > 0):
         print result
         #print ""
