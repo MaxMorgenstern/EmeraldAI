@@ -209,19 +209,18 @@ class ComputerVision(object):
 
 
         reachedThreshold = False
-        """
-        for id, obj in enumerate(objects):
-            fields.append(('id_is_' + id, obj))
-        """
+
+
+
 
         prediction = self.Predict(image, model, dictionary)
-        for p in prediction:
-            print p['face']['value'], p['face']['distance']
+        for key, value in enumerate(prediction):
+            print key, value['face']['value'], value['face']['distance'], value['face']['coords']['x'], value['face']['coords']['y']
 
-            if int(p['face']['distance']) > self.__PredictStreamMaxDistance:
-                self.__addPrediction("Unknown", (int(p['face']['distance']) - self.__PredictStreamMaxDistance))
+            if int(value['face']['distance']) > self.__PredictStreamMaxDistance:
+                self.__addPrediction(key, "Unknown", (int(value['face']['distance']) - self.__PredictStreamMaxDistance))
             else:
-                self.__addPrediction(p['face']['value'], int(p['face']['distance']))
+                self.__addPrediction(key, value['face']['value'], int(value['face']['distance']))
 
             # TODO - more than one --> notify or prediction array
 
@@ -233,12 +232,15 @@ class ComputerVision(object):
         return self.__PredictStreamResult, reachedThreshold, reachedTimeout
 
 
-
-    def __addPrediction(self, key, distance):
-        if(self.__PredictStreamResult.has_key(key)):
-            self.__PredictStreamResult[key] += (self.__PredictStreamMaxDistance - distance) / 10
+    def __addPrediction(self, id, key, distance):
+        if(self.__PredictStreamResult.has_key(id)):
+            if(self.__PredictStreamResult[id].has_key(key)):
+                self.__PredictStreamResult[id][key] += (self.__PredictStreamMaxDistance - distance) / 10
+            else:
+                self.__PredictStreamResult[id][key] = (self.__PredictStreamMaxDistance - distance) / 10
         else:
-            self.__PredictStreamResult[key] = (self.__PredictStreamMaxDistance - distance) / 10
+            self.__PredictStreamResult[id] = {}
+            self.__PredictStreamResult[id][key] = (self.__PredictStreamMaxDistance - distance) / 10
 
 
 

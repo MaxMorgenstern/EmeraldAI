@@ -57,6 +57,12 @@ LUIS: https://blogs.msdn.microsoft.com/benjaminperkins/2016/11/21/most-common-ch
 
 - use os.path.join(x, y,...) instead of os.sep
 
+
+---
+
+http://www.chefkoch.de/forum/2,43,681438/api-chefkoch-de-frei-nutzbar.html
+http://api.chefkoch.de/api/1.1/api-recipe-search.php?Suchbegriff=apple%20pie&i=0&z=1&m=0&o=0&t=&limit=2
+
 ---
 
 Rank  Bot Property  Value
