@@ -208,7 +208,7 @@ class ComputerVision(object):
             reachedTimeout = True
 
 
-
+        reachedThreshold = False
         """
         for id, obj in enumerate(objects):
             fields.append(('id_is_' + id, obj))
@@ -226,7 +226,7 @@ class ComputerVision(object):
             # TODO - more than one --> notify or prediction array
 
             # TODO - if threshold reached...
-            reachedThreshold = False
+
             if 0 > threshold:
                 reachedThreshold = True
 
@@ -262,6 +262,7 @@ class ComputerVision(object):
                         #self.__disableFile(subjectPath, filename)
 
     def __disableFile(self, filePath, fileName):
+        self.__ensureDirectoryExists(os.path.join(filePath, self.__DisabledFileFolder))
         os.rename(os.path.join(filePath, fileName), os.path.join(filePath, self.__DisabledFileFolder, fileName))
 
     def __getCreationDate(self, filePath):
