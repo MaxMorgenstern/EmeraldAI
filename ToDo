@@ -176,3 +176,12 @@ pyaudio
 add iwlist to sudo "vi sudoers"
 
 
+or
+
+sudo visudo
+
+add:
+USERNAME ALL= NOPASSWD: DATEIPFAD
+
+save:
+Strg+X ; Y ; Enter
