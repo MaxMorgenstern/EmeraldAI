@@ -5,6 +5,7 @@ import re
 import numpy as np
 import platform
 import time
+import operator
 
 class ComputerVision(object):
 
@@ -17,13 +18,17 @@ class ComputerVision(object):
         self.__TempCVFolder = "Temp"
         self.__DisabledFileFolder = "Disabled"
 
+        self.__UnknownUserTag = "Unknown"
+
         self.__ImageLimit = 100
 
         self.__ResizeWidth = 350
         self.__ResizeHeight = 350
 
         self.__PredictionTimeout = 5
-        self.__PredictStreamTimeout = 0
+        self.__PredictStreamThreshold = 300
+        self.__PredictStreamTimeoutDate = 0
+        self.__PredictStreamTimeoutBool = False
         self.__PredictStreamMaxDistance = 500
         self.__PredictStreamResult = {}
 
@@ -55,8 +60,7 @@ class ComputerVision(object):
 
             out = cv2.resize(img, (self.__ResizeWidth, self.__ResizeHeight)) #Resize face so all images have same size
 
-            # TODO
-            cv2.imwrite("%s/%s/%s/%s.jpg" %(self.__DatasetBasePath, datasetName, imageType, fileName), out) #Write image
+            cv2.imwrite(os.path.join(self.__DatasetBasePath, datasetName, imageType, fileName), out) #Write image
         except:
            pass #If error, pass file
 
@@ -97,6 +101,25 @@ class ComputerVision(object):
                 if(len(tmpNum) > 0 and int(tmpNum) > maxImgNum):
                     maxImgNum = int(tmpNum)
         return int(maxImgNum)
+
+    def __thresholdReached(self, threshold):
+        if len(self.__PredictStreamResult) > 0:
+            for key, resultSet in self.__PredictStreamResult.iteritems():
+                maxKey = max(resultSet.iteritems(), key=operator.itemgetter(1))[0]
+                if maxKey != self.__UnknownUserTag and threshold < resultSet[maxKey]:
+                    return True
+        return False
+
+    def __addPrediction(self, id, key, distance):
+        if(self.__PredictStreamResult.has_key(id)):
+            if(self.__PredictStreamResult[id].has_key(key)):
+                self.__PredictStreamResult[id][key] += (self.__PredictStreamMaxDistance - distance) / 10
+            else:
+                self.__PredictStreamResult[id][key] = (self.__PredictStreamMaxDistance - distance) / 10
+        else:
+            self.__PredictStreamResult[id] = {}
+            self.__PredictStreamResult[id][key] = (self.__PredictStreamMaxDistance - distance) / 10
+
 
 
     def DetectFaceFast(self, img):
@@ -182,6 +205,34 @@ class ComputerVision(object):
                 })
         return result
 
+    def PredictStream(self, image, model, dictionary, threshold=None, timeout=None):
+        if threshold == None:
+            threshold = self.__PredictStreamThreshold
+
+        if timeout == None:
+            timeout = self.__PredictionTimeout
+
+        # reset is timeout happened on last call
+        if self.__PredictStreamTimeoutBool:
+            self.__PredictStreamResult = {}
+            self.__PredictStreamTimeoutDate = time.time() + timeout
+            self.__PredictStreamTimeoutBool = False
+
+        #check if current call times out
+        reachedTimeout = False
+        if time.time() > self.__PredictStreamTimeoutDate:
+            reachedTimeout = True
+            self.__PredictStreamTimeoutBool = True
+
+        prediction = self.Predict(image, model, dictionary)
+        for key, value in enumerate(prediction):
+            if int(value['face']['distance']) > self.__PredictStreamMaxDistance:
+                self.__addPrediction(key, self.__UnknownUserTag, (int(value['face']['distance']) - self.__PredictStreamMaxDistance))
+            else:
+                self.__addPrediction(key, value['face']['value'], int(value['face']['distance']))
+
+        return self.__PredictStreamResult, self.__thresholdReached(threshold), reachedTimeout
+
     def TakeFaceImage(self, image, imageType, datasetName=None):
         if datasetName == None:
             datasetName = self.__TempCVFolder
@@ -193,54 +244,6 @@ class ComputerVision(object):
 
                 fileName = str(self.__getHighestImageID(datasetName, imageType) + 1)
                 self.__saveImg(resizedImage, datasetName, imageType, fileName)
-
-
-
-    # TODO
-    def PredictStream(self, image, model, dictionary, threshold, timeout=None):
-        if timeout == None:
-            timeout = self.__PredictionTimeout
-
-        reachedTimeout = False
-        if time.time() > self.__PredictStreamTimeout:
-            self.__PredictStreamTimeout = time.time() + timeout
-            self.__PredictStreamResult = {}
-            reachedTimeout = True
-
-
-        reachedThreshold = False
-
-
-
-
-        prediction = self.Predict(image, model, dictionary)
-        for key, value in enumerate(prediction):
-            print key, value['face']['value'], value['face']['distance'], value['face']['coords']['x'], value['face']['coords']['y']
-
-            if int(value['face']['distance']) > self.__PredictStreamMaxDistance:
-                self.__addPrediction(key, "Unknown", (int(value['face']['distance']) - self.__PredictStreamMaxDistance))
-            else:
-                self.__addPrediction(key, value['face']['value'], int(value['face']['distance']))
-
-            # TODO - more than one --> notify or prediction array
-
-            # TODO - if threshold reached...
-
-            if 0 > threshold:
-                reachedThreshold = True
-
-        return self.__PredictStreamResult, reachedThreshold, reachedTimeout
-
-
-    def __addPrediction(self, id, key, distance):
-        if(self.__PredictStreamResult.has_key(id)):
-            if(self.__PredictStreamResult[id].has_key(key)):
-                self.__PredictStreamResult[id][key] += (self.__PredictStreamMaxDistance - distance) / 10
-            else:
-                self.__PredictStreamResult[id][key] = (self.__PredictStreamMaxDistance - distance) / 10
-        else:
-            self.__PredictStreamResult[id] = {}
-            self.__PredictStreamResult[id][key] = (self.__PredictStreamMaxDistance - distance) / 10
 
 
 
@@ -303,9 +306,9 @@ while True:
     #cv.TakeFaceImage(image, "normal")
 
     #result = cv.Predict(image, model, dictionary)
-    result, thresholdReached, timeoutReached = cv.PredictStream(image, model, dictionary, 100)
+    result, thresholdReached, timeoutReached = cv.PredictStream(image, model, dictionary)
     if(len(result) > 0):
-        print result
+        print thresholdReached, timeoutReached, result
         #print ""
         #print ""
         #print result[0]['face']['value'], " - ", result[0]['face']['distance']
