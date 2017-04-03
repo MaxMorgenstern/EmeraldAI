@@ -178,6 +178,20 @@ class ComputerVision(object):
 
         return self.__RecognizerModel, self.__RecognizerDictionary
 
+    def TakeFaceImage(self, image, imageType, datasetName=None):
+        if datasetName == None:
+            datasetName = self.__TempCVFolder
+        faces = self.DetectFaceFast(image)
+        if len(faces) > 0:
+            croppedFaceImages = self.__cropFaces(image, faces)
+            for croppedImage in croppedFaceImages:
+                resizedImage = cv2.resize(self.__toGrayscale(croppedImage), (self.__ResizeWidth, self.__ResizeHeight))
+
+                fileName = str(self.__getHighestImageID(datasetName, imageType) + 1)
+                self.__saveImg(resizedImage, datasetName, imageType, fileName)
+
+
+    # TODO - multiple models / dicts at once
     def Predict(self, image, model, dictionary):
         faces = self.DetectFaceBest(image)
         result = []
@@ -205,6 +219,8 @@ class ComputerVision(object):
                 })
         return result
 
+
+    # TODO - multiple models / dicts at once
     def PredictStream(self, image, model, dictionary, threshold=None, timeout=None):
         if threshold == None:
             threshold = self.__PredictStreamThreshold
@@ -232,19 +248,6 @@ class ComputerVision(object):
                 self.__addPrediction(key, value['face']['value'], int(value['face']['distance']))
 
         return self.__PredictStreamResult, self.__thresholdReached(threshold), reachedTimeout
-
-    def TakeFaceImage(self, image, imageType, datasetName=None):
-        if datasetName == None:
-            datasetName = self.__TempCVFolder
-        faces = self.DetectFaceFast(image)
-        if len(faces) > 0:
-            croppedFaceImages = self.__cropFaces(image, faces)
-            for croppedImage in croppedFaceImages:
-                resizedImage = cv2.resize(self.__toGrayscale(croppedImage), (self.__ResizeWidth, self.__ResizeHeight))
-
-                fileName = str(self.__getHighestImageID(datasetName, imageType) + 1)
-                self.__saveImg(resizedImage, datasetName, imageType, fileName)
-
 
 
 
