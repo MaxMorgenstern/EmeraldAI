@@ -64,6 +64,8 @@ class ComputerVision(object):
         except:
            pass #If error, pass file
 
+
+    # TODO - make sure no disabled folders are used
     def __loadImages(self, datasetName):
         trainingData = []
         trainingLabels = []
@@ -71,6 +73,9 @@ class ComputerVision(object):
 
         for dirname, dirnames, filenames in os.walk(os.path.join(self.__DatasetBasePath, datasetName)):
             for subdirname in dirnames:
+                if subdirname == self.__DisabledFileFolder:
+                    continue
+
                 subjectPath = os.path.join(dirname, subdirname)
                 for filename in os.listdir(subjectPath):
                     if(not filename.startswith('.')):
@@ -119,6 +124,17 @@ class ComputerVision(object):
         else:
             self.__PredictStreamResult[id] = {}
             self.__PredictStreamResult[id][key] = (self.__PredictStreamMaxDistance - distance) / 10
+
+    def __getSortedListDir(self, path):
+        if platform.system() == 'Windows':
+            mtime = lambda f: os.stat(os.path.join(path, f)).st_ctime
+        else:
+            mtime = lambda f: os.stat(os.path.join(path, f)).st_mtime
+        return list(sorted(os.listdir(path), key=mtime))
+
+    def __disableFile(self, filePath, fileName):
+        self.__ensureDirectoryExists(os.path.join(filePath, self.__DisabledFileFolder))
+        os.rename(os.path.join(filePath, fileName), os.path.join(filePath, self.__DisabledFileFolder, fileName))
 
 
 
@@ -252,27 +268,31 @@ class ComputerVision(object):
 
 
 
-
-    # TODO
     def LimitImagesInFolder(self, datasetName, amount=None):
         if amount == None:
             amount = self.__ImageLimit
+        amount += 2 # add one for 'Disabled' folder and one for eventual hidden file
 
         for dirname, dirnames, filenames in os.walk(os.path.join(self.__DatasetBasePath, datasetName)):
             for subdirname in dirnames:
+                if subdirname == self.__DisabledFileFolder:
+                    continue
+
                 subjectPath = os.path.join(dirname, subdirname)
-                dirContent = os.listdir(subjectPath)
+                dirContent = self.__getSortedListDir(subjectPath)
                 if len(dirContent) > amount:
                     filesToDeactivate = len(dirContent) - amount
                     for filename in dirContent:
-                        print time.ctime(self.__getCreationDate(os.path.join(subjectPath, filename)))
-                        #...
-                        #self.__disableFile(subjectPath, filename)
+                        if(not filename.startswith('.')):
+                            if filesToDeactivate > 0:
+                                self.__disableFile(subjectPath, filename)
+                                filesToDeactivate -= 1
+                            else:
+                                continue
 
-    def __disableFile(self, filePath, fileName):
-        self.__ensureDirectoryExists(os.path.join(filePath, self.__DisabledFileFolder))
-        os.rename(os.path.join(filePath, fileName), os.path.join(filePath, self.__DisabledFileFolder, fileName))
 
+
+    """
     def __getCreationDate(self, filePath):
         if platform.system() == 'Windows':
             return os.path.getctime(filePath)
@@ -282,7 +302,7 @@ class ComputerVision(object):
                 return stat.st_birthtime
             except AttributeError:
                 return stat.st_mtime
-
+    """
 
 cv = ComputerVision()
 
@@ -291,8 +311,8 @@ cv = ComputerVision()
 #exit()
 
 
-#cv.LimitImagesInFolder("mood", 10)
-#exit()
+cv.LimitImagesInFolder("mood", 5)
+exit()
 
 model, dictionary = cv.LoadModel("mood")
 
