@@ -45,13 +45,17 @@ class ComputerVision(object):
     def __toGrayscale(self, img):
         gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
         return gray
-
+    """
     def __cropFaces(self, img, faces):
         faceImages = []
         for face in faces:
             x, y, h, w = [result for result in face]
             faceImages.append(img[y:y+h,x:x+w])
         return faceImages
+    """
+    def __cropFace(self, img, face):
+        x, y, h, w = [result for result in face]
+        return img[y:y+h,x:x+w]
 
     def __saveImg(self, img, datasetName, imageType, fileName):
         try:
@@ -64,8 +68,6 @@ class ComputerVision(object):
         except:
            pass #If error, pass file
 
-
-    # TODO - make sure no disabled folders are used
     def __loadImages(self, datasetName):
         trainingData = []
         trainingLabels = []
@@ -78,7 +80,7 @@ class ComputerVision(object):
 
                 subjectPath = os.path.join(dirname, subdirname)
                 for filename in os.listdir(subjectPath):
-                    if(not filename.startswith('.')):
+                    if(not filename.startswith('.') and filename != self.__DisabledFileFolder):
                         try:
                             image = cv2.imread(os.path.join(subjectPath, filename), cv2.IMREAD_GRAYSCALE)
                             trainingData.append(image)
@@ -137,6 +139,27 @@ class ComputerVision(object):
         os.rename(os.path.join(filePath, fileName), os.path.join(filePath, self.__DisabledFileFolder, fileName))
 
 
+    def LimitImagesInFolder(self, datasetName, amount=None):
+        if amount == None:
+            amount = self.__ImageLimit
+        amount += 2 # add one for 'Disabled' folder and one for eventual hidden file
+
+        for dirname, dirnames, filenames in os.walk(os.path.join(self.__DatasetBasePath, datasetName)):
+            for subdirname in dirnames:
+                if subdirname == self.__DisabledFileFolder:
+                    continue
+
+                subjectPath = os.path.join(dirname, subdirname)
+                dirContent = self.__getSortedListDir(subjectPath)
+                if len(dirContent) > amount:
+                    filesToDeactivate = len(dirContent) - amount
+                    for filename in dirContent:
+                        if(not filename.startswith('.')):
+                            if filesToDeactivate > 0:
+                                self.__disableFile(subjectPath, filename)
+                                filesToDeactivate -= 1
+                            else:
+                                continue
 
     def DetectFaceFast(self, img):
         face = self.__frontalFace.detectMultiScale(img, scaleFactor=1.3, minNeighbors=4, minSize=(5, 5), flags=cv2.CASCADE_SCALE_IMAGE)
@@ -199,26 +222,22 @@ class ComputerVision(object):
             datasetName = self.__TempCVFolder
         faces = self.DetectFaceFast(image)
         if len(faces) > 0:
-            croppedFaceImages = self.__cropFaces(image, faces)
-            for croppedImage in croppedFaceImages:
+            for face in faces:
+                croppedImage = self.__cropFace(image, face)
                 resizedImage = cv2.resize(self.__toGrayscale(croppedImage), (self.__ResizeWidth, self.__ResizeHeight))
 
                 fileName = str(self.__getHighestImageID(datasetName, imageType) + 1)
                 self.__saveImg(resizedImage, datasetName, imageType, fileName)
 
-
-    # TODO - multiple models / dicts at once
     def Predict(self, image, model, dictionary):
         faces = self.DetectFaceBest(image)
         result = []
         if len(faces) > 0:
-            croppedFaceImages = self.__cropFaces(image, faces)
-            for croppedImage in croppedFaceImages:
+            for face in faces:
+                croppedImage = self.__cropFace(image, face)
+                resizedImage = cv2.resize(self.__toGrayscale(croppedImage), (self.__ResizeWidth, self.__ResizeHeight))
 
-                resized = cv2.resize(self.__toGrayscale(croppedImage), (self.__ResizeWidth, self.__ResizeHeight))
-
-                prediction = model.predict(resized)
-
+                prediction = model.predict(resizedImage)
                 result.append({
                     'face': {
                         'id': len(result)+1,
@@ -226,17 +245,15 @@ class ComputerVision(object):
                         'rawvalue': prediction[0],
                         'distance': prediction[1],
                         'coords': {
-                            'x': str(faces[0][0]),
-                            'y': str(faces[0][1]),
-                            'width': str(faces[0][2]),
-                            'height': str(faces[0][3])
+                            'x': str(face[0]),
+                            'y': str(face[1]),
+                            'width': str(face[2]),
+                            'height': str(face[3])
                         }
                     }
                 })
         return result
 
-
-    # TODO - multiple models / dicts at once
     def PredictStream(self, image, model, dictionary, threshold=None, timeout=None):
         if threshold == None:
             threshold = self.__PredictStreamThreshold
@@ -266,29 +283,47 @@ class ComputerVision(object):
         return self.__PredictStreamResult, self.__thresholdReached(threshold), reachedTimeout
 
 
+    def PredictMultiple(self, image, predictionObjectList):
+        faces = self.DetectFaceBest(image)
+        result = []
+        if len(faces) > 0:
+            faceId = 1
+            for face in faces:
+                croppedImage = self.__cropFace(image, face)
+                resizedImage = cv2.resize(self.__toGrayscale(croppedImage), (self.__ResizeWidth, self.__ResizeHeight))
 
+                predictionResult = []
+                for predictionObject in predictionObjectList:
+                    prediction = predictionObject.Model.predict(resizedImage)
 
-    def LimitImagesInFolder(self, datasetName, amount=None):
-        if amount == None:
-            amount = self.__ImageLimit
-        amount += 2 # add one for 'Disabled' folder and one for eventual hidden file
+                    try:
+                        predictionResult.append({
+                            'model': predictionObject.Name,
+                            'value': predictionObject.Dictionary.keys()[predictionObject.Dictionary.values().index(prediction[0])],
+                            'rawvalue': prediction[0],
+                            'distance': prediction[1]
+                        })
+                    except Exception as e:
+                        print "Value Error", e
 
-        for dirname, dirnames, filenames in os.walk(os.path.join(self.__DatasetBasePath, datasetName)):
-            for subdirname in dirnames:
-                if subdirname == self.__DisabledFileFolder:
-                    continue
+                result.append({
+                    'face': {
+                        'id': faceId,
+                        'data': predictionResult,
+                        'coords': {
+                            'x': str(face[0]),
+                            'y': str(face[1]),
+                            'width': str(face[2]),
+                            'height': str(face[3])
+                        }
+                    }
+                })
 
-                subjectPath = os.path.join(dirname, subdirname)
-                dirContent = self.__getSortedListDir(subjectPath)
-                if len(dirContent) > amount:
-                    filesToDeactivate = len(dirContent) - amount
-                    for filename in dirContent:
-                        if(not filename.startswith('.')):
-                            if filesToDeactivate > 0:
-                                self.__disableFile(subjectPath, filename)
-                                filesToDeactivate -= 1
-                            else:
-                                continue
+                faceId += 1
+        return result
+
+    def PredictMultipleStream(self, image, predictionObjectList, threshold=None, timeout=None):
+        return
 
 
 
@@ -304,17 +339,50 @@ class ComputerVision(object):
                 return stat.st_mtime
     """
 
+
+class PredictionObject(object):
+    def __init__(self, name, model, directory, maxDistance):
+        self.Name = name
+        self.Model = model
+        self.Dictionary = dictionary
+        self.PredictionResult = {}
+
+        self.__MaxPredictionDistance = maxDistance
+
+    def AddPrediction(self, id, key, distance):
+        if(self.PredictionResult.has_key(id)):
+            if(self.PredictionResult[id].has_key(key)):
+                self.PredictionResult[id][key] += (self.__MaxPredictionDistance - distance) / 10
+            else:
+                self.PredictionResult[id][key] = (self.__MaxPredictionDistance - distance) / 10
+        else:
+            self.PredictionResult[id] = {}
+            self.PredictionResult[id][key] = (self.__MaxPredictionDistance - distance) / 10
+
+    def ResetResult(self):
+        self.PredictionResult = {}
+
+
+
 cv = ComputerVision()
 
-
-#cv.TrainModel("mood")
+#cv.TrainModel("person")
 #exit()
 
 
-cv.LimitImagesInFolder("mood", 5)
-exit()
+#cv.LimitImagesInFolder("mood", 5)
+#exit()
 
 model, dictionary = cv.LoadModel("mood")
+
+
+moodModel, moodDictionary = cv.LoadModel("mood")
+personModel, personDictionary = cv.LoadModel("person")
+
+
+print type(cv) is ComputerVision
+print type(model), type(dictionary)
+#exit()
 
 
 camera = cv2.VideoCapture(0)
@@ -328,12 +396,19 @@ while True:
 
     #cv.TakeFaceImage(image, "normal")
 
+
+    predictionObjectList = []
+    predictionObjectList.append(PredictionObject("mood", moodModel, moodDictionary, 500))
+    predictionObjectList.append(PredictionObject("person", personModel, personDictionary, 500))
+
+    result = cv.PredictMultiple(image, predictionObjectList)
+
     #result = cv.Predict(image, model, dictionary)
-    result, thresholdReached, timeoutReached = cv.PredictStream(image, model, dictionary)
+    #result, thresholdReached, timeoutReached = cv.PredictStream(image, model, dictionary)
     if(len(result) > 0):
-        print thresholdReached, timeoutReached, result
+        #print thresholdReached, timeoutReached, result
         #print ""
-        #print ""
+        print result
         #print result[0]['face']['value'], " - ", result[0]['face']['distance']
 
 
