@@ -1,1 +1,1 @@
- This folder contains images of known persons for reference.
+ This folder contains datasets for computer vision.

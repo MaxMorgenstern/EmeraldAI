@@ -9,23 +9,23 @@ import platform
 import time
 import operator
 from EmeraldAI.Config.Config import *
+from EmeraldAI.Logic.Modules import Global
 
-"""
-TODO:
-Config().Get("ComputerVision", "HaarcascadeFaceFrontal")
-"""
+# TODO: replace print with log
+# TODO: body detection
 
 class ComputerVision(object):
 
     def __init__(self):
-        self.__ModelFile = "myModel.mdl"
-        self.__DictionaryFile = "myDict.npy"
+        self.__ModelFile = "myCVModel.mdl"
+        self.__DictionaryFile = "myCVDict.npy"
 
-        self.__DatasetBasePath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ComputerVisionData")
+        self.__DatasetBasePath = os.path.join(Global.EmeraldPath, "Data", "ComputerVisionData")
         self.__TempCVFolder = "Temp"
         self.__DisabledFileFolder = "Disabled"
 
         self.__UnknownUserTag = Config().Get("ComputerVision", "UnknownUserTag") # Unknown
+        self.__NotKnownDataPrefix = Config().Get("ComputerVision", "NotKnownDataPrefix") # NotKnown
 
         self.__ImageLimit = Config().GetInt("ComputerVision", "ImageLimit") # 100
 
@@ -39,12 +39,13 @@ class ComputerVision(object):
         self.__PredictStreamMaxDistance = Config().GetInt("ComputerVision.Prediction", "MaxPredictionDistance") # 500
         self.__PredictStreamResult = {}
 
-        self.__haarDir = Global.EmeraldPath + "Data/HaarCascades/"
-        self.__frontalFace = cv2.CascadeClassifier(self.__haarDir + Config().Get("ComputerVision", "HaarcascadeFaceFrontalDefault"))
-        self.__frontalFace2 = cv2.CascadeClassifier(self.__haarDir + Config().Get("ComputerVision", "HaarcascadeFaceFrontalAlt"))
-        self.__frontalFace3 = cv2.CascadeClassifier(self.__haarDir + Config().Get("ComputerVision", "HaarcascadeFaceFrontalAlt2"))
-        self.__frontalFace4 = cv2.CascadeClassifier(self.__haarDir + Config().Get("ComputerVision", "HaarcascadeFaceFrontalAltTree"))
-        self.__frontalFace5 = cv2.CascadeClassifier(self.__haarDir + Config().Get("ComputerVision", "HaarcascadeFaceProfile"))
+        self.__haarDir = os.path.join(Global.EmeraldPath, "Data", "HaarCascades")
+
+        self.__frontalFace = cv2.CascadeClassifier(os.path.join(self.__haarDir, Config().Get("ComputerVision", "HaarcascadeFaceFrontalDefault")))
+        self.__frontalFace2 = cv2.CascadeClassifier(os.path.join(self.__haarDir, Config().Get("ComputerVision", "HaarcascadeFaceFrontalAlt")))
+        self.__frontalFace3 = cv2.CascadeClassifier(os.path.join(self.__haarDir, Config().Get("ComputerVision", "HaarcascadeFaceFrontalAlt2")))
+        self.__frontalFace4 = cv2.CascadeClassifier(os.path.join(self.__haarDir, Config().Get("ComputerVision", "HaarcascadeFaceFrontalAltTree")))
+        self.__frontalFace5 = cv2.CascadeClassifier(os.path.join(self.__haarDir, Config().Get("ComputerVision", "HaarcascadeFaceProfile")))
 
         self.__RecognizerModel = cv2.createFisherFaceRecognizer()
         self.__RecognizerDictionary = {}
@@ -206,6 +207,9 @@ class ComputerVision(object):
 
     def TrainModel(self, datasetName):
         images, labels, labelDict = self.__loadImages(datasetName)
+        if len(images) == 0 or len(labels) == 0:
+        	print "Error, no data given"
+        	return
         self.__RecognizerModel.train(images, labels)
         self.__RecognizerDictionary = labelDict
 
@@ -287,7 +291,7 @@ class ComputerVision(object):
         for key, value in enumerate(prediction):
             data = value['face']['data'][0]
 
-            if int(data['distance']) > self.__PredictStreamMaxDistance:
+            if int(data['distance']) > self.__PredictStreamMaxDistance or data['value'].startswith(self.__NotKnownDataPrefix):
                 self.__addPrediction(key, self.__UnknownUserTag, (int(data['distance']) - self.__PredictStreamMaxDistance))
             else:
                 self.__addPrediction(key, data['value'], int(data['distance']))
@@ -364,7 +368,7 @@ class ComputerVision(object):
             for data in dataArray:
                 for predictionObject in predictionObjectList:
                     if data['model'] == predictionObject.Name:
-                        if int(data['distance']) > predictionObject.MaxPredictionDistance:
+                        if int(data['distance']) > predictionObject.MaxPredictionDistance or data['value'].startswith(self.__NotKnownDataPrefix):
                             predictionObject.AddPrediction(key, self.__UnknownUserTag, (int(data['distance']) - predictionObject.MaxPredictionDistance))
                         else:
                             predictionObject.AddPrediction(key, data['value'], int(data['distance']))

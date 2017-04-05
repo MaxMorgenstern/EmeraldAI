@@ -10,3 +10,14 @@ from EmeraldAI.Entities.PredictionObject import PredictionObject
 po = PredictionObject(None,None,None,None)
 
 print po
+
+
+
+
+from EmeraldAI.Logic.ComputerVisionNew.ComputerVision import ComputerVision
+
+cv = ComputerVision()
+
+
+
+cv.TrainModel("wurst")

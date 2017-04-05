@@ -97,22 +97,31 @@ CameraWidth = 640
 CameraHeight = 360
 CameraID = 0
 
-HaarcascadeFaceFrontal = haarcascade_frontalface_alt2.xml
+UnknownUserTag = Unknown
+NotKnownDataPrefix = NotKnown
+
+ImageSizeWidth = 350
+ImageSizeHeight = 350
+ImageLimit = 100
+
+HaarcascadeFaceFrontalDefault = haarcascade_frontalface_default.xml
+HaarcascadeFaceFrontalAlt = haarcascade_frontalface_alt.xml
+HaarcascadeFaceFrontalAlt2 = haarcascade_frontalface_alt2.xml
+HaarcascadeFaceFrontalAltTree = haarcascade_frontalface_alt_tree.xml
+
 HaarcascadeFaceProfile = haarcascade_profileface.xml
 
+# ----------------------
 HaarcascadeBodyUpper = haarcascade_upperbody.xml
 HaarcascadeBodyLower = haarcascade_lowerbody.xml
 HaarcascadeBodyFull = haarcascade_fullbody.xml
+# ----------------------
 
-HaarcascadeEyes = haarcascade_eye.xml
-HaarcascadeEyesGlasses = haarcascade_eye_tree_eyeglasses.xml
+[ComputerVision.Prediction]
+MaxPredictionDistance = 500
 
-
-[ComputerVision.Predictor]
-ImageSize = 100x100
-MaxPredictionDistance = 150
 PredictionTimeout = 5
-PredictionThreshold = 50
+PredictionThreshold = 300
 
 
 # ----------------------
