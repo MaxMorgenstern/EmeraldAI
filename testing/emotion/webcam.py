@@ -7,10 +7,15 @@ import platform
 import time
 import operator
 
+"""
+TODO: check why we get lot of:
+Value Error 1701013047 is not in list
+Value Error 32718 is not in list
+"""
+
 class ComputerVision(object):
 
     def __init__(self):
-
         self.__ModelFile = "myModel.mdl"
         self.__DictionaryFile = "myDict.npy"
 
@@ -45,14 +50,7 @@ class ComputerVision(object):
     def __toGrayscale(self, img):
         gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
         return gray
-    """
-    def __cropFaces(self, img, faces):
-        faceImages = []
-        for face in faces:
-            x, y, h, w = [result for result in face]
-            faceImages.append(img[y:y+h,x:x+w])
-        return faceImages
-    """
+
     def __cropFace(self, img, face):
         x, y, h, w = [result for result in face]
         return img[y:y+h,x:x+w]
@@ -139,6 +137,7 @@ class ComputerVision(object):
         os.rename(os.path.join(filePath, fileName), os.path.join(filePath, self.__DisabledFileFolder, fileName))
 
 
+
     def LimitImagesInFolder(self, datasetName, amount=None):
         if amount == None:
             amount = self.__ImageLimit
@@ -201,6 +200,7 @@ class ComputerVision(object):
             bestResult = face5
         return bestResult
 
+
     def TrainModel(self, datasetName):
         images, labels, labelDict = self.__loadImages(datasetName)
         self.__RecognizerModel.train(images, labels)
@@ -209,6 +209,7 @@ class ComputerVision(object):
         path = os.path.join(self.__DatasetBasePath, datasetName)
         self.__RecognizerModel.save(os.path.join(path, self.__ModelFile))
         np.save(os.path.join(path, self.__DictionaryFile), labelDict)
+
 
     def LoadModel(self, datasetName):
         path = os.path.join(self.__DatasetBasePath, datasetName)
@@ -236,22 +237,28 @@ class ComputerVision(object):
             for face in faces:
                 croppedImage = self.__cropFace(image, face)
                 resizedImage = cv2.resize(self.__toGrayscale(croppedImage), (self.__ResizeWidth, self.__ResizeHeight))
-
                 prediction = model.predict(resizedImage)
-                result.append({
-                    'face': {
-                        'id': len(result)+1,
-                        'value': dictionary.keys()[dictionary.values().index(prediction[0])],
-                        'rawvalue': prediction[0],
-                        'distance': prediction[1],
-                        'coords': {
-                            'x': str(face[0]),
-                            'y': str(face[1]),
-                            'width': str(face[2]),
-                            'height': str(face[3])
+
+                try:
+                    result.append({
+                        'face': {
+                            'id': len(result)+1,
+                            'data': [{
+                                'model': '',
+                                'value': dictionary.keys()[dictionary.values().index(prediction[0])],
+                                'rawvalue': prediction[0],
+                                'distance': prediction[1]
+                                }],
+                            'coords': {
+                                'x': str(face[0]),
+                                'y': str(face[1]),
+                                'width': str(face[2]),
+                                'height': str(face[3])
+                            }
                         }
-                    }
-                })
+                    })
+                except Exception as e:
+                    print "Value Error", e
         return result
 
     def PredictStream(self, image, model, dictionary, threshold=None, timeout=None):
@@ -275,13 +282,14 @@ class ComputerVision(object):
 
         prediction = self.Predict(image, model, dictionary)
         for key, value in enumerate(prediction):
-            if int(value['face']['distance']) > self.__PredictStreamMaxDistance:
-                self.__addPrediction(key, self.__UnknownUserTag, (int(value['face']['distance']) - self.__PredictStreamMaxDistance))
+            data = value['face']['data'][0]
+
+            if int(data['distance']) > self.__PredictStreamMaxDistance:
+                self.__addPrediction(key, self.__UnknownUserTag, (int(data['distance']) - self.__PredictStreamMaxDistance))
             else:
-                self.__addPrediction(key, value['face']['value'], int(value['face']['distance']))
+                self.__addPrediction(key, data['value'], int(data['distance']))
 
         return self.__PredictStreamResult, self.__thresholdReached(threshold), reachedTimeout
-
 
     def PredictMultiple(self, image, predictionObjectList):
         faces = self.DetectFaceBest(image)
@@ -294,6 +302,8 @@ class ComputerVision(object):
 
                 predictionResult = []
                 for predictionObject in predictionObjectList:
+                    print "--", predictionObject.Name, predictionObject.Dictionary
+
                     prediction = predictionObject.Model.predict(resizedImage)
 
                     try:
@@ -323,44 +333,86 @@ class ComputerVision(object):
         return result
 
     def PredictMultipleStream(self, image, predictionObjectList, threshold=None, timeout=None):
-        return
+        if threshold == None:
+            threshold = self.__PredictStreamThreshold
 
+        if timeout == None:
+            timeout = self.__PredictionTimeout
 
+        # reset is timeout happened on last call
+        if self.__PredictStreamTimeoutBool:
+            self.__PredictStreamTimeoutDate = time.time() + timeout
+            self.__PredictStreamTimeoutBool = False
+            for predictionObject in predictionObjectList:
+                predictionObject.ResetResult()
 
-    """
-    def __getCreationDate(self, filePath):
-        if platform.system() == 'Windows':
-            return os.path.getctime(filePath)
-        else:
-            stat = os.stat(filePath)
-            try:
-                return stat.st_birthtime
-            except AttributeError:
-                return stat.st_mtime
-    """
+        #check if current call times out
+        reachedTimeout = False
+        if time.time() > self.__PredictStreamTimeoutDate:
+            reachedTimeout = True
+            self.__PredictStreamTimeoutBool = True
+
+        reachedThreshold = False
+
+        prediction = self.PredictMultiple(image, predictionObjectList)
+        print prediction
+        for key, value in enumerate(prediction):
+            dataArray = value['face']['data']
+            for data in dataArray:
+                for predictionObject in predictionObjectList:
+                    if data['model'] == predictionObject.Name:
+                        if int(data['distance']) > predictionObject.MaxPredictionDistance:
+                            predictionObject.AddPrediction(key, self.__UnknownUserTag, (int(data['distance']) - predictionObject.MaxPredictionDistance))
+                        else:
+                            predictionObject.AddPrediction(key, data['value'], int(data['distance']))
+
+        for predictionObject in predictionObjectList:
+            if predictionObject.ThresholdReached(threshold):
+                reachedThreshold = True
+
+        return predictionObjectList, reachedThreshold, reachedTimeout
 
 
 class PredictionObject(object):
-    def __init__(self, name, model, directory, maxDistance):
+    def __init__(self, name, model, dictionary, maxDistance):
         self.Name = name
         self.Model = model
         self.Dictionary = dictionary
         self.PredictionResult = {}
 
-        self.__MaxPredictionDistance = maxDistance
+        self.MaxPredictionDistance = maxDistance
+        self.__UnknownUserTag = "Unknown"
 
     def AddPrediction(self, id, key, distance):
         if(self.PredictionResult.has_key(id)):
             if(self.PredictionResult[id].has_key(key)):
-                self.PredictionResult[id][key] += (self.__MaxPredictionDistance - distance) / 10
+                self.PredictionResult[id][key] += (self.MaxPredictionDistance - distance) / 10
             else:
-                self.PredictionResult[id][key] = (self.__MaxPredictionDistance - distance) / 10
+                self.PredictionResult[id][key] = (self.MaxPredictionDistance - distance) / 10
         else:
             self.PredictionResult[id] = {}
-            self.PredictionResult[id][key] = (self.__MaxPredictionDistance - distance) / 10
+            self.PredictionResult[id][key] = (self.MaxPredictionDistance - distance) / 10
+
+    def ThresholdReached(self, threshold):
+        if len(self.PredictionResult) > 0:
+            for key, resultSet in self.PredictionResult.iteritems():
+                maxKey = max(resultSet.iteritems(), key=operator.itemgetter(1))[0]
+                if maxKey != self.__UnknownUserTag and threshold < resultSet[maxKey]:
+                    return True
+        return False
 
     def ResetResult(self):
         self.PredictionResult = {}
+
+    def __repr__(self):
+         return "Result:{0}".format(self.PredictionResult)
+
+    def __str__(self):
+         return "Result:{0}".format(self.PredictionResult)
+
+
+
+
 
 
 
@@ -379,6 +431,8 @@ model, dictionary = cv.LoadModel("mood")
 moodModel, moodDictionary = cv.LoadModel("mood")
 personModel, personDictionary = cv.LoadModel("person")
 
+print moodDictionary
+print personDictionary
 
 print type(cv) is ComputerVision
 print type(model), type(dictionary)
@@ -391,24 +445,26 @@ ret = camera.set(4, 480)
 
 count = 0
 
+
+predictionObjectList = []
+predictionObjectList.append(PredictionObject("mood", moodModel, moodDictionary, 500))
+predictionObjectList.append(PredictionObject("person", personModel, personDictionary, 500))
+
+
 while True:
     ret, image = camera.read()
 
     #cv.TakeFaceImage(image, "normal")
 
-
-    predictionObjectList = []
-    predictionObjectList.append(PredictionObject("mood", moodModel, moodDictionary, 500))
-    predictionObjectList.append(PredictionObject("person", personModel, personDictionary, 500))
-
-    result = cv.PredictMultiple(image, predictionObjectList)
+    #result = cv.PredictMultiple(image, predictionObjectList)
+    result, thresholdReached, timeoutReached = cv.PredictMultipleStream(image, predictionObjectList)
 
     #result = cv.Predict(image, model, dictionary)
     #result, thresholdReached, timeoutReached = cv.PredictStream(image, model, dictionary)
     if(len(result) > 0):
-        #print thresholdReached, timeoutReached, result
+        print thresholdReached, timeoutReached, result
         #print ""
-        print result
+        #print result
         #print result[0]['face']['value'], " - ", result[0]['face']['distance']
 
 
