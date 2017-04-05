@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 import cv2
 import glob
 import os
@@ -6,11 +8,11 @@ import numpy as np
 import platform
 import time
 import operator
+from EmeraldAI.Config.Config import *
 
 """
-TODO: check why we get lot of:
-Value Error 1701013047 is not in list
-Value Error 32718 is not in list
+TODO:
+Config().Get("ComputerVision", "HaarcascadeFaceFrontal")
 """
 
 class ComputerVision(object):
@@ -23,25 +25,26 @@ class ComputerVision(object):
         self.__TempCVFolder = "Temp"
         self.__DisabledFileFolder = "Disabled"
 
-        self.__UnknownUserTag = "Unknown"
+        self.__UnknownUserTag = Config().Get("ComputerVision", "UnknownUserTag") # Unknown
 
-        self.__ImageLimit = 100
+        self.__ImageLimit = Config().GetInt("ComputerVision", "ImageLimit") # 100
 
-        self.__ResizeWidth = 350
-        self.__ResizeHeight = 350
+        self.__ResizeWidth = Config().GetInt("ComputerVision", "ImageSizeWidth") # 350
+        self.__ResizeHeight = Config().GetInt("ComputerVision", "ImageSizeHeight") # 350
 
-        self.__PredictionTimeout = 5
-        self.__PredictStreamThreshold = 300
+        self.__PredictionTimeout = Config().GetInt("ComputerVision.Prediction", "PredictionTimeout") # 5
+        self.__PredictStreamThreshold = Config().GetInt("ComputerVision.Prediction", "PredictionThreshold") # 300
         self.__PredictStreamTimeoutDate = 0
         self.__PredictStreamTimeoutBool = False
-        self.__PredictStreamMaxDistance = 500
+        self.__PredictStreamMaxDistance = Config().GetInt("ComputerVision.Prediction", "MaxPredictionDistance") # 500
         self.__PredictStreamResult = {}
 
-        self.__frontalFace = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
-        self.__frontalFace2 = cv2.CascadeClassifier("haarcascade_frontalface_alt2.xml")
-        self.__frontalFace3 = cv2.CascadeClassifier("haarcascade_frontalface_alt.xml")
-        self.__frontalFace4 = cv2.CascadeClassifier("haarcascade_frontalface_alt_tree.xml")
-        self.__frontalFace5 = cv2.CascadeClassifier("haarcascade_profileface.xml")
+        self.__haarDir = Global.EmeraldPath + "Data/HaarCascades/"
+        self.__frontalFace = cv2.CascadeClassifier(self.__haarDir + Config().Get("ComputerVision", "HaarcascadeFaceFrontalDefault"))
+        self.__frontalFace2 = cv2.CascadeClassifier(self.__haarDir + Config().Get("ComputerVision", "HaarcascadeFaceFrontalAlt"))
+        self.__frontalFace3 = cv2.CascadeClassifier(self.__haarDir + Config().Get("ComputerVision", "HaarcascadeFaceFrontalAlt2"))
+        self.__frontalFace4 = cv2.CascadeClassifier(self.__haarDir + Config().Get("ComputerVision", "HaarcascadeFaceFrontalAltTree"))
+        self.__frontalFace5 = cv2.CascadeClassifier(self.__haarDir + Config().Get("ComputerVision", "HaarcascadeFaceProfile"))
 
         self.__RecognizerModel = cv2.createFisherFaceRecognizer()
         self.__RecognizerDictionary = {}
@@ -371,113 +374,3 @@ class ComputerVision(object):
                 reachedThreshold = True
 
         return predictionObjectList, reachedThreshold, reachedTimeout
-
-
-class PredictionObject(object):
-    def __init__(self, name, model, dictionary, maxDistance):
-        self.Name = name
-        self.Model = model
-        self.Dictionary = dictionary
-        self.PredictionResult = {}
-
-        self.MaxPredictionDistance = maxDistance
-        self.__UnknownUserTag = "Unknown"
-
-    def AddPrediction(self, id, key, distance):
-        if(self.PredictionResult.has_key(id)):
-            if(self.PredictionResult[id].has_key(key)):
-                self.PredictionResult[id][key] += (self.MaxPredictionDistance - distance) / 10
-            else:
-                self.PredictionResult[id][key] = (self.MaxPredictionDistance - distance) / 10
-        else:
-            self.PredictionResult[id] = {}
-            self.PredictionResult[id][key] = (self.MaxPredictionDistance - distance) / 10
-
-    def ThresholdReached(self, threshold):
-        if len(self.PredictionResult) > 0:
-            for key, resultSet in self.PredictionResult.iteritems():
-                maxKey = max(resultSet.iteritems(), key=operator.itemgetter(1))[0]
-                if maxKey != self.__UnknownUserTag and threshold < resultSet[maxKey]:
-                    return True
-        return False
-
-    def ResetResult(self):
-        self.PredictionResult = {}
-
-    def __repr__(self):
-         return "Result:{0}".format(self.PredictionResult)
-
-    def __str__(self):
-         return "Result:{0}".format(self.PredictionResult)
-
-
-
-
-
-
-cv = ComputerVision()
-
-#cv.TrainModel("person")
-#exit()
-
-
-#cv.LimitImagesInFolder("mood", 5)
-#exit()
-
-model, dictionary = cv.LoadModel("mood")
-
-
-moodModel, moodDictionary = cv.LoadModel("mood")
-personModel, personDictionary = cv.LoadModel("person")
-
-print moodDictionary
-print personDictionary
-
-print type(cv) is ComputerVision
-print type(model), type(dictionary)
-#exit()
-
-
-camera = cv2.VideoCapture(0)
-ret = camera.set(3, 640)
-ret = camera.set(4, 480)
-
-count = 0
-
-
-predictionObjectList = []
-predictionObjectList.append(PredictionObject("mood", moodModel, moodDictionary, 500))
-predictionObjectList.append(PredictionObject("person", personModel, personDictionary, 500))
-
-
-while True:
-    ret, image = camera.read()
-
-    #cv.TakeFaceImage(image, "normal")
-
-    #result = cv.PredictMultiple(image, predictionObjectList)
-    result, thresholdReached, timeoutReached = cv.PredictMultipleStream(image, predictionObjectList)
-
-    #result = cv.Predict(image, model, dictionary)
-    #result, thresholdReached, timeoutReached = cv.PredictStream(image, model, dictionary)
-    if(len(result) > 0):
-        print thresholdReached, timeoutReached, result
-        #print ""
-        #print result
-        #print result[0]['face']['value'], " - ", result[0]['face']['distance']
-
-
-"""
-    if len(faces) > 0:
-
-        cropped = to_grayscale(crop_faces(image, faces))
-        resized = cv2.resize(cropped, (350,350))
-        save_img(resized, "neutral", count)
-        count +=1
-
-    #if (image != None):
-    #    cv2.rectangle(image, (int(coords['x']), int(coords['y'])), (int(coords['x']) + int(coords['width']), int(coords['y']) + int(coords['height'])), (0, 0, 255), 1)
-    #    cv2.putText(image, textStr, (int(coords['x']) - 10, int(coords['y']) - 10), cv2.FONT_HERSHEY_PLAIN, 0.5, (0, 0, 255), 1)
-
-    cv2.imshow("image", image)
-"""
