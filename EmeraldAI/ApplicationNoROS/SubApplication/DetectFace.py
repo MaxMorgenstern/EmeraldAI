@@ -46,7 +46,11 @@ def RunFaceDetection():
         result, thresholdReached, timeoutReached = ComputerVision().PredictMultipleStream(image, predictionObjectList)
 
         for predictorObject in result:
-            print predictorObject.PredictionResult
+            if len(predictorObject.PredictionResult) > 0:
+                print predictorObject.PredictionResult
+
+
+        ComputerVision().TakeFaceImage(image, "random")
 
 
     """

@@ -15,6 +15,7 @@ from EmeraldAI.Logic.Singleton import Singleton
 # TODO: replace print with log
 # TODO: add logging
 # TODO: body detection
+# TODO: test line 60 --> #gray = cv2.equalizeHist(gray)
 
 class ComputerVision(object):
     __metaclass__ = Singleton
@@ -56,6 +57,7 @@ class ComputerVision(object):
 
     def __toGrayscale(self, img):
         gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+        #gray = cv2.equalizeHist(gray)
         return gray
 
     def __cropFace(self, img, face):
@@ -233,13 +235,13 @@ class ComputerVision(object):
     def TakeFaceImage(self, image, imageType, datasetName=None):
         if datasetName == None:
             datasetName = self.__TempCVFolder
-        faces = self.DetectFaceFast(image)
+        faces = self.DetectFaceBest(image)
         if len(faces) > 0:
             for face in faces:
                 croppedImage = self.__cropFace(image, face)
                 resizedImage = cv2.resize(self.__toGrayscale(croppedImage), (self.__ResizeWidth, self.__ResizeHeight))
 
-                fileName = str(self.__getHighestImageID(datasetName, imageType) + 1)
+                fileName = str(self.__getHighestImageID(datasetName, imageType) + 1) + ".jpg"
                 self.__saveImg(resizedImage, datasetName, imageType, fileName)
 
     def Predict(self, image, model, dictionary):
@@ -314,10 +316,10 @@ class ComputerVision(object):
 
                 predictionResult = []
                 for predictionObject in predictionObjectList:
-                    try:
+
+                    prediction = None
+                    if predictionObject.Model != None:
                         prediction = predictionObject.Model.predict(resizedImage)
-                    except Exception as e:
-                        print "Prediction Error", e
 
                     try:
                         if prediction != None:
