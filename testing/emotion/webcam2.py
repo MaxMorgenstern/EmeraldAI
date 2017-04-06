@@ -14,7 +14,7 @@ print po
 
 
 
-from EmeraldAI.Logic.ComputerVisionNew.ComputerVision import ComputerVision
+from EmeraldAI.Logic.ComputerVision.ComputerVision import ComputerVision
 
 cv = ComputerVision()
 

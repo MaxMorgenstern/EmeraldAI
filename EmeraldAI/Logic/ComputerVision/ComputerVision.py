@@ -10,11 +10,14 @@ import time
 import operator
 from EmeraldAI.Config.Config import *
 from EmeraldAI.Logic.Modules import Global
+from EmeraldAI.Logic.Singleton import Singleton
 
 # TODO: replace print with log
+# TODO: add logging
 # TODO: body detection
 
 class ComputerVision(object):
+    __metaclass__ = Singleton
 
     def __init__(self):
         self.__ModelFile = "myCVModel.mdl"
@@ -141,7 +144,6 @@ class ComputerVision(object):
         os.rename(os.path.join(filePath, fileName), os.path.join(filePath, self.__DisabledFileFolder, fileName))
 
 
-
     def LimitImagesInFolder(self, datasetName, amount=None):
         if amount == None:
             amount = self.__ImageLimit
@@ -220,10 +222,13 @@ class ComputerVision(object):
 
     def LoadModel(self, datasetName):
         path = os.path.join(self.__DatasetBasePath, datasetName)
-        self.__RecognizerModel.load(os.path.join(path, self.__ModelFile))
-        self.__RecognizerDictionary = np.load(os.path.join(path, self.__DictionaryFile)).item()
-
-        return self.__RecognizerModel, self.__RecognizerDictionary
+        try:
+            self.__RecognizerModel.load(os.path.join(path, self.__ModelFile))
+            self.__RecognizerDictionary = np.load(os.path.join(path, self.__DictionaryFile)).item()
+            return self.__RecognizerModel, self.__RecognizerDictionary
+        except Exception as e:
+            print "Error while opening File", e
+            return None, None
 
     def TakeFaceImage(self, image, imageType, datasetName=None):
         if datasetName == None:
@@ -309,17 +314,19 @@ class ComputerVision(object):
 
                 predictionResult = []
                 for predictionObject in predictionObjectList:
-                    print "--", predictionObject.Name, predictionObject.Dictionary
-
-                    prediction = predictionObject.Model.predict(resizedImage)
+                    try:
+                        prediction = predictionObject.Model.predict(resizedImage)
+                    except Exception as e:
+                        print "Prediction Error", e
 
                     try:
-                        predictionResult.append({
-                            'model': predictionObject.Name,
-                            'value': predictionObject.Dictionary.keys()[predictionObject.Dictionary.values().index(prediction[0])],
-                            'rawvalue': prediction[0],
-                            'distance': prediction[1]
-                        })
+                        if prediction != None:
+                            predictionResult.append({
+                                'model': predictionObject.Name,
+                                'value': predictionObject.Dictionary.keys()[predictionObject.Dictionary.values().index(prediction[0])],
+                                'rawvalue': prediction[0],
+                                'distance': prediction[1]
+                            })
                     except Exception as e:
                         print "Value Error", e
 
@@ -362,7 +369,7 @@ class ComputerVision(object):
         reachedThreshold = False
 
         prediction = self.PredictMultiple(image, predictionObjectList)
-        print prediction
+
         for key, value in enumerate(prediction):
             dataArray = value['face']['data']
             for data in dataArray:
