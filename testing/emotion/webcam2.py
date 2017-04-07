@@ -20,4 +20,4 @@ cv = ComputerVision()
 
 
 
-cv.TrainModel("wurst")
+cv.TrainModel("Person", "350x350")
