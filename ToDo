@@ -44,6 +44,24 @@ READ!!!
 LUIS: https://blogs.msdn.microsoft.com/benjaminperkins/2016/11/21/most-common-chatbot-questions-and-how-to-answer-them/
 
 - predictor - runvisual - adapt run functionality
+- update CV with more simple process
+
+- microphone and camera selector - for config
+
+- deployment script
+	* checkout git Release branch into seperate folder
+	* run unit tests
+	* stop current processes
+	* if all pass copy files to live folder
+	* start processes again
+
+- use os.path.join(x, y,...) instead of os.sep
+
+
+---
+
+http://www.chefkoch.de/forum/2,43,681438/api-chefkoch-de-frei-nutzbar.html
+http://api.chefkoch.de/api/1.1/api-recipe-search.php?Suchbegriff=apple%20pie&i=0&z=1&m=0&o=0&t=&limit=2
 
 ---
 
@@ -158,3 +176,12 @@ pyaudio
 add iwlist to sudo "vi sudoers"
 
 
+or
+
+sudo visudo
+
+add:
+USERNAME ALL= NOPASSWD: DATEIPFAD
+
+save:
+Strg+X ; Y ; Enter

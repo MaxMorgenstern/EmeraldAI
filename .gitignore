@@ -229,5 +229,6 @@ EmeraldAI/Data/SqliteDB/brain.sqlite
 
 *.pgm
 
-EmeraldAI/Data/ComputerVisionData/myModel.pkl
-EmeraldAI/Data/ComputerVisionData/Archiv.zip
+
+testing/emotion/dataset/*
+EmeraldAI/Data/ComputerVisionData/Temp/*

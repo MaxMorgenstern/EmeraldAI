@@ -1,7 +1,6 @@
 import Actions
 import ComputerVision
 import Database
-import External
 import KnowledgeGathering
 import LocationProcessing
 import Modules
