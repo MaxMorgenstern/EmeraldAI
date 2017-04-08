@@ -75,13 +75,16 @@ class ComputerVision(object):
         except:
            pass #If error, pass file
 
-    def __loadImages(self, datasetName):
+    def __loadImages(self, datasetName, imageSize=None):
         trainingData = []
         trainingLabels = []
         trainingLabelsDict = {}
 
         for dirname, dirnames, filenames in os.walk(os.path.join(self.__DatasetBasePath, datasetName)):
             for subdirname in dirnames:
+                if imageSize != None and not subdirname.startswith(imageSize):
+                    continue
+
                 if subdirname == self.__DisabledFileFolder:
                     continue
 
@@ -209,8 +212,10 @@ class ComputerVision(object):
         return bestResult
 
 
-    def TrainModel(self, datasetName):
-        images, labels, labelDict = self.__loadImages(datasetName)
+    def TrainModel(self, datasetName, imageSize=None):
+        if imageType == None:
+            imageSize = "{0}x{1}".format(self.__ResizeWidth, self.__ResizeHeight)
+        images, labels, labelDict = self.__loadImages(datasetName, imageSize)
         if len(images) == 0 or len(labels) == 0:
         	print "Error, no data given"
         	return
