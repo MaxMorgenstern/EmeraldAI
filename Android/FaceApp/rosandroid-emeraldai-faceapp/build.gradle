@@ -4,7 +4,7 @@ android {
     compileSdkVersion 14
     buildToolsVersion '25.0.0'
     defaultConfig {
-        applicationId 'org.ollide.rosandroid'
+        applicationId 'org.EmeraldAI.FaceApp'
         // Android 4.0+ http://dannyroa.com/2013/10/17/why-its-time-to-support-only-android-4-0-and-above
         minSdkVersion 14
         targetSdkVersion 14

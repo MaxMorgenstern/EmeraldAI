@@ -14,7 +14,7 @@
  * the License.
  */
 
-package org.ollide.rosandroid;
+package org.EmeraldAI.FaceApp;
 
 import android.os.Bundle;
 
