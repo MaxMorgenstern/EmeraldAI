@@ -14,4 +14,10 @@
         android:layout_height="wrap_content"
         android:autoLink="web"/>
 
+    <org.EmeraldAI.FaceApp.GifImageView
+        android:id="@+id/GifImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" />
+
 </RelativeLayout>
