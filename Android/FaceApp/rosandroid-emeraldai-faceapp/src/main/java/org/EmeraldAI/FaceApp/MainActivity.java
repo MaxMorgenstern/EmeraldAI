@@ -23,6 +23,10 @@ import org.ros.android.RosActivity;
 import org.ros.node.NodeConfiguration;
 import org.ros.node.NodeMain;
 import org.ros.node.NodeMainExecutor;
+import org.EmeraldAI.FaceApp.GifImageView;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 public class MainActivity extends RosActivity {
 
@@ -34,6 +38,17 @@ public class MainActivity extends RosActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // load image and play
+        GifImageView gifImageView = (GifImageView) findViewById(R.id.GifImageView);
+        try {
+            InputStream ins = getAssets().open("blinkv2.gif");
+            gifImageView.setGifImageStream(ins);
+        }
+        catch(IOException ex) {
+            return;
+        }
+
     }
 
     @Override
@@ -44,8 +59,8 @@ public class MainActivity extends RosActivity {
         NodeMain node = new SimplePublisherNode();
         nodeMainExecutor.execute(node, nodeConfiguration);
 
-
         NodeMain node2 = new SimpleSubscriberNode();
         nodeMainExecutor.execute(node2, nodeConfiguration);
+
     }
 }

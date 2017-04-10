@@ -21,7 +21,7 @@ public class GifImageView extends View {
 
     private InputStream mInputStream;
     private Movie mMovie;
-    private int mWidth, mHeight;
+    private int mWidth, mHeight, mDuration;
     private long mStart;
     private Context mContext;
 
@@ -49,6 +49,10 @@ public class GifImageView extends View {
         mMovie = Movie.decodeStream(mInputStream);
         mWidth = mMovie.width();
         mHeight = mMovie.height();
+        mDuration = mMovie.duration();
+        if (mDuration == 0) {
+            mDuration = 1000;
+        }
 
         requestLayout();
     }
@@ -63,18 +67,13 @@ public class GifImageView extends View {
 
         long now = SystemClock.uptimeMillis();
 
-        if (mStart == 0) {
-            mStart = now;
-        }
-
         if (mMovie != null) {
-
-            int duration = mMovie.duration();
-            if (duration == 0) {
-                duration = 1000;
+            if (mStart == 0 ) {
+                mStart = now;
             }
 
-            int relTime = (int) ((now - mStart) % duration);
+            int relTime = (int) ((now - mStart) % mDuration);
+            //int relTime = (int) ((now - mStart));
 
             mMovie.setTime(relTime);
 
@@ -85,6 +84,11 @@ public class GifImageView extends View {
 
     public void setGifImageResource(int id) {
         mInputStream = mContext.getResources().openRawResource(id);
+        init();
+    }
+
+    public void setGifImageStream(InputStream stream) {
+        mInputStream = stream;
         init();
     }
 
