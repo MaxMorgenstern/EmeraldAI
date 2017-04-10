@@ -10,16 +10,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c6d3151f-9918-455a-827c-cc4dda49034d" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/rosandroid-emeraldai-faceapp/src/main/java/org/EmeraldAI/FaceApp/GifImageView.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/3.3/taskArtifacts/fileSnapshots.bin" afterPath="$PROJECT_DIR$/.gradle/3.3/taskArtifacts/fileSnapshots.bin" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/3.3/taskArtifacts/taskArtifacts.bin" afterPath="$PROJECT_DIR$/.gradle/3.3/taskArtifacts/taskArtifacts.bin" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/3.3/taskArtifacts/taskArtifacts.lock" afterPath="$PROJECT_DIR$/.gradle/3.3/taskArtifacts/taskArtifacts.lock" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/libraries/rosandroid-core/rosandroid-core.iml" afterPath="$PROJECT_DIR$/libraries/rosandroid-core/rosandroid-core.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rosandroid-emeraldai-faceapp/rosandroid-emeraldai-faceapp.iml" afterPath="$PROJECT_DIR$/rosandroid-emeraldai-faceapp/rosandroid-emeraldai-faceapp.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rosandroid-emeraldai-faceapp/src/main/AndroidManifest.xml" afterPath="$PROJECT_DIR$/rosandroid-emeraldai-faceapp/src/main/AndroidManifest.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rosandroid-emeraldai-faceapp/src/main/res/layout/activity_main.xml" afterPath="$PROJECT_DIR$/rosandroid-emeraldai-faceapp/src/main/res/layout/activity_main.xml" />
     </list>
     <ignored path="rosjava_android_template.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -3552,7 +3546,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="android.project.structure.last.selected" value="rosandroid-emeraldai-faceapp" />
     <property name="android.project.structure.proportion" value="0.15" />
-    <property name="device.picker.selection" value="010721c779d3cc41" />
+    <property name="device.picker.selection" value="Nexus_5X_API_25_86_64" />
     <property name="settings.editor.selected.configurable" value="instant.run" />
     <property name="settings.editor.splitter.proportion" value="0.2" />
   </component>
