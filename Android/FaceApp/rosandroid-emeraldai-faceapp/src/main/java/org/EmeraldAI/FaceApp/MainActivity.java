@@ -39,6 +39,8 @@ public class MainActivity extends RosActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // maybe try: https://github.com/koral--/android-gif-drawable
+
         // load image and play
         GifImageView gifImageView = (GifImageView) findViewById(R.id.GifImageView);
         try {
