@@ -16,7 +16,10 @@
 
 package org.EmeraldAI.FaceApp;
 
+import android.app.ActionBar;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.view.View;
 
 import org.ros.address.InetAddressFactory;
 import org.ros.android.RosActivity;
@@ -38,6 +41,20 @@ public class MainActivity extends RosActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // landscape mode
+        super.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
+        // hide action bar and ui
+        View decorView = getWindow().getDecorView();
+        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+        decorView.setSystemUiVisibility(uiOptions);
+
+        ActionBar actionBar = getActionBar();
+        actionBar.hide();
+
+
+
 
         // maybe try: https://github.com/koral--/android-gif-drawable
 

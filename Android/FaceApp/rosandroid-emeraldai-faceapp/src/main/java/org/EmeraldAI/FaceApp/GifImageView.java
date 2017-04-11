@@ -77,6 +77,17 @@ public class GifImageView extends View {
 
             mMovie.setTime(relTime);
 
+            // TODO: scale test
+            final float scale = Math.min((float)getWidth() / mMovie.width(), (float)getHeight() / mMovie.height());
+
+            float scalex = (float) this.getWidth() / (float) mMovie.width();
+            float scaley = (float) this.getHeight() / (float) mMovie.height();
+
+            canvas.scale(scalex, scaley);
+            canvas.translate(((float)getWidth() / scale - (float)mMovie.width())/2f,
+                            ((float)getHeight() / scale - (float)mMovie.height())/2f);
+            // End scaletest
+
             mMovie.draw(canvas, 0, 0);
             invalidate();
         }
