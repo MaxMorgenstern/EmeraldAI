@@ -21,7 +21,8 @@ public class GifImageView extends View {
 
     private InputStream mInputStream;
     private Movie mMovie;
-    private int mWidth, mHeight, mDuration;
+    // private int mWidth, mHeight
+    private int mDuration;
     private long mStart;
     private Context mContext;
 
@@ -47,8 +48,8 @@ public class GifImageView extends View {
     private void init() {
         setFocusable(true);
         mMovie = Movie.decodeStream(mInputStream);
-        mWidth = mMovie.width();
-        mHeight = mMovie.height();
+        //mWidth = mMovie.width();
+        //mHeight = mMovie.height();
         mDuration = mMovie.duration();
         if (mDuration == 0) {
             mDuration = 1000;
@@ -59,7 +60,10 @@ public class GifImageView extends View {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        setMeasuredDimension(mWidth, mHeight);
+        int parentWidth = MeasureSpec.getSize(widthMeasureSpec);
+        int parentHeight = MeasureSpec.getSize(heightMeasureSpec);
+        this.setMeasuredDimension(parentWidth, parentHeight);
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
     @Override
@@ -77,16 +81,11 @@ public class GifImageView extends View {
 
             mMovie.setTime(relTime);
 
-            // TODO: scale test
             final float scale = Math.min((float)getWidth() / mMovie.width(), (float)getHeight() / mMovie.height());
 
-            float scalex = (float) this.getWidth() / (float) mMovie.width();
-            float scaley = (float) this.getHeight() / (float) mMovie.height();
-
-            canvas.scale(scalex, scaley);
+            canvas.scale(scale, scale);
             canvas.translate(((float)getWidth() / scale - (float)mMovie.width())/2f,
                             ((float)getHeight() / scale - (float)mMovie.height())/2f);
-            // End scaletest
 
             mMovie.draw(canvas, 0, 0);
             invalidate();

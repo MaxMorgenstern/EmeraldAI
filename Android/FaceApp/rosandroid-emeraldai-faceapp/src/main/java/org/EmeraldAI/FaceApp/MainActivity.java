@@ -61,7 +61,7 @@ public class MainActivity extends RosActivity {
         // load image and play
         GifImageView gifImageView = (GifImageView) findViewById(R.id.GifImageView);
         try {
-            InputStream ins = getAssets().open("blinkv2.gif");
+            InputStream ins = getAssets().open("eye animation2017.gif");
             gifImageView.setGifImageStream(ins);
         }
         catch(IOException ex) {
