@@ -1,0 +1,32 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 14
+    buildToolsVersion '25.0.0'
+    defaultConfig {
+        applicationId 'org.EmeraldAI.FaceApp'
+        // Android 4.0+ http://dannyroa.com/2013/10/17/why-its-time-to-support-only-android-4-0-and-above
+        minSdkVersion 14
+        targetSdkVersion 14
+        versionCode 1
+        versionName '0.1'
+    }
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    packagingOptions {
+        /* https://github.com/rosjava/android_core/issues/194 */
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+    }
+    productFlavors {
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile project(':libraries:rosandroid-core')
+}

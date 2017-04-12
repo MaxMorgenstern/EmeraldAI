@@ -224,11 +224,13 @@ pip-log.txt
 *.wav
 *.mp3
 *.config
+*.pgm
 
 EmeraldAI/Data/SqliteDB/brain.sqlite
 
-*.pgm
-
-
 testing/emotion/dataset/*
 EmeraldAI/Data/ComputerVisionData/Temp/*
+
+Android/FaceApp/.gradle
+
+Android/FaceApp/.*
