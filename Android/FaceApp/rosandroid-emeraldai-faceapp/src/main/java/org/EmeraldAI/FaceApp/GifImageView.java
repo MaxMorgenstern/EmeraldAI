@@ -23,10 +23,11 @@ public class GifImageView extends View {
 
     private InputStream mInputStream;
     private Movie mMovie;
-    // private int mWidth, mHeight
     private float mScale, mTranslateWidth, mTranslateHeight;
     private int mDuration;
     private long mStart;
+    private boolean mLoop;
+    private int mDelay;
     private Context mContext;
 
     public GifImageView(Context context) {
@@ -43,20 +44,23 @@ public class GifImageView extends View {
         this.mContext = context;
         if (attrs.getAttributeName(1).equals("background")) {
             int id = Integer.parseInt(attrs.getAttributeValue(1).substring(1));
-            setGifImageResource(id);
+            SetGifImageResource(id);
         }
     }
 
 
-    private void init() {
+    private void init(InputStream inputStream, boolean loop, int delay) {
+        mInputStream = inputStream;
+        mLoop = loop;
+        mDelay = delay;
+
         setFocusable(true);
         mMovie = Movie.decodeStream(mInputStream);
-        //mWidth = mMovie.width();
-        //mHeight = mMovie.height();
         mDuration = mMovie.duration();
         if (mDuration == 0) {
             mDuration = 1000;
         }
+        mStart = 0;
 
         requestLayout();
     }
@@ -83,15 +87,22 @@ public class GifImageView extends View {
             mTranslateHeight = ((float)getHeight() / mScale - (float)mMovie.height())/2f;
         }
 
-        //int relTime = (int) ((now - mStart) % mDuration);
-
-        // Blink all 10 seconds
-        int relTime = (int) ((now - mStart));
-        if(relTime > 10000) {
-            mStart = now;
+        int relTime = 0;
+        // loop with delay
+        if(mLoop && mDelay > 0) {
+            relTime = (int) ((now - mStart));
+            if(relTime >= (mDelay+mDuration)) {
+                mStart = now;
+            }
+        // loop without delay
+        } else if(mLoop){
+            relTime = (int) ((now - mStart) % mDuration);
+        // play once
+        } else {
+            relTime = (int) ((now - mStart));
         }
 
-        Log.i(TAG, "current time: " + relTime);
+        //Log.i(TAG, "current time: " + relTime);
 
         mMovie.setTime(relTime);
 
@@ -102,20 +113,43 @@ public class GifImageView extends View {
         invalidate();
     }
 
-    public void setGifImageResource(int id) {
-        mInputStream = mContext.getResources().openRawResource(id);
-        init();
+    public void SetGifImageResource(int id) {
+        init(mContext.getResources().openRawResource(id), true, 0);
+    }
+    public void SetGifImageResource(int id, boolean loop) {
+        init(mContext.getResources().openRawResource(id), loop, 0);
+    }
+    public void SetGifImageResource(int id, boolean loop, int delay) {
+        init(mContext.getResources().openRawResource(id), loop, delay);
     }
 
-    public void setGifImageStream(InputStream stream) {
-        mInputStream = stream;
-        init();
+    public void SetGifImageStream(InputStream stream) {
+        init(stream, true, 0);
+    }
+    public void SetGifImageStream(InputStream stream, boolean loop) {
+        init(stream, loop, 0);
+    }
+    public void SetGifImageStream(InputStream stream, boolean loop, int delay) {
+        init(stream, loop, delay);
     }
 
-    public void setGifImageUri(Uri uri) {
+    public void SetGifImageUri(Uri uri) {
         try {
-            mInputStream = mContext.getContentResolver().openInputStream(uri);
-            init();
+            init(mContext.getContentResolver().openInputStream(uri), true, 0);
+        } catch (FileNotFoundException e) {
+            Log.e("GIfImageView", "File not found");
+        }
+    }
+    public void SetGifImageUri(Uri uri, boolean loop) {
+        try {
+            init(mContext.getContentResolver().openInputStream(uri), loop, 0);
+        } catch (FileNotFoundException e) {
+            Log.e("GIfImageView", "File not found");
+        }
+    }
+    public void SetGifImageUri(Uri uri, boolean loop, int delay) {
+        try {
+            init(mContext.getContentResolver().openInputStream(uri), loop, delay);
         } catch (FileNotFoundException e) {
             Log.e("GIfImageView", "File not found");
         }
