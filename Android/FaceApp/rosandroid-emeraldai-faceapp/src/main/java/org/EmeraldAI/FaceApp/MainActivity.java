@@ -49,13 +49,11 @@ public class MainActivity extends RosActivity {
         // keep screen on
         //getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        // maybe try: https://github.com/koral--/android-gif-drawable
-
         // load image and play
         GifImageView gifImageView = (GifImageView) findViewById(R.id.GifImageView);
         try {
             InputStream ins = getAssets().open("blinkv2.gif");
-            gifImageView.setGifImageStream(ins);
+            gifImageView.SetGifImageStream(ins, true, 5000);
         }
         catch(IOException ex) {
             return;
