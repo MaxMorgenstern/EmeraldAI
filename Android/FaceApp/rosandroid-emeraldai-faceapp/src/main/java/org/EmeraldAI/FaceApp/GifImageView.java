@@ -21,7 +21,6 @@ import static android.content.ContentValues.TAG;
 
 public class GifImageView extends View {
 
-    private InputStream mInputStream;
     private Movie mMovie;
     private float mScale, mTranslateWidth, mTranslateHeight;
     private int mDuration;
@@ -50,12 +49,11 @@ public class GifImageView extends View {
 
 
     private void init(InputStream inputStream, boolean loop, int delay) {
-        mInputStream = inputStream;
         mLoop = loop;
         mDelay = delay;
 
         setFocusable(true);
-        mMovie = Movie.decodeStream(mInputStream);
+        mMovie = Movie.decodeStream(inputStream);
         mDuration = mMovie.duration();
         if (mDuration == 0) {
             mDuration = 1000;
