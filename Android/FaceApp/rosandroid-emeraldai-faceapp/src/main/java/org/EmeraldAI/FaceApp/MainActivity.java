@@ -20,6 +20,7 @@ import android.app.ActionBar;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 
 import org.ros.address.InetAddressFactory;
 import org.ros.android.RosActivity;
@@ -45,12 +46,15 @@ public class MainActivity extends RosActivity {
         // landscape mode
         super.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
+        // keep screen on
+        //getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         // maybe try: https://github.com/koral--/android-gif-drawable
 
         // load image and play
         GifImageView gifImageView = (GifImageView) findViewById(R.id.GifImageView);
         try {
-            InputStream ins = getAssets().open("eye animation2017.gif");
+            InputStream ins = getAssets().open("blinkv2.gif");
             gifImageView.setGifImageStream(ins);
         }
         catch(IOException ex) {

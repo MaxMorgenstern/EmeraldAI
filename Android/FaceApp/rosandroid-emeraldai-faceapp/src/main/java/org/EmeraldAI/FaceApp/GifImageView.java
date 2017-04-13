@@ -12,6 +12,8 @@ import android.view.View;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
+import static android.content.ContentValues.TAG;
+
 /**
  * Created by maximilianporzelt on 10.04.17.
  * Class inspired by: http://www.mavengang.com/2016/05/02/gif-animation-android/
@@ -22,6 +24,7 @@ public class GifImageView extends View {
     private InputStream mInputStream;
     private Movie mMovie;
     // private int mWidth, mHeight
+    private float mScale, mTranslateWidth, mTranslateHeight;
     private int mDuration;
     private long mStart;
     private Context mContext;
@@ -68,28 +71,35 @@ public class GifImageView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
+        if (mMovie == null)
+            return;
 
         long now = SystemClock.uptimeMillis();
 
-        if (mMovie != null) {
-            if (mStart == 0 ) {
-                mStart = now;
-            }
-
-            int relTime = (int) ((now - mStart) % mDuration);
-            //int relTime = (int) ((now - mStart));
-
-            mMovie.setTime(relTime);
-
-            final float scale = Math.min((float)getWidth() / mMovie.width(), (float)getHeight() / mMovie.height());
-
-            canvas.scale(scale, scale);
-            canvas.translate(((float)getWidth() / scale - (float)mMovie.width())/2f,
-                            ((float)getHeight() / scale - (float)mMovie.height())/2f);
-
-            mMovie.draw(canvas, 0, 0);
-            invalidate();
+        if (mStart == 0 ) {
+            mStart = now;
+            mScale = Math.min((float)getWidth() / mMovie.width(), (float)getHeight() / mMovie.height());
+            mTranslateWidth = ((float)getWidth() / mScale - (float)mMovie.width())/2f;
+            mTranslateHeight = ((float)getHeight() / mScale - (float)mMovie.height())/2f;
         }
+
+        //int relTime = (int) ((now - mStart) % mDuration);
+
+        // Blink all 10 seconds
+        int relTime = (int) ((now - mStart));
+        if(relTime > 10000) {
+            mStart = now;
+        }
+
+        Log.i(TAG, "current time: " + relTime);
+
+        mMovie.setTime(relTime);
+
+        canvas.scale(mScale, mScale);
+        canvas.translate(mTranslateWidth, mTranslateHeight);
+
+        mMovie.draw(canvas, 0, 0);
+        invalidate();
     }
 
     public void setGifImageResource(int id) {
