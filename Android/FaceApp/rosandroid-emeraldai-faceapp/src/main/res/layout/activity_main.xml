@@ -10,7 +10,7 @@
     tools:context=".MainActivity"
     android:keepScreenOn="true">
 
-    <org.EmeraldAI.FaceApp.GifImageView
+    <org.EmeraldAI.FaceApp.CustomViews.GifImageView
         android:id="@+id/GifImageView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"

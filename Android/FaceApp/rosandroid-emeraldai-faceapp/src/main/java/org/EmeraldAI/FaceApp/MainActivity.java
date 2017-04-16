@@ -16,18 +16,19 @@
 
 package org.EmeraldAI.FaceApp;
 
-import android.app.ActionBar;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
-import android.view.WindowManager;
 
+import org.EmeraldAI.FaceApp.CustomViews.GifImageView;
+import org.EmeraldAI.FaceApp.ROS.SimplePublisherNode;
+import org.EmeraldAI.FaceApp.ROS.SimpleSubscriberNode;
 import org.ros.address.InetAddressFactory;
 import org.ros.android.RosActivity;
 import org.ros.node.NodeConfiguration;
 import org.ros.node.NodeMain;
 import org.ros.node.NodeMainExecutor;
-import org.EmeraldAI.FaceApp.GifImageView;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,6 +38,9 @@ public class MainActivity extends RosActivity {
     public MainActivity() {
         super("RosAndroidExample", "RosAndroidExample");
     }
+
+    //Random rand = new Random();
+    Handler handler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +52,15 @@ public class MainActivity extends RosActivity {
 
         // keep screen on
         //getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+
+        Runnable r = new Runnable() {
+            public void run() {
+                // TODO: check EyeState Queue
+                handler.postDelayed(this, 100);
+            }
+        };
+        handler.postDelayed(r, 100);
 
         // load image and play
         GifImageView gifImageView = (GifImageView) findViewById(R.id.GifImageView);
@@ -74,7 +87,6 @@ public class MainActivity extends RosActivity {
                             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         }
     }
-
 
     @Override
     protected void init(NodeMainExecutor nodeMainExecutor) {

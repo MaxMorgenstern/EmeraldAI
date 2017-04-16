@@ -21,13 +21,12 @@ public class EyeState {
     public boolean IdleMode;
 
     public EyeAnimationObject CurrentAnimation;
-
-    public String LastQueuedPosition;
-    public boolean LastQueuedIsIntermediateState;
+    public EyeAnimationObject LastAnimation;
 
     private Queue<EyeAnimationObject> AnimationQueue = new LinkedList<EyeAnimationObject>();
 
-    public void AddToQueue(String animation, String name, String position, boolean isIntermediateState) {
+    public void AddToQueue(String animation, String name, String position, boolean isIntermediateState)
+    {
         this.AddToQueue(animation, name, position, isIntermediateState, 500);
     }
 
@@ -42,8 +41,7 @@ public class EyeState {
 
         this.AnimationQueue.add(animationObject);
 
-        this.LastQueuedPosition = position;
-        this.LastQueuedIsIntermediateState = isIntermediateState;
+        this.LastAnimation = animationObject;
     }
 
     public EyeAnimationObject GetFromQueue()

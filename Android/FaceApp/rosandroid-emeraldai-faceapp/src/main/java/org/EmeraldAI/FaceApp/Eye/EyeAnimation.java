@@ -12,7 +12,8 @@ public class EyeAnimation {
     private List<String> _position = Arrays.asList("center","left","right","top","bottom");
     private List<String> _availableAnimationPosition = Arrays.asList("center","left","right");
     private List<String> _animation = Arrays.asList("blink","bad","doubt","sad","shock");
-
+    private List<String> _singleAnimation = Arrays.asList("blink");
+    private String _defaultLocation = "center";
 
     public void TriggerAnimation(String command)
     {
@@ -32,46 +33,72 @@ public class EyeAnimation {
     public void MoveTo(String destination)
     {
         // Example: move_right_center
+        EyeState es = EyeState.getInstance();
 
-        // TODO: one needs to be center
+        if(es.LastAnimation.Position.equals(destination))
+            return;
 
-        String gifToPlay = String.format("move_{0}_{1}", EyeState.getInstance().LastQueuedPosition, destination);
-        EyeState.getInstance().AddToQueue(gifToPlay, "move", destination, false);
+        if (!es.LastAnimation.Position.equals(_defaultLocation) && !destination.equals(_defaultLocation))
+        {
+            this.MoveTo(_defaultLocation);
+        }
+
+        String gifToPlay = String.format("move_{0}_{1}", es.LastAnimation.Position, destination);
+        es.AddToQueue(gifToPlay, "move", destination, false);
     }
 
     public void PlayAnimation(String animation)
     {
         // Example: center_bad_end
-        String state = "start";
-        if(EyeState.getInstance().LastQueuedIsIntermediateState)
+        EyeState es = EyeState.getInstance();
+        EyeAnimationObject eao = es.LastAnimation;
+
+
+        if(eao.IntermediateAnimation && !eao.AnimationName.equals(animation))
         {
-            state = "end";
+            this.PlayAnimation(eao.AnimationName);
         }
 
-        String position = EyeState.getInstance().LastQueuedPosition;
+        String state = (eao.IntermediateAnimation) ? "end" : "start";
+        if(_singleAnimation.contains(animation))
+        {
+            state = "full";
+        }
+
+        String position = eao.Position;
 
         // If current position has no animations reset to center
         if(!_availableAnimationPosition.contains(position))
         {
-            position = "center";
-            this.MoveTo("center");
+            position = _defaultLocation;
+            this.MoveTo(_defaultLocation);
         }
 
         String gifToPlay = String.format("{0}_{1}_{2}", position, animation, state);
-        EyeState.getInstance().AddToQueue(gifToPlay, animation, position, (state.equals("start")));
+        es.AddToQueue(gifToPlay, animation, position, (state.equals("start")));
     }
 
     public void ResetAnimation()
     {
-        // TODO: reset animation and go back to default
+        this.ResetAnimation(false);
+    }
 
+    public void ResetAnimation(boolean movePositionToDefault)
+    {
         EyeState es = EyeState.getInstance();
-        EyeAnimationObject currentAnimation =  es.CurrentAnimation;
-
-        // TODO: get currentposition + is intermediate
-        // TODO: calculate next to reset
-
         es.ClearQueue();
 
+        EyeAnimationObject currentAnimation =  es.CurrentAnimation;
+
+        if(currentAnimation.IntermediateAnimation)
+        {
+            String gifToPlay = String.format("{0}_{1}_{2}", currentAnimation.Position, currentAnimation.AnimationName, "end");
+            es.AddToQueue(gifToPlay, currentAnimation.AnimationName, currentAnimation.Position, false, 0);
+        }
+
+        if(movePositionToDefault && !currentAnimation.Position.equals(_defaultLocation))
+        {
+            this.MoveTo(_defaultLocation);
+        }
     }
 }

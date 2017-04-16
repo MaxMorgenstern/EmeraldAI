@@ -14,7 +14,7 @@
  * the License.
  */
 
-package org.EmeraldAI.FaceApp;
+package org.EmeraldAI.FaceApp.ROS;
 
 import android.util.Log;
 
