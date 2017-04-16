@@ -1,4 +1,4 @@
-package org.EmeraldAI.FaceApp;
+package org.EmeraldAI.FaceApp.Eye;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,27 +26,29 @@ public class EyeAnimation {
             this.PlayAnimation(command);
         }
 
-        // error
+        // TODO: throw error
     }
 
     public void MoveTo(String destination)
     {
         // Example: move_right_center
-        String gifToPlay = String.format("move_{0}_{1}", EyeState.getInstance().CurrentPosition, destination);
-        // TODO: 16.04.17  - Trigger animation
+
+        // TODO: one needs to be center
+
+        String gifToPlay = String.format("move_{0}_{1}", EyeState.getInstance().LastQueuedPosition, destination);
+        EyeState.getInstance().AddToQueue(gifToPlay, "move", destination, false);
     }
 
     public void PlayAnimation(String animation)
     {
         // Example: center_bad_end
-
         String state = "start";
-        if(EyeState.getInstance().IntermediateState)    // TODO - if we use an animation queue this needs to be updated
+        if(EyeState.getInstance().LastQueuedIsIntermediateState)
         {
             state = "end";
         }
 
-        String position = EyeState.getInstance().CurrentPosition; // TODO - if we use an animation queue this needs to be updated
+        String position = EyeState.getInstance().LastQueuedPosition;
 
         // If current position has no animations reset to center
         if(!_availableAnimationPosition.contains(position))
@@ -55,8 +57,21 @@ public class EyeAnimation {
             this.MoveTo("center");
         }
 
-
         String gifToPlay = String.format("{0}_{1}_{2}", position, animation, state);
-        // TODO: 16.04.17  - Trigger animation
+        EyeState.getInstance().AddToQueue(gifToPlay, animation, position, (state.equals("start")));
+    }
+
+    public void ResetAnimation()
+    {
+        // TODO: reset animation and go back to default
+
+        EyeState es = EyeState.getInstance();
+        EyeAnimationObject currentAnimation =  es.CurrentAnimation;
+
+        // TODO: get currentposition + is intermediate
+        // TODO: calculate next to reset
+
+        es.ClearQueue();
+
     }
 }

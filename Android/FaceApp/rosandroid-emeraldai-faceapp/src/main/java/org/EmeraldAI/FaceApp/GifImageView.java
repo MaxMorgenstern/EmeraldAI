@@ -9,6 +9,8 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
+import org.EmeraldAI.FaceApp.Eye.EyeState;
+
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
@@ -59,6 +61,8 @@ public class GifImageView extends View {
             mDuration = 1000;
         }
         mStart = 0;
+        EyeState.getInstance().AnimationRunning = true;
+        EyeState.getInstance().Loop = loop;
 
         requestLayout();
     }
@@ -98,6 +102,12 @@ public class GifImageView extends View {
         // play once
         } else {
             relTime = (int) ((now - mStart));
+        }
+
+        if(relTime > mDuration)
+        {
+            EyeState.getInstance().AnimationRunning = false;
+            EyeState.getInstance().AnimationEndTimestamp = now;
         }
 
         //Log.i(TAG, "current time: " + relTime);
