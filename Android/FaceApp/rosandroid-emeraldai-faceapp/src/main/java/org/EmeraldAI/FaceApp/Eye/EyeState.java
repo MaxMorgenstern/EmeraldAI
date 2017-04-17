@@ -1,5 +1,6 @@
 package org.EmeraldAI.FaceApp.Eye;
 
+import android.os.SystemClock;
 import android.util.Log;
 
 import java.util.LinkedList;
@@ -18,25 +19,30 @@ public class EyeState {
         return ourInstance;
     }
 
-    public boolean AnimationRunning = false;
-    public boolean Loop = false;
-    public long AnimationEndTimestamp = -1;
+    public boolean AnimationRunning;
+    public boolean Loop;
+    public long AnimationEndTimestamp;
 
-    public boolean IdleMode = false;
-    public long IdleDelay = 0;
+    public boolean IdleMode;
+    public long IdleDelay;
 
     public EyeAnimationObject CurrentAnimation;
     public EyeAnimationObject LastAnimation;
 
-    private Queue<EyeAnimationObject> AnimationQueue = new LinkedList<EyeAnimationObject>();
+    private Queue<EyeAnimationObject> AnimationQueue;
 
     public void AddToQueue(String animation, String name, String position, boolean isIntermediateState)
     {
-        this.AddToQueue(animation, name, position, isIntermediateState, 500);
+        this.AddToQueue(animation, name, position, isIntermediateState, 250);
     }
 
     public void AddToQueue(String animation, String name, String position, boolean isIntermediateState, int minDelayAfterAnimation)
     {
+        if(name.equals("blink")
+                && GetQueueSize() > 0
+                && this.LastAnimation != null
+                && this.LastAnimation.AnimationName.equals("blink"))
+            return;
         Log.w(TAG, animation);
         EyeAnimationObject animationObject = new EyeAnimationObject();
         animationObject.AnimationObject = animation;
@@ -73,5 +79,15 @@ public class EyeState {
         this.AnimationQueue.clear();
     }
 
-    private EyeState() { }
+    private EyeState()
+    {
+        AnimationRunning = false;
+        Loop = false;
+        AnimationEndTimestamp = SystemClock.uptimeMillis();
+
+        IdleMode = false;
+        IdleDelay = 0;
+
+        AnimationQueue = new LinkedList<EyeAnimationObject>();
+    }
 }

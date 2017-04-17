@@ -19,6 +19,7 @@ package org.EmeraldAI.FaceApp;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 
@@ -67,20 +68,22 @@ public class MainActivity extends RosActivity {
 
                 ea.EnableIdleMode();
 
-                Log.i(TAG, "Runnable().run() " + es.GetQueueSize());
+                Log.e(TAG, "Main - Idle: " + es.IdleMode + " - QueueSize: " + es.GetQueueSize() + " - Timestamp: " + es.AnimationEndTimestamp);
 
-                // TODO Delay -- es.AnimationEndTimestamp -- es.CurrentAnimation.MinDelayAfterAnimation
-                if(!es.AnimationRunning && es.GetQueueSize() > 0)
+                long now = SystemClock.uptimeMillis();
+                long waitUntil = (es.CurrentAnimation != null) ?
+                        (es.AnimationEndTimestamp + es.CurrentAnimation.MinDelayAfterAnimation) : 0;
+
+                if(waitUntil <= now && !es.AnimationRunning && es.GetQueueSize() > 0)
                 {
                     EyeAnimationObject eao = es.GetFromQueue();
-
                     GifImageView gifImageView = (GifImageView) findViewById(R.id.GifImageView);
                     try
                     {
                         InputStream ins = getAssets().open(eao.AnimationObject + ".gif");
                         gifImageView.SetGifImageStream(ins, false);
                     } catch (IOException ex) {
-                        Log.e(TAG, ex.toString());
+                        Log.e(TAG, "Error on calling new image " + ex.toString());
                     }
                 }
 
@@ -89,19 +92,8 @@ public class MainActivity extends RosActivity {
         };
         handler.postDelayed(r, 100);
 
-        new EyeAnimation().TriggerAnimation("shock");
-
-        /*
-        // load image and play
-        GifImageView gifImageView = (GifImageView) findViewById(R.id.GifImageView);
-        try {
-            InputStream ins = getAssets().open("center_blink_full.gif");
-            gifImageView.SetGifImageStream(ins, false);
-        }
-        catch(IOException ex) {
-            return;
-        }
-        */
+        Log.i(TAG, "add blink from main");
+        new EyeAnimation().TriggerAnimation("blink");
     }
 
     @Override

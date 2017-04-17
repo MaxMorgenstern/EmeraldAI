@@ -64,7 +64,7 @@ public class GifImageView extends View {
         mStart = 0;
         EyeState.getInstance().AnimationRunning = true;
         EyeState.getInstance().Loop = loop;
-        EyeState.getInstance().AnimationEndTimestamp = -1;
+        //EyeState.getInstance().AnimationEndTimestamp = -1;
 
         requestLayout();
     }
@@ -106,10 +106,12 @@ public class GifImageView extends View {
             relTime = (int) ((now - mStart));
         }
 
-        if(relTime > mDuration && EyeState.getInstance().AnimationRunning)
+        EyeState es = EyeState.getInstance();
+        if(relTime > mDuration && es.AnimationRunning)
         {
-            EyeState.getInstance().AnimationRunning = false;
-            EyeState.getInstance().AnimationEndTimestamp = now;
+            es.AnimationRunning = false;
+            if(!es.CurrentAnimation.AnimationName.equals("blink"))
+                es.AnimationEndTimestamp = now;
         }
 
         //Log.i(TAG, "current time: " + relTime);

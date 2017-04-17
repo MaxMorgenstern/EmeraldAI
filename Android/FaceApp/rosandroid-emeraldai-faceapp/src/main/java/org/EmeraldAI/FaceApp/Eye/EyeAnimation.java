@@ -6,6 +6,7 @@ import android.util.Log;
 import org.apache.commons.lang.ObjectUtils;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -18,11 +19,20 @@ import static android.content.ContentValues.TAG;
 
 public class EyeAnimation {
 
-    private List<String> _position = Arrays.asList("center","left","right","top","bottom");
-    private List<String> _availableAnimationPosition = Arrays.asList("center","left","right");
-    private List<String> _animation = Arrays.asList("blink","bad","doubt","sad","shock");
-    private List<String> _singleAnimation = Arrays.asList("blink");
-    private String _defaultLocation = "center";
+    private List<String> _position;
+    private List<String> _availableAnimationPosition;
+    private List<String> _animation;
+    private List<String> _singleAnimation;
+    private String _defaultLocation;
+
+    public EyeAnimation()
+    {
+        _position = Arrays.asList("center","left","right","top","bottom");
+        _availableAnimationPosition = Arrays.asList("center","left","right");
+        _animation = Arrays.asList("blink","bad","doubt","sad","shock");
+        _singleAnimation = Arrays.asList("blink");
+        _defaultLocation = "center";
+    }
 
     public void TriggerAnimation(String command)
     {
@@ -35,14 +45,17 @@ public class EyeAnimation {
         if (_position.contains(command))
         {
             this.MoveTo(command);
+            return;
         }
 
         if (_animation.contains(command))
         {
             this.PlayAnimation(command);
+            return;
         }
 
         // TODO: throw error
+        Log.e(TAG, "TriggerAnimation(): Invalid comand recieved: " + command);
     }
 
     public void MoveTo(String destination)
@@ -76,7 +89,7 @@ public class EyeAnimation {
         EyeAnimationObject eao = es.LastAnimation;
 
         String position = "center";
-        String state = "end";
+        String state = "start";
 
         if (eao != null)
         {
@@ -86,12 +99,12 @@ public class EyeAnimation {
             }
 
             state = (eao.IntermediateAnimation) ? "end" : "start";
-            if (_singleAnimation.contains(animation))
-            {
-                state = "full";
-            }
-
             position = eao.Position;
+        }
+
+        if (_singleAnimation.contains(animation))
+        {
+            state = "full";
         }
 
         // If current position has no animations reset to center
@@ -133,25 +146,39 @@ public class EyeAnimation {
     {
         EyeState es = EyeState.getInstance();
 
-        long timeToWaitUntilIdleBegins = 5000; // TODO
-
-        if(es.GetQueueSize() > 0 || es.AnimationRunning)
+        // if animation is currently running stop
+        if(es.GetQueueSize() > 1 || es.AnimationRunning)
             return;
 
+        if(new Random().nextInt(100 + 1) > 97) // TODO - to config (97) or check if we can do time intervals
+            this.PlayAnimation("blink");
+
+        if(es.GetQueueSize() > 0)
+            return;
+
+        long timeToWaitUntilIdleBegins = 60000; // TODO - to config
         long now = SystemClock.uptimeMillis();
+        // wait x seconds since last animation to start idle
         if(!es.IdleMode && (es.AnimationEndTimestamp + timeToWaitUntilIdleBegins) >= now)
             return;
 
         if(es.IdleMode && (es.AnimationEndTimestamp + es.IdleDelay) >= now)
             return;
 
+        if(!es.IdleMode)
+            this.ResetAnimation();
         es.IdleMode = true;
 
-        int max = 15000; // TODO
-        int min = 5000; // TODO
+        int max = 10000; // TODO - to config
+        int min = 1000; // TODO - to config
         es.IdleDelay = new Random().nextInt(max - min + 1) + min;
 
-        String moveToPosition = _position.get(new Random().nextInt(_position.size()));
+        List<String> combinedList = new ArrayList<String>();
+        combinedList.addAll(_availableAnimationPosition);
+        combinedList.addAll(_position);
+
+        String moveToPosition = combinedList.get(new Random().nextInt(combinedList.size()));
         this.MoveTo(moveToPosition);
+
     }
 }
