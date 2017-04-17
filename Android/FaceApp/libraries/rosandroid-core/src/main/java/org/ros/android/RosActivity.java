@@ -64,9 +64,9 @@ public abstract class RosActivity extends Activity {
     @Override
     public void onServiceDisconnected(ComponentName name) {
     }
-  };
+  }
 
-  protected RosActivity(String notificationTicker, String notificationTitle) {
+    protected RosActivity(String notificationTicker, String notificationTitle) {
     super();
     this.notificationTicker = notificationTicker;
     this.notificationTitle = notificationTitle;
