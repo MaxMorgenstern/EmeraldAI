@@ -1,7 +1,11 @@
 package org.EmeraldAI.FaceApp.Eye;
 
+import android.util.Log;
+
 import java.util.LinkedList;
 import java.util.Queue;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Created by maximilianporzelt on 15.04.17.
@@ -14,11 +18,12 @@ public class EyeState {
         return ourInstance;
     }
 
-    public boolean AnimationRunning;
-    public boolean Loop;
-    public long AnimationEndTimestamp;
+    public boolean AnimationRunning = false;
+    public boolean Loop = false;
+    public long AnimationEndTimestamp = -1;
 
-    public boolean IdleMode;
+    public boolean IdleMode = false;
+    public long IdleDelay = 0;
 
     public EyeAnimationObject CurrentAnimation;
     public EyeAnimationObject LastAnimation;
@@ -30,14 +35,15 @@ public class EyeState {
         this.AddToQueue(animation, name, position, isIntermediateState, 500);
     }
 
-    public void AddToQueue(String animation, String name, String position, boolean isIntermediateState, int delayAfterAnimation)
+    public void AddToQueue(String animation, String name, String position, boolean isIntermediateState, int minDelayAfterAnimation)
     {
+        Log.w(TAG, animation);
         EyeAnimationObject animationObject = new EyeAnimationObject();
         animationObject.AnimationObject = animation;
         animationObject.AnimationName = name;
         animationObject.IntermediateAnimation = isIntermediateState;
         animationObject.Position = position;
-        animationObject.MinDelayAfterAnimation = delayAfterAnimation;
+        animationObject.MinDelayAfterAnimation = minDelayAfterAnimation;
 
         this.AnimationQueue.add(animationObject);
 

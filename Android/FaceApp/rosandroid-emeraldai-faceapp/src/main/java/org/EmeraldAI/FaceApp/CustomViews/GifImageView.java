@@ -106,7 +106,7 @@ public class GifImageView extends View {
             relTime = (int) ((now - mStart));
         }
 
-        if(relTime > mDuration)
+        if(relTime > mDuration && EyeState.getInstance().AnimationRunning)
         {
             EyeState.getInstance().AnimationRunning = false;
             EyeState.getInstance().AnimationEndTimestamp = now;

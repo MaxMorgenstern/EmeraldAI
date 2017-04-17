@@ -19,9 +19,13 @@ package org.EmeraldAI.FaceApp;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 
 import org.EmeraldAI.FaceApp.CustomViews.GifImageView;
+import org.EmeraldAI.FaceApp.Eye.EyeAnimation;
+import org.EmeraldAI.FaceApp.Eye.EyeAnimationObject;
+import org.EmeraldAI.FaceApp.Eye.EyeState;
 import org.EmeraldAI.FaceApp.ROS.SimplePublisherNode;
 import org.EmeraldAI.FaceApp.ROS.SimpleSubscriberNode;
 import org.ros.address.InetAddressFactory;
@@ -32,6 +36,8 @@ import org.ros.node.NodeMainExecutor;
 
 import java.io.IOException;
 import java.io.InputStream;
+
+import static android.content.ContentValues.TAG;
 
 public class MainActivity extends RosActivity {
 
@@ -56,21 +62,46 @@ public class MainActivity extends RosActivity {
 
         Runnable r = new Runnable() {
             public void run() {
-                // TODO: check EyeState Queue
+                EyeState es = EyeState.getInstance();
+                EyeAnimation ea = new EyeAnimation();
+
+                ea.EnableIdleMode();
+
+                Log.i(TAG, "Runnable().run() " + es.GetQueueSize());
+
+                // TODO Delay -- es.AnimationEndTimestamp -- es.CurrentAnimation.MinDelayAfterAnimation
+                if(!es.AnimationRunning && es.GetQueueSize() > 0)
+                {
+                    EyeAnimationObject eao = es.GetFromQueue();
+
+                    GifImageView gifImageView = (GifImageView) findViewById(R.id.GifImageView);
+                    try
+                    {
+                        InputStream ins = getAssets().open(eao.AnimationObject + ".gif");
+                        gifImageView.SetGifImageStream(ins, false);
+                    } catch (IOException ex) {
+                        Log.e(TAG, ex.toString());
+                    }
+                }
+
                 handler.postDelayed(this, 100);
             }
         };
         handler.postDelayed(r, 100);
 
+        new EyeAnimation().TriggerAnimation("shock");
+
+        /*
         // load image and play
         GifImageView gifImageView = (GifImageView) findViewById(R.id.GifImageView);
         try {
-            InputStream ins = getAssets().open("blinkv2.gif");
-            gifImageView.SetGifImageStream(ins, true, 5000);
+            InputStream ins = getAssets().open("center_blink_full.gif");
+            gifImageView.SetGifImageStream(ins, false);
         }
         catch(IOException ex) {
             return;
         }
+        */
     }
 
     @Override
@@ -90,6 +121,7 @@ public class MainActivity extends RosActivity {
 
     @Override
     protected void init(NodeMainExecutor nodeMainExecutor) {
+        /*
         NodeConfiguration nodeConfiguration = NodeConfiguration.newPublic(InetAddressFactory.newNonLoopback().getHostAddress());
         nodeConfiguration.setMasterUri(getMasterUri());
 
@@ -98,5 +130,6 @@ public class MainActivity extends RosActivity {
 
         NodeMain node2 = new SimpleSubscriberNode();
         nodeMainExecutor.execute(node2, nodeConfiguration);
+        */
     }
 }
