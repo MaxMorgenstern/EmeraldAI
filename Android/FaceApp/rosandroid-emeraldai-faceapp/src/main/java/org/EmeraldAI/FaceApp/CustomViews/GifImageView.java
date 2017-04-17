@@ -10,15 +10,12 @@ import android.util.Log;
 import android.view.View;
 
 import org.EmeraldAI.FaceApp.Eye.EyeState;
-import org.apache.commons.lang.ObjectUtils;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
-import static android.content.ContentValues.TAG;
-
 /**
- * Created by maximilianporzelt on 10.04.17.
+ * Created by maximilian porzelt on 10.04.17.
  * Class inspired by: http://www.mavengang.com/2016/05/02/gif-animation-android/
  */
 
@@ -64,7 +61,6 @@ public class GifImageView extends View {
         mStart = 0;
         EyeState.getInstance().AnimationRunning = true;
         EyeState.getInstance().Loop = loop;
-        //EyeState.getInstance().AnimationEndTimestamp = -1;
 
         requestLayout();
     }
@@ -113,8 +109,6 @@ public class GifImageView extends View {
             if(!es.CurrentAnimation.AnimationName.equals("blink"))
                 es.AnimationEndTimestamp = now;
         }
-
-        //Log.i(TAG, "current time: " + relTime);
 
         mMovie.setTime(relTime);
 

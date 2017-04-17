@@ -16,7 +16,6 @@
 
 package org.EmeraldAI.FaceApp;
 
-import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -46,7 +45,6 @@ public class MainActivity extends RosActivity {
         super("RosAndroidExample", "RosAndroidExample");
     }
 
-    //Random rand = new Random();
     Handler handler = new Handler();
 
     @Override
@@ -54,11 +52,12 @@ public class MainActivity extends RosActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // TODO: remove
         // landscape mode
-        super.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        // super.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
         // keep screen on
-        //getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        // getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
 
         Runnable r = new Runnable() {
@@ -68,7 +67,7 @@ public class MainActivity extends RosActivity {
 
                 ea.EnableIdleMode();
 
-                Log.e(TAG, "Main - Idle: " + es.IdleMode + " - QueueSize: " + es.GetQueueSize() + " - Timestamp: " + es.AnimationEndTimestamp);
+                Log.i(TAG, "Main - Idle: " + es.IdleMode + " - QueueSize: " + es.GetQueueSize() + " - Timestamp: " + es.AnimationEndTimestamp);
 
                 long now = SystemClock.uptimeMillis();
                 long waitUntil = (es.CurrentAnimation != null) ?
@@ -113,7 +112,6 @@ public class MainActivity extends RosActivity {
 
     @Override
     protected void init(NodeMainExecutor nodeMainExecutor) {
-        /*
         NodeConfiguration nodeConfiguration = NodeConfiguration.newPublic(InetAddressFactory.newNonLoopback().getHostAddress());
         nodeConfiguration.setMasterUri(getMasterUri());
 
@@ -122,6 +120,5 @@ public class MainActivity extends RosActivity {
 
         NodeMain node2 = new SimpleSubscriberNode();
         nodeMainExecutor.execute(node2, nodeConfiguration);
-        */
     }
 }

@@ -10,7 +10,7 @@
 
     <application>
 
-        <activity android:name="org.ros.android.MasterChooser" />
+        <activity android:name="org.ros.android.MasterChooser" android:screenOrientation="landscape"/>
 
         <service
             android:name="org.ros.android.NodeMainExecutorService"
