@@ -14,7 +14,7 @@
  * the License.
  */
 
-package org.EmeraldAI.FaceApp;
+package org.EmeraldAI.FaceApp.ROS;
 
 import android.util.Log;
 
@@ -28,13 +28,13 @@ import org.ros.node.topic.Publisher;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class SimplePublisherNode extends AbstractNodeMain implements NodeMain {
+public class PublisherNode extends AbstractNodeMain implements NodeMain {
 
-    private static final String TAG = SimplePublisherNode.class.getSimpleName();
+    private static final String TAG = PublisherNode.class.getSimpleName();
 
     @Override
     public GraphName getDefaultNodeName() {
-        return GraphName.of("SimplePublisher/TimeLoopNode");
+        return GraphName.of("PublisherNode/TimeLoopNode");
     }
 
     @Override

@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 14
+    compileSdkVersion 19
     buildToolsVersion '25.0.0'
     defaultConfig {
         applicationId 'org.EmeraldAI.FaceApp'
         // Android 4.0+ http://dannyroa.com/2013/10/17/why-its-time-to-support-only-android-4-0-and-above
-        minSdkVersion 14
-        targetSdkVersion 14
+        minSdkVersion 19
+        targetSdkVersion 19
         versionCode 1
         versionName '0.1'
     }

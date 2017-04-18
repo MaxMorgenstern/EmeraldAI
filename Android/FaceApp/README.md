@@ -24,3 +24,8 @@ therefore you can not only use Ubuntu but also Windows or Mac.
 
 ### Contribution ###
 Feel free to contribute to this project by either raising issues or handing in pull requests.
+
+
+### Credits ###
+Artificial Intelligence Icon by Maximilian Becker from the Noun Project
+https://thenounproject.com/term/artificial-intelligence/81056/

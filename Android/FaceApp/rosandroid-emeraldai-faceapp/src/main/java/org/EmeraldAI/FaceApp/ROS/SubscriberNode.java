@@ -1,4 +1,4 @@
-package org.EmeraldAI.FaceApp;
+package org.EmeraldAI.FaceApp.ROS;
 
 import android.util.Log;
 
@@ -14,13 +14,13 @@ import org.ros.node.topic.Subscriber;
  * Note: http://rosjava.github.io/rosjava_core/0.1.6/getting_started.html
  */
 
-public class SimpleSubscriberNode  extends AbstractNodeMain implements NodeMain {
+public class SubscriberNode extends AbstractNodeMain implements NodeMain {
 
-    private static final String TAG = SimpleSubscriberNode.class.getSimpleName();
+    private static final String TAG = SubscriberNode.class.getSimpleName();
 
     @Override
     public GraphName getDefaultNodeName() {
-        return GraphName.of("SimpleSubscriberNode/ListenerNode");
+        return GraphName.of("SubscriberNode/ListenerNode");
     }
 
     @Override
