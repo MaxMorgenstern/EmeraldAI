@@ -34,12 +34,12 @@ public class PublisherNode extends AbstractNodeMain implements NodeMain {
 
     @Override
     public GraphName getDefaultNodeName() {
-        return GraphName.of("PublisherNode/TimeLoopNode");
+        return GraphName.of("EmeraldFaceApp/PublisherNode");
     }
 
     @Override
     public void onStart(ConnectedNode connectedNode) {
-        final Publisher<std_msgs.String> publisher = connectedNode.newPublisher(GraphName.of("time"), std_msgs.String._TYPE);
+        final Publisher<std_msgs.String> publisher = connectedNode.newPublisher(GraphName.of("Ping"), std_msgs.String._TYPE);
 
         final CancellableLoop loop = new CancellableLoop() {
             @Override
@@ -47,15 +47,15 @@ public class PublisherNode extends AbstractNodeMain implements NodeMain {
                 // retrieve current system time
                 String time = new SimpleDateFormat("HH:mm:ss").format(new Date());
 
-                Log.i(TAG, "publishing the current time: " + time);
+                Log.i(TAG, "Sending: \"FaceApp|" + time + "\"");
 
                 // create and publish a simple string message
                 std_msgs.String str = publisher.newMessage();
-                str.setData("The current time is: " + time);
+                str.setData("FaceApp|" + time);
                 publisher.publish(str);
 
-                // go to sleep for one second
-                Thread.sleep(1000);
+                // go to sleep for 10 seconds
+                Thread.sleep(10000);
             }
         };
         connectedNode.executeCancellableLoop(loop);
