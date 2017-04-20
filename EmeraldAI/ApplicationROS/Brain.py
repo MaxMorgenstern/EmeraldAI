@@ -23,8 +23,14 @@ def RunBrain():
 
     rospy.Subscriber("to_brain", String, callback)
 
+    rospy.Subscriber("ping", String, pingCallback)
+
     rospy.spin()
 
+def pingCallback(data):
+    dataParts = data.data.split("|")
+    print dataParts
+    # TODO
 
 def callback(data):
     dataParts = data.data.split("|")

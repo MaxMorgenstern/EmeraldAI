@@ -1,5 +1,9 @@
 Just a messy list with things to do
 
+Android:
+check display - if turned off --> TTS "Hey, I can't see anymore."
+
+
 - !!! Initial Conversation on User detection !!!
 - check is an observer pattern should be used or if we can trigger by watching ROS nodes
 
