@@ -34,7 +34,7 @@ public class SubscriberNode extends AbstractNodeMain implements NodeMain {
             @Override
             public void onNewMessage(std_msgs.String message) {
                 Log.i(TAG, "I heard: \"" + message.getData() + "\"");
-                List<String> messageData = Arrays.asList(message.getData().split("|"));
+                List<String> messageData = Arrays.asList(message.getData().split("\\|"));
 
                 if(messageData.size() == 2)
                 {
