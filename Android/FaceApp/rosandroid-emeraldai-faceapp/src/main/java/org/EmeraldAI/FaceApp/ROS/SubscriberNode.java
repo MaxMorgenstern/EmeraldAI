@@ -29,7 +29,7 @@ public class SubscriberNode extends AbstractNodeMain implements NodeMain {
 
     @Override
     public void onStart(ConnectedNode connectedNode) {
-        Subscriber<std_msgs.String> subscriber = connectedNode.newSubscriber("To_FaceApp", std_msgs.String._TYPE);
+        Subscriber<std_msgs.String> subscriber = connectedNode.newSubscriber("to_faceapp", std_msgs.String._TYPE);
         subscriber.addMessageListener(new MessageListener<std_msgs.String>() {
             @Override
             public void onNewMessage(std_msgs.String message) {

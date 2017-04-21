@@ -142,22 +142,30 @@ public class EyeAnimation {
         }
     }
 
-    public void EnableIdleMode()
+    public void BlinkUpdater()
     {
         EyeState es = EyeState.getInstance();
+        long now = SystemClock.uptimeMillis();
 
         // if animation is currently running stop
-        if(es.GetQueueSize() > 1 || es.AnimationRunning)
+        int intermediateAnimationTimeout = 30000; // TODO - to config
+        if(es.GetQueueSize() > 1 || es.AnimationRunning
+                || (es.CurrentAnimation.IntermediateAnimation && (es.AnimationEndTimestamp + intermediateAnimationTimeout) >= now))
             return;
 
         if(new Random().nextInt(100 + 1) > 97) // TODO - to config (97) or check if we can do time intervals
             this.PlayAnimation("blink");
+    }
+
+    public void IdleUpdater()
+    {
+        EyeState es = EyeState.getInstance();
+        long now = SystemClock.uptimeMillis();
 
         if(es.GetQueueSize() > 0)
             return;
 
         long timeToWaitUntilIdleBegins = 60000; // TODO - to config
-        long now = SystemClock.uptimeMillis();
         // wait x seconds since last animation to start idle
         if(!es.IdleMode && (es.AnimationEndTimestamp + timeToWaitUntilIdleBegins) >= now)
             return;

@@ -69,7 +69,8 @@ public class MainActivity extends RosActivity {
                 EyeState es = EyeState.getInstance();
                 EyeAnimation ea = new EyeAnimation();
 
-                ea.EnableIdleMode();
+                ea.BlinkUpdater();
+                ea.IdleUpdater();
 
                 Log.i(TAG, "Main - Idle: " + es.IdleMode + " - QueueSize: " + es.GetQueueSize() + " - Timestamp: " + es.AnimationEndTimestamp);
 
