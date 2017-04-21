@@ -55,7 +55,6 @@ public class OrientationPublisher extends AbstractNodeMain {
         SensorManager.getQuaternionFromVector(quaternion, event.values);
         PoseStamped pose = publisher.newMessage();
         pose.getHeader().setFrameId("/map");
-        // TODO(damonkohler): Should get time from the Node.
         pose.getHeader().setStamp(Time.fromMillis(System.currentTimeMillis()));
         pose.getPose().getOrientation().setW(quaternion[0]);
         pose.getPose().getOrientation().setX(quaternion[1]);

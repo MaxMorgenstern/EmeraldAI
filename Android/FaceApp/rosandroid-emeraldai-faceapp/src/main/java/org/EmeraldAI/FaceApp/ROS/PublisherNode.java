@@ -37,9 +37,13 @@ public class PublisherNode extends AbstractNodeMain implements NodeMain {
         return GraphName.of("EmeraldFaceApp/PublisherNode");
     }
 
+    private Publisher<std_msgs.String> brainPublisher;
+
     @Override
     public void onStart(ConnectedNode connectedNode) {
-        final Publisher<std_msgs.String> publisher = connectedNode.newPublisher(GraphName.of("Ping"), std_msgs.String._TYPE);
+        brainPublisher = connectedNode.newPublisher(GraphName.of("to_brain"), std_msgs.String._TYPE);
+
+        final Publisher<std_msgs.String> pingPublisher = connectedNode.newPublisher(GraphName.of("Ping"), std_msgs.String._TYPE);
 
         final CancellableLoop loop = new CancellableLoop() {
             @Override
@@ -47,18 +51,27 @@ public class PublisherNode extends AbstractNodeMain implements NodeMain {
                 // retrieve current system time
                 String time = new SimpleDateFormat("HH:mm:ss").format(new Date());
 
-                Log.i(TAG, "Sending: \"FaceApp|" + time + "\"");
+                Log.i(TAG, "Sending to 'ping': \"FaceApp|" + time + "\"");
 
                 // create and publish a simple string message
-                std_msgs.String str = publisher.newMessage();
+                std_msgs.String str = pingPublisher.newMessage();
                 str.setData("FaceApp|" + time);
-                publisher.publish(str);
+                pingPublisher.publish(str);
 
                 // go to sleep for 10 seconds
                 Thread.sleep(10000);
             }
         };
         connectedNode.executeCancellableLoop(loop);
+    }
+
+    public void ToBrain(String data)
+    {
+        Log.i(TAG, "Sending to 'to_brain': \"FaceApp|" + data + "\"");
+
+        std_msgs.String str = brainPublisher.newMessage();
+        str.setData("FaceApp|" + data);
+        brainPublisher.publish(str);
     }
 
 }

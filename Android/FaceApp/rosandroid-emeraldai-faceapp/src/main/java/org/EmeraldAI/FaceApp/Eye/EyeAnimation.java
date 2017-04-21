@@ -54,8 +54,7 @@ public class EyeAnimation {
             return;
         }
 
-        // TODO: throw error
-        Log.e(TAG, "TriggerAnimation(): Invalid comand recieved: " + command);
+        Log.e(TAG, "TriggerAnimation(): Invalid command received: " + command);
     }
 
     public void MoveTo(String destination)
@@ -159,6 +158,8 @@ public class EyeAnimation {
 
     public void IdleUpdater()
     {
+        // TODO - enable / disable via config
+        
         EyeState es = EyeState.getInstance();
         long now = SystemClock.uptimeMillis();
 

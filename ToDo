@@ -47,9 +47,6 @@ export ROS_IP=1.2.3.4
 READ!!!
 LUIS: https://blogs.msdn.microsoft.com/benjaminperkins/2016/11/21/most-common-chatbot-questions-and-how-to-answer-them/
 
-- predictor - runvisual - adapt run functionality
-- update CV with more simple process
-
 - microphone and camera selector - for config
 
 - deployment script

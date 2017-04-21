@@ -5,6 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import org.EmeraldAI.FaceApp.ROS.PublisherNode;
+import org.ros.node.NodeMain;
+
 import static android.content.ContentValues.TAG;
 
 /**
@@ -13,15 +16,22 @@ import static android.content.ContentValues.TAG;
 
 public class ActionReceiver extends BroadcastReceiver {
 
+    PublisherNode node;
+
+    public ActionReceiver(PublisherNode mainNode)
+    {
+        node = mainNode;
+    }
+
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {
             Log.e(TAG, "Screen turned on");
-            // TODO - Notify ROS Master
+            node.ToBrain("ScreenON");
         }
         if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
             Log.e(TAG, "Screen turned off");
-            // TODO - Notify ROS Master
+            node.ToBrain("ScreenOFF");
         }
     }
 }
