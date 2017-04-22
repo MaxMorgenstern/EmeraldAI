@@ -3,6 +3,7 @@ package org.EmeraldAI.FaceApp.Eye;
 import android.os.SystemClock;
 import android.util.Log;
 
+import org.EmeraldAI.FaceApp.R;
 import org.apache.commons.lang.ObjectUtils;
 
 import java.text.MessageFormat;
@@ -148,18 +149,20 @@ public class EyeAnimation {
 
 
         // if animation is currently running stop
-        int intermediateAnimationTimeout = 30000; // TODO - to config
+        int intermediateAnimationTimeout =
+                R.integer.intermediate_animation_timeout * 1000;
         if(es.GetQueueSize() > 1 || es.AnimationRunning
                 || (es.CurrentAnimation.IntermediateAnimation && (es.AnimationEndTimestamp + intermediateAnimationTimeout) >= now))
             return;
 
-        if(new Random().nextInt(100 + 1) > 97) // TODO - to config (97) or check if we can do time intervals
+        if(new Random().nextInt(100 + 1) > R.integer.blink_percentage)
             this.PlayAnimation("blink");
     }
 
     public void IdleUpdater()
     {
-        // TODO - enable / disable via config
+        if(R.integer.enable_idle_mode == 0)
+            return;
 
         EyeState es = EyeState.getInstance();
         long now = SystemClock.uptimeMillis();
@@ -167,7 +170,7 @@ public class EyeAnimation {
         if(es.GetQueueSize() > 0)
             return;
 
-        long timeToWaitUntilIdleBegins = 60000; // TODO - to config
+        long timeToWaitUntilIdleBegins = R.integer.time_to_wait_until_idle_begins * 1000;
         // wait x seconds since last animation to start idle
         if(!es.IdleMode && (es.AnimationEndTimestamp + timeToWaitUntilIdleBegins) >= now)
             return;
@@ -179,8 +182,8 @@ public class EyeAnimation {
             this.ResetAnimation();
         es.IdleMode = true;
 
-        int max = 10000; // TODO - to config
-        int min = 1000; // TODO - to config
+        int max = R.integer.max_animation_delay * 1000;
+        int min = R.integer.min_animation_delay * 1000;
         es.IdleDelay = new Random().nextInt(max - min + 1) + min;
 
         List<String> combinedList = new ArrayList<String>();
