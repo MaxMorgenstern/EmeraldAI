@@ -44,6 +44,10 @@ def callback(data):
         ProcessSpeech(dataParts[1])
 
 
+    if dataParts[0] == "FACEAPP":
+        print "TODO"
+
+
 
 
 def ProcessUser(cvTag):
@@ -66,7 +70,6 @@ def ProcessSpeech(data):
 
     print "Pipeline Args", pipelineArgs.toJSON()
     print "Main User", User().toJSON()
-    print "CV User", CVUserInstance.toJSON()
     print "Trainer Result: ", trainerResult
 
 

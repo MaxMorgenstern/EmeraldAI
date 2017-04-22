@@ -43,7 +43,7 @@ public class PublisherNode extends AbstractNodeMain implements NodeMain {
     public void onStart(ConnectedNode connectedNode) {
         brainPublisher = connectedNode.newPublisher(GraphName.of("to_brain"), std_msgs.String._TYPE);
 
-        final Publisher<std_msgs.String> pingPublisher = connectedNode.newPublisher(GraphName.of("Ping"), std_msgs.String._TYPE);
+        final Publisher<std_msgs.String> pingPublisher = connectedNode.newPublisher(GraphName.of("ping"), std_msgs.String._TYPE);
 
         final CancellableLoop loop = new CancellableLoop() {
             @Override
@@ -51,11 +51,11 @@ public class PublisherNode extends AbstractNodeMain implements NodeMain {
                 // retrieve current system time
                 String time = new SimpleDateFormat("HH:mm:ss").format(new Date());
 
-                Log.i(TAG, "Sending to 'ping': \"FaceApp|" + time + "\"");
+                Log.i(TAG, "Sending to 'ping': \"FACEAPP|" + time + "\"");
 
                 // create and publish a simple string message
                 std_msgs.String str = pingPublisher.newMessage();
-                str.setData("FaceApp|" + time);
+                str.setData("FACEAPP|" + time);
                 pingPublisher.publish(str);
 
                 // go to sleep for 10 seconds
@@ -67,10 +67,10 @@ public class PublisherNode extends AbstractNodeMain implements NodeMain {
 
     public void ToBrain(String data)
     {
-        Log.i(TAG, "Sending to 'to_brain': \"FaceApp|" + data + "\"");
+        Log.i(TAG, "Sending to 'to_brain': \"FACEAPP|" + data + "\"");
 
         std_msgs.String str = brainPublisher.newMessage();
-        str.setData("FaceApp|" + data);
+        str.setData("FACEAPP|" + data);
         brainPublisher.publish(str);
     }
 

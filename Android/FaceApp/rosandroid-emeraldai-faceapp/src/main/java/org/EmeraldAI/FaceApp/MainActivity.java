@@ -88,7 +88,6 @@ public class MainActivity extends RosActivity {
         };
         handler.postDelayed(r, 100);
 
-        Log.i(TAG, "add blink from main");
         new EyeAnimation().TriggerAnimation("blink");
     }
 

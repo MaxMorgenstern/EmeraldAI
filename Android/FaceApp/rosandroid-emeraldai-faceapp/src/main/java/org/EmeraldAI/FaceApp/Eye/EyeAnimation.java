@@ -146,6 +146,7 @@ public class EyeAnimation {
         EyeState es = EyeState.getInstance();
         long now = SystemClock.uptimeMillis();
 
+
         // if animation is currently running stop
         int intermediateAnimationTimeout = 30000; // TODO - to config
         if(es.GetQueueSize() > 1 || es.AnimationRunning
@@ -159,7 +160,7 @@ public class EyeAnimation {
     public void IdleUpdater()
     {
         // TODO - enable / disable via config
-        
+
         EyeState es = EyeState.getInstance();
         long now = SystemClock.uptimeMillis();
 
