@@ -18,6 +18,8 @@ from EmeraldAI.Entities.User import User
 from EmeraldAI.Entities.Context import Context
 from EmeraldAI.Entities.PipelineArgs import PipelineArgs
 
+# TODO - global config - mute - detecting people off/on - listen to commands - sleep mode
+
 def RunBrain():
     rospy.init_node('brain_node', anonymous=True)
 
@@ -35,6 +37,7 @@ def callback(data):
 
     if dataParts[0] == "STT":
         ProcessSpeech(dataParts[1])
+        # TODO - stop command
 
     if dataParts[0] == "FACEAPP":
         print "TODO"
