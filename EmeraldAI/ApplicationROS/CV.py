@@ -23,8 +23,8 @@ def RunCV():
     rate = rospy.Rate(10) # 10hz
 
     camera = cv2.VideoCapture(Config().GetInt("ComputerVision", "CameraID"))
-    ret = camera.set(3, Config().GetInt("ComputerVision", "CameraWidth"))
-    ret = camera.set(4, Config().GetInt("ComputerVision", "CameraHeight"))
+    camera.set(3, Config().GetInt("ComputerVision", "CameraWidth"))
+    camera.set(4, Config().GetInt("ComputerVision", "CameraHeight"))
 
     pred = Predictor()
 
