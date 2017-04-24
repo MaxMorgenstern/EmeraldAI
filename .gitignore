@@ -234,3 +234,5 @@ EmeraldAI/Data/ComputerVisionData/Temp/*
 Android/FaceApp/.gradle
 
 Android/FaceApp/.*
+Android/FaceApp/rosandroid-emeraldai-faceapp/src/main/assets/*.gif
+!Android/FaceApp/rosandroid-emeraldai-faceapp/src/main/assets/center_blink_full.gif
