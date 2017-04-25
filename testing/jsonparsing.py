@@ -18,9 +18,6 @@ def CleanTerm(term):
 def IsVersionHigher(old, current):
 	oldVersion = old.split(".")
 	currentVersion = current.split(".")
-
-	print oldVersion, currentVersion
-
 	if(int(currentVersion[0]) > int(oldVersion[0])):
 		return True
 	if(int(currentVersion[1]) > int(oldVersion[1])):
@@ -29,8 +26,14 @@ def IsVersionHigher(old, current):
 		return True
 	return False
 
+# TODO get current version
+try:
+	file = open("versionfile.txt", "r")
+	v = file.read()
+except Exception as e:
+	v = "0.0.0"
 
-highestVestion = "0.0.0"
+highestVestion = v
 highestVersionObject = None
 for d in data:
 	currentVersion = CleanTerm(d['tag_name'])
@@ -38,7 +41,16 @@ for d in data:
 		highestVestion = currentVersion
 		highestVersionObject = d
 
-print "Highest version", highestVestion
+if (highestVersionObject == None):
+	print "Already up to date"
+	exit()
+
+print "New highest version", highestVestion
+
+file = open("versionfile.txt","w")
+file.write(highestVestion)
+file.close()
+
 
 response = urllib2.urlopen(highestVersionObject['tarball_url'])
 data = response.read()
@@ -57,16 +69,11 @@ tar.close()
 
 print "File extracted"
 
+# TODO: move into destination
 
-"""
-print data[0]['tag_name'], CleanTerm(data[0]['tag_name'])
-print " "
-print " "
-print data[0]
-print " "
-print data[1]
-"""
+# TODO: update current version for next run
 
+# TODO: delete everything left over in tmp folder
 
 
 

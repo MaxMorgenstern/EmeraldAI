@@ -9,6 +9,8 @@ sys.setdefaultencoding('utf-8')
 import rospy
 from std_msgs.msg import String
 
+# TODO update
+
 from EmeraldAI.Logic.ComputerVision.Predictor import *
 from EmeraldAI.Logic.ComputerVision.Detector import *
 from EmeraldAI.Config.Config import *
