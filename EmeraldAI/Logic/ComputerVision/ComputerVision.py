@@ -213,7 +213,7 @@ class ComputerVision(object):
 
 
     def TrainModel(self, datasetName, imageSize=None):
-        if imageType == None:
+        if imageSize == None:
             imageSize = "{0}x{1}".format(self.__ResizeWidth, self.__ResizeHeight)
         images, labels, labelDict = self.__loadImages(datasetName, imageSize)
         if len(images) == 0 or len(labels) == 0:
