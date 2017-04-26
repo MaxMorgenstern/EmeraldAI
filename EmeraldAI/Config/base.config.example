@@ -98,7 +98,7 @@ CameraHeight = 360
 CameraID = 0
 
 UnknownUserTag = Unknown
-NotKnownDataPrefix = NotKnown
+NotKnownDataTag = NotKnown
 
 ImageSizeWidth = 350
 ImageSizeHeight = 350

@@ -6,8 +6,10 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-import rospy
-from std_msgs.msg import String
+import cv2
+
+#import rospy
+#from std_msgs.msg import String
 
 from EmeraldAI.Entities.PredictionObject import PredictionObject
 from EmeraldAI.Logic.ComputerVision.ComputerVision import ComputerVision
@@ -15,15 +17,18 @@ from EmeraldAI.Config.Config import *
 
 
 def RunCV():
-    pub = rospy.Publisher('to_brain', String, queue_size=10)
-    rospy.init_node('CV_node', anonymous=True)
-    rate = rospy.Rate(10) # 10hz
+    #pub = rospy.Publisher('to_brain', String, queue_size=10)
+    #rospy.init_node('CV_node', anonymous=True)
+    #rate = rospy.Rate(10) # 10hz
 
     camera = cv2.VideoCapture(Config().GetInt("ComputerVision", "CameraID"))
     camera.set(3, Config().GetInt("ComputerVision", "CameraWidth"))
     camera.set(4, Config().GetInt("ComputerVision", "CameraHeight"))
 
     cv = ComputerVision()
+
+    #cv.TrainModel("Person")
+    #exit()
 
     predictionObjectList = []
     # moodModel, moodDictionary = cv.LoadModel("Mood")
@@ -36,11 +41,22 @@ def RunCV():
 
         predictionResult, thresholdReached, timeoutReached = cv.PredictMultipleStream(image, predictionObjectList)
 
-        if(len(predictionResult) > 0 and (thresholdReached or timeoutReached)):
-            print predictionResult
-            # TODO - get best result and name
-            # rospy.loginfo("CV|PERSON|{0}".format(data))
-            # pub.publish("CV|PERSON|{0}".format(data))
+        takeImage = True
+        for predictorObject in predictionResult:
+            if len(predictorObject.PredictionResult) > 0:
+                takeImage = False
+                print "PredictionResult", predictorObject.Name, predictorObject.PredictionResult
+
+
+        if(takeImage):
+            cv.TakeFaceImage(image, "random")
+
+        #if(thresholdReached or timeoutReached):
+        #    print "Result: ", predictionResult
+        # TODO - get best result and name
+        # rospy.loginfo("CV|PERSON|{0}".format(data))
+        # pub.publish("CV|PERSON|{0}".format(data))
+
 
 
 

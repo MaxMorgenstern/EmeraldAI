@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+import operator
 from EmeraldAI.Config.Config import *
 
 class PredictionObject(object):

@@ -29,7 +29,7 @@ class ComputerVision(object):
         self.__DisabledFileFolder = "Disabled"
 
         self.__UnknownUserTag = Config().Get("ComputerVision", "UnknownUserTag") # Unknown
-        self.__NotKnownDataPrefix = Config().Get("ComputerVision", "NotKnownDataPrefix") # NotKnown
+        self.__NotKnownDataTag = Config().Get("ComputerVision", "NotKnownDataTag") # NotKnown
 
         self.__ImageLimit = Config().GetInt("ComputerVision", "ImageLimit") # 100
 
@@ -303,7 +303,7 @@ class ComputerVision(object):
         for key, value in enumerate(prediction):
             data = value['face']['data'][0]
 
-            if int(data['distance']) > self.__PredictStreamMaxDistance or data['value'].startswith(self.__NotKnownDataPrefix):
+            if int(data['distance']) > self.__PredictStreamMaxDistance or self.__NotKnownDataTag in data['value']:
                 self.__addPrediction(key, self.__UnknownUserTag, (int(data['distance']) - self.__PredictStreamMaxDistance))
             else:
                 self.__addPrediction(key, data['value'], int(data['distance']))
@@ -382,7 +382,7 @@ class ComputerVision(object):
             for data in dataArray:
                 for predictionObject in predictionObjectList:
                     if data['model'] == predictionObject.Name:
-                        if int(data['distance']) > predictionObject.MaxPredictionDistance or data['value'].startswith(self.__NotKnownDataPrefix):
+                        if int(data['distance']) > predictionObject.MaxPredictionDistance or self.__NotKnownDataTag in data['value']:
                             predictionObject.AddPrediction(key, self.__UnknownUserTag, (int(data['distance']) - predictionObject.MaxPredictionDistance))
                         else:
                             predictionObject.AddPrediction(key, data['value'], int(data['distance']))
