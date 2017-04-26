@@ -33,6 +33,8 @@ try:
 except Exception as e:
 	v = "0.0.0"
 
+print "Current version", v
+
 highestVestion = v
 highestVersionObject = None
 for d in data:

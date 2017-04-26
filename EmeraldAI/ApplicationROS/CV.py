@@ -9,11 +9,49 @@ sys.setdefaultencoding('utf-8')
 import rospy
 from std_msgs.msg import String
 
-# TODO update
-
-from EmeraldAI.Logic.ComputerVision.Predictor import *
-from EmeraldAI.Logic.ComputerVision.Detector import *
+from EmeraldAI.Entities.PredictionObject import PredictionObject
+from EmeraldAI.Logic.ComputerVision.ComputerVision import ComputerVision
 from EmeraldAI.Config.Config import *
+
+
+def RunCV():
+    pub = rospy.Publisher('to_brain', String, queue_size=10)
+    rospy.init_node('CV_node', anonymous=True)
+    rate = rospy.Rate(10) # 10hz
+
+    camera = cv2.VideoCapture(Config().GetInt("ComputerVision", "CameraID"))
+    camera.set(3, Config().GetInt("ComputerVision", "CameraWidth"))
+    camera.set(4, Config().GetInt("ComputerVision", "CameraHeight"))
+
+    cv = ComputerVision()
+
+    predictionObjectList = []
+    # moodModel, moodDictionary = cv.LoadModel("Mood")
+    # predictionObjectList.append(PredictionObject("mood", moodModel, moodDictionary, 500))
+    personModel, personDictionary = cv.LoadModel("Person")
+    predictionObjectList.append(PredictionObject("person", personModel, personDictionary, 500))
+
+    while True:
+        ret, image = camera.read()
+
+        predictionResult, thresholdReached, timeoutReached = cv.PredictMultipleStream(image, predictionObjectList)
+
+        if(len(predictionResult) > 0 and (thresholdReached or timeoutReached)):
+            print predictionResult
+            # TODO - get best result and name
+            # rospy.loginfo("CV|PERSON|{0}".format(data))
+            # pub.publish("CV|PERSON|{0}".format(data))
+
+
+
+
+if __name__ == "__main__":
+    try:
+        RunCV()
+    except KeyboardInterrupt:
+        print "End"
+
+"""
 
 visual = False
 if len(sys.argv) > 1 and str(sys.argv[1]) == "visual":
@@ -47,7 +85,6 @@ def RunCV():
 
         if(detectionResult != None and len(detectionResult)):
 
-            """
             # ToDo - check if this is a plausible way of doing it
             if previousResult != None:
                 combinedResult = (Counter(previousResult) + Counter(detectionResult))
@@ -59,8 +96,6 @@ def RunCV():
             print "Current Best Guess",  GetHighestResult(detectionResult)
             print ""
             print "---"
-            """
-
 
             bestCVMatch = pred.GetHighestResult(detectionResult)
             if bestCVMatch[0] != None and bestCVMatch[0] != "Unknown" and bestCVMatch[0] != "NotKnown":
@@ -77,3 +112,5 @@ if __name__ == "__main__":
         RunCV()
     except KeyboardInterrupt:
         print "End"
+
+"""

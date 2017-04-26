@@ -32,7 +32,9 @@ def callback(data):
     print dataParts
 
     if dataParts[0] == "CV":
-        ProcessUser(dataParts[1])
+
+        # TODO - check for type - eg. "person" or "mood"
+        ProcessUser(dataParts[1], dataParts[2])
         # ... TODO - initial greeting
 
     if dataParts[0] == "STT":
@@ -50,7 +52,8 @@ def callback(data):
 
 
 
-def ProcessUser(cvTag):
+def ProcessUser(type, cvTag):
+    # TODO - check for type - eg. "person" or "mood"
     User().SetUserByCVTag(cvTag)
 
 def ProcessSpeech(data):
