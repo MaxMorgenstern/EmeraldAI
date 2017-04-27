@@ -34,7 +34,7 @@ def RunCV():
     # moodModel, moodDictionary = cv.LoadModel("Mood")
     # predictionObjectList.append(PredictionObject("mood", moodModel, moodDictionary, 500))
     personModel, personDictionary = cv.LoadModel("Person")
-    predictionObjectList.append(PredictionObject("person", personModel, personDictionary, 500))
+    predictionObjectList.append(PredictionObject("Person", personModel, personDictionary, 500))
 
     while True:
         ret, image = camera.read()
@@ -43,12 +43,20 @@ def RunCV():
 
         takeImage = True
         for predictorObject in predictionResult:
-            if len(predictorObject.PredictionResult) > 0:
-                takeImage = False
-                print "PredictionResult", predictorObject.Name, predictorObject.PredictionResult
+            if len(predictorObject.PredictionResult) > 0 and (thresholdReached or timeoutReached):
+                if (predictorObject.Name is "Person"):
+                    for key, face in predictorObject.PredictionResult.iteritems():
+                        for name, distance in face.iteritems():
+                            if (name != "Unknown"):
+                                takeImage = False
 
 
+                if (predictorObject.Name is "Mood"):
+                    print "TODO"
+
+        # todo
         if(takeImage):
+            print "Take Image"
             cv.TakeFaceImage(image, "random")
 
         #if(thresholdReached or timeoutReached):
