@@ -44,12 +44,14 @@ def RunCV():
         takeImage = True
         for predictorObject in predictionResult:
             if len(predictorObject.PredictionResult) > 0 and (thresholdReached or timeoutReached):
+
                 if (predictorObject.Name is "Person"):
                     for key, face in predictorObject.PredictionResult.iteritems():
-                        for name, distance in face.iteritems():
-                            if (name != "Unknown"):
-                                takeImage = False
+                        bestResult = predictorObject.GetBestPredictionResult(key)
 
+                        print "---", bestResult, bestResult[0], bestResult[1], thresholdReached, timeoutReached
+                        # rospy.loginfo("CV|PERSON|{0}|{1}|{2}|{3}|{4}".format(key, bestResult[0], bestResult[1], thresholdReached, timeoutReached))
+                        # pub.publish("CV|PERSON|{0}|{1}|{2}|{3}|{4}".format(key, bestResult[0], bestResult[1], thresholdReached, timeoutReached))
 
                 if (predictorObject.Name is "Mood"):
                     print "TODO"
@@ -57,13 +59,7 @@ def RunCV():
         # todo
         if(takeImage):
             print "Take Image"
-            cv.TakeFaceImage(image, "random")
-
-        #if(thresholdReached or timeoutReached):
-        #    print "Result: ", predictionResult
-        # TODO - get best result and name
-        # rospy.loginfo("CV|PERSON|{0}".format(data))
-        # pub.publish("CV|PERSON|{0}".format(data))
+            cv.TakeFaceImage(image, "Person")
 
 
 

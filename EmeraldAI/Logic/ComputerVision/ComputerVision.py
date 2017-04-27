@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import cv2
-import glob
 import os
 import re
 import numpy as np

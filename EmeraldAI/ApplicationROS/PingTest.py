@@ -21,6 +21,7 @@ def RunPingTest():
     publisher = rospy.Publisher('to_brain', String, queue_size=10)
     rate = rospy.Rate(10) # 10hz
 
+    # TODO - alive
     while True:
         rate.sleep()
         if(len(dictionary) > 0):
@@ -35,9 +36,6 @@ def RunPingTest():
 def pingCallback(data):
     dataParts = data.data.split("|")
     dictionary[dataParts[0]] = datetime.datetime.strptime(dataParts[1], '%H:%M:%S')
-
-
-
 
 if __name__ == "__main__":
     try:
