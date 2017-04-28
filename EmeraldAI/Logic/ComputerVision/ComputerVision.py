@@ -14,14 +14,12 @@ from EmeraldAI.Logic.Singleton import Singleton
 # TODO: replace print with log
 # TODO: add logging
 # TODO: body detection
-# TODO: test line 60 --> #gray = cv2.equalizeHist(gray)
 
-"""
-    Old CV class
-    __haarScale = 1.1
-    __haarMinNeighbors = 4
-    __haarMinSize = (30, 30)
-"""
+class DetectionSettings(object):
+    def __init__(self, scale, minNeighbors, minSize):
+        self.Scale = scale
+        self.MinNeighbors = minNeighbors
+        self.MinSize = minSize
 
 class ComputerVision(object):
     __metaclass__ = Singleton
@@ -29,6 +27,11 @@ class ComputerVision(object):
     def __init__(self):
         self.__ModelFile = "myCVModel.mdl"
         self.__DictionaryFile = "myCVDict.npy"
+
+        if(Config().Get("ComputerVision", "DetectionSettings") == "advanced"):
+            self.__DetectionSettings = DetectionSettings(1.1, 4, (30, 30))
+        else:
+            self.__DetectionSettings = DetectionSettings(1.3, 4, (5, 5))
 
         self.__DatasetBasePath = os.path.join(Global.EmeraldPath, "Data", "ComputerVisionData")
         self.__TempCVFolder = "Temp"
@@ -63,7 +66,7 @@ class ComputerVision(object):
 
     def __toGrayscale(self, img):
         gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-        #gray = cv2.equalizeHist(gray)
+        gray = cv2.equalizeHist(gray)
         return gray
 
     def __cropFace(self, img, face):
@@ -180,33 +183,33 @@ class ComputerVision(object):
                                 continue
 
     def DetectFaceFast(self, img):
-        face = self.__frontalFace.detectMultiScale(img, scaleFactor=1.3, minNeighbors=4, minSize=(5, 5), flags=cv2.CASCADE_SCALE_IMAGE)
+        face = self.__frontalFace.detectMultiScale(img, scaleFactor=self.__DetectionSettings.Scale, minNeighbors=self.__DetectionSettings.MinNeighbors, minSize=self.__DetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
         if len(face) > 0:
             return face
 
-        face2 = self.__frontalFace2.detectMultiScale(img, scaleFactor=1.3, minNeighbors=4, minSize=(5, 5), flags=cv2.CASCADE_SCALE_IMAGE)
+        face2 = self.__frontalFace2.detectMultiScale(img, scaleFactor=self.__DetectionSettings.Scale, minNeighbors=self.__DetectionSettings.MinNeighbors, minSize=self.__DetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
         if len(face2) > 0:
             return face2
 
-        face3 = self.__frontalFace3.detectMultiScale(img, scaleFactor=1.3, minNeighbors=4, minSize=(5, 5), flags=cv2.CASCADE_SCALE_IMAGE)
+        face3 = self.__frontalFace3.detectMultiScale(img, scaleFactor=self.__DetectionSettings.Scale, minNeighbors=self.__DetectionSettings.MinNeighbors, minSize=self.__DetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
         if len(face3) > 0:
             return face3
 
-        face4 = self.__frontalFace4.detectMultiScale(img, scaleFactor=1.3, minNeighbors=4, minSize=(5, 5), flags=cv2.CASCADE_SCALE_IMAGE)
+        face4 = self.__frontalFace4.detectMultiScale(img, scaleFactor=self.__DetectionSettings.Scale, minNeighbors=self.__DetectionSettings.MinNeighbors, minSize=self.__DetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
         if len(face4) > 0:
             return face4
 
-        face5 = self.__frontalFace5.detectMultiScale(img, scaleFactor=1.3, minNeighbors=4, minSize=(5, 5), flags=cv2.CASCADE_SCALE_IMAGE)
+        face5 = self.__frontalFace5.detectMultiScale(img, scaleFactor=self.__DetectionSettings.Scale, minNeighbors=self.__DetectionSettings.MinNeighbors, minSize=self.__DetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
         if len(face5) > 0:
             return face
         return []
 
     def DetectFaceBest(self, img):
-        face = self.__frontalFace.detectMultiScale(img, scaleFactor=1.3, minNeighbors=4, minSize=(5, 5), flags=cv2.CASCADE_SCALE_IMAGE)
-        face2 = self.__frontalFace2.detectMultiScale(img, scaleFactor=1.3, minNeighbors=4, minSize=(5, 5), flags=cv2.CASCADE_SCALE_IMAGE)
-        face3 = self.__frontalFace3.detectMultiScale(img, scaleFactor=1.3, minNeighbors=4, minSize=(5, 5), flags=cv2.CASCADE_SCALE_IMAGE)
-        face4 = self.__frontalFace4.detectMultiScale(img, scaleFactor=1.3, minNeighbors=4, minSize=(5, 5), flags=cv2.CASCADE_SCALE_IMAGE)
-        face5 = self.__frontalFace5.detectMultiScale(img, scaleFactor=1.3, minNeighbors=4, minSize=(5, 5), flags=cv2.CASCADE_SCALE_IMAGE)
+        face = self.__frontalFace.detectMultiScale(img, scaleFactor=self.__DetectionSettings.Scale, minNeighbors=self.__DetectionSettings.MinNeighbors, minSize=self.__DetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
+        face2 = self.__frontalFace2.detectMultiScale(img, scaleFactor=self.__DetectionSettings.Scale, minNeighbors=self.__DetectionSettings.MinNeighbors, minSize=self.__DetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
+        face3 = self.__frontalFace3.detectMultiScale(img, scaleFactor=self.__DetectionSettings.Scale, minNeighbors=self.__DetectionSettings.MinNeighbors, minSize=self.__DetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
+        face4 = self.__frontalFace4.detectMultiScale(img, scaleFactor=self.__DetectionSettings.Scale, minNeighbors=self.__DetectionSettings.MinNeighbors, minSize=self.__DetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
+        face5 = self.__frontalFace5.detectMultiScale(img, scaleFactor=self.__DetectionSettings.Scale, minNeighbors=self.__DetectionSettings.MinNeighbors, minSize=self.__DetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
 
         bestResult = face
         if (len(bestResult) < len(face2)):

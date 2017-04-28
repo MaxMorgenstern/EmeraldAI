@@ -97,6 +97,8 @@ CameraWidth = 640
 CameraHeight = 360
 CameraID = 0
 
+DetectionSettings = advanced
+
 UnknownUserTag = Unknown
 NotKnownDataTag = NotKnown
 
