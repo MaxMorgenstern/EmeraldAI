@@ -16,6 +16,13 @@ from EmeraldAI.Logic.Singleton import Singleton
 # TODO: body detection
 # TODO: test line 60 --> #gray = cv2.equalizeHist(gray)
 
+"""
+    Old CV class
+    __haarScale = 1.1
+    __haarMinNeighbors = 4
+    __haarMinSize = (30, 30)
+"""
+
 class ComputerVision(object):
     __metaclass__ = Singleton
 
@@ -94,9 +101,11 @@ class ComputerVision(object):
                             image = cv2.imread(os.path.join(subjectPath, filename), cv2.IMREAD_GRAYSCALE)
                             trainingData.append(image)
 
-                            if (subdirname not in trainingLabelsDict):
-                                trainingLabelsDict[subdirname] = len(trainingLabelsDict)
-                            labelID = trainingLabelsDict[subdirname]
+                            trimmedSubdirname = subdirname.replace(imageSize, "")
+
+                            if (trimmedSubdirname not in trainingLabelsDict):
+                                trainingLabelsDict[trimmedSubdirname] = len(trainingLabelsDict)
+                            labelID = trainingLabelsDict[trimmedSubdirname]
 
                             trainingLabels.append(labelID)
                         except IOError, (errno, strerror):
