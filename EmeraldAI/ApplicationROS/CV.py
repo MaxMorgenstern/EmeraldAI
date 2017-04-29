@@ -47,35 +47,38 @@ def RunCV():
         if (len(bodyDetectionResult) > 0):
             print "Body Detection", len(bodyDetectionResult), bodyDetectionResult
 
+            # TODO - config or only every few seconds
             cv.TakeImage(image, "Body", bodyDetectionResult)
             rospy.loginfo("CV|BODY|{0}".format(len(bodyDetectionResult)))
             pub.publish("CV|BODY|{0}".format(len(bodyDetectionResult)))
 
 
-        predictionResult, thresholdReached, timeoutReached = cv.PredictMultipleStream(image, predictionObjectList)
+            # TODO - Test: only predict face if we have found an body, upper body or head and shoulders
+            # TODO - move to config  so we can detect all the time or this way
+            predictionResult, thresholdReached, timeoutReached = cv.PredictMultipleStream(image, predictionObjectList)
 
-        takeImage = True
-        for predictorObject in predictionResult:
-            if len(predictorObject.PredictionResult) > 0 and (thresholdReached or timeoutReached):
+            takeImage = True
+            for predictorObject in predictionResult:
+                if len(predictorObject.PredictionResult) > 0 and (thresholdReached or timeoutReached):
 
-                print predictionResult
+                    print predictionResult
 
-                if (predictorObject.Name is "Person"):
-                    for key, face in predictorObject.PredictionResult.iteritems():
-                        bestResult = predictorObject.GetBestPredictionResult(key)
+                    if (predictorObject.Name is "Person"):
+                        for key, face in predictorObject.PredictionResult.iteritems():
+                            bestResult = predictorObject.GetBestPredictionResult(key)
 
-                        if(bestResult[0] != "Unknown"):
-                            takeImage = False
+                            if(bestResult[0] != "Unknown"):
+                                takeImage = False
 
-                        #print "---", bestResult, bestResult[0], bestResult[1], thresholdReached, timeoutReached
-                        rospy.loginfo("CV|PERSON|{0}|{1}|{2}|{3}|{4}".format(key, bestResult[0], bestResult[1], thresholdReached, timeoutReached))
-                        pub.publish("CV|PERSON|{0}|{1}|{2}|{3}|{4}".format(key, bestResult[0], bestResult[1], thresholdReached, timeoutReached))
+                            #print "---", bestResult, bestResult[0], bestResult[1], thresholdReached, timeoutReached
+                            rospy.loginfo("CV|PERSON|{0}|{1}|{2}|{3}|{4}".format(key, bestResult[0], bestResult[1], thresholdReached, timeoutReached))
+                            pub.publish("CV|PERSON|{0}|{1}|{2}|{3}|{4}".format(key, bestResult[0], bestResult[1], thresholdReached, timeoutReached))
 
-                if (predictorObject.Name is "Mood"):
-                    print "TODO"
+                    if (predictorObject.Name is "Mood"):
+                        print "TODO"
 
-        if(takeImage):
-            cv.TakeFaceImage(image, "Person")
+            if(takeImage):
+                cv.TakeFaceImage(image, "Person")
 
 
 
