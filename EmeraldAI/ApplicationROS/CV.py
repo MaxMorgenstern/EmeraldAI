@@ -8,8 +8,8 @@ sys.setdefaultencoding('utf-8')
 
 import cv2
 
-#import rospy
-#from std_msgs.msg import String
+import rospy
+from std_msgs.msg import String
 
 from EmeraldAI.Entities.PredictionObject import PredictionObject
 from EmeraldAI.Logic.ComputerVision.ComputerVision import ComputerVision
@@ -17,9 +17,9 @@ from EmeraldAI.Config.Config import *
 
 
 def RunCV():
-    #pub = rospy.Publisher('to_brain', String, queue_size=10)
-    #rospy.init_node('CV_node', anonymous=True)
-    #rate = rospy.Rate(10) # 10hz
+    pub = rospy.Publisher('to_brain', String, queue_size=10)
+    rospy.init_node('CV_node', anonymous=True)
+    rospy.Rate(10) # 10hz
 
     camera = cv2.VideoCapture(Config().GetInt("ComputerVision", "CameraID"))
     camera.set(3, Config().GetInt("ComputerVision", "CameraWidth"))
@@ -48,8 +48,8 @@ def RunCV():
             print "Body Detection", len(bodyDetectionResult), bodyDetectionResult
 
             cv.TakeImage(image, "Body", bodyDetectionResult)
-            # rospy.loginfo("CV|BODY|{0}".format(len(bodyDetectionResult)))
-            # pub.publish("CV|BODY|{0}".format(len(bodyDetectionResult)))
+            rospy.loginfo("CV|BODY|{0}".format(len(bodyDetectionResult)))
+            pub.publish("CV|BODY|{0}".format(len(bodyDetectionResult)))
 
 
         predictionResult, thresholdReached, timeoutReached = cv.PredictMultipleStream(image, predictionObjectList)
@@ -67,16 +67,14 @@ def RunCV():
                         if(bestResult[0] != "Unknown"):
                             takeImage = False
 
-                        print "---", bestResult, bestResult[0], bestResult[1], thresholdReached, timeoutReached
-                        # rospy.loginfo("CV|PERSON|{0}|{1}|{2}|{3}|{4}".format(key, bestResult[0], bestResult[1], thresholdReached, timeoutReached))
-                        # pub.publish("CV|PERSON|{0}|{1}|{2}|{3}|{4}".format(key, bestResult[0], bestResult[1], thresholdReached, timeoutReached))
+                        #print "---", bestResult, bestResult[0], bestResult[1], thresholdReached, timeoutReached
+                        rospy.loginfo("CV|PERSON|{0}|{1}|{2}|{3}|{4}".format(key, bestResult[0], bestResult[1], thresholdReached, timeoutReached))
+                        pub.publish("CV|PERSON|{0}|{1}|{2}|{3}|{4}".format(key, bestResult[0], bestResult[1], thresholdReached, timeoutReached))
 
                 if (predictorObject.Name is "Mood"):
                     print "TODO"
 
-        # todo
         if(takeImage):
-            #print "Take Image"
             cv.TakeFaceImage(image, "Person")
 
 

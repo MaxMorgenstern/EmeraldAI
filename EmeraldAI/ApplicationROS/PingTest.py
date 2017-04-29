@@ -21,7 +21,7 @@ def RunPingTest():
     publisher = rospy.Publisher('to_brain', String, queue_size=10)
     rate = rospy.Rate(10) # 10hz
 
-    # TODO - alive
+    # TODO - tell when a new device is alive
     while True:
         rate.sleep()
         if(len(dictionary) > 0):

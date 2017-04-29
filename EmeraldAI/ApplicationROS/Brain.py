@@ -33,7 +33,7 @@ def callback(data):
 
     if dataParts[0] == "CV":
 
-        # TODO - check for type - eg. "person" or "mood"
+        # TODO - check for type - eg. "person" , "body" or "mood"
         ProcessUser(dataParts[1], dataParts[2], data.data)
         # ... TODO - initial greeting
 
