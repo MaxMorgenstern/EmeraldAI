@@ -39,15 +39,33 @@ def RunCV():
     while True:
         ret, image = camera.read()
 
+        cv2.imshow("image", image)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+        bodyDetectionResult = cv.DetectBody(image)
+        if (len(bodyDetectionResult) > 0):
+            print "Body Detection", len(bodyDetectionResult), bodyDetectionResult
+
+            cv.TakeImage(image, "Body", bodyDetectionResult)
+            # rospy.loginfo("CV|BODY|{0}".format(len(bodyDetectionResult)))
+            # pub.publish("CV|BODY|{0}".format(len(bodyDetectionResult)))
+
+
         predictionResult, thresholdReached, timeoutReached = cv.PredictMultipleStream(image, predictionObjectList)
 
         takeImage = True
         for predictorObject in predictionResult:
             if len(predictorObject.PredictionResult) > 0 and (thresholdReached or timeoutReached):
 
+                print predictionResult
+
                 if (predictorObject.Name is "Person"):
                     for key, face in predictorObject.PredictionResult.iteritems():
                         bestResult = predictorObject.GetBestPredictionResult(key)
+
+                        if(bestResult[0] != "Unknown"):
+                            takeImage = False
 
                         print "---", bestResult, bestResult[0], bestResult[1], thresholdReached, timeoutReached
                         # rospy.loginfo("CV|PERSON|{0}|{1}|{2}|{3}|{4}".format(key, bestResult[0], bestResult[1], thresholdReached, timeoutReached))
@@ -58,7 +76,7 @@ def RunCV():
 
         # todo
         if(takeImage):
-            print "Take Image"
+            #print "Take Image"
             cv.TakeFaceImage(image, "Person")
 
 
@@ -70,67 +88,3 @@ if __name__ == "__main__":
         RunCV()
     except KeyboardInterrupt:
         print "End"
-
-"""
-
-visual = False
-if len(sys.argv) > 1 and str(sys.argv[1]) == "visual":
-    visual = True
-
-def RunCV():
-    pub = rospy.Publisher('to_brain', String, queue_size=10)
-    rospy.init_node('CV_node', anonymous=True)
-    rate = rospy.Rate(10) # 10hz
-
-    camera = cv2.VideoCapture(Config().GetInt("ComputerVision", "CameraID"))
-    camera.set(3, Config().GetInt("ComputerVision", "CameraWidth"))
-    camera.set(4, Config().GetInt("ComputerVision", "CameraHeight"))
-
-    pred = Predictor()
-
-    predictorObject = pred.GetPredictor(camera, Detector().DetectFaceFrontal)
-    if predictorObject == None:
-        print "Create Dataset"
-        pred.CreateDataset()
-        predictorObject = pred.GetPredictor(camera, Detector().DetectFaceFrontal)
-
-    previousResult = None
-    while True:
-        rate.sleep()
-        if visual:
-            detectionResult = predictorObject.RunVisual()
-        else:
-            detectionResult = predictorObject.Run()
-        detectionResult = pred.RemoveUnknownPredictions(detectionResult)
-
-        if(detectionResult != None and len(detectionResult)):
-
-            # ToDo - check if this is a plausible way of doing it
-            if previousResult != None:
-                combinedResult = (Counter(previousResult) + Counter(detectionResult))
-                print "Combined Result", combinedResult
-                print "Combined Best Guess", GetHighestResult(combinedResult)
-
-            print ""
-            print "Current Result", detectionResult
-            print "Current Best Guess",  GetHighestResult(detectionResult)
-            print ""
-            print "---"
-
-            bestCVMatch = pred.GetHighestResult(detectionResult)
-            if bestCVMatch[0] != None and bestCVMatch[0] != "Unknown" and bestCVMatch[0] != "NotKnown":
-                rospy.loginfo("CV|{0}".format(data))
-                pub.publish("CV|{0}".format(data))
-                print bestCVMatch[0]
-
-
-            #previousResult = detectionResult.copy()
-
-
-if __name__ == "__main__":
-    try:
-        RunCV()
-    except KeyboardInterrupt:
-        print "End"
-
-"""

@@ -60,6 +60,10 @@ class ComputerVision(object):
         self.__frontalFace4 = cv2.CascadeClassifier(os.path.join(self.__haarDir, Config().Get("ComputerVision", "HaarcascadeFaceFrontalAltTree")))
         self.__frontalFace5 = cv2.CascadeClassifier(os.path.join(self.__haarDir, Config().Get("ComputerVision", "HaarcascadeFaceProfile")))
 
+        self.__fullBody = cv2.CascadeClassifier(os.path.join(self.__haarDir, Config().Get("ComputerVision", "HaarcascadeBodyFull")))
+        self.__upperBody = cv2.CascadeClassifier(os.path.join(self.__haarDir, Config().Get("ComputerVision", "HaarcascadeBodyUpper")))
+        self.__headShoulders = cv2.CascadeClassifier(os.path.join(self.__haarDir, Config().Get("ComputerVision", "HaarcascadeHeadShoulder")))
+
         self.__RecognizerModel = cv2.createFisherFaceRecognizer()
         self.__RecognizerDictionary = {}
 
@@ -69,7 +73,7 @@ class ComputerVision(object):
         gray = cv2.equalizeHist(gray)
         return gray
 
-    def __cropFace(self, img, face):
+    def __cropImage(self, img, face):
         x, y, h, w = [result for result in face]
         return img[y:y+h,x:x+w]
 
@@ -182,6 +186,21 @@ class ComputerVision(object):
                             else:
                                 continue
 
+    def DetectBody(self, img):
+        bodies = self.__fullBody.detectMultiScale(img, scaleFactor=self.__DetectionSettings.Scale, minNeighbors=self.__DetectionSettings.MinNeighbors, minSize=self.__DetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
+        if len(bodies) > 0:
+            return bodies
+
+        bodies = self.__upperBody.detectMultiScale(img, scaleFactor=self.__DetectionSettings.Scale, minNeighbors=self.__DetectionSettings.MinNeighbors, minSize=self.__DetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
+        if len(bodies) > 0:
+            return bodies
+
+        bodies = self.__headShoulders.detectMultiScale(img, scaleFactor=self.__DetectionSettings.Scale, minNeighbors=self.__DetectionSettings.MinNeighbors, minSize=self.__DetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
+        if len(bodies) > 0:
+            return bodies
+
+        return []
+
     def DetectFaceFast(self, img):
         face = self.__frontalFace.detectMultiScale(img, scaleFactor=self.__DetectionSettings.Scale, minNeighbors=self.__DetectionSettings.MinNeighbors, minSize=self.__DetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
         if len(face) > 0:
@@ -228,8 +247,8 @@ class ComputerVision(object):
             imageSize = "{0}x{1}".format(self.__ResizeWidth, self.__ResizeHeight)
         images, labels, labelDict = self.__loadImages(datasetName, imageSize)
         if len(images) == 0 or len(labels) == 0:
-        	print "Error, no data given"
-        	return
+            print "Error, no data given"
+            return
         self.__RecognizerModel.train(images, labels)
         self.__RecognizerDictionary = labelDict
 
@@ -248,13 +267,26 @@ class ComputerVision(object):
             print "Error while opening File", e
             return None, None
 
+    def TakeImage(self, image, imageType, dataArray, datasetName=None, grayscale=False):
+        if datasetName == None:
+            datasetName = self.__TempCVFolder
+        if len(dataArray) > 0:
+            for imageData in dataArray:
+                croppedImage = self.__cropImage(image, imageData)
+                if grayscale:
+                    croppedImage = self.__toGrayscale(croppedImage)
+                resizedImage = cv2.resize(croppedImage, (self.__ResizeWidth, self.__ResizeHeight))
+
+                fileName = str(self.__getHighestImageID(datasetName, imageType) + 1) + ".jpg"
+                self.__saveImg(resizedImage, datasetName, imageType, fileName)
+
     def TakeFaceImage(self, image, imageType, datasetName=None):
         if datasetName == None:
             datasetName = self.__TempCVFolder
         faces = self.DetectFaceBest(image)
         if len(faces) > 0:
             for face in faces:
-                croppedImage = self.__cropFace(image, face)
+                croppedImage = self.__cropImage(image, face)
                 resizedImage = cv2.resize(self.__toGrayscale(croppedImage), (self.__ResizeWidth, self.__ResizeHeight))
 
                 fileName = str(self.__getHighestImageID(datasetName, imageType) + 1) + ".jpg"
@@ -265,7 +297,7 @@ class ComputerVision(object):
         result = []
         if len(faces) > 0:
             for face in faces:
-                croppedImage = self.__cropFace(image, face)
+                croppedImage = self.__cropImage(image, face)
                 resizedImage = cv2.resize(self.__toGrayscale(croppedImage), (self.__ResizeWidth, self.__ResizeHeight))
                 prediction = model.predict(resizedImage)
 
@@ -327,7 +359,7 @@ class ComputerVision(object):
         if len(faces) > 0:
             faceId = 1
             for face in faces:
-                croppedImage = self.__cropFace(image, face)
+                croppedImage = self.__cropImage(image, face)
                 resizedImage = cv2.resize(self.__toGrayscale(croppedImage), (self.__ResizeWidth, self.__ResizeHeight))
 
                 predictionResult = []

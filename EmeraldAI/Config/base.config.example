@@ -97,7 +97,7 @@ CameraWidth = 640
 CameraHeight = 360
 CameraID = 0
 
-DetectionSettings = advanced
+DetectionSettings = advanced # fast
 
 UnknownUserTag = Unknown
 NotKnownDataTag = NotKnown
@@ -113,12 +113,11 @@ HaarcascadeFaceFrontalAltTree = haarcascade_frontalface_alt_tree.xml
 
 HaarcascadeFaceProfile = haarcascade_profileface.xml
 
-# ----------------------
 HaarcascadeBodyUpper = haarcascade_upperbody.xml
-HaarcascadeBodyLower = haarcascade_lowerbody.xml
 HaarcascadeBodyFull = haarcascade_fullbody.xml
-# ----------------------
+HaarcascadeHeadShoulder = haarcascade_head_shoulders.xml
 
+# ----------------------
 [ComputerVision.Prediction]
 MaxPredictionDistance = 500
 
