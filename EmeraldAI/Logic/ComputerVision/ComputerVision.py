@@ -360,7 +360,7 @@ class ComputerVision(object):
             faceId = 1
             for face in faces:
                 croppedImage = self.__cropImage(image, face)
-                resizedImage = cv2.resize((croppedImage), (self.__ResizeWidth, self.__ResizeHeight))
+                resizedImage = cv2.resize(self.__toGrayscale(croppedImage), (self.__ResizeWidth, self.__ResizeHeight))
 
                 predictionResult = []
                 for predictionObject in predictionObjectList:
