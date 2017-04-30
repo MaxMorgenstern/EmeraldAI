@@ -13,8 +13,20 @@ class PredictionObject(object):
         self.MaxPredictionDistance = maxDistance
         self.__UnknownUserTag = Config().Get("ComputerVision", "UnknownUserTag")
 
-    def GetBestPredictionResult(self, id):
-        sortedDict = sorted(self.PredictionResult[id].items(), key=operator.itemgetter(1), reverse=True)
+    def __RemoveUnknown(self, resultDict):
+        for k in resultDict.keys():
+          if k == "Unknown":
+            resultDict.pop(k)
+        return resultDict
+
+    def GetBestPredictionResult(self, id, ignoreUnknown=False):
+        resultDict = self.PredictionResult[id]
+        if(ignoreUnknown):
+            resultDict = self.__RemoveUnknown(resultDict)
+
+        sortedDict = sorted(resultDict.items(), key=operator.itemgetter(1), reverse=True)
+        if (len(sortedDict) == 0):
+            return ()
         return sortedDict[0]
 
     def AddPrediction(self, id, key, distance):
