@@ -20,12 +20,12 @@ class PredictionObject(object):
     def AddPrediction(self, id, key, distance):
         if(self.PredictionResult.has_key(id)):
             if(self.PredictionResult[id].has_key(key)):
-                self.PredictionResult[id][key] += (self.MaxPredictionDistance - distance) / 10
+                self.PredictionResult[id][key] += (self.MaxPredictionDistance - distance)
             else:
-                self.PredictionResult[id][key] = (self.MaxPredictionDistance - distance) / 10
+                self.PredictionResult[id][key] = (self.MaxPredictionDistance - distance)
         else:
             self.PredictionResult[id] = {}
-            self.PredictionResult[id][key] = (self.MaxPredictionDistance - distance) / 10
+            self.PredictionResult[id][key] = (self.MaxPredictionDistance - distance)
 
     def ThresholdReached(self, threshold):
         if len(self.PredictionResult) > 0:

@@ -10,10 +10,7 @@ import operator
 from EmeraldAI.Config.Config import *
 from EmeraldAI.Logic.Modules import Global
 from EmeraldAI.Logic.Singleton import Singleton
-
-# TODO: replace print with log
-# TODO: add logging
-# TODO: body detection
+from EmeraldAI.Logic.Logger import *
 
 class DetectionSettings(object):
     def __init__(self, scale, minNeighbors, minSize):
@@ -116,9 +113,9 @@ class ComputerVision(object):
 
                             trainingLabels.append(labelID)
                         except IOError, (errno, strerror):
-                            print "IOError"
-                        except:
-                            print "Error"
+                            FileLogger().Error("ComputerVision Line 116: IO Exception: {0}".format(strerror))
+                        except Exception as e:
+                            FileLogger().Error("ComputerVision Line 118: Exception: {0}".format(e))
         return trainingData, np.asarray(trainingLabels), trainingLabelsDict
 
     def __ensureDirectoryExists(self, directory):
@@ -247,7 +244,7 @@ class ComputerVision(object):
             imageSize = "{0}x{1}".format(self.__ResizeWidth, self.__ResizeHeight)
         images, labels, labelDict = self.__loadImages(datasetName, imageSize)
         if len(images) == 0 or len(labels) == 0:
-            print "Error, no data given"
+            FileLogger().Error("ComputerVision Line 247: No Data given")
             return
         self.__RecognizerModel.train(images, labels)
         self.__RecognizerDictionary = labelDict
@@ -264,7 +261,7 @@ class ComputerVision(object):
             self.__RecognizerDictionary = np.load(os.path.join(path, self.__DictionaryFile)).item()
             return self.__RecognizerModel, self.__RecognizerDictionary
         except Exception as e:
-            print "Error while opening File", e
+            FileLogger().Error("ComputerVision Line 264: Exception: Error while opening File {0}".format(e))
             return None, None
 
     def TakeImage(self, image, imageType, dataArray, datasetName=None, grayscale=False):
@@ -292,8 +289,11 @@ class ComputerVision(object):
                 fileName = str(self.__getHighestImageID(datasetName, imageType) + 1) + ".jpg"
                 self.__saveImg(resizedImage, datasetName, imageType, fileName)
 
-    def Predict(self, image, model, dictionary):
-        faces = self.DetectFaceBest(image)
+    def Predict(self, image, model, dictionary, fast=True):
+        if(fast):
+            faces = self.DetectFaceFast(image)
+        else:
+            faces = self.DetectFaceBest(image)
         result = []
         if len(faces) > 0:
             for face in faces:
@@ -320,10 +320,10 @@ class ComputerVision(object):
                         }
                     })
                 except Exception as e:
-                    print "Value Error", e
+                    FileLogger().Error("ComputerVision Line 323: Value Error: {0}".format(e))
         return result
 
-    def PredictStream(self, image, model, dictionary, threshold=None, timeout=None):
+    def PredictStream(self, image, model, dictionary, fast=True, threshold=None, timeout=None):
         if threshold == None:
             threshold = self.__PredictStreamThreshold
 
@@ -342,19 +342,22 @@ class ComputerVision(object):
             reachedTimeout = True
             self.__PredictStreamTimeoutBool = True
 
-        prediction = self.Predict(image, model, dictionary)
+        prediction = self.Predict(image, model, dictionary, fast)
         for key, value in enumerate(prediction):
             data = value['face']['data'][0]
 
             if int(data['distance']) > self.__PredictStreamMaxDistance or self.__NotKnownDataTag in data['value']:
-                self.__addPrediction(key, self.__UnknownUserTag, (int(data['distance']) - self.__PredictStreamMaxDistance))
+                self.__addPrediction(key, self.__UnknownUserTag, (int(data['distance']) - self.__PredictStreamMaxDistance)/4)
             else:
                 self.__addPrediction(key, data['value'], int(data['distance']))
 
         return self.__PredictStreamResult, self.__thresholdReached(threshold), reachedTimeout
 
-    def PredictMultiple(self, image, predictionObjectList):
-        faces = self.DetectFaceBest(image)
+    def PredictMultiple(self, image, predictionObjectList, fast=True):
+        if(fast):
+            faces = self.DetectFaceFast(image)
+        else:
+            faces = self.DetectFaceBest(image)
         result = []
         if len(faces) > 0:
             faceId = 1
@@ -378,7 +381,7 @@ class ComputerVision(object):
                                 'distance': prediction[1]
                             })
                     except Exception as e:
-                        print "Value Error", e
+                        FileLogger().Error("ComputerVision Line 384: Value Error {0}".format(e))
 
                 result.append({
                     'face': {
@@ -396,7 +399,7 @@ class ComputerVision(object):
                 faceId += 1
         return result
 
-    def PredictMultipleStream(self, image, predictionObjectList, threshold=None, timeout=None):
+    def PredictMultipleStream(self, image, predictionObjectList, fast=True, threshold=None, timeout=None):
         if threshold == None:
             threshold = self.__PredictStreamThreshold
 
@@ -418,7 +421,7 @@ class ComputerVision(object):
 
         reachedThreshold = False
 
-        prediction = self.PredictMultiple(image, predictionObjectList)
+        prediction = self.PredictMultiple(image, predictionObjectList, fast)
 
         for key, value in enumerate(prediction):
             dataArray = value['face']['data']
