@@ -9,7 +9,7 @@ except ImportError:
 from EmeraldAI.Logic.Singleton import Singleton
 
 
-class EmeraldGPIO(object):
+class GPIOProxy(object):
     __metaclass__ = Singleton
 
     def __init__(self):
