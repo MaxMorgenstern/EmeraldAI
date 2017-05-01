@@ -20,7 +20,7 @@ class PredictionObject(object):
         return resultDict
 
     def GetBestPredictionResult(self, id, ignoreUnknown=False):
-        resultDict = self.PredictionResult[id]
+        resultDict = self.PredictionResult[id].copy()
         if(ignoreUnknown):
             resultDict = self.__RemoveUnknown(resultDict)
 
