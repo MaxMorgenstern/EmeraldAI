@@ -15,6 +15,19 @@ import time
 from EmeraldAI.Entities.PredictionObject import PredictionObject
 from EmeraldAI.Logic.ComputerVision.ComputerVision import ComputerVision
 from EmeraldAI.Config.Config import *
+from EmeraldAI.Logic.ComputerVision.ModelMonitor import ModelMonitor
+
+
+def EnsureModelUpdate():
+    monitor = ModelMonitor()
+    predictionModules = Config().GetList("ComputerVision", "Modules")
+
+    for moduleName in predictionModules:
+        if(monitor.CompareHash(moduleName, monitor.GetStoredHash(moduleName))):
+            print "Model '{0}' up to date".format(moduleName)
+            continue
+        print "Rebuild Model '{0}'...".format(moduleName)
+        monitor.Rebuild(moduleName)
 
 
 def RunCV():
@@ -28,14 +41,15 @@ def RunCV():
 
     cv = ComputerVision()
 
-    #cv.TrainModel("Person")
-    #exit()
-
     predictionObjectList = []
-    # moodModel, moodDictionary = cv.LoadModel("Mood")
-    # predictionObjectList.append(PredictionObject("mood", moodModel, moodDictionary, 500))
-    personModel, personDictionary = cv.LoadModel("Person")
-    predictionObjectList.append(PredictionObject("Person", personModel, personDictionary, 1500)) # last one distance
+
+    predictionModules = Config().GetList("ComputerVision", "Modules")
+    for moduleName in predictionModules:
+        model, dictionary = cv.LoadModel(moduleName)
+        if (model == None or dictionary == None):
+            continue
+        print "load", moduleName
+        predictionObjectList.append(PredictionObject(moduleName, model, dictionary, 1500)) # last one distance
 
     clock = time.time()
 
@@ -53,23 +67,20 @@ def RunCV():
 
         bodyDetectionResult = cv.DetectBody(image)
         if (len(bodyDetectionResult) > 0):
-            #print "Body Detection", len(bodyDetectionResult), bodyDetectionResult
-
             if(clockTimeout):
                 cv.TakeImage(image, "Body", bodyDetectionResult)
             #rospy.loginfo("CV|BODY|{0}".format(len(bodyDetectionResult)))
             #pub.publish("CV|BODY|{0}".format(len(bodyDetectionResult)))
 
 
-            # TODO - Test: only predict face if we have found an body, upper body or head and shoulders
             # TODO - move to config  so we can detect all the time or this way
-            predictionResult, thresholdReached, timeoutReached = cv.PredictMultipleStream(image, predictionObjectList)
+            predictionResult, thresholdReached, timeoutReached = cv.PredictMultipleStream(image, predictionObjectList, threshold=7500)
 
             takeImage = True
             for predictorObject in predictionResult:
                 if len(predictorObject.PredictionResult) > 0 and (thresholdReached or timeoutReached):
 
-                    if (predictorObject.Name is "Person"):
+                    if (predictorObject.Name == "Person"):
                         for key, face in predictorObject.PredictionResult.iteritems():
                             bestResult = predictorObject.GetBestPredictionResult(key, False)
                             bestResultPerson = predictorObject.GetBestPredictionResult(key, True)
@@ -78,12 +89,11 @@ def RunCV():
                                 takeImage = False
 
                             print ""
-                            print "Face Detection", predictionResult, bestResult, bestResultPerson
-                            print "Face Detection", bestResult, thresholdReached, timeoutReached
+                            print "Face Detection", bestResult, bestResultPerson, thresholdReached, timeoutReached
                             #rospy.loginfo("CV|PERSON|{0}|{1}|{2}|{3}|{4}".format(key, bestResult[0], bestResult[1], thresholdReached, timeoutReached))
                             #pub.publish("CV|PERSON|{0}|{1}|{2}|{3}|{4}".format(key, bestResult[0], bestResult[1], thresholdReached, timeoutReached))
 
-                    if (predictorObject.Name is "Mood"):
+                    if (predictorObject.Name == "Mood"):
                         print "TODO"
 
             if(takeImage and clockTimeout):
@@ -91,10 +101,9 @@ def RunCV():
 
 
 
-
-
 if __name__ == "__main__":
     try:
+        EnsureModelUpdate()
         RunCV()
     except KeyboardInterrupt:
         print "End"

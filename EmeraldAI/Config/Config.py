@@ -26,6 +26,9 @@ class Config():
     def GetBoolean(self, section, parameter):
         return self.__config.getboolean(section, parameter)
 
+    def GetList(self, section, parameter):
+        return self.__config.get(section, parameter).split(",")
+
     def Set(self, section, parameter, value):
         if not self.__config.has_section(section):
             self.__config.add_section(section)
