@@ -18,6 +18,8 @@ from EmeraldAI.Entities.User import User
 from EmeraldAI.Entities.Context import Context
 from EmeraldAI.Entities.PipelineArgs import PipelineArgs
 
+# TODO - global config - mute - detecting people off/on - listen to commands - sleep mode
+
 def RunBrain():
     rospy.init_node('brain_node', anonymous=True)
 
@@ -25,22 +27,33 @@ def RunBrain():
 
     rospy.spin()
 
-
 def callback(data):
     dataParts = data.data.split("|")
     print dataParts
 
     if dataParts[0] == "CV":
-        ProcessUser(dataParts[1])
+
+        # TODO - check for type - eg. "person" , "body" or "mood"
+        ProcessUser(dataParts[1], dataParts[2], data.data)
         # ... TODO - initial greeting
 
     if dataParts[0] == "STT":
         ProcessSpeech(dataParts[1])
+        # TODO - stop command
+
+    if dataParts[0] == "FACEAPP":
+        print "TODO"
+        # TODO - tablet turned off / on
+
+    if dataParts[0] == "PING":
+        print "TODO"
+        # TODO - a device we need does not ping anymore
 
 
 
 
-def ProcessUser(cvTag):
+def ProcessUser(type, cvTag, data):
+    # TODO - check for type - eg. "person" or "mood"
     User().SetUserByCVTag(cvTag)
 
 def ProcessSpeech(data):
@@ -60,7 +73,6 @@ def ProcessSpeech(data):
 
     print "Pipeline Args", pipelineArgs.toJSON()
     print "Main User", User().toJSON()
-    print "CV User", CVUserInstance.toJSON()
     print "Trainer Result: ", trainerResult
 
 

@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+import operator
 from EmeraldAI.Config.Config import *
 
 class PredictionObject(object):
@@ -12,15 +13,31 @@ class PredictionObject(object):
         self.MaxPredictionDistance = maxDistance
         self.__UnknownUserTag = Config().Get("ComputerVision", "UnknownUserTag")
 
+    def __RemoveUnknown(self, resultDict):
+        for k in resultDict.keys():
+          if k == "Unknown":
+            resultDict.pop(k)
+        return resultDict
+
+    def GetBestPredictionResult(self, id, ignoreUnknown=False):
+        resultDict = self.PredictionResult[id].copy()
+        if(ignoreUnknown):
+            resultDict = self.__RemoveUnknown(resultDict)
+
+        sortedDict = sorted(resultDict.items(), key=operator.itemgetter(1), reverse=True)
+        if (len(sortedDict) == 0):
+            return ()
+        return sortedDict[0]
+
     def AddPrediction(self, id, key, distance):
         if(self.PredictionResult.has_key(id)):
             if(self.PredictionResult[id].has_key(key)):
-                self.PredictionResult[id][key] += (self.MaxPredictionDistance - distance) / 10
+                self.PredictionResult[id][key] += (self.MaxPredictionDistance - distance)
             else:
-                self.PredictionResult[id][key] = (self.MaxPredictionDistance - distance) / 10
+                self.PredictionResult[id][key] = (self.MaxPredictionDistance - distance)
         else:
             self.PredictionResult[id] = {}
-            self.PredictionResult[id][key] = (self.MaxPredictionDistance - distance) / 10
+            self.PredictionResult[id][key] = (self.MaxPredictionDistance - distance)
 
     def ThresholdReached(self, threshold):
         if len(self.PredictionResult) > 0:

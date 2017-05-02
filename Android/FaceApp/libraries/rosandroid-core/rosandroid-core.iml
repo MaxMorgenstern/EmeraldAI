@@ -120,5 +120,6 @@
     <orderEntry type="library" exported="" name="actionlib_msgs-1.11.9" level="project" />
     <orderEntry type="library" exported="" name="com.springsource.org.apache.commons.lang-2.4.0" level="project" />
     <orderEntry type="library" exported="" name="com.springsource.org.apache.commons.httpclient-3.1.0" level="project" />
+    <orderEntry type="library" exported="" name="android-android-19" level="project" />
   </component>
 </module>

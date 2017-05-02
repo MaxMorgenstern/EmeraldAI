@@ -226,11 +226,29 @@ pip-log.txt
 *.config
 *.pgm
 
+*.mdl
+*.npy
+
 EmeraldAI/Data/SqliteDB/brain.sqlite
 
 testing/emotion/dataset/*
 EmeraldAI/Data/ComputerVisionData/Temp/*
 
+EmeraldAI/Data/ComputerVisionData/Person/*
+!EmeraldAI/Data/ComputerVisionData/Person/350x350NotKnown1/*
+!EmeraldAI/Data/ComputerVisionData/Person/350x350NotKnown2/*
+!EmeraldAI/Data/ComputerVisionData/Person/350x350NotKnown3/*
+!EmeraldAI/Data/ComputerVisionData/Person/350x350NotKnown4/*
+!EmeraldAI/Data/ComputerVisionData/Person/100x100NotKnown1/*
+!EmeraldAI/Data/ComputerVisionData/Person/100x100NotKnown2/*
+!EmeraldAI/Data/ComputerVisionData/Person/100x100NotKnown3/*
+
 Android/FaceApp/.gradle
 
 Android/FaceApp/.*
+Android/FaceApp/rosandroid-emeraldai-faceapp/src/main/assets/*.gif
+!Android/FaceApp/rosandroid-emeraldai-faceapp/src/main/assets/center_blink_full.gif
+
+
+.DS_Store
+

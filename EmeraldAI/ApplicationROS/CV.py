@@ -6,72 +6,104 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-import rospy
-from std_msgs.msg import String
+import cv2
+import time
 
-from EmeraldAI.Logic.ComputerVision.Predictor import *
-from EmeraldAI.Logic.ComputerVision.Detector import *
+#import rospy
+#from std_msgs.msg import String
+
+from EmeraldAI.Entities.PredictionObject import PredictionObject
+from EmeraldAI.Logic.ComputerVision.ComputerVision import ComputerVision
 from EmeraldAI.Config.Config import *
+from EmeraldAI.Logic.ComputerVision.ModelMonitor import ModelMonitor
 
-visual = False
-if len(sys.argv) > 1 and str(sys.argv[1]) == "visual":
-    visual = True
+
+def EnsureModelUpdate():
+    monitor = ModelMonitor()
+    predictionModules = Config().GetList("ComputerVision", "Modules")
+
+    for moduleName in predictionModules:
+        if(monitor.CompareHash(moduleName, monitor.GetStoredHash(moduleName))):
+            print "Model '{0}' up to date".format(moduleName)
+            continue
+        print "Rebuild Model '{0}'...".format(moduleName)
+        monitor.Rebuild(moduleName)
+
 
 def RunCV():
-    pub = rospy.Publisher('to_brain', String, queue_size=10)
-    rospy.init_node('CV_node', anonymous=True)
-    rate = rospy.Rate(10) # 10hz
+    #pub = rospy.Publisher('to_brain', String, queue_size=10)
+    #rospy.init_node('CV_node', anonymous=True)
+    #rospy.Rate(10) # 10hz
 
     camera = cv2.VideoCapture(Config().GetInt("ComputerVision", "CameraID"))
-    ret = camera.set(3, Config().GetInt("ComputerVision", "CameraWidth"))
-    ret = camera.set(4, Config().GetInt("ComputerVision", "CameraHeight"))
+    camera.set(3, Config().GetInt("ComputerVision", "CameraWidth"))
+    camera.set(4, Config().GetInt("ComputerVision", "CameraHeight"))
 
-    pred = Predictor()
+    cv = ComputerVision()
 
-    predictorObject = pred.GetPredictor(camera, Detector().DetectFaceFrontal)
-    if predictorObject == None:
-        print "Create Dataset"
-        pred.CreateDataset()
-        predictorObject = pred.GetPredictor(camera, Detector().DetectFaceFrontal)
+    predictionObjectList = []
 
-    previousResult = None
+    predictionModules = Config().GetList("ComputerVision", "Modules")
+    for moduleName in predictionModules:
+        model, dictionary = cv.LoadModel(moduleName)
+        if (model == None or dictionary == None):
+            continue
+        print "load", moduleName
+        predictionObjectList.append(PredictionObject(moduleName, model, dictionary, 1500)) # last one distance
+
+    clock = time.time()
+
     while True:
-        rate.sleep()
-        if visual:
-            detectionResult = predictorObject.RunVisual()
-        else:
-            detectionResult = predictorObject.Run()
-        detectionResult = pred.RemoveUnknownPredictions(detectionResult)
+        ret, image = camera.read()
 
-        if(detectionResult != None and len(detectionResult)):
+        clockTimeout = False
+        if(clock <= (time.time()-1)):
+            clockTimeout = True
+            clock = time.time()
 
-            """
-            # ToDo - check if this is a plausible way of doing it
-            if previousResult != None:
-                combinedResult = (Counter(previousResult) + Counter(detectionResult))
-                print "Combined Result", combinedResult
-                print "Combined Best Guess", GetHighestResult(combinedResult)
+        cv2.imshow("image", image)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
 
-            print ""
-            print "Current Result", detectionResult
-            print "Current Best Guess",  GetHighestResult(detectionResult)
-            print ""
-            print "---"
-            """
+        bodyDetectionResult = cv.DetectBody(image)
+        if (len(bodyDetectionResult) > 0):
+            if(clockTimeout):
+                cv.TakeImage(image, "Body", bodyDetectionResult)
+            #rospy.loginfo("CV|BODY|{0}".format(len(bodyDetectionResult)))
+            #pub.publish("CV|BODY|{0}".format(len(bodyDetectionResult)))
 
 
-            bestCVMatch = pred.GetHighestResult(detectionResult)
-            if bestCVMatch[0] != None and bestCVMatch[0] != "Unknown" and bestCVMatch[0] != "NotKnown":
-                rospy.loginfo("CV|{0}".format(data))
-                pub.publish("CV|{0}".format(data))
-                print bestCVMatch[0]
+            # TODO - move to config  so we can detect all the time or this way
+            predictionResult, thresholdReached, timeoutReached = cv.PredictMultipleStream(image, predictionObjectList, threshold=7500)
 
+            takeImage = True
+            for predictorObject in predictionResult:
+                if len(predictorObject.PredictionResult) > 0 and (thresholdReached or timeoutReached):
 
-            #previousResult = detectionResult.copy()
+                    if (predictorObject.Name == "Person"):
+                        for key, face in predictorObject.PredictionResult.iteritems():
+                            bestResult = predictorObject.GetBestPredictionResult(key, False)
+                            bestResultPerson = predictorObject.GetBestPredictionResult(key, True)
+
+                            if(bestResult[0] != "Unknown"):
+                                takeImage = False
+
+                            print ""
+                            print "Face Detection", bestResult, bestResultPerson, thresholdReached, timeoutReached
+                            #rospy.loginfo("CV|PERSON|{0}|{1}|{2}|{3}|{4}".format(key, bestResult[0], bestResult[1], thresholdReached, timeoutReached))
+                            #pub.publish("CV|PERSON|{0}|{1}|{2}|{3}|{4}".format(key, bestResult[0], bestResult[1], thresholdReached, timeoutReached))
+
+                    if (predictorObject.Name == "Mood"):
+                        print "TODO"
+
+            if(takeImage and clockTimeout):
+                cv.TakeFaceImage(image, "Person")
+
 
 
 if __name__ == "__main__":
     try:
+        EnsureModelUpdate()
         RunCV()
     except KeyboardInterrupt:
         print "End"

@@ -97,8 +97,12 @@ CameraWidth = 640
 CameraHeight = 360
 CameraID = 0
 
+Modules = Person,Mood,Gender
+
+DetectionSettings = advanced # fast
+
 UnknownUserTag = Unknown
-NotKnownDataPrefix = NotKnown
+NotKnownDataTag = NotKnown
 
 ImageSizeWidth = 350
 ImageSizeHeight = 350
@@ -111,12 +115,11 @@ HaarcascadeFaceFrontalAltTree = haarcascade_frontalface_alt_tree.xml
 
 HaarcascadeFaceProfile = haarcascade_profileface.xml
 
-# ----------------------
 HaarcascadeBodyUpper = haarcascade_upperbody.xml
-HaarcascadeBodyLower = haarcascade_lowerbody.xml
 HaarcascadeBodyFull = haarcascade_fullbody.xml
-# ----------------------
+HaarcascadeHeadShoulder = haarcascade_head_shoulders.xml
 
+# ----------------------
 [ComputerVision.Prediction]
 MaxPredictionDistance = 500
 

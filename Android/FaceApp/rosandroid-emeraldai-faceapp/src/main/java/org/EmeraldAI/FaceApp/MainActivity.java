@@ -16,6 +16,9 @@
 
 package org.EmeraldAI.FaceApp;
 
+import android.content.BroadcastReceiver;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -26,6 +29,7 @@ import org.EmeraldAI.FaceApp.CustomViews.GifImageView;
 import org.EmeraldAI.FaceApp.Eye.EyeAnimation;
 import org.EmeraldAI.FaceApp.Eye.EyeAnimationObject;
 import org.EmeraldAI.FaceApp.Eye.EyeState;
+import org.EmeraldAI.FaceApp.Helper.ActionReceiver;
 import org.EmeraldAI.FaceApp.ROS.PublisherNode;
 import org.EmeraldAI.FaceApp.ROS.SubscriberNode;
 import org.ros.address.InetAddressFactory;
@@ -52,22 +56,15 @@ public class MainActivity extends RosActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // TODO: remove
-        // landscape mode
-        // super.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-
-        // keep screen on
-        // getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-
         Runnable r = new Runnable() {
             public void run() {
                 EyeState es = EyeState.getInstance();
                 EyeAnimation ea = new EyeAnimation();
 
-                ea.EnableIdleMode();
+                ea.BlinkUpdater();
+                ea.IdleUpdater();
 
-                Log.i(TAG, "Main - Idle: " + es.IdleMode + " - QueueSize: " + es.GetQueueSize() + " - Timestamp: " + es.AnimationEndTimestamp);
+                //Log.i(TAG, "Main - Idle: " + es.IdleMode + " - QueueSize: " + es.GetQueueSize() + " - Timestamp: " + es.AnimationEndTimestamp);
 
                 long now = SystemClock.uptimeMillis();
                 long waitUntil = (es.CurrentAnimation != null) ?
@@ -91,7 +88,6 @@ public class MainActivity extends RosActivity {
         };
         handler.postDelayed(r, 100);
 
-        Log.i(TAG, "add blink from main");
         new EyeAnimation().TriggerAnimation("blink");
     }
 
@@ -115,10 +111,16 @@ public class MainActivity extends RosActivity {
         NodeConfiguration nodeConfiguration = NodeConfiguration.newPublic(InetAddressFactory.newNonLoopback().getHostAddress());
         nodeConfiguration.setMasterUri(getMasterUri());
 
-        NodeMain node = new PublisherNode();
+        PublisherNode node = new PublisherNode();
         nodeMainExecutor.execute(node, nodeConfiguration);
 
-        NodeMain node2 = new SubscriberNode();
+        SubscriberNode node2 = new SubscriberNode();
         nodeMainExecutor.execute(node2, nodeConfiguration);
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_SCREEN_OFF);
+        filter.addAction(Intent.ACTION_SCREEN_ON);
+        BroadcastReceiver mReceiver = new ActionReceiver(node);
+        registerReceiver(mReceiver, filter);
     }
 }
