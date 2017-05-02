@@ -27,11 +27,10 @@ class ComputerVision(object):
 
         if(Config().Get("ComputerVision", "DetectionSettings") == "precise"):
             self.__DetectionSettings = DetectionSettings(1.3, 4, (75, 75))
+            self.__FaceDetectionSettings = DetectionSettings(1.1, 4, (50, 50))
         else:
             self.__DetectionSettings = DetectionSettings(1.4, 4, (150, 150))
-
-        # TODO - Test settings
-        # TODO - Add seperate settings for body/... and face
+            self.__FaceDetectionSettings = DetectionSettings(1.3, 4, (100, 100))
 
         self.__DatasetBasePath = os.path.join(Global.EmeraldPath, "Data", "ComputerVisionData")
         self.__TempCVFolder = "Temp"
@@ -54,20 +53,21 @@ class ComputerVision(object):
 
         self.__haarDir = os.path.join(Global.EmeraldPath, "Data", "HaarCascades")
 
-        self.__frontalFace = cv2.CascadeClassifier(os.path.join(self.__haarDir, Config().Get("ComputerVision", "HaarcascadeFaceFrontalDefault")))
-        self.__frontalFace2 = cv2.CascadeClassifier(os.path.join(self.__haarDir, Config().Get("ComputerVision", "HaarcascadeFaceFrontalAlt")))
-        self.__frontalFace3 = cv2.CascadeClassifier(os.path.join(self.__haarDir, Config().Get("ComputerVision", "HaarcascadeFaceFrontalAlt2")))
-        self.__frontalFace4 = cv2.CascadeClassifier(os.path.join(self.__haarDir, Config().Get("ComputerVision", "HaarcascadeFaceFrontalAltTree")))
-        self.__frontalFace5 = cv2.CascadeClassifier(os.path.join(self.__haarDir, Config().Get("ComputerVision", "HaarcascadeFaceProfile")))
+        self.__frontalFace = cv2.CascadeClassifier(os.path.join(self.__haarDir, "haarcascade_frontalface_default.xml"))
+        self.__frontalFace2 = cv2.CascadeClassifier(os.path.join(self.__haarDir, "haarcascade_frontalface_alt.xml"))
+        self.__frontalFace3 = cv2.CascadeClassifier(os.path.join(self.__haarDir, "haarcascade_frontalface_alt2.xml"))
+        self.__frontalFace4 = cv2.CascadeClassifier(os.path.join(self.__haarDir, "haarcascade_frontalface_alt_tree.xml"))
+        self.__frontalFace5 = cv2.CascadeClassifier(os.path.join(self.__haarDir, "haarcascade_profileface.xml"))
 
-        self.__fullBody = cv2.CascadeClassifier(os.path.join(self.__haarDir, Config().Get("ComputerVision", "HaarcascadeBodyFull")))
-        self.__upperBody = cv2.CascadeClassifier(os.path.join(self.__haarDir, Config().Get("ComputerVision", "HaarcascadeBodyUpper")))
-        self.__headShoulders = cv2.CascadeClassifier(os.path.join(self.__haarDir, Config().Get("ComputerVision", "HaarcascadeHeadShoulder")))
+        self.__fullBody = cv2.CascadeClassifier(os.path.join(self.__haarDir, "haarcascade_fullbody.xml"))
+        self.__upperBody = cv2.CascadeClassifier(os.path.join(self.__haarDir, "haarcascade_upperbody.xml"))
+        self.__headShoulders = cv2.CascadeClassifier(os.path.join(self.__haarDir, "haarcascade_head_shoulders.xml"))
 
         try:
             self.__RecognizerModel = cv2.createFisherFaceRecognizer()
         except:
             self.__RecognizerModel = cv2.face.createFisherFaceRecognizer()
+
         self.__RecognizerDictionary = {}
 
 
@@ -119,9 +119,9 @@ class ComputerVision(object):
 
                             trainingLabels.append(labelID)
                         except IOError, (errno, strerror):
-                            FileLogger().Error("ComputerVision Line 116: IO Exception: {0}".format(strerror))
+                            FileLogger().Error("ComputerVision: IO Exception: {0}".format(strerror))
                         except Exception as e:
-                            FileLogger().Error("ComputerVision Line 118: Exception: {0}".format(e))
+                            FileLogger().Error("ComputerVision: Exception: {0}".format(e))
         return trainingData, np.asarray(trainingLabels), trainingLabelsDict
 
     def __ensureDirectoryExists(self, directory):
@@ -205,33 +205,33 @@ class ComputerVision(object):
         return []
 
     def DetectFaceFast(self, img):
-        face = self.__frontalFace.detectMultiScale(img, scaleFactor=self.__DetectionSettings.Scale, minNeighbors=self.__DetectionSettings.MinNeighbors, minSize=self.__DetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
+        face = self.__frontalFace.detectMultiScale(img, scaleFactor=self.__FaceDetectionSettings.Scale, minNeighbors=self.__FaceDetectionSettings.MinNeighbors, minSize=self.__FaceDetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
         if len(face) > 0:
             return face
 
-        face2 = self.__frontalFace2.detectMultiScale(img, scaleFactor=self.__DetectionSettings.Scale, minNeighbors=self.__DetectionSettings.MinNeighbors, minSize=self.__DetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
+        face2 = self.__frontalFace2.detectMultiScale(img, scaleFactor=self.__FaceDetectionSettings.Scale, minNeighbors=self.__FaceDetectionSettings.MinNeighbors, minSize=self.__FaceDetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
         if len(face2) > 0:
             return face2
 
-        face3 = self.__frontalFace3.detectMultiScale(img, scaleFactor=self.__DetectionSettings.Scale, minNeighbors=self.__DetectionSettings.MinNeighbors, minSize=self.__DetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
+        face3 = self.__frontalFace3.detectMultiScale(img, scaleFactor=self.__FaceDetectionSettings.Scale, minNeighbors=self.__FaceDetectionSettings.MinNeighbors, minSize=self.__FaceDetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
         if len(face3) > 0:
             return face3
 
-        face4 = self.__frontalFace4.detectMultiScale(img, scaleFactor=self.__DetectionSettings.Scale, minNeighbors=self.__DetectionSettings.MinNeighbors, minSize=self.__DetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
+        face4 = self.__frontalFace4.detectMultiScale(img, scaleFactor=self.__FaceDetectionSettings.Scale, minNeighbors=self.__FaceDetectionSettings.MinNeighbors, minSize=self.__FaceDetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
         if len(face4) > 0:
             return face4
 
-        face5 = self.__frontalFace5.detectMultiScale(img, scaleFactor=self.__DetectionSettings.Scale, minNeighbors=self.__DetectionSettings.MinNeighbors, minSize=self.__DetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
+        face5 = self.__frontalFace5.detectMultiScale(img, scaleFactor=self.__FaceDetectionSettings.Scale, minNeighbors=self.__FaceDetectionSettings.MinNeighbors, minSize=self.__FaceDetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
         if len(face5) > 0:
             return face
         return []
 
     def DetectFaceBest(self, img):
-        face = self.__frontalFace.detectMultiScale(img, scaleFactor=self.__DetectionSettings.Scale, minNeighbors=self.__DetectionSettings.MinNeighbors, minSize=self.__DetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
-        face2 = self.__frontalFace2.detectMultiScale(img, scaleFactor=self.__DetectionSettings.Scale, minNeighbors=self.__DetectionSettings.MinNeighbors, minSize=self.__DetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
-        face3 = self.__frontalFace3.detectMultiScale(img, scaleFactor=self.__DetectionSettings.Scale, minNeighbors=self.__DetectionSettings.MinNeighbors, minSize=self.__DetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
-        face4 = self.__frontalFace4.detectMultiScale(img, scaleFactor=self.__DetectionSettings.Scale, minNeighbors=self.__DetectionSettings.MinNeighbors, minSize=self.__DetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
-        face5 = self.__frontalFace5.detectMultiScale(img, scaleFactor=self.__DetectionSettings.Scale, minNeighbors=self.__DetectionSettings.MinNeighbors, minSize=self.__DetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
+        face = self.__frontalFace.detectMultiScale(img, scaleFactor=self.__FaceDetectionSettings.Scale, minNeighbors=self.__FaceDetectionSettings.MinNeighbors, minSize=self.__FaceDetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
+        face2 = self.__frontalFace2.detectMultiScale(img, scaleFactor=self.__FaceDetectionSettings.Scale, minNeighbors=self.__FaceDetectionSettings.MinNeighbors, minSize=self.__FaceDetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
+        face3 = self.__frontalFace3.detectMultiScale(img, scaleFactor=self.__FaceDetectionSettings.Scale, minNeighbors=self.__FaceDetectionSettings.MinNeighbors, minSize=self.__FaceDetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
+        face4 = self.__frontalFace4.detectMultiScale(img, scaleFactor=self.__FaceDetectionSettings.Scale, minNeighbors=self.__FaceDetectionSettings.MinNeighbors, minSize=self.__FaceDetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
+        face5 = self.__frontalFace5.detectMultiScale(img, scaleFactor=self.__FaceDetectionSettings.Scale, minNeighbors=self.__FaceDetectionSettings.MinNeighbors, minSize=self.__FaceDetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
 
         bestResult = face
         if (len(bestResult) < len(face2)):
@@ -250,7 +250,7 @@ class ComputerVision(object):
             imageSize = "{0}x{1}".format(self.__ResizeWidth, self.__ResizeHeight)
         images, labels, labelDict = self.__loadImages(datasetName, imageSize)
         if len(images) == 0 or len(labels) == 0:
-            FileLogger().Error("ComputerVision Line 247: No Data given")
+            FileLogger().Error("ComputerVision: No Data given")
             return
         self.__RecognizerModel.train(images, labels)
         self.__RecognizerDictionary = labelDict
@@ -267,7 +267,7 @@ class ComputerVision(object):
             self.__RecognizerDictionary = np.load(os.path.join(path, self.__DictionaryFile)).item()
             return self.__RecognizerModel, self.__RecognizerDictionary
         except Exception as e:
-            FileLogger().Error("ComputerVision Line 264: Exception: Error while opening File {0}".format(e))
+            FileLogger().Error("ComputerVision: Exception: Error while opening File {0}".format(e))
             return None, None
 
     def TakeImage(self, image, imageType, dataArray, datasetName=None, grayscale=False):
@@ -326,7 +326,7 @@ class ComputerVision(object):
                         }
                     })
                 except Exception as e:
-                    FileLogger().Error("ComputerVision Line 323: Value Error: {0}".format(e))
+                    FileLogger().Error("ComputerVision: Value Error: {0}".format(e))
         return result
 
     def PredictStream(self, image, model, dictionary, fast=True, threshold=None, timeout=None):
@@ -349,6 +349,7 @@ class ComputerVision(object):
             self.__PredictStreamTimeoutBool = True
 
         prediction = self.Predict(image, model, dictionary, fast)
+
         for key, value in enumerate(prediction):
             data = value['face']['data'][0]
 
@@ -387,7 +388,7 @@ class ComputerVision(object):
                                 'distance': prediction[1]
                             })
                     except Exception as e:
-                        FileLogger().Error("ComputerVision Line 384: Value Error {0}".format(e))
+                        FileLogger().Error("ComputerVision: Value Error {0}".format(e))
 
                 result.append({
                     'face': {

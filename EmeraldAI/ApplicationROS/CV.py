@@ -72,9 +72,8 @@ def RunCV():
             #rospy.loginfo("CV|BODY|{0}".format(len(bodyDetectionResult)))
             #pub.publish("CV|BODY|{0}".format(len(bodyDetectionResult)))
 
-
             # TODO - move to config  so we can detect all the time or this way
-            predictionResult, thresholdReached, timeoutReached = cv.PredictMultipleStream(image, predictionObjectList, threshold=7500)
+            predictionResult, thresholdReached, timeoutReached = cv.PredictMultipleStream(image, predictionObjectList, fast=False, threshold=7500)
 
             takeImage = True
             for predictorObject in predictionResult:
@@ -88,13 +87,12 @@ def RunCV():
                             if(bestResult[0] != "Unknown"):
                                 takeImage = False
 
-                            print ""
                             print "Face Detection", bestResult, bestResultPerson, thresholdReached, timeoutReached
                             #rospy.loginfo("CV|PERSON|{0}|{1}|{2}|{3}|{4}".format(key, bestResult[0], bestResult[1], thresholdReached, timeoutReached))
                             #pub.publish("CV|PERSON|{0}|{1}|{2}|{3}|{4}".format(key, bestResult[0], bestResult[1], thresholdReached, timeoutReached))
 
                     if (predictorObject.Name == "Mood"):
-                        print "TODO"
+                        print "Mood: ", predictorObject.PredictionResult
 
             if(takeImage and clockTimeout):
                 cv.TakeFaceImage(image, "Person")
