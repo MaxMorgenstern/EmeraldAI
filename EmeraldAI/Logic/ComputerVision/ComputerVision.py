@@ -25,10 +25,13 @@ class ComputerVision(object):
         self.__ModelFile = "myCVModel.mdl"
         self.__DictionaryFile = "myCVDict.npy"
 
-        if(Config().Get("ComputerVision", "DetectionSettings") == "advanced"):
-            self.__DetectionSettings = DetectionSettings(1.1, 4, (30, 30))
+        if(Config().Get("ComputerVision", "DetectionSettings") == "precise"):
+            self.__DetectionSettings = DetectionSettings(1.3, 4, (75, 75))
         else:
-            self.__DetectionSettings = DetectionSettings(1.3, 4, (5, 5))
+            self.__DetectionSettings = DetectionSettings(1.4, 4, (150, 150))
+
+        # TODO - Test settings
+        # TODO - Add seperate settings for body/... and face
 
         self.__DatasetBasePath = os.path.join(Global.EmeraldPath, "Data", "ComputerVisionData")
         self.__TempCVFolder = "Temp"
@@ -61,7 +64,10 @@ class ComputerVision(object):
         self.__upperBody = cv2.CascadeClassifier(os.path.join(self.__haarDir, Config().Get("ComputerVision", "HaarcascadeBodyUpper")))
         self.__headShoulders = cv2.CascadeClassifier(os.path.join(self.__haarDir, Config().Get("ComputerVision", "HaarcascadeHeadShoulder")))
 
-        self.__RecognizerModel = cv2.createFisherFaceRecognizer()
+        try:
+            self.__RecognizerModel = cv2.createFisherFaceRecognizer()
+        except:
+            self.__RecognizerModel = cv2.face.createFisherFaceRecognizer()
         self.__RecognizerDictionary = {}
 
 
