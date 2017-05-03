@@ -30,12 +30,15 @@ def EnsureModelUpdate():
         monitor.Rebuild(moduleName)
 
 
-def RunCV():
+def RunCV(camID):
     #pub = rospy.Publisher('to_brain', String, queue_size=10)
     #rospy.init_node('CV_node', anonymous=True)
     #rospy.Rate(10) # 10hz
 
-    camera = cv2.VideoCapture(Config().GetInt("ComputerVision", "CameraID"))
+    if(camID  < 0):
+        camID = Config().GetInt("ComputerVision", "CameraID")
+
+    camera = cv2.VideoCapture(camID)
     camera.set(3, Config().GetInt("ComputerVision", "CameraWidth"))
     camera.set(4, Config().GetInt("ComputerVision", "CameraHeight"))
 
@@ -100,8 +103,14 @@ def RunCV():
 
 
 if __name__ == "__main__":
+    camID = -1
+    if len(sys.argv) > 1:
+        for arg in sys.argv:
+            if (arg.lower().startswith("-cam")):
+                camID = int(arg.lower().replace("-cam", ""))
+
     try:
         EnsureModelUpdate()
-        RunCV()
+        RunCV(camID)
     except KeyboardInterrupt:
         print "End"
