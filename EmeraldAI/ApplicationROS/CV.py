@@ -51,29 +51,23 @@ def RunCV():
         print "load", moduleName
         predictionObjectList.append(PredictionObject(moduleName, model, dictionary, 1500)) # last one distance
 
-    clock = time.time()
+    clockFace = time.time()
+    clockBody = time.time()
 
     while True:
         ret, image = camera.read()
-
-        clockTimeout = False
-        if(clock <= (time.time()-1)):
-            clockTimeout = True
-            clock = time.time()
 
         cv2.imshow("image", image)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
-        bodyDetectionResult = cv.DetectBody(image)
-        if (len(bodyDetectionResult) > 0):
-            if(clockTimeout):
-                cv.TakeImage(image, "Body", bodyDetectionResult)
-            #rospy.loginfo("CV|BODY|{0}".format(len(bodyDetectionResult)))
-            #pub.publish("CV|BODY|{0}".format(len(bodyDetectionResult)))
+        rawBodyData = cv.DetectBody(image)
+        if (len(rawBodyData) > 0):
+            #rospy.loginfo("CV|BODY|{0}".format(len(rawBodyData)))
+            #pub.publish("CV|BODY|{0}".format(len(rawBodyData)))
 
             # TODO - move to config  so we can detect all the time or this way
-            predictionResult, thresholdReached, timeoutReached = cv.PredictMultipleStream(image, predictionObjectList, fast=False, threshold=7500)
+            predictionResult, thresholdReached, timeoutReached, rawFaceData = cv.PredictMultipleStream(image, predictionObjectList, threshold=7500)
 
             takeImage = True
             for predictorObject in predictionResult:
@@ -93,9 +87,15 @@ def RunCV():
 
                     if (predictorObject.Name == "Mood"):
                         print "Mood: ", predictorObject.PredictionResult
+                        #rospy.loginfo("CV|Mood|{0}|{1}|{2}|{3}|{4}".format("TODO"))
+                        #pub.publish("CV|Mood|{0}|{1}|{2}|{3}|{4}".format("TODO"))
 
-            if(takeImage and clockTimeout):
-                cv.TakeFaceImage(image, "Person")
+
+            if(takeImage and clockFace <= (time.time()-1) and cv.TakeImage(image, "Person", rawFaceData, grayscale=True)):
+                clockFace = time.time()
+
+            if(clockBody <= (time.time()-1) and cv.TakeImage(image, "Body", rawBodyData)):
+                clockBody = time.time()
 
 
 

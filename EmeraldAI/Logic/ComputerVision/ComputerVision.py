@@ -26,12 +26,12 @@ class ComputerVision(object):
         self.__DictionaryFile = "myCVDict.npy"
 
         if(Config().Get("ComputerVision", "DetectionSettings") == "precise"):
-            self.__DetectionSettings = DetectionSettings(1.3, 4, (75, 75))
+            self.__DetectionSettings = DetectionSettings(1.2, 4, (75, 75))
             self.__FaceDetectionSettings = DetectionSettings(1.1, 4, (50, 50))
             self.__FastDetection = False
         else:
-            self.__DetectionSettings = DetectionSettings(1.4, 4, (150, 150))
-            self.__FaceDetectionSettings = DetectionSettings(1.3, 4, (100, 100))
+            self.__DetectionSettings = DetectionSettings(1.3, 4, (150, 150))
+            self.__FaceDetectionSettings = DetectionSettings(1.3, 4, (90, 90))
             self.__FastDetection = True
 
         self.__DatasetBasePath = os.path.join(Global.EmeraldPath, "Data", "ComputerVisionData")

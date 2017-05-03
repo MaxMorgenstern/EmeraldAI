@@ -114,7 +114,7 @@ ImageLimit = 100
 MaxPredictionDistance = 500
 
 PredictionTimeout = 5
-PredictionThreshold = 300
+PredictionThreshold = 1000
 
 
 # ----------------------
