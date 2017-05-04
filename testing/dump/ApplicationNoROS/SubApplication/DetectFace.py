@@ -43,7 +43,7 @@ def RunFaceDetection():
     while True:
         ret, image = camera.read()
 
-        result, thresholdReached, timeoutReached = ComputerVision().PredictMultipleStream(image, predictionObjectList)
+        result, thresholdReached, timeoutReached = ComputerVision().PredictStream(image, predictionObjectList)
 
         for predictorObject in result:
             if len(predictorObject.PredictionResult) > 0:

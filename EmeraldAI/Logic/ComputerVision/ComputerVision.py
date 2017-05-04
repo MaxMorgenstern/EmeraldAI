@@ -22,8 +22,8 @@ class ComputerVision(object):
     __metaclass__ = Singleton
 
     def __init__(self):
-        self.__ModelFile = "myCVModel.mdl"
-        self.__DictionaryFile = "myCVDict.npy"
+        self.__ModelFile = "myCVModel{0}.mdl"
+        self.__DictionaryFile = "myCVDict{0}.npy"
 
         if(Config().Get("ComputerVision", "DetectionSettings") == "precise"):
             self.__DetectionSettings = DetectionSettings(1.2, 4, (75, 75))
@@ -31,7 +31,7 @@ class ComputerVision(object):
             self.__FastDetection = False
         else:
             self.__DetectionSettings = DetectionSettings(1.3, 4, (150, 150))
-            self.__FaceDetectionSettings = DetectionSettings(1.3, 4, (90, 90))
+            self.__FaceDetectionSettings = DetectionSettings(1.3, 4, (75, 75))
             self.__FastDetection = True
 
         self.__DatasetBasePath = os.path.join(Global.EmeraldPath, "Data", "ComputerVisionData")
@@ -247,7 +247,6 @@ class ComputerVision(object):
         return bestResult
 
 
-    # TODO - out of memory check
     def TrainModel(self, datasetName, imageSize=None):
         if imageSize == None:
             imageSize = "{0}x{1}".format(self.__ResizeWidth, self.__ResizeHeight)
@@ -259,19 +258,22 @@ class ComputerVision(object):
         self.__RecognizerDictionary = labelDict
 
         path = os.path.join(self.__DatasetBasePath, datasetName)
-        self.__RecognizerModel.save(os.path.join(path, self.__ModelFile))
-        np.save(os.path.join(path, self.__DictionaryFile), labelDict)
+        self.__RecognizerModel.save(os.path.join(path, self.__ModelFile.format(imageSize)))
+        np.save(os.path.join(path, self.__DictionaryFile.format(imageSize)), labelDict)
 
 
-    def LoadModel(self, datasetName):
+    def LoadModel(self, datasetName, imageSize=None):
+        if imageSize == None:
+            imageSize = "{0}x{1}".format(self.__ResizeWidth, self.__ResizeHeight)
         path = os.path.join(self.__DatasetBasePath, datasetName)
         try:
-            self.__RecognizerModel.load(os.path.join(path, self.__ModelFile))
-            self.__RecognizerDictionary = np.load(os.path.join(path, self.__DictionaryFile)).item()
+            self.__RecognizerModel.load(os.path.join(path, self.__ModelFile.format(imageSize)))
+            self.__RecognizerDictionary = np.load(os.path.join(path, self.__DictionaryFile.format(imageSize))).item()
             return self.__RecognizerModel, self.__RecognizerDictionary
         except Exception as e:
             FileLogger().Error("ComputerVision: Exception: Error while opening File {0}".format(e))
             return None, None
+
 
     def TakeImage(self, image, imageType, dataArray, datasetName=None, grayscale=False):
         if datasetName == None:
@@ -288,80 +290,8 @@ class ComputerVision(object):
                 return True
         return False
 
-    def TakeFaceImage(self, image, imageType, datasetName=None, grayscale=False):
-        if(self.__FastDetection):
-            faces = self.DetectFaceFast(image)
-        else:
-            faces = self.DetectFaceBest(image)
-        return self.TakeImage(image, imageType, faces, datasetName, grayscale)
 
-
-    def Predict(self, image, model, dictionary):
-        if(self.__FastDetection):
-            faces = self.DetectFaceFast(image)
-        else:
-            faces = self.DetectFaceBest(image)
-        result = []
-        if len(faces) > 0:
-            for face in faces:
-                croppedImage = self.__cropImage(image, face)
-                resizedImage = cv2.resize(self.__toGrayscale(croppedImage), (self.__ResizeWidth, self.__ResizeHeight))
-                prediction = model.predict(resizedImage)
-
-                try:
-                    result.append({
-                        'face': {
-                            'id': len(result)+1,
-                            'data': [{
-                                'model': '',
-                                'value': dictionary.keys()[dictionary.values().index(prediction[0])],
-                                'rawvalue': prediction[0],
-                                'distance': prediction[1]
-                                }],
-                            'coords': {
-                                'x': str(face[0]),
-                                'y': str(face[1]),
-                                'width': str(face[2]),
-                                'height': str(face[3])
-                            }
-                        }
-                    })
-                except Exception as e:
-                    FileLogger().Error("ComputerVision: Value Error: {0}".format(e))
-        return result, faces
-
-    def PredictStream(self, image, model, dictionary, threshold=None, timeout=None):
-        if threshold == None:
-            threshold = self.__PredictStreamThreshold
-
-        if timeout == None:
-            timeout = self.__PredictionTimeout
-
-        # reset is timeout happened on last call
-        if self.__PredictStreamTimeoutBool:
-            self.__PredictStreamResult = {}
-            self.__PredictStreamTimeoutDate = time.time() + timeout
-            self.__PredictStreamTimeoutBool = False
-
-        #check if current call times out
-        reachedTimeout = False
-        if time.time() > self.__PredictStreamTimeoutDate:
-            reachedTimeout = True
-            self.__PredictStreamTimeoutBool = True
-
-        prediction, rawFaceData = self.Predict(image, model, dictionary)
-
-        for key, value in enumerate(prediction):
-            data = value['face']['data'][0]
-
-            if int(data['distance']) > self.__PredictStreamMaxDistance or self.__NotKnownDataTag in data['value']:
-                self.__addPrediction(key, self.__UnknownUserTag, (int(data['distance']) - self.__PredictStreamMaxDistance)/4)
-            else:
-                self.__addPrediction(key, data['value'], int(data['distance']))
-
-        return self.__PredictStreamResult, self.__thresholdReached(threshold), reachedTimeout, rawFaceData
-
-    def PredictMultiple(self, image, predictionObjectList):
+    def Predict(self, image, predictionObjectList):
         if(self.__FastDetection):
             faces = self.DetectFaceFast(image)
         else:
@@ -407,7 +337,8 @@ class ComputerVision(object):
                 faceId += 1
         return result, faces
 
-    def PredictMultipleStream(self, image, predictionObjectList, threshold=None, timeout=None):
+
+    def PredictStream(self, image, predictionObjectList, threshold=None, timeout=None):
         if threshold == None:
             threshold = self.__PredictStreamThreshold
 

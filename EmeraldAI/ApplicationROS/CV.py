@@ -9,8 +9,8 @@ sys.setdefaultencoding('utf-8')
 import cv2
 import time
 
-#import rospy
-#from std_msgs.msg import String
+import rospy
+from std_msgs.msg import String
 
 from EmeraldAI.Entities.PredictionObject import PredictionObject
 from EmeraldAI.Logic.ComputerVision.ComputerVision import ComputerVision
@@ -31,8 +31,8 @@ def EnsureModelUpdate():
 
 
 def RunCV(camID):
-    #pub = rospy.Publisher('to_brain', String, queue_size=10)
-    #rospy.init_node('CV_node', anonymous=True)
+    pub = rospy.Publisher('to_brain', String, queue_size=10)
+    rospy.init_node('CV_node', anonymous=True)
     #rospy.Rate(10) # 10hz
 
     if(camID  < 0):
@@ -57,8 +57,16 @@ def RunCV(camID):
     clockFace = time.time()
     clockBody = time.time()
 
+    while not camera.isOpened():
+        print "Waiting for camera"
+        time.sleep(1)
+
     while True:
         ret, image = camera.read()
+
+        if(image == None):
+            print "Can't read image"
+            continue
 
         cv2.imshow("image", image)
         if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -66,11 +74,10 @@ def RunCV(camID):
 
         rawBodyData = cv.DetectBody(image)
         if (len(rawBodyData) > 0):
-            #rospy.loginfo("CV|BODY|{0}".format(len(rawBodyData)))
-            #pub.publish("CV|BODY|{0}".format(len(rawBodyData)))
+            rospy.loginfo("CV|BODY|{0}".format(len(rawBodyData)))
+            pub.publish("CV|BODY|{0}".format(len(rawBodyData)))
 
-            # TODO - move to config  so we can detect all the time or this way
-            predictionResult, thresholdReached, timeoutReached, rawFaceData = cv.PredictMultipleStream(image, predictionObjectList, threshold=7500)
+            predictionResult, thresholdReached, timeoutReached, rawFaceData = cv.PredictStream(image, predictionObjectList, threshold=7500)
 
             takeImage = True
             for predictorObject in predictionResult:
@@ -84,9 +91,8 @@ def RunCV(camID):
                             if(bestResult[0] != "Unknown"):
                                 takeImage = False
 
-                            print "Face Detection", bestResult, bestResultPerson, thresholdReached, timeoutReached
-                            #rospy.loginfo("CV|PERSON|{0}|{1}|{2}|{3}|{4}".format(key, bestResult[0], bestResult[1], thresholdReached, timeoutReached))
-                            #pub.publish("CV|PERSON|{0}|{1}|{2}|{3}|{4}".format(key, bestResult[0], bestResult[1], thresholdReached, timeoutReached))
+                            rospy.loginfo("CV|PERSON|{0}|{1}|{2}|{3}|{4}".format(key, bestResult[0], bestResultPerson[0], thresholdReached, timeoutReached))
+                            pub.publish("CV|PERSON|{0}|{1}|{2}|{3}|{4}".format(key, bestResult[0], bestResultPerson[0], thresholdReached, timeoutReached))
 
                     if (predictorObject.Name == "Mood"):
                         print "Mood: ", predictorObject.PredictionResult

@@ -14,10 +14,10 @@ from EmeraldAI.Pipelines.SpeechToText.STT import STT
 def RunTTS():
     pub = rospy.Publisher('to_brain', String, queue_size=10)
     rospy.init_node('STT_node', anonymous=True)
-    rate = rospy.Rate(10) # 10hz
+    #rate = rospy.Rate(10) # 10hz
 
     while True:
-        rate.sleep()
+        #rate.sleep()
         data = STT().Process(False)
         if(data == None):
             continue
