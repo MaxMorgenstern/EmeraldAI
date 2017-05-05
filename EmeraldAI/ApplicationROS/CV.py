@@ -103,6 +103,7 @@ def RunCV(camID):
             if(takeImage and clockFace <= (time.time()-1) and cv.TakeImage(image, "Person", rawFaceData, grayscale=True)):
                 clockFace = time.time()
 
+            # cv.TakeImage(image, "Body")
             if(clockBody <= (time.time()-1) and cv.TakeImage(image, "Body", rawBodyData)):
                 clockBody = time.time()
 

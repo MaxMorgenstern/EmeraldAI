@@ -26,12 +26,12 @@ class ComputerVision(object):
         self.__DictionaryFile = "myCVDict{0}.npy"
 
         if(Config().Get("ComputerVision", "DetectionSettings") == "precise"):
-            self.__DetectionSettings = DetectionSettings(1.2, 4, (75, 75))
-            self.__FaceDetectionSettings = DetectionSettings(1.1, 4, (50, 50))
+            self.__DetectionSettings = DetectionSettings(1.2, 4, (80, 80))
+            self.__FaceDetectionSettings = DetectionSettings(1.1, 4, (45, 45))
             self.__FastDetection = False
         else:
             self.__DetectionSettings = DetectionSettings(1.3, 4, (150, 150))
-            self.__FaceDetectionSettings = DetectionSettings(1.3, 4, (75, 75))
+            self.__FaceDetectionSettings = DetectionSettings(1.3, 4, (60, 60))
             self.__FastDetection = True
 
         self.__DatasetBasePath = os.path.join(Global.EmeraldPath, "Data", "ComputerVisionData")
@@ -275,9 +275,17 @@ class ComputerVision(object):
             return None, None
 
 
-    def TakeImage(self, image, imageType, dataArray, datasetName=None, grayscale=False):
+    def TakeImage(self, image, imageType, dataArray=None, datasetName=None, grayscale=False):
         if datasetName == None:
             datasetName = self.__TempCVFolder
+
+        if(dataArray == None):
+            if grayscale:
+                image = self.__toGrayscale(image)
+            fileName = str(self.__getHighestImageID(datasetName, imageType) + 1) + ".jpg"
+            self.__saveImg(image, datasetName, imageType, fileName)
+            return True
+
         if len(dataArray) > 0:
             for imageData in dataArray:
                 croppedImage = self.__cropImage(image, imageData)
