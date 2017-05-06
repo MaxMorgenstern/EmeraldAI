@@ -42,6 +42,9 @@ def RunCV(camID):
     camera.set(3, Config().GetInt("ComputerVision", "CameraWidth"))
     camera.set(4, Config().GetInt("ComputerVision", "CameraHeight"))
 
+    cropBodyImage = Config().GetBoolean("ComputerVision", "CropBodyImage")
+    intervalBetweenImages = Config().GetInt("ComputerVision", "IntervalBetweenImages")
+
     cv = ComputerVision()
 
     predictionObjectList = []
@@ -74,8 +77,14 @@ def RunCV(camID):
 
         rawBodyData = cv.DetectBody(image)
         if (len(rawBodyData) > 0):
-            rospy.loginfo("CV|BODY|{0}".format(len(rawBodyData)))
-            pub.publish("CV|BODY|{0}".format(len(rawBodyData)))
+            bodyID = 1
+            for bodyCoordinates in rawBodyData:
+
+                rospy.loginfo("CV|BODY|{0}".format(bodyID))
+                pub.publish("CV|BODY|{0}".format(bodyID))
+
+                bodyID += 1
+
 
             predictionResult, thresholdReached, timeoutReached, rawFaceData = cv.PredictStream(image, predictionObjectList, threshold=7500)
 
@@ -91,20 +100,22 @@ def RunCV(camID):
                             if(bestResult[0] != "Unknown"):
                                 takeImage = False
 
-                            rospy.loginfo("CV|PERSON|{0}|{1}|{2}|{3}|{4}".format(key, bestResult[0], bestResultPerson[0], thresholdReached, timeoutReached))
-                            pub.publish("CV|PERSON|{0}|{1}|{2}|{3}|{4}".format(key, bestResult[0], bestResultPerson[0], thresholdReached, timeoutReached))
+                            personData = "CV|PERSON|{0}|{1}|{2}|{3}|{4}".format(key, bestResult[0], bestResultPerson[0], thresholdReached, timeoutReached)
+                            rospy.loginfo(personData)
+                            pub.publish(personData)
 
                     if (predictorObject.Name == "Mood"):
                         print "Mood: ", predictorObject.PredictionResult
-                        #rospy.loginfo("CV|Mood|{0}|{1}|{2}|{3}|{4}".format("TODO"))
-                        #pub.publish("CV|Mood|{0}|{1}|{2}|{3}|{4}".format("TODO"))
+                        moodData = "CV|Mood|{0}".format("TODO")
+                        rospy.loginfo(moodData)
+                        pub.publish(moodData)
 
 
-            if(takeImage and clockFace <= (time.time()-1) and cv.TakeImage(image, "Person", rawFaceData, grayscale=True)):
+            if(takeImage and clockFace <= (time.time()-intervalBetweenImages) and cv.TakeImage(image, "Person", rawFaceData, grayscale=True)):
                 clockFace = time.time()
 
-            # cv.TakeImage(image, "Body")
-            if(clockBody <= (time.time()-1) and cv.TakeImage(image, "Body", rawBodyData)):
+            passedBodyData = rawBodyData if cropBodyImage else None
+            if(clockBody <= (time.time()-intervalBetweenImages) and cv.TakeImage(image, "Body", passedBodyData)):
                 clockBody = time.time()
 
 

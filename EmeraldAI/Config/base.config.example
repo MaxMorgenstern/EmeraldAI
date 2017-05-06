@@ -107,6 +107,8 @@ NotKnownDataTag = NotKnown
 ImageSizeWidth = 350
 ImageSizeHeight = 350
 ImageLimit = 100
+CropBodyImage = True
+IntervalBetweenImages = 1
 
 
 # ----------------------
