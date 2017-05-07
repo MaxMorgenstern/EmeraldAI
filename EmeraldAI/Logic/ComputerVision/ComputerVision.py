@@ -78,6 +78,7 @@ class ComputerVision(object):
         gray = cv2.equalizeHist(gray)
         return gray
 
+    # TODO - check if this should be x, y, w, h
     def __cropImage(self, img, face):
         x, y, h, w = [result for result in face]
         return img[y:y+h,x:x+w]
@@ -368,7 +369,7 @@ class ComputerVision(object):
 
         reachedThreshold = False
 
-        prediction, rawFaceData = self.PredictMultiple(image, predictionObjectList)
+        prediction, rawFaceData = self.Predict(image, predictionObjectList)
 
         for key, value in enumerate(prediction):
             dataArray = value['face']['data']
