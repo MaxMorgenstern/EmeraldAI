@@ -11,8 +11,7 @@ class Logger(object):
     logger = None
 
     def __init__(self, loggerName):
-        logging.config.fileConfig(Global.EmeraldPath + "Config" + os.sep + "logging.config")
-        self.logger = logging.getLogger(loggerName)
+        logging.config.fileConfig(os.path.join(Global.EmeraldPath, "Config", "logging.config"))
 
     def Debug(self, data):
         self.logger.debug(data)
@@ -34,7 +33,7 @@ class FileLogger(Logger):
     __metaclass__ = Singleton
 
     def __init__(self):
-        logging.config.fileConfig(Global.EmeraldPath + "Config" + os.sep + "logging.config")
+        logging.config.fileConfig(os.path.join(Global.EmeraldPath, "Config", "logging.config"))
         self.logger = logging.getLogger("FileLogger")
 
 
@@ -42,14 +41,14 @@ class ConsoleLogger(Logger):
     __metaclass__ = Singleton
 
     def __init__(self):
-        logging.config.fileConfig(Global.EmeraldPath + "Config" + os.sep + "logging.config")
+        logging.config.fileConfig(os.path.join(Global.EmeraldPath, "Config", "logging.config"))
         self.logger = logging.getLogger("ConsoleLogger")
 
 class BaseLogger(Logger):
     __metaclass__ = Singleton
 
     def __init__(self):
-        logging.config.fileConfig(Global.EmeraldPath + "Config" + os.sep + "logging.config")
+        logging.config.fileConfig(os.path.join(Global.EmeraldPath, "Config", "logging.config"))
         self.logger = logging.getLogger("root")
 
 

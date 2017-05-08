@@ -18,9 +18,8 @@ class AliceBot(object):
         self.language = language
         self.kernel = aiml.Kernel()
 
-        self.__brainPath = Global.EmeraldPath + \
-            "Data" + os.sep + "AIML" + os.sep + "Brain" + os.sep + "brain_" + language + ".brn"
-        self.__AIMLPath = Global.EmeraldPath + "Data" + os.sep + "AIML" + os.sep + language.upper() + os.sep
+        self.__brainPath = os.path.join(Global.EmeraldPath, "Data", "AIML", "Brain", ("brain_" + language + ".brn"))
+        self.__AIMLPath = os.path.join(Global.EmeraldPath, "Data", "AIML", language.upper())
 
         if os.path.isfile(self.__brainPath):
             self.kernel.bootstrap(self.__brainPath)
@@ -28,7 +27,7 @@ class AliceBot(object):
             for root, dirs, filenames in os.walk(self.__AIMLPath):
                 for f in filenames:
                     if(not f.startswith('.') and f.endswith('.aiml')):
-                        self.kernel.bootstrap(learnFiles=self.__AIMLPath + f)
+                        self.kernel.bootstrap(learnFiles=os.path.join(self.__AIMLPath, f))
         self.kernel.saveBrain(self.__brainPath)
 
     def SetPredicate(self, name, value, sessionId=__globalSessionID):

@@ -11,7 +11,7 @@ from EmeraldAI.Logic.ComputerVision.Detector import *
 class Trainer(object):
 
     def __init__(self):
-        self.__imageDir = Global.EmeraldPath + "Data" + os.sep + "ComputerVisionData" + os.sep
+        self.__imageDir = os.path.join(Global.EmeraldPath, "Data","ComputerVisionData")
         self.__detector = Detector()
 
     def GetTrainingImageDir(self):
