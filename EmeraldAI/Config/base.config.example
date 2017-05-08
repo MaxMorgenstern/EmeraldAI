@@ -99,32 +99,24 @@ CameraID = 0
 
 Modules = Person,Mood,Gender
 
-DetectionSettings = advanced # fast
-
+DetectionSettings = precise
+#DetectionSettings = fast
 UnknownUserTag = Unknown
 NotKnownDataTag = NotKnown
 
 ImageSizeWidth = 350
 ImageSizeHeight = 350
 ImageLimit = 100
+CropBodyImage = True
+IntervalBetweenImages = 1
 
-HaarcascadeFaceFrontalDefault = haarcascade_frontalface_default.xml
-HaarcascadeFaceFrontalAlt = haarcascade_frontalface_alt.xml
-HaarcascadeFaceFrontalAlt2 = haarcascade_frontalface_alt2.xml
-HaarcascadeFaceFrontalAltTree = haarcascade_frontalface_alt_tree.xml
-
-HaarcascadeFaceProfile = haarcascade_profileface.xml
-
-HaarcascadeBodyUpper = haarcascade_upperbody.xml
-HaarcascadeBodyFull = haarcascade_fullbody.xml
-HaarcascadeHeadShoulder = haarcascade_head_shoulders.xml
 
 # ----------------------
 [ComputerVision.Prediction]
-MaxPredictionDistance = 500
+MaxPredictionDistance = 1500
 
 PredictionTimeout = 5
-PredictionThreshold = 300
+PredictionThreshold = 1000
 
 
 # ----------------------

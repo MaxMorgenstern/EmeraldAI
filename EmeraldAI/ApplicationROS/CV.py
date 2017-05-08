@@ -9,8 +9,8 @@ sys.setdefaultencoding('utf-8')
 import cv2
 import time
 
-#import rospy
-#from std_msgs.msg import String
+import rospy
+from std_msgs.msg import String
 
 from EmeraldAI.Entities.PredictionObject import PredictionObject
 from EmeraldAI.Logic.ComputerVision.ComputerVision import ComputerVision
@@ -30,14 +30,20 @@ def EnsureModelUpdate():
         monitor.Rebuild(moduleName)
 
 
-def RunCV():
-    #pub = rospy.Publisher('to_brain', String, queue_size=10)
-    #rospy.init_node('CV_node', anonymous=True)
+def RunCV(camID):
+    pub = rospy.Publisher('to_brain', String, queue_size=10)
+    rospy.init_node('CV_node', anonymous=True)
     #rospy.Rate(10) # 10hz
 
-    camera = cv2.VideoCapture(Config().GetInt("ComputerVision", "CameraID"))
+    if(camID  < 0):
+        camID = Config().GetInt("ComputerVision", "CameraID")
+
+    camera = cv2.VideoCapture(camID)
     camera.set(3, Config().GetInt("ComputerVision", "CameraWidth"))
     camera.set(4, Config().GetInt("ComputerVision", "CameraHeight"))
+
+    cropBodyImage = Config().GetBoolean("ComputerVision", "CropBodyImage")
+    intervalBetweenImages = Config().GetInt("ComputerVision", "IntervalBetweenImages")
 
     cv = ComputerVision()
 
@@ -49,32 +55,59 @@ def RunCV():
         if (model == None or dictionary == None):
             continue
         print "load", moduleName
-        predictionObjectList.append(PredictionObject(moduleName, model, dictionary, 1500)) # last one distance
+        predictionObjectList.append(PredictionObject(moduleName, model, dictionary))
 
-    clock = time.time()
+    clockFace = time.time()
+    clockBody = time.time()
+
+    while not camera.isOpened():
+        print "Waiting for camera"
+        time.sleep(1)
+
+    ret, image = camera.read()
+    imageHeight, imageWidth = image.shape[:2]
 
     while True:
+        #rate.sleep()
         ret, image = camera.read()
 
-        clockTimeout = False
-        if(clock <= (time.time()-1)):
-            clockTimeout = True
-            clock = time.time()
+        if(image == None):
+            print "Can't read image"
+            continue
 
-        cv2.imshow("image", image)
+        #cv2.imshow("image", image)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
-        bodyDetectionResult = cv.DetectBody(image)
-        if (len(bodyDetectionResult) > 0):
-            if(clockTimeout):
-                cv.TakeImage(image, "Body", bodyDetectionResult)
-            #rospy.loginfo("CV|BODY|{0}".format(len(bodyDetectionResult)))
-            #pub.publish("CV|BODY|{0}".format(len(bodyDetectionResult)))
+        rawBodyData = cv.DetectBody(image)
+        if (len(rawBodyData) > 0):
+            bodyID = 1
 
+            for (x, y, w, h) in rawBodyData:
+                centerX = (x + w/2)
+                centerY = (y + h/2)
 
-            # TODO - move to config  so we can detect all the time or this way
-            predictionResult, thresholdReached, timeoutReached = cv.PredictMultipleStream(image, predictionObjectList, threshold=7500)
+                if (centerX < imageWidth/3):
+                    posX = "left"
+                if (centerX > imageWidth/3*2):
+                    posX = "right"
+                else:
+                    posX = "center"
+
+                if (centerY < imageHeight/5):
+                    posY = "top"
+                if (centerY > imageHeight/5*4):
+                    posY = "bottom"
+                else:
+                    posY = "center"
+
+                bodyData = "CV|BODY|{0}|{1}|{2}".format(bodyID, posX, posY)
+                rospy.loginfo(bodyData)
+                pub.publish(bodyData)
+
+                bodyID += 1
+
+            predictionResult, thresholdReached, timeoutReached, rawFaceData = cv.PredictStream(image, predictionObjectList, threshold=7500)
 
             takeImage = True
             for predictorObject in predictionResult:
@@ -88,22 +121,35 @@ def RunCV():
                             if(bestResult[0] != "Unknown"):
                                 takeImage = False
 
-                            print ""
-                            print "Face Detection", bestResult, bestResultPerson, thresholdReached, timeoutReached
-                            #rospy.loginfo("CV|PERSON|{0}|{1}|{2}|{3}|{4}".format(key, bestResult[0], bestResult[1], thresholdReached, timeoutReached))
-                            #pub.publish("CV|PERSON|{0}|{1}|{2}|{3}|{4}".format(key, bestResult[0], bestResult[1], thresholdReached, timeoutReached))
+                            personData = "CV|PERSON|{0}|{1}|{2}|{3}|{4}".format(key, bestResult[0], bestResultPerson[0], thresholdReached, timeoutReached)
+                            rospy.loginfo(personData)
+                            pub.publish(personData)
 
                     if (predictorObject.Name == "Mood"):
-                        print "TODO"
+                        print "Mood: ", predictorObject.PredictionResult
+                        moodData = "CV|Mood|{0}".format("TODO")
+                        rospy.loginfo(moodData)
+                        pub.publish(moodData)
 
-            if(takeImage and clockTimeout):
-                cv.TakeFaceImage(image, "Person")
+
+            if(takeImage and clockFace <= (time.time()-intervalBetweenImages) and cv.TakeImage(image, "Person", rawFaceData, grayscale=True)):
+                clockFace = time.time()
+
+            passedBodyData = rawBodyData if cropBodyImage else None
+            if(clockBody <= (time.time()-intervalBetweenImages) and cv.TakeImage(image, "Body", passedBodyData)):
+                clockBody = time.time()
 
 
 
 if __name__ == "__main__":
+    camID = -1
+    if len(sys.argv) > 1:
+        for arg in sys.argv:
+            if (arg.lower().startswith("-cam")):
+                camID = int(arg.lower().replace("-cam", ""))
+
     try:
         EnsureModelUpdate()
-        RunCV()
+        RunCV(camID)
     except KeyboardInterrupt:
         print "End"

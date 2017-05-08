@@ -57,6 +57,10 @@ LUIS: https://blogs.msdn.microsoft.com/benjaminperkins/2016/11/21/most-common-ch
 - use os.path.join(x, y,...) instead of os.sep
 
 
+
+tts api: https://forum.sinusbot.com/threads/text-to-speech-apis-for-sinusbot.500/
+
+
 ---
 
 http://www.chefkoch.de/forum/2,43,681438/api-chefkoch-de-frei-nutzbar.html

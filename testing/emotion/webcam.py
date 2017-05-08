@@ -456,7 +456,7 @@ while True:
     #cv.TakeFaceImage(image, "normal")
 
     #result = cv.PredictMultiple(image, predictionObjectList)
-    result, thresholdReached, timeoutReached = cv.PredictMultipleStream(image, predictionObjectList)
+    result, thresholdReached, timeoutReached = cv.PredictStream(image, predictionObjectList)
 
     #result = cv.Predict(image, model, dictionary)
     #result, thresholdReached, timeoutReached = cv.PredictStream(image, model, dictionary)

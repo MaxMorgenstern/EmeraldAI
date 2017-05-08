@@ -22,13 +22,17 @@ class ComputerVision(object):
     __metaclass__ = Singleton
 
     def __init__(self):
-        self.__ModelFile = "myCVModel.mdl"
-        self.__DictionaryFile = "myCVDict.npy"
+        self.__ModelFile = "myCVModel{0}.mdl"
+        self.__DictionaryFile = "myCVDict{0}.npy"
 
-        if(Config().Get("ComputerVision", "DetectionSettings") == "advanced"):
-            self.__DetectionSettings = DetectionSettings(1.1, 4, (30, 30))
+        if(Config().Get("ComputerVision", "DetectionSettings") == "precise"):
+            self.__DetectionSettings = DetectionSettings(1.2, 4, (80, 80))
+            self.__FaceDetectionSettings = DetectionSettings(1.1, 4, (45, 45))
+            self.__FastDetection = False
         else:
-            self.__DetectionSettings = DetectionSettings(1.3, 4, (5, 5))
+            self.__DetectionSettings = DetectionSettings(1.3, 4, (150, 150))
+            self.__FaceDetectionSettings = DetectionSettings(1.3, 4, (60, 60))
+            self.__FastDetection = True
 
         self.__DatasetBasePath = os.path.join(Global.EmeraldPath, "Data", "ComputerVisionData")
         self.__TempCVFolder = "Temp"
@@ -43,7 +47,7 @@ class ComputerVision(object):
         self.__ResizeHeight = Config().GetInt("ComputerVision", "ImageSizeHeight") # 350
 
         self.__PredictionTimeout = Config().GetInt("ComputerVision.Prediction", "PredictionTimeout") # 5
-        self.__PredictStreamThreshold = Config().GetInt("ComputerVision.Prediction", "PredictionThreshold") # 300
+        self.__PredictStreamThreshold = Config().GetInt("ComputerVision.Prediction", "PredictionThreshold") # 1000
         self.__PredictStreamTimeoutDate = 0
         self.__PredictStreamTimeoutBool = False
         self.__PredictStreamMaxDistance = Config().GetInt("ComputerVision.Prediction", "MaxPredictionDistance") # 500
@@ -51,17 +55,21 @@ class ComputerVision(object):
 
         self.__haarDir = os.path.join(Global.EmeraldPath, "Data", "HaarCascades")
 
-        self.__frontalFace = cv2.CascadeClassifier(os.path.join(self.__haarDir, Config().Get("ComputerVision", "HaarcascadeFaceFrontalDefault")))
-        self.__frontalFace2 = cv2.CascadeClassifier(os.path.join(self.__haarDir, Config().Get("ComputerVision", "HaarcascadeFaceFrontalAlt")))
-        self.__frontalFace3 = cv2.CascadeClassifier(os.path.join(self.__haarDir, Config().Get("ComputerVision", "HaarcascadeFaceFrontalAlt2")))
-        self.__frontalFace4 = cv2.CascadeClassifier(os.path.join(self.__haarDir, Config().Get("ComputerVision", "HaarcascadeFaceFrontalAltTree")))
-        self.__frontalFace5 = cv2.CascadeClassifier(os.path.join(self.__haarDir, Config().Get("ComputerVision", "HaarcascadeFaceProfile")))
+        self.__frontalFace = cv2.CascadeClassifier(os.path.join(self.__haarDir, "haarcascade_frontalface_default.xml"))
+        self.__frontalFace2 = cv2.CascadeClassifier(os.path.join(self.__haarDir, "haarcascade_frontalface_alt.xml"))
+        self.__frontalFace3 = cv2.CascadeClassifier(os.path.join(self.__haarDir, "haarcascade_frontalface_alt2.xml"))
+        self.__frontalFace4 = cv2.CascadeClassifier(os.path.join(self.__haarDir, "haarcascade_frontalface_alt_tree.xml"))
+        self.__frontalFace5 = cv2.CascadeClassifier(os.path.join(self.__haarDir, "haarcascade_profileface.xml"))
 
-        self.__fullBody = cv2.CascadeClassifier(os.path.join(self.__haarDir, Config().Get("ComputerVision", "HaarcascadeBodyFull")))
-        self.__upperBody = cv2.CascadeClassifier(os.path.join(self.__haarDir, Config().Get("ComputerVision", "HaarcascadeBodyUpper")))
-        self.__headShoulders = cv2.CascadeClassifier(os.path.join(self.__haarDir, Config().Get("ComputerVision", "HaarcascadeHeadShoulder")))
+        self.__fullBody = cv2.CascadeClassifier(os.path.join(self.__haarDir, "haarcascade_fullbody.xml"))
+        self.__upperBody = cv2.CascadeClassifier(os.path.join(self.__haarDir, "haarcascade_upperbody.xml"))
+        self.__headShoulders = cv2.CascadeClassifier(os.path.join(self.__haarDir, "haarcascade_head_shoulders.xml"))
 
-        self.__RecognizerModel = cv2.createFisherFaceRecognizer()
+        try:
+            self.__RecognizerModel = cv2.createFisherFaceRecognizer()
+        except:
+            self.__RecognizerModel = cv2.face.createFisherFaceRecognizer()
+
         self.__RecognizerDictionary = {}
 
 
@@ -70,6 +78,7 @@ class ComputerVision(object):
         gray = cv2.equalizeHist(gray)
         return gray
 
+    # TODO - check if this should be x, y, w, h
     def __cropImage(self, img, face):
         x, y, h, w = [result for result in face]
         return img[y:y+h,x:x+w]
@@ -113,9 +122,9 @@ class ComputerVision(object):
 
                             trainingLabels.append(labelID)
                         except IOError, (errno, strerror):
-                            FileLogger().Error("ComputerVision Line 116: IO Exception: {0}".format(strerror))
+                            FileLogger().Error("ComputerVision: IO Exception: {0}".format(strerror))
                         except Exception as e:
-                            FileLogger().Error("ComputerVision Line 118: Exception: {0}".format(e))
+                            FileLogger().Error("ComputerVision: Exception: {0}".format(e))
         return trainingData, np.asarray(trainingLabels), trainingLabelsDict
 
     def __ensureDirectoryExists(self, directory):
@@ -199,33 +208,33 @@ class ComputerVision(object):
         return []
 
     def DetectFaceFast(self, img):
-        face = self.__frontalFace.detectMultiScale(img, scaleFactor=self.__DetectionSettings.Scale, minNeighbors=self.__DetectionSettings.MinNeighbors, minSize=self.__DetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
+        face = self.__frontalFace.detectMultiScale(img, scaleFactor=self.__FaceDetectionSettings.Scale, minNeighbors=self.__FaceDetectionSettings.MinNeighbors, minSize=self.__FaceDetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
         if len(face) > 0:
             return face
 
-        face2 = self.__frontalFace2.detectMultiScale(img, scaleFactor=self.__DetectionSettings.Scale, minNeighbors=self.__DetectionSettings.MinNeighbors, minSize=self.__DetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
+        face2 = self.__frontalFace2.detectMultiScale(img, scaleFactor=self.__FaceDetectionSettings.Scale, minNeighbors=self.__FaceDetectionSettings.MinNeighbors, minSize=self.__FaceDetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
         if len(face2) > 0:
             return face2
 
-        face3 = self.__frontalFace3.detectMultiScale(img, scaleFactor=self.__DetectionSettings.Scale, minNeighbors=self.__DetectionSettings.MinNeighbors, minSize=self.__DetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
+        face3 = self.__frontalFace3.detectMultiScale(img, scaleFactor=self.__FaceDetectionSettings.Scale, minNeighbors=self.__FaceDetectionSettings.MinNeighbors, minSize=self.__FaceDetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
         if len(face3) > 0:
             return face3
 
-        face4 = self.__frontalFace4.detectMultiScale(img, scaleFactor=self.__DetectionSettings.Scale, minNeighbors=self.__DetectionSettings.MinNeighbors, minSize=self.__DetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
+        face4 = self.__frontalFace4.detectMultiScale(img, scaleFactor=self.__FaceDetectionSettings.Scale, minNeighbors=self.__FaceDetectionSettings.MinNeighbors, minSize=self.__FaceDetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
         if len(face4) > 0:
             return face4
 
-        face5 = self.__frontalFace5.detectMultiScale(img, scaleFactor=self.__DetectionSettings.Scale, minNeighbors=self.__DetectionSettings.MinNeighbors, minSize=self.__DetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
+        face5 = self.__frontalFace5.detectMultiScale(img, scaleFactor=self.__FaceDetectionSettings.Scale, minNeighbors=self.__FaceDetectionSettings.MinNeighbors, minSize=self.__FaceDetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
         if len(face5) > 0:
             return face
         return []
 
     def DetectFaceBest(self, img):
-        face = self.__frontalFace.detectMultiScale(img, scaleFactor=self.__DetectionSettings.Scale, minNeighbors=self.__DetectionSettings.MinNeighbors, minSize=self.__DetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
-        face2 = self.__frontalFace2.detectMultiScale(img, scaleFactor=self.__DetectionSettings.Scale, minNeighbors=self.__DetectionSettings.MinNeighbors, minSize=self.__DetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
-        face3 = self.__frontalFace3.detectMultiScale(img, scaleFactor=self.__DetectionSettings.Scale, minNeighbors=self.__DetectionSettings.MinNeighbors, minSize=self.__DetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
-        face4 = self.__frontalFace4.detectMultiScale(img, scaleFactor=self.__DetectionSettings.Scale, minNeighbors=self.__DetectionSettings.MinNeighbors, minSize=self.__DetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
-        face5 = self.__frontalFace5.detectMultiScale(img, scaleFactor=self.__DetectionSettings.Scale, minNeighbors=self.__DetectionSettings.MinNeighbors, minSize=self.__DetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
+        face = self.__frontalFace.detectMultiScale(img, scaleFactor=self.__FaceDetectionSettings.Scale, minNeighbors=self.__FaceDetectionSettings.MinNeighbors, minSize=self.__FaceDetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
+        face2 = self.__frontalFace2.detectMultiScale(img, scaleFactor=self.__FaceDetectionSettings.Scale, minNeighbors=self.__FaceDetectionSettings.MinNeighbors, minSize=self.__FaceDetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
+        face3 = self.__frontalFace3.detectMultiScale(img, scaleFactor=self.__FaceDetectionSettings.Scale, minNeighbors=self.__FaceDetectionSettings.MinNeighbors, minSize=self.__FaceDetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
+        face4 = self.__frontalFace4.detectMultiScale(img, scaleFactor=self.__FaceDetectionSettings.Scale, minNeighbors=self.__FaceDetectionSettings.MinNeighbors, minSize=self.__FaceDetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
+        face5 = self.__frontalFace5.detectMultiScale(img, scaleFactor=self.__FaceDetectionSettings.Scale, minNeighbors=self.__FaceDetectionSettings.MinNeighbors, minSize=self.__FaceDetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
 
         bestResult = face
         if (len(bestResult) < len(face2)):
@@ -244,29 +253,40 @@ class ComputerVision(object):
             imageSize = "{0}x{1}".format(self.__ResizeWidth, self.__ResizeHeight)
         images, labels, labelDict = self.__loadImages(datasetName, imageSize)
         if len(images) == 0 or len(labels) == 0:
-            FileLogger().Error("ComputerVision Line 247: No Data given")
+            FileLogger().Error("ComputerVision: No Data given")
             return
         self.__RecognizerModel.train(images, labels)
         self.__RecognizerDictionary = labelDict
 
         path = os.path.join(self.__DatasetBasePath, datasetName)
-        self.__RecognizerModel.save(os.path.join(path, self.__ModelFile))
-        np.save(os.path.join(path, self.__DictionaryFile), labelDict)
+        self.__RecognizerModel.save(os.path.join(path, self.__ModelFile.format(imageSize)))
+        np.save(os.path.join(path, self.__DictionaryFile.format(imageSize)), labelDict)
 
 
-    def LoadModel(self, datasetName):
+    def LoadModel(self, datasetName, imageSize=None):
+        if imageSize == None:
+            imageSize = "{0}x{1}".format(self.__ResizeWidth, self.__ResizeHeight)
         path = os.path.join(self.__DatasetBasePath, datasetName)
         try:
-            self.__RecognizerModel.load(os.path.join(path, self.__ModelFile))
-            self.__RecognizerDictionary = np.load(os.path.join(path, self.__DictionaryFile)).item()
+            self.__RecognizerModel.load(os.path.join(path, self.__ModelFile.format(imageSize)))
+            self.__RecognizerDictionary = np.load(os.path.join(path, self.__DictionaryFile.format(imageSize))).item()
             return self.__RecognizerModel, self.__RecognizerDictionary
         except Exception as e:
-            FileLogger().Error("ComputerVision Line 264: Exception: Error while opening File {0}".format(e))
+            FileLogger().Error("ComputerVision: Exception: Error while opening File {0}".format(e))
             return None, None
 
-    def TakeImage(self, image, imageType, dataArray, datasetName=None, grayscale=False):
+
+    def TakeImage(self, image, imageType, dataArray=None, datasetName=None, grayscale=False):
         if datasetName == None:
             datasetName = self.__TempCVFolder
+
+        if(dataArray == None):
+            if grayscale:
+                image = self.__toGrayscale(image)
+            fileName = str(self.__getHighestImageID(datasetName, imageType) + 1) + ".jpg"
+            self.__saveImg(image, datasetName, imageType, fileName)
+            return True
+
         if len(dataArray) > 0:
             for imageData in dataArray:
                 croppedImage = self.__cropImage(image, imageData)
@@ -276,85 +296,12 @@ class ComputerVision(object):
 
                 fileName = str(self.__getHighestImageID(datasetName, imageType) + 1) + ".jpg"
                 self.__saveImg(resizedImage, datasetName, imageType, fileName)
+                return True
+        return False
 
-    def TakeFaceImage(self, image, imageType, datasetName=None):
-        if datasetName == None:
-            datasetName = self.__TempCVFolder
-        faces = self.DetectFaceBest(image)
-        if len(faces) > 0:
-            for face in faces:
-                croppedImage = self.__cropImage(image, face)
-                resizedImage = cv2.resize(self.__toGrayscale(croppedImage), (self.__ResizeWidth, self.__ResizeHeight))
 
-                fileName = str(self.__getHighestImageID(datasetName, imageType) + 1) + ".jpg"
-                self.__saveImg(resizedImage, datasetName, imageType, fileName)
-
-    def Predict(self, image, model, dictionary, fast=True):
-        if(fast):
-            faces = self.DetectFaceFast(image)
-        else:
-            faces = self.DetectFaceBest(image)
-        result = []
-        if len(faces) > 0:
-            for face in faces:
-                croppedImage = self.__cropImage(image, face)
-                resizedImage = cv2.resize(self.__toGrayscale(croppedImage), (self.__ResizeWidth, self.__ResizeHeight))
-                prediction = model.predict(resizedImage)
-
-                try:
-                    result.append({
-                        'face': {
-                            'id': len(result)+1,
-                            'data': [{
-                                'model': '',
-                                'value': dictionary.keys()[dictionary.values().index(prediction[0])],
-                                'rawvalue': prediction[0],
-                                'distance': prediction[1]
-                                }],
-                            'coords': {
-                                'x': str(face[0]),
-                                'y': str(face[1]),
-                                'width': str(face[2]),
-                                'height': str(face[3])
-                            }
-                        }
-                    })
-                except Exception as e:
-                    FileLogger().Error("ComputerVision Line 323: Value Error: {0}".format(e))
-        return result
-
-    def PredictStream(self, image, model, dictionary, fast=True, threshold=None, timeout=None):
-        if threshold == None:
-            threshold = self.__PredictStreamThreshold
-
-        if timeout == None:
-            timeout = self.__PredictionTimeout
-
-        # reset is timeout happened on last call
-        if self.__PredictStreamTimeoutBool:
-            self.__PredictStreamResult = {}
-            self.__PredictStreamTimeoutDate = time.time() + timeout
-            self.__PredictStreamTimeoutBool = False
-
-        #check if current call times out
-        reachedTimeout = False
-        if time.time() > self.__PredictStreamTimeoutDate:
-            reachedTimeout = True
-            self.__PredictStreamTimeoutBool = True
-
-        prediction = self.Predict(image, model, dictionary, fast)
-        for key, value in enumerate(prediction):
-            data = value['face']['data'][0]
-
-            if int(data['distance']) > self.__PredictStreamMaxDistance or self.__NotKnownDataTag in data['value']:
-                self.__addPrediction(key, self.__UnknownUserTag, (int(data['distance']) - self.__PredictStreamMaxDistance)/4)
-            else:
-                self.__addPrediction(key, data['value'], int(data['distance']))
-
-        return self.__PredictStreamResult, self.__thresholdReached(threshold), reachedTimeout
-
-    def PredictMultiple(self, image, predictionObjectList, fast=True):
-        if(fast):
+    def Predict(self, image, predictionObjectList):
+        if(self.__FastDetection):
             faces = self.DetectFaceFast(image)
         else:
             faces = self.DetectFaceBest(image)
@@ -381,7 +328,7 @@ class ComputerVision(object):
                                 'distance': prediction[1]
                             })
                     except Exception as e:
-                        FileLogger().Error("ComputerVision Line 384: Value Error {0}".format(e))
+                        FileLogger().Error("ComputerVision: Value Error {0}".format(e))
 
                 result.append({
                     'face': {
@@ -397,9 +344,10 @@ class ComputerVision(object):
                 })
 
                 faceId += 1
-        return result
+        return result, faces
 
-    def PredictMultipleStream(self, image, predictionObjectList, fast=True, threshold=None, timeout=None):
+
+    def PredictStream(self, image, predictionObjectList, threshold=None, timeout=None):
         if threshold == None:
             threshold = self.__PredictStreamThreshold
 
@@ -421,7 +369,7 @@ class ComputerVision(object):
 
         reachedThreshold = False
 
-        prediction = self.PredictMultiple(image, predictionObjectList, fast)
+        prediction, rawFaceData = self.Predict(image, predictionObjectList)
 
         for key, value in enumerate(prediction):
             dataArray = value['face']['data']
@@ -437,4 +385,4 @@ class ComputerVision(object):
             if predictionObject.ThresholdReached(threshold):
                 reachedThreshold = True
 
-        return predictionObjectList, reachedThreshold, reachedTimeout
+        return predictionObjectList, reachedThreshold, reachedTimeout, rawFaceData
