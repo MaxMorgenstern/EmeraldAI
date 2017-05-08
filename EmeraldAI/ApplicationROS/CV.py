@@ -33,7 +33,7 @@ def EnsureModelUpdate():
 def RunCV(camID):
     pub = rospy.Publisher('to_brain', String, queue_size=10)
     rospy.init_node('CV_node', anonymous=True)
-    rospy.Rate(10) # 10hz
+    #rospy.Rate(10) # 10hz
 
     if(camID  < 0):
         camID = Config().GetInt("ComputerVision", "CameraID")
@@ -55,7 +55,7 @@ def RunCV(camID):
         if (model == None or dictionary == None):
             continue
         print "load", moduleName
-        predictionObjectList.append(PredictionObject(moduleName, model, dictionary, 1500)) # last one distance
+        predictionObjectList.append(PredictionObject(moduleName, model, dictionary))
 
     clockFace = time.time()
     clockBody = time.time()
@@ -68,6 +68,7 @@ def RunCV(camID):
     imageHeight, imageWidth = image.shape[:2]
 
     while True:
+        #rate.sleep()
         ret, image = camera.read()
 
         if(image == None):

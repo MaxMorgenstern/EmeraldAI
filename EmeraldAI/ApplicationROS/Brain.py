@@ -43,11 +43,11 @@ def callback(data):
 
     if dataParts[0] == "FACEAPP":
         print "TODO"
-        # TODO - tablet turned off / on
+        # TODO - tablet turned off / on - trigger action
 
     if dataParts[0] == "PING":
         print "TODO"
-        # TODO - a device we need does not ping anymore
+        # TODO - a device we need does not ping anymore or a new device has been found
 
 
 
