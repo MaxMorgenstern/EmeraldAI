@@ -33,7 +33,7 @@ def EnsureModelUpdate():
 def RunCV(camID):
     pub = rospy.Publisher('to_brain', String, queue_size=10)
     rospy.init_node('CV_node', anonymous=True)
-    #rospy.Rate(10) # 10hz
+    rospy.Rate(10) # 10hz
 
     if(camID  < 0):
         camID = Config().GetInt("ComputerVision", "CameraID")
@@ -64,6 +64,9 @@ def RunCV(camID):
         print "Waiting for camera"
         time.sleep(1)
 
+    ret, image = camera.read()
+    imageHeight, imageWidth = image.shape[:2]
+
     while True:
         ret, image = camera.read()
 
@@ -71,20 +74,37 @@ def RunCV(camID):
             print "Can't read image"
             continue
 
-        cv2.imshow("image", image)
+        #cv2.imshow("image", image)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
         rawBodyData = cv.DetectBody(image)
         if (len(rawBodyData) > 0):
             bodyID = 1
-            for bodyCoordinates in rawBodyData:
 
-                rospy.loginfo("CV|BODY|{0}".format(bodyID))
-                pub.publish("CV|BODY|{0}".format(bodyID))
+            for (x, y, w, h) in rawBodyData:
+                centerX = (x + w/2)
+                centerY = (y + h/2)
+
+                if (centerX < imageWidth/3):
+                    posX = "left"
+                if (centerX > imageWidth/3*2):
+                    posX = "right"
+                else:
+                    posX = "center"
+
+                if (centerY < imageHeight/5):
+                    posY = "top"
+                if (centerY > imageHeight/5*4):
+                    posY = "bottom"
+                else:
+                    posY = "center"
+
+                bodyData = "CV|BODY|{0}|{1}|{2}".format(bodyID, posX, posY)
+                rospy.loginfo(bodyData)
+                pub.publish(bodyData)
 
                 bodyID += 1
-
 
             predictionResult, thresholdReached, timeoutReached, rawFaceData = cv.PredictStream(image, predictionObjectList, threshold=7500)
 
