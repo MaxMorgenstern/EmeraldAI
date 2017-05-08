@@ -4,18 +4,18 @@ import operator
 from EmeraldAI.Config.Config import *
 
 class PredictionObject(object):
-    def __init__(self, name, model, dictionary, maxDistance):
+    def __init__(self, name, model, dictionary):
         self.Name = name
         self.Model = model
         self.Dictionary = dictionary
         self.PredictionResult = {}
 
-        self.MaxPredictionDistance = maxDistance
+        self.MaxPredictionDistance = Config().Get("ComputerVision", "MaxPredictionDistance")
         self.__UnknownUserTag = Config().Get("ComputerVision", "UnknownUserTag")
 
     def __RemoveUnknown(self, resultDict):
         for k in resultDict.keys():
-          if k == "Unknown":
+          if k == self.__UnknownUserTag:
             resultDict.pop(k)
         return resultDict
 

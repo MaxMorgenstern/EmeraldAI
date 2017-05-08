@@ -113,7 +113,7 @@ IntervalBetweenImages = 1
 
 # ----------------------
 [ComputerVision.Prediction]
-MaxPredictionDistance = 500
+MaxPredictionDistance = 1500
 
 PredictionTimeout = 5
 PredictionThreshold = 1000
