@@ -19,6 +19,7 @@ from EmeraldAI.Entities.Context import Context
 from EmeraldAI.Entities.PipelineArgs import PipelineArgs
 
 # TODO - global config - mute - detecting people off/on - listen to commands - sleep mode
+cancelSpeech = False
 
 def RunBrain():
     rospy.init_node('brain_node', anonymous=True)
@@ -32,31 +33,46 @@ def callback(data):
     print dataParts
 
     if dataParts[0] == "CV":
+        if dataParts[1] == "PERSON":
+            ProcessUser(dataParts[1], dataParts[2], data.data)
 
-        # TODO - check for type - eg. "person" , "body" or "mood"
-        ProcessUser(dataParts[1], dataParts[2], data.data)
-        # ... TODO - initial greeting
+        if dataParts[1] == "BODY":
+            print "TODO"
+
+        if dataParts[1] == "MOOD":
+            print "TODO"
+
+        if dataParts[1] == "GENDER":
+            print "TODO"
+
+        # ... TODO - initial greeting on person seen
 
     if dataParts[0] == "STT":
         ProcessSpeech(dataParts[1])
-        # TODO - stop command
 
     if dataParts[0] == "FACEAPP":
         print "TODO"
         # TODO - tablet turned off / on - trigger action
 
     if dataParts[0] == "PING":
-        print "TODO"
+
+        if dataParts[1] == "DEAD":
+            print "TODO"
+
+        if dataParts[1] == "ALIVE":
+            print "TODO"
         # TODO - a device we need does not ping anymore or a new device has been found
 
 
 
 
 def ProcessUser(type, cvTag, data):
-    # TODO - check for type - eg. "person" or "mood"
     User().SetUserByCVTag(cvTag)
 
 def ProcessSpeech(data):
+    # TODO - check if stop command
+    # cancelSpeech = True
+
     pipelineArgs = PipelineArgs(data)
 
     pipelineArgs = ProcessInput().ProcessAsync(pipelineArgs)
@@ -64,6 +80,9 @@ def ProcessSpeech(data):
     pipelineArgs = AnalyzeScope().Process(pipelineArgs)
 
     pipelineArgs = ProcessResponse().Process(pipelineArgs)
+
+    if cancelSpeech:
+        return
 
     pipelineArgs = TTS().Process(pipelineArgs)
 
