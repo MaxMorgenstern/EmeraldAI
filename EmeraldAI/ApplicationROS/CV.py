@@ -127,7 +127,14 @@ def RunCV(camID):
 
                     if (predictorObject.Name == "Mood"):
                         print "Mood: ", predictorObject.PredictionResult
-                        moodData = "CV|Mood|{0}".format("TODO")
+                        moodData = "CV|MOOD|{0}".format("TODO") # TODO
+                        rospy.loginfo(moodData)
+                        pub.publish(moodData)
+
+
+                    if (predictorObject.Name == "Gender"):
+                        print "Gender: ", predictorObject.PredictionResult
+                        moodData = "CV|GENDER|{0}".format("TODO") # TODO
                         rospy.loginfo(moodData)
                         pub.publish(moodData)
 

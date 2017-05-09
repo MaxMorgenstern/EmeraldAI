@@ -34,6 +34,7 @@ def callback(data):
 
     if dataParts[0] == "CV":
         if dataParts[1] == "PERSON":
+            # TODO - we are getting more data
             ProcessUser(dataParts[1], dataParts[2], data.data)
 
         if dataParts[1] == "BODY":
