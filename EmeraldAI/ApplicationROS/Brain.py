@@ -34,42 +34,50 @@ def callback(data):
 
     if dataParts[0] == "CV":
         if dataParts[1] == "PERSON":
-            # TODO - we are getting more data
-            ProcessUser(dataParts[1], dataParts[2], data.data)
+            ProcessPerson(dataParts[2], dataParts[3], dataParts[4], dataParts[5], dataParts[6])
 
         if dataParts[1] == "BODY":
-            print "TODO"
+            ProcessBody(dataParts[2], dataParts[3], dataParts[4])
 
         if dataParts[1] == "MOOD":
-            print "TODO"
+            ProcessMood(dataParts[2], dataParts[3])
 
         if dataParts[1] == "GENDER":
-            print "TODO"
-
-        # ... TODO - initial greeting on person seen
+            ProcessGender(dataParts[2], dataParts[3])
 
     if dataParts[0] == "STT":
         ProcessSpeech(dataParts[1])
 
     if dataParts[0] == "FACEAPP":
-        print "TODO"
-        # TODO - tablet turned off / on - trigger action
-        # dataParts[1] == ON / OFF
+        ProcessFaceApp(dataParts[1])
 
     if dataParts[0] == "PING":
-
-        if dataParts[1] == "DEAD":
-            print "TODO"
-
-        if dataParts[1] == "ALIVE":
-            print "TODO"
-        # TODO - a device we need does not ping anymore or a new device has been found
+        ProcessPing(dataParts[1])
 
 
 
+##### CV #####
 
-def ProcessUser(type, cvTag, data):
-    User().SetUserByCVTag(cvTag)
+def ProcessPerson(id, bestResult, bestResultPerson, thresholdReached, timeoutReached):
+    User().SetUserByCVTag("TODO")
+    # TODO
+    # ... TODO - initial greeting on person seen
+
+def ProcessBody(id, xPos, yPos):
+    print id, xPos, yPos # center, left right, top bottom
+    # TODO
+    # TODO - trigger eyes to move
+
+def ProcessMood(id, mood):
+    print id, mood
+    # TODO
+
+def ProcessGender(id, gender):
+    print id, gender
+    # TODO
+
+
+##### STT #####
 
 def ProcessSpeech(data):
     # TODO - check if stop command
@@ -97,7 +105,24 @@ def ProcessSpeech(data):
     print "Trainer Result: ", trainerResult
 
 
+##### FACEAPP #####
 
+def ProcessFaceApp(state):
+    print state
+    # TODO - tablet turned off / on - trigger action
+    # state == ON / OFF
+
+
+##### FACEAPP #####
+
+def ProcessPing(state):
+    print state
+    # TODO - state = DEAD / ALIVE
+    # TODO - a device we need does not ping anymore or a new device has been found
+
+
+
+##### MAIN #####
 
 if __name__ == "__main__":
     try:
