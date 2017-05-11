@@ -94,7 +94,7 @@ MySQLHost = 127.0.0.1
 # ----------------------
 [ComputerVision]
 CameraWidth = 640
-CameraHeight = 360
+CameraHeight = 480
 CameraID = 0
 
 Modules = Person,Mood,Gender
