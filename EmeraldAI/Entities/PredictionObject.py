@@ -10,7 +10,7 @@ class PredictionObject(object):
         self.Dictionary = dictionary
         self.PredictionResult = {}
 
-        self.MaxPredictionDistance = Config().Get("ComputerVision", "MaxPredictionDistance")
+        self.MaxPredictionDistance = Config().GetInt("ComputerVision.Prediction", "MaxPredictionDistance")
         self.__UnknownUserTag = Config().Get("ComputerVision", "UnknownUserTag")
 
     def __RemoveUnknown(self, resultDict):
