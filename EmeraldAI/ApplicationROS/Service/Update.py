@@ -2,13 +2,16 @@
 # -*- coding: utf-8 -*-
 import sys
 import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-reload(sys)
-sys.setdefaultencoding('utf-8')
-
 import urllib2
 import json
 import tarfile
+import shutil
+from os.path import dirname, abspath
+sys.path.append(dirname(dirname(dirname(dirname(abspath(__file__))))))
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
+from EmeraldAI.Logic.Modules import Global
 
 def CleanTerm(term):
     term = term.replace("-alpha", "")
@@ -32,9 +35,13 @@ releaseUrl = "https://api.github.com/repos/MaxMorgenstern/EmeraldAI/releases"
 response = urllib2.urlopen(releaseUrl)
 releaseObjects = json.loads(response.read())
 
-versionFilePath = "versionfile.txt"
+deploymentPath = os.path.join(Global.RootPath, "Deployment")
+Global.EnsureDirectoryExists(deploymentPath)
+versionFilePath = os.path.join(deploymentPath, "versionfile.txt")
 
-# TODO - point file into better location
+downloadFilename = os.path.join(deploymentPath, "currentVersion.tar.gz")
+
+
 try:
 	file = open(versionFilePath, "r")
 	highestVestion = file.read()
@@ -57,19 +64,23 @@ if (highestVersionObject == None):
 response = urllib2.urlopen(highestVersionObject['tarball_url'])
 data = response.read()
 
-filename = "currentVersion.tar.gz"
-file_ = open(filename, 'w')
-file_.write(data)
-file_.close()
+file = open(downloadFilename, 'w')
+file.write(data)
+file.close()
+
 
 # extract
-tar = tarfile.open(filename, "r:gz")
-tar.extractall("tmp_extract")
+tar = tarfile.open(downloadFilename, "r:gz")
+tar.extractall(deploymentPath)
+extractedFolderName = tar.getnames()[0]
 tar.close()
 
 
 
 # TODO: move into destination
+# shutil.move(os.path.join(deploymentPath, extractedFolderName, "EmeraldAI"), os.path.join(deploymentPath, "test", extractedFolderName))
+
+#shutil.copy("src", "dst")
 
 
 # update version
@@ -77,6 +88,11 @@ file = open(versionFilePath,"w")
 file.write(highestVestion)
 file.close()
 
-# TODO: delete everything left over in tmp folder
 
+# delete everything left over in tmp folder
+os.remove(downloadFilename)
+shutil.rmtree(os.path.join(deploymentPath, extractedFolderName))
+
+# TODO - remove this line - just for testing
+os.remove(versionFilePath)
 
