@@ -24,6 +24,6 @@ def ReadDataFile(foldername, filename, utf8=True):
     else:
         return [line.rstrip('\n').rstrip('\r') for line in open(script_dir)]
 
-def EnsureDirectoryExists(self, directory):
+def EnsureDirectoryExists(directory):
     if not os.path.exists(directory):
         os.makedirs(directory)
