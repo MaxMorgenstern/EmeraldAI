@@ -68,9 +68,9 @@ class Microsoft(object):
     def Speak(self, audioString, playAudio=False):
         if(len(audioString) == 0):
             return
-        tmpAudioFile = Global.EmeraldPath + "Data" + os.sep + "TTS" + os.sep + "Microsoft_" + \
+        tmpAudioFile = os.path.join(Global.EmeraldPath, "Data", "TTS", ("Microsoft_" + \
             self.__language_2letter_cc + "_" + \
-            self.CleanString(audioString) + ".wav"
+            self.CleanString(audioString) + ".wav"))
 
         if not os.path.isfile(tmpAudioFile):
             ssml = self.__ssmlTemplate.format(

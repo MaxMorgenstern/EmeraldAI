@@ -27,11 +27,11 @@ public class ActionReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {
             Log.e(TAG, "Screen turned on");
-            node.ToBrain("ScreenON");
+            node.ToBrain("ON");
         }
         if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
             Log.e(TAG, "Screen turned off");
-            node.ToBrain("ScreenOFF");
+            node.ToBrain("OFF");
         }
     }
 }

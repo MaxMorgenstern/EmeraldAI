@@ -105,9 +105,9 @@ class Ivona(object):
     def Speak(self, audioString, playAudio=False):
         if(len(audioString) == 0):
             return
-        tmpAudioFile = Global.EmeraldPath + "Data" + os.sep + "TTS" + os.sep + "Ivona_" + \
+        tmpAudioFile = os.path.join(Global.EmeraldPath, "Data", "TTS", ("Ivona_" + \
             self.__language_2letter_cc + "_" + \
-            self.CleanString(audioString) + ".mp3"
+            self.CleanString(audioString) + ".mp3"))
 
         if not os.path.isfile(tmpAudioFile):
             with open(tmpAudioFile, "wb") as f:

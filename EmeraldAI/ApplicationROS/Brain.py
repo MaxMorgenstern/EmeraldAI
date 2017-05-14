@@ -19,6 +19,7 @@ from EmeraldAI.Entities.Context import Context
 from EmeraldAI.Entities.PipelineArgs import PipelineArgs
 
 # TODO - global config - mute - detecting people off/on - listen to commands - sleep mode
+cancelSpeech = False
 
 def RunBrain():
     rospy.init_node('brain_node', anonymous=True)
@@ -32,31 +33,56 @@ def callback(data):
     print dataParts
 
     if dataParts[0] == "CV":
+        if dataParts[1] == "PERSON":
+            ProcessPerson(dataParts[2], dataParts[3], dataParts[4], dataParts[5], dataParts[6])
 
-        # TODO - check for type - eg. "person" , "body" or "mood"
-        ProcessUser(dataParts[1], dataParts[2], data.data)
-        # ... TODO - initial greeting
+        if dataParts[1] == "BODY":
+            ProcessBody(dataParts[2], dataParts[3], dataParts[4])
+
+        if dataParts[1] == "MOOD":
+            ProcessMood(dataParts[2], dataParts[3])
+
+        if dataParts[1] == "GENDER":
+            ProcessGender(dataParts[2], dataParts[3])
 
     if dataParts[0] == "STT":
         ProcessSpeech(dataParts[1])
-        # TODO - stop command
 
     if dataParts[0] == "FACEAPP":
-        print "TODO"
-        # TODO - tablet turned off / on - trigger action
+        ProcessFaceApp(dataParts[1])
 
     if dataParts[0] == "PING":
-        print "TODO"
-        # TODO - a device we need does not ping anymore or a new device has been found
+        ProcessPing(dataParts[1])
 
 
 
+##### CV #####
 
-def ProcessUser(type, cvTag, data):
-    # TODO - check for type - eg. "person" or "mood"
-    User().SetUserByCVTag(cvTag)
+def ProcessPerson(id, bestResult, bestResultPerson, thresholdReached, timeoutReached):
+    User().SetUserByCVTag("TODO")
+    # TODO
+    # ... TODO - initial greeting on person seen
+
+def ProcessBody(id, xPos, yPos):
+    print id, xPos, yPos # center, left right, top bottom
+    # TODO
+    # TODO - trigger eyes to move
+
+def ProcessMood(id, mood):
+    print id, mood
+    # TODO
+
+def ProcessGender(id, gender):
+    print id, gender
+    # TODO
+
+
+##### STT #####
 
 def ProcessSpeech(data):
+    # TODO - check if stop command
+    # cancelSpeech = True
+
     pipelineArgs = PipelineArgs(data)
 
     pipelineArgs = ProcessInput().ProcessAsync(pipelineArgs)
@@ -64,6 +90,9 @@ def ProcessSpeech(data):
     pipelineArgs = AnalyzeScope().Process(pipelineArgs)
 
     pipelineArgs = ProcessResponse().Process(pipelineArgs)
+
+    if cancelSpeech:
+        return
 
     pipelineArgs = TTS().Process(pipelineArgs)
 
@@ -76,7 +105,24 @@ def ProcessSpeech(data):
     print "Trainer Result: ", trainerResult
 
 
+##### FACEAPP #####
 
+def ProcessFaceApp(state):
+    print state
+    # TODO - tablet turned off / on - trigger action
+    # state == ON / OFF
+
+
+##### FACEAPP #####
+
+def ProcessPing(state):
+    print state
+    # TODO - state = DEAD / ALIVE
+    # TODO - a device we need does not ping anymore or a new device has been found
+
+
+
+##### MAIN #####
 
 if __name__ == "__main__":
     try:

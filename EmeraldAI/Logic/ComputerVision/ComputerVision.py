@@ -85,8 +85,8 @@ class ComputerVision(object):
 
     def __saveImg(self, img, datasetName, imageType, fileName):
         try:
-            self.__ensureDirectoryExists(os.path.join(self.__DatasetBasePath, datasetName))
-            self.__ensureDirectoryExists(os.path.join(self.__DatasetBasePath, datasetName, imageType))
+            Global.EnsureDirectoryExists(os.path.join(self.__DatasetBasePath, datasetName))
+            Global.EnsureDirectoryExists(os.path.join(self.__DatasetBasePath, datasetName, imageType))
 
             out = cv2.resize(img, (self.__ResizeWidth, self.__ResizeHeight)) #Resize face so all images have same size
 
@@ -127,10 +127,6 @@ class ComputerVision(object):
                             FileLogger().Error("ComputerVision: Exception: {0}".format(e))
         return trainingData, np.asarray(trainingLabels), trainingLabelsDict
 
-    def __ensureDirectoryExists(self, directory):
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-
     def __getHighestImageID(self, datasetName, imageType):
         maxImgNum = 0
         for root, dirs, filenames in os.walk(os.path.join(self.__DatasetBasePath, datasetName, imageType)):
@@ -166,7 +162,7 @@ class ComputerVision(object):
         return list(sorted(os.listdir(path), key=mtime))
 
     def __disableFile(self, filePath, fileName):
-        self.__ensureDirectoryExists(os.path.join(filePath, self.__DisabledFileFolder))
+        Global.EnsureDirectoryExists(os.path.join(filePath, self.__DisabledFileFolder))
         os.rename(os.path.join(filePath, fileName), os.path.join(filePath, self.__DisabledFileFolder, fileName))
 
 
