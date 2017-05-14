@@ -229,6 +229,9 @@ pip-log.txt
 *.mdl
 *.npy
 
+Deployment/Update.py
+Deployment/versionfile.txt
+
 EmeraldAI/Data/SqliteDB/brain.sqlite
 
 testing/emotion/dataset/*
@@ -249,6 +252,4 @@ Android/FaceApp/.*
 Android/FaceApp/rosandroid-emeraldai-faceapp/src/main/assets/*.gif
 !Android/FaceApp/rosandroid-emeraldai-faceapp/src/main/assets/center_blink_full.gif
 
-
 .DS_Store
-

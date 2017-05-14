@@ -7,6 +7,9 @@ import json
 import tarfile
 import shutil
 from os.path import dirname, abspath
+# Path to run in deployment folder
+sys.path.append(dirname(dirname(abspath(__file__))))
+# Path to run in service folder
 sys.path.append(dirname(dirname(dirname(dirname(abspath(__file__))))))
 reload(sys)
 sys.setdefaultencoding('utf-8')
