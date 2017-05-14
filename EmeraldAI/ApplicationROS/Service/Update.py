@@ -79,12 +79,10 @@ extractedFolderName = tar.getnames()[0]
 tar.close()
 
 
-
-# TODO: move into destination
-# shutil.move(os.path.join(deploymentPath, extractedFolderName, 'EmeraldAI'), os.path.join(deploymentPath, 'test', extractedFolderName))
+# move into destination
+#shutil.move(os.path.join(deploymentPath, extractedFolderName, 'EmeraldAI'), Global.EmeraldPath)
 
 #shutil.copy('src', 'dst')
-
 
 # update version
 file = open(versionFilePath,'w')
