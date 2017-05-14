@@ -7,7 +7,7 @@ import json
 import tarfile
 import shutil
 from os.path import dirname, abspath
-sys.path.append(dirname(dirname(dirname(dirname(abspath(__file__))))))
+sys.path.append(dirname(dirname(abspath(__file__))))
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
@@ -34,6 +34,7 @@ def IsVersionHigher(old, current):
 releaseUrl = 'https://api.github.com/repos/MaxMorgenstern/EmeraldAI/releases'
 response = urllib2.urlopen(releaseUrl)
 releaseObjects = json.loads(response.read())
+
 
 deploymentPath = os.path.join(Global.RootPath, 'Deployment')
 Global.EnsureDirectoryExists(deploymentPath)
@@ -95,4 +96,5 @@ shutil.rmtree(os.path.join(deploymentPath, extractedFolderName))
 
 # TODO - remove this line - just for testing
 os.remove(versionFilePath)
+
 
