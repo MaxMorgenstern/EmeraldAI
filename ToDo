@@ -55,8 +55,12 @@ LUIS: https://blogs.msdn.microsoft.com/benjaminperkins/2016/11/21/most-common-ch
 	* start processes again
 
 
-
 tts api: https://forum.sinusbot.com/threads/text-to-speech-apis-for-sinusbot.500/
+
+
+shorten:
+from os.path import dirname, abspath
+sys.path.append(dirname(dirname(abspath(__file__))))
 
 
 ---

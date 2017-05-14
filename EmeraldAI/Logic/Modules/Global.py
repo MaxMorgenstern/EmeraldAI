@@ -1,14 +1,14 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import os
-import sys
 import platform
 import codecs
+from os.path import dirname, abspath
 
 from cachetools import cached
 
-RootPath = os.path.dirname(os.path.dirname(os.path.abspath(sys.argv[0]))).rstrip(os.sep) + os.sep
-EmeraldPath = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))).rstrip(os.sep) + os.sep
+RootPath = dirname(dirname(dirname(dirname(abspath(__file__))))).rstrip(os.sep) + os.sep
+EmeraldPath = dirname(dirname(dirname(abspath(__file__)))).rstrip(os.sep) + os.sep
 OS = platform.system().lower()  # darwin (=osx) - windows - linux
 
 class OperatingSystem():
