@@ -24,15 +24,28 @@ def CleanTerm(term):
     return term
 
 def IsVersionHigher(old, current):
-	oldVersion = old.split('.')
-	currentVersion = current.split('.')
-	if(int(currentVersion[0]) > int(oldVersion[0])):
-		return True
-	if(int(currentVersion[1]) > int(oldVersion[1])):
-		return True
-	if(int(currentVersion[2]) > int(oldVersion[2])):
-		return True
-	return False
+    oldVersion = old.split('.')
+    currentVersion = current.split('.')
+    if(int(currentVersion[0]) > int(oldVersion[0])):
+        return True
+    if(int(currentVersion[1]) > int(oldVersion[1])):
+        return True
+    if(int(currentVersion[2]) > int(oldVersion[2])):
+        return True
+    return False
+
+def MoveDirectory(src_dir, dest_dir):
+    fileList = os.listdir(src_dir)
+    for i in fileList:
+        src = os.path.join(src_dir, i)
+        dest = os.path.join(dest_dir, i)
+        if os.path.exists(dest):
+            if os.path.isdir(dest):
+                MoveDirectory(src, dest)
+                continue
+            else:
+                os.remove(dest)
+        shutil.move(src, dest_dir)
 
 releaseUrl = 'https://api.github.com/repos/MaxMorgenstern/EmeraldAI/releases'
 response = urllib2.urlopen(releaseUrl)
@@ -46,21 +59,21 @@ downloadFilename = os.path.join(deploymentPath, 'currentVersion.tar.gz')
 
 
 try:
-	file = open(versionFilePath, 'r')
-	highestVestion = file.read()
+    file = open(versionFilePath, 'r')
+    highestVestion = file.read()
 except Exception as e:
-	highestVestion = '0.0.0'
+    highestVestion = '0.0.0'
 
 highestVersionObject = None
 for d in releaseObjects:
-	currentVersion = CleanTerm(d['tag_name'])
-	if(IsVersionHigher(highestVestion, currentVersion)):
-		highestVestion = currentVersion
-		highestVersionObject = d
+    currentVersion = CleanTerm(d['tag_name'])
+    if(IsVersionHigher(highestVestion, currentVersion)):
+        highestVestion = currentVersion
+        highestVersionObject = d
 
 if (highestVersionObject == None):
-	print 'Already up to date'
-	exit()
+    print 'Already up to date'
+    exit()
 
 
 # download file
@@ -80,9 +93,8 @@ tar.close()
 
 
 # move into destination
-#shutil.move(os.path.join(deploymentPath, extractedFolderName, 'EmeraldAI'), Global.EmeraldPath)
+MoveDirectory(os.path.join(deploymentPath, extractedFolderName, 'EmeraldAI'), Global.EmeraldPath)
 
-#shutil.copy('src', 'dst')
 
 # update version
 file = open(versionFilePath,'w')
@@ -93,7 +105,3 @@ file.close()
 # delete everything left over in tmp folder
 os.remove(downloadFilename)
 shutil.rmtree(os.path.join(deploymentPath, extractedFolderName))
-
-# TODO - remove this line - just for testing
-os.remove(versionFilePath)
-
