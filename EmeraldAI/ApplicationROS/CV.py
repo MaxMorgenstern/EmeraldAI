@@ -101,7 +101,7 @@ def RunCV(camID):
                 else:
                     posY = "center"
 
-                bodyData = "CV|BODY|{0}|{1}|{2}".format(bodyID, posX, posY)
+                bodyData = "CV|BODY|{0}|{1}|{2}|{3}".format(camID, bodyID, posX, posY)
                 rospy.loginfo(bodyData)
                 pub.publish(bodyData)
 
@@ -121,20 +121,20 @@ def RunCV(camID):
                             if(bestResult[0] != "Unknown"):
                                 takeImage = False
 
-                            personData = "CV|PERSON|{0}|{1}|{2}|{3}|{4}".format(key, bestResult[0], bestResultPerson[0], thresholdReached, timeoutReached)
+                            personData = "CV|PERSON|{0}|{1}|{2}|{3}|{4}|{5}".format(camID, key, bestResult, bestResultPerson, thresholdReached, timeoutReached)
                             rospy.loginfo(personData)
                             pub.publish(personData)
 
                     if (predictorObject.Name == "Mood"):
                         print "Mood: ", predictorObject.PredictionResult
-                        moodData = "CV|MOOD|{0}".format("TODO") # TODO
+                        moodData = "CV|MOOD|{0}|{1}".format(camID, "TODO") # TODO
                         rospy.loginfo(moodData)
                         pub.publish(moodData)
 
 
                     if (predictorObject.Name == "Gender"):
                         print "Gender: ", predictorObject.PredictionResult
-                        moodData = "CV|GENDER|{0}".format("TODO") # TODO
+                        moodData = "CV|GENDER|{0}|{1}".format(camID, "TODO") # TODO
                         rospy.loginfo(moodData)
                         pub.publish(moodData)
 

@@ -60,8 +60,9 @@ def callback(data):
 
 def ProcessPerson(id, bestResult, bestResultPerson, thresholdReached, timeoutReached):
     User().SetUserByCVTag("TODO")
-    # TODO
+    # TODO - bestResult and bestResultPerson are touples ('username', distance)
     # ... TODO - initial greeting on person seen
+    # TODO - ensure we don't overwrite this too often
 
 def ProcessBody(id, xPos, yPos):
     print id, xPos, yPos # center, left right, top bottom
