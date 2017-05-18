@@ -15,6 +15,7 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 from EmeraldAI.Logic.Modules import Global
+from EmeraldAI.Logic.Modules import Pid
 
 def CleanTerm(term):
     term = term.replace('-alpha', '')
@@ -47,61 +48,72 @@ def MoveDirectory(src_dir, dest_dir):
                 os.remove(dest)
         shutil.move(src, dest_dir)
 
-releaseUrl = 'https://api.github.com/repos/MaxMorgenstern/EmeraldAI/releases'
-response = urllib2.urlopen(releaseUrl)
-releaseObjects = json.loads(response.read())
 
-deploymentPath = os.path.join(Global.RootPath, 'Deployment')
-Global.EnsureDirectoryExists(deploymentPath)
-versionFilePath = os.path.join(deploymentPath, 'versionfile.txt')
-
-downloadFilename = os.path.join(deploymentPath, 'currentVersion.tar.gz')
-
+if(Pid.HasPid("Update")):
+    print "Update already running"
+    exit()
+Pid.Create("Update")
 
 try:
-    file = open(versionFilePath, 'r')
-    highestVestion = file.read()
-except Exception as e:
-    highestVestion = '0.0.0'
+    releaseUrl = 'https://api.github.com/repos/MaxMorgenstern/EmeraldAI/releases'
+    response = urllib2.urlopen(releaseUrl)
+    releaseObjects = json.loads(response.read())
 
-highestVersionObject = None
-for d in releaseObjects:
-    currentVersion = CleanTerm(d['tag_name'])
-    if(IsVersionHigher(highestVestion, currentVersion)):
-        highestVestion = currentVersion
-        highestVersionObject = d
+    deploymentPath = os.path.join(Global.RootPath, 'Deployment')
+    Global.EnsureDirectoryExists(deploymentPath)
+    versionFilePath = os.path.join(deploymentPath, 'versionfile.txt')
 
-if (highestVersionObject == None):
-    print 'Already up to date'
-    exit()
+    downloadFilename = os.path.join(deploymentPath, 'currentVersion.tar.gz')
 
 
-# download file
-response = urllib2.urlopen(highestVersionObject['tarball_url'])
-data = response.read()
+    try:
+        file = open(versionFilePath, 'r')
+        highestVestion = file.read()
+    except Exception as e:
+        highestVestion = '0.0.0'
 
-file = open(downloadFilename, 'w')
-file.write(data)
-file.close()
+    highestVersionObject = None
+    for d in releaseObjects:
+        currentVersion = CleanTerm(d['tag_name'])
+        if(IsVersionHigher(highestVestion, currentVersion)):
+            highestVestion = currentVersion
+            highestVersionObject = d
 
-
-# extract
-tar = tarfile.open(downloadFilename, 'r:gz')
-tar.extractall(deploymentPath)
-extractedFolderName = tar.getnames()[0]
-tar.close()
-
-
-# move into destination
-MoveDirectory(os.path.join(deploymentPath, extractedFolderName, 'EmeraldAI'), Global.EmeraldPath)
-
-
-# update version
-file = open(versionFilePath,'w')
-file.write(highestVestion)
-file.close()
+    if (highestVersionObject == None):
+        print 'Already up to date'
+        Pid.Remove("Update")
+        exit()
 
 
-# delete everything left over in tmp folder
-os.remove(downloadFilename)
-shutil.rmtree(os.path.join(deploymentPath, extractedFolderName))
+    # download file
+    response = urllib2.urlopen(highestVersionObject['tarball_url'])
+    data = response.read()
+
+    file = open(downloadFilename, 'w')
+    file.write(data)
+    file.close()
+
+
+    # extract
+    tar = tarfile.open(downloadFilename, 'r:gz')
+    tar.extractall(deploymentPath)
+    extractedFolderName = tar.getnames()[0]
+    tar.close()
+
+
+    # move into destination
+    MoveDirectory(os.path.join(deploymentPath, extractedFolderName, 'EmeraldAI'), Global.EmeraldPath)
+
+
+    # update version
+    file = open(versionFilePath,'w')
+    file.write(highestVestion)
+    file.close()
+
+
+    # delete everything left over in tmp folder
+    os.remove(downloadFilename)
+    shutil.rmtree(os.path.join(deploymentPath, extractedFolderName))
+
+finally:
+    Pid.Remove("Update")

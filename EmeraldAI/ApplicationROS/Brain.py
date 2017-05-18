@@ -17,6 +17,7 @@ from EmeraldAI.Pipelines.Trainer.Trainer import Trainer
 from EmeraldAI.Entities.User import User
 from EmeraldAI.Entities.Context import Context
 from EmeraldAI.Entities.PipelineArgs import PipelineArgs
+from EmeraldAI.Logic.Modules import Pid
 
 # TODO - global config - mute - detecting people off/on - listen to commands - sleep mode
 cancelSpeech = False
@@ -126,7 +127,12 @@ def ProcessPing(state):
 ##### MAIN #####
 
 if __name__ == "__main__":
+    if(Pid.HasPid("Brain")):
+        sys.exit()
+    Pid.Create("Brain")
     try:
         RunBrain()
     except KeyboardInterrupt:
         print "End"
+    finally:
+        Pid.Remove("Brain")

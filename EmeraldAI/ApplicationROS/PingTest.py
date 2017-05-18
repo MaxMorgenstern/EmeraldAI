@@ -8,6 +8,7 @@ sys.setdefaultencoding('utf-8')
 import datetime
 import rospy
 from std_msgs.msg import String
+from EmeraldAI.Logic.Modules import Pid
 
 dictionary = {}
 publisher = None
@@ -43,8 +44,14 @@ def pingCallback(data):
 
 
 if __name__ == "__main__":
+    if(Pid.HasPid("PingTest")):
+        sys.exit()
+    Pid.Create("PingTest")
+
     try:
         RunPingTest()
     except KeyboardInterrupt:
         print "End"
+    finally:
+        Pid.Remove("PingTest")
 

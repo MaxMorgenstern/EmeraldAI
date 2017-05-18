@@ -16,6 +16,7 @@ from EmeraldAI.Entities.PredictionObject import PredictionObject
 from EmeraldAI.Logic.ComputerVision.ComputerVision import ComputerVision
 from EmeraldAI.Config.Config import *
 from EmeraldAI.Logic.ComputerVision.ModelMonitor import ModelMonitor
+from EmeraldAI.Logic.Modules import Pid
 
 
 def EnsureModelUpdate():
@@ -155,8 +156,14 @@ if __name__ == "__main__":
             if (arg.lower().startswith("-cam")):
                 camID = int(arg.lower().replace("-cam", ""))
 
+    if(Pid.HasPid("CV{0}".format(camID))):
+        sys.exit()
+    Pid.Create("CV{0}".format(camID))
+
     try:
         EnsureModelUpdate()
         RunCV(camID)
     except KeyboardInterrupt:
         print "End"
+    finally:
+        Pid.Remove("CV{0}".format(camID))
