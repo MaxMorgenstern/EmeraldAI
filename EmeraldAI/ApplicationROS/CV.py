@@ -34,7 +34,7 @@ def EnsureModelUpdate():
 def RunCV(camID):
     pub = rospy.Publisher('to_brain', String, queue_size=10)
     rospy.init_node('CV_node', anonymous=True)
-    #rospy.Rate(10) # 10hz
+    rospy.Rate(10) # 10hz
 
     if(camID  < 0):
         camID = Config().GetInt("ComputerVision", "CameraID")
@@ -103,6 +103,7 @@ def RunCV(camID):
                     posY = "center"
 
                 bodyData = "CV|BODY|{0}|{1}|{2}|{3}".format(camID, bodyID, posX, posY)
+                #print bodyData
                 rospy.loginfo(bodyData)
                 pub.publish(bodyData)
 
@@ -114,31 +115,28 @@ def RunCV(camID):
             for predictorObject in predictionResult:
                 if len(predictorObject.PredictionResult) > 0 and (thresholdReached or timeoutReached):
 
-                    if (predictorObject.Name == "Person"):
-                        for key, face in predictorObject.PredictionResult.iteritems():
-                            bestResult = predictorObject.GetBestPredictionResult(key, False)
+                     for key, face in predictorObject.PredictionResult.iteritems():
+                        bestResult = predictorObject.GetBestPredictionResult(key, False)
+
+                        if (predictorObject.Name == "Person"):
                             bestResultPerson = predictorObject.GetBestPredictionResult(key, True)
 
                             if(bestResult[0] != "Unknown"):
                                 takeImage = False
 
-                            personData = "CV|PERSON|{0}|{1}|{2}|{3}|{4}|{5}".format(camID, key, bestResult, bestResultPerson, thresholdReached, timeoutReached)
-                            rospy.loginfo(personData)
-                            pub.publish(personData)
-
-                    if (predictorObject.Name == "Mood"):
-                        print "Mood: ", predictorObject.PredictionResult
-                        moodData = "CV|MOOD|{0}|{1}".format(camID, "TODO") # TODO
-                        rospy.loginfo(moodData)
-                        pub.publish(moodData)
+                            predictionData = "CV|PERSON|{0}|{1}|{2}|{3}|{4}|{5}".format(camID, key, bestResult, bestResultPerson, thresholdReached, timeoutReached)
 
 
-                    if (predictorObject.Name == "Gender"):
-                        print "Gender: ", predictorObject.PredictionResult
-                        moodData = "CV|GENDER|{0}|{1}".format(camID, "TODO") # TODO
-                        rospy.loginfo(moodData)
-                        pub.publish(moodData)
+                        if (predictorObject.Name == "Mood"):
+                            predictionData = "CV|MOOD|{0}|{1}|{2}".format(camID, key, bestResult)
 
+
+                        if (predictorObject.Name == "Gender"):
+                            predictionData = "CV|GENDER|{0}|{1}|{2}".format(camID, key, bestResult)
+
+                        #print predictionData
+                        rospy.loginfo(predictionData)
+                        pub.publish(predictionData)
 
             if(takeImage and clockFace <= (time.time()-intervalBetweenImages) and cv.TakeImage(image, "Person", rawFaceData, grayscale=True)):
                 clockFace = time.time()
