@@ -35,16 +35,16 @@ def callback(data):
 
     if dataParts[0] == "CV":
         if dataParts[1] == "PERSON":
-            ProcessPerson(dataParts[2], dataParts[3], dataParts[4], dataParts[5], dataParts[6])
+            ProcessPerson(dataParts[2], dataParts[3], dataParts[4], dataParts[5], dataParts[6], dataParts[7])
 
         if dataParts[1] == "BODY":
-            ProcessBody(dataParts[2], dataParts[3], dataParts[4])
+            ProcessBody(dataParts[2], dataParts[3], dataParts[4], dataParts[5])
 
         if dataParts[1] == "MOOD":
-            ProcessMood(dataParts[2], dataParts[3])
+            ProcessMood(dataParts[2], dataParts[3], dataParts[4])
 
         if dataParts[1] == "GENDER":
-            ProcessGender(dataParts[2], dataParts[3])
+            ProcessGender(dataParts[2], dataParts[3], dataParts[4])
 
     if dataParts[0] == "STT":
         ProcessSpeech(dataParts[1])
@@ -59,22 +59,22 @@ def callback(data):
 
 ##### CV #####
 
-def ProcessPerson(id, bestResult, bestResultPerson, thresholdReached, timeoutReached):
+def ProcessPerson(camId, id, bestResult, bestResultPerson, thresholdReached, timeoutReached):
     User().SetUserByCVTag("TODO")
     # TODO - bestResult and bestResultPerson are touples ('username', distance)
     # ... TODO - initial greeting on person seen
     # TODO - ensure we don't overwrite this too often
 
-def ProcessBody(id, xPos, yPos):
+def ProcessBody(camId, id, xPos, yPos):
     print id, xPos, yPos # center, left right, top bottom
     # TODO
     # TODO - trigger eyes to move
 
-def ProcessMood(id, mood):
+def ProcessMood(camId, id, mood):
     print id, mood
     # TODO
 
-def ProcessGender(id, gender):
+def ProcessGender(camId, id, gender):
     print id, gender
     # TODO
 
