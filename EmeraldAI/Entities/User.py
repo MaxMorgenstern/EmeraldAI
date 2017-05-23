@@ -15,7 +15,7 @@ class User(BaseObject):
     # This class is a singleton as we only need one instance across the whole project, the currently active user
 
     def __init__(self):
-        self.CVTag = None
+        self.CVTag = "Unknown"
 
         self.Name = "Unknown"
         self.LastName = None

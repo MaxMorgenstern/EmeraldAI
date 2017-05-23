@@ -6,6 +6,9 @@ sys.path.append(dirname(dirname(dirname(abspath(__file__)))))
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
+import re
+import time
+
 import rospy
 from std_msgs.msg import String
 
@@ -21,6 +24,7 @@ from EmeraldAI.Logic.Modules import Pid
 
 # TODO - global config - mute - detecting people off/on - listen to commands - sleep mode
 cancelSpeech = False
+clockPerson = time.time()
 
 def RunBrain():
     rospy.init_node('brain_node', anonymous=True)
@@ -35,7 +39,7 @@ def callback(data):
 
     if dataParts[0] == "CV":
         if dataParts[1] == "PERSON":
-            ProcessPerson(dataParts[2], dataParts[3], dataParts[4], dataParts[5], dataParts[6], dataParts[7])
+            ProcessPerson(dataParts[2], dataParts[3], dataParts[4], dataParts[5], (dataParts[6]=="True"), (dataParts[7]=="True"))
 
         if dataParts[1] == "BODY":
             ProcessBody(dataParts[2], dataParts[3], dataParts[4], dataParts[5])
@@ -60,10 +64,35 @@ def callback(data):
 ##### CV #####
 
 def ProcessPerson(camId, id, bestResult, bestResultPerson, thresholdReached, timeoutReached):
-    User().SetUserByCVTag("TODO")
-    # TODO - bestResult and bestResultPerson are touples ('username', distance)
-    # ... TODO - initial greeting on person seen
-    # TODO - ensure we don't overwrite this too often
+    global clockPerson
+
+    # TODO - to confic
+    personToUnknownFactor = 5
+    personTimeout = 10 # seconds
+
+    bestResultTag = None
+    if (len(bestResult) > 2):
+        resultData = re.sub("[()'\"]", "", bestResult).split(",")
+        bestResultTag = resultData[0]
+        bestResultValue = int(resultData[1])
+
+        if (len(bestResultPerson) > 2):
+            resultData = re.sub("[()'\"]", "", bestResultPerson).split(",")
+            if(bestResultValue / personToUnknownFactor <= int(resultData[1])):
+                bestResultTag = resultData[0]
+
+    timeout = False
+    if(clockPerson <= (time.time()-personTimeout)):
+        timeout = True
+
+    # TODO - unknown user tag from config
+    if(not timeout and not thresholdReached and (not timeoutReached or bestResultTag == "Unknown")):
+        return
+
+    if(User().GetCVTag() is not bestResultTag):
+        User().SetUserByCVTag(bestResultTag)
+        clockPerson = time.time()
+
 
 def ProcessBody(camId, id, xPos, yPos):
     print id, xPos, yPos # center, left right, top bottom
