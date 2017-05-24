@@ -42,12 +42,16 @@ class SQlite3(object):
         return self.FetchallDB(self.__Database, sql, args)
 
     def FetchallDB(self, db, sql, args=None):
-        cur = db.cursor()
-        if args:
-            cur.execute(sql, args)
-        else:
-            cur.execute(sql)
-        rows = cur.fetchall()
+        try:
+            cur = db.cursor()
+            if args:
+                cur.execute(sql, args)
+            else:
+                cur.execute(sql)
+            rows = cur.fetchall()
+        except Exception as e:
+            FileLogger().Error("SQlite3 Line 53: {0}".format(e))
+            return []
         return rows
 
 
