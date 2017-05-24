@@ -2,12 +2,11 @@
 # -*- coding: utf-8 -*-
 import sys
 from os.path import dirname, abspath
+import re
+import time
 sys.path.append(dirname(dirname(dirname(abspath(__file__)))))
 reload(sys)
 sys.setdefaultencoding('utf-8')
-
-import re
-import time
 
 import rospy
 from std_msgs.msg import String
@@ -21,6 +20,7 @@ from EmeraldAI.Entities.User import User
 from EmeraldAI.Entities.Context import Context
 from EmeraldAI.Entities.PipelineArgs import PipelineArgs
 from EmeraldAI.Logic.Modules import Pid
+from EmeraldAI.Config.Config import *
 
 # TODO - global config - mute - detecting people off/on - listen to commands - sleep mode
 cancelSpeech = False
@@ -66,9 +66,8 @@ def callback(data):
 def ProcessPerson(camId, id, bestResult, bestResultPerson, thresholdReached, timeoutReached):
     global clockPerson
 
-    # TODO - to confic
-    personToUnknownFactor = 5
-    personTimeout = 10 # seconds
+    personToUnknownFactor = Config().GetInt("Application.Brain", "PersonToUnknownFactor") # 1 : 5
+    personTimeout = Config().GetInt("Application.Brain", "PersonTimeout") # 10 seconds
 
     bestResultTag = None
     if (len(bestResult) > 2):
@@ -85,8 +84,8 @@ def ProcessPerson(camId, id, bestResult, bestResultPerson, thresholdReached, tim
     if(clockPerson <= (time.time()-personTimeout)):
         timeout = True
 
-    # TODO - unknown user tag from config
-    if(not timeout and not thresholdReached and (not timeoutReached or bestResultTag == "Unknown")):
+    unknownUserTag = Config().Get("Application.Brain", "UnknownUserTag")
+    if(not timeout and not thresholdReached and (not timeoutReached or bestResultTag == unknownUserTag)):
         return
 
     if(User().GetCVTag() is not bestResultTag):
@@ -111,6 +110,7 @@ def ProcessGender(camId, id, gender):
 ##### STT #####
 
 def ProcessSpeech(data):
+    print data
     # TODO - check if stop command
     # cancelSpeech = True
 

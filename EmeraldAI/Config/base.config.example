@@ -8,6 +8,9 @@ Language = de
 FormalFormOfAddressMale = Herr {0}
 FormalFormOfAddressFemale = Frau {0}
 
+UnknownUserTag = Unknown
+NotKnownDataTag = NotKnown
+
 
 # ----------------------
 [Bot]
@@ -101,8 +104,6 @@ Modules = Person,Mood,Gender
 
 DetectionSettings = precise
 #DetectionSettings = fast
-UnknownUserTag = Unknown
-NotKnownDataTag = NotKnown
 
 ImageSizeWidth = 350
 ImageSizeHeight = 350
@@ -144,3 +145,11 @@ MaxCharToNewLine = 300
 RemoveLowPrioritySentencesBeforeRequirement = False
 RemoveLowPrioritySentencesAfterRequirement = True
 RemoveStopwordOnlySentences = True
+
+
+# ----------------------
+#      APPLICATION
+# ----------------------
+[Application.Brain]
+PersonToUnknownFactor = 5
+PersonTimeout = 10
