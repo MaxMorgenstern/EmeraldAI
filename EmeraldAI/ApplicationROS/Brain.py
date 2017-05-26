@@ -35,7 +35,7 @@ def RunBrain():
 
 def callback(data):
     dataParts = data.data.split("|")
-    print dataParts
+    print "Just got", dataParts
 
     if dataParts[0] == "CV":
         if dataParts[1] == "PERSON":
@@ -89,6 +89,7 @@ def ProcessPerson(camId, id, bestResult, bestResultPerson, thresholdReached, tim
         return
 
     if(User().GetCVTag() is not bestResultTag):
+        print "set user", bestResultTag
         User().SetUserByCVTag(bestResultTag)
         clockPerson = time.time()
 
@@ -110,9 +111,10 @@ def ProcessGender(camId, id, gender):
 ##### STT #####
 
 def ProcessSpeech(data):
-    print data
-    # TODO - check if stop command
-    # cancelSpeech = True
+    cancelSpeech = False
+    stopwordList = Config().GetList("Bot", "StoppwordList")
+    if(data in stopwordList):
+        cancelSpeech = True
 
     pipelineArgs = PipelineArgs(data)
 
@@ -123,6 +125,7 @@ def ProcessSpeech(data):
     pipelineArgs = ProcessResponse().Process(pipelineArgs)
 
     if cancelSpeech:
+        print "speech canceled"
         return
 
     pipelineArgs = TTS().Process(pipelineArgs)

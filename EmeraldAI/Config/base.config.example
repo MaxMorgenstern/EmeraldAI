@@ -21,6 +21,8 @@ BuildDate = 20.10.2016
 Developer = Maximilian Porzelt
 Origin = Alzenau, Deutschland
 
+StoppwordList = Stopp, stop, Beenden, Halt, Anhalten
+
 
 # ----------------------
 [SentenceResolver]
@@ -63,6 +65,7 @@ Microphone =
 # ----------------------
 [TextToSpeech]
 AudioPlayer = afplay
+#AudioPlayer = mpg123
 Provider = Ivona
 
 MicrosoftVoiceGender = Female
