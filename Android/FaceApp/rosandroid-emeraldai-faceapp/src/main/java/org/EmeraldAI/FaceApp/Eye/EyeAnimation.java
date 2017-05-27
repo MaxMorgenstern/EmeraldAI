@@ -147,12 +147,11 @@ public class EyeAnimation {
         EyeState es = EyeState.getInstance();
         long now = SystemClock.uptimeMillis();
 
-
         // if animation is currently running stop
-        int intermediateAnimationTimeout =
-                R.integer.intermediate_animation_timeout * 1000;
+        int intermediateAnimationTimeout = R.integer.intermediate_animation_timeout * 1000;
         if(es.GetQueueSize() > 1 || es.AnimationRunning
-                || (es.CurrentAnimation.IntermediateAnimation && (es.AnimationEndTimestamp + intermediateAnimationTimeout) >= now))
+                || (es.CurrentAnimation != null && es.CurrentAnimation.IntermediateAnimation &&
+                    (es.AnimationEndTimestamp + intermediateAnimationTimeout) >= now))
             return;
 
         if(new Random().nextInt(100 + 1) > R.integer.blink_percentage)
