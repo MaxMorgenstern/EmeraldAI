@@ -3,7 +3,7 @@
 import sys
 import os
 from os.path import dirname, abspath
-sys.path.append(dirname(dirname(abspath(__file__))))
+sys.path.append(dirname(dirname(dirname(dirname(abspath(__file__))))))
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
