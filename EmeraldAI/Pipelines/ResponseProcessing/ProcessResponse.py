@@ -22,7 +22,7 @@ class ProcessResponse(object):
 
     def Process(self, PipelineArgs):
         sentence = PipelineArgs.GetRandomSentenceWithHighestValue()
-        FileLogger().Info("ProcessResponse, Process(), Sentence: ID:{0} {1}".format(sentence.ID, sentence))
+        FileLogger().Info("ProcessResponse, Process(), Sentence: ID:{0}".format(sentence))
 
         responseFound = True
         if sentence == None or sentence.Rating < self.__sentenceRatingThreshold:

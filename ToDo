@@ -55,8 +55,12 @@ LUIS: https://blogs.msdn.microsoft.com/benjaminperkins/2016/11/21/most-common-ch
 	* start processes again
 
 
-
 tts api: https://forum.sinusbot.com/threads/text-to-speech-apis-for-sinusbot.500/
+
+
+shorten:
+from os.path import dirname, abspath
+sys.path.append(dirname(dirname(abspath(__file__))))
 
 
 ---
@@ -186,3 +190,14 @@ USERNAME ALL= NOPASSWD: DATEIPFAD
 
 save:
 Strg+X ; Y ; Enter
+
+
+
+
+
+rostopic pub /to_brain --once std_msgs/String "STT|Gute Nacht"
+rostopic pub /to_brain --once std_msgs/String "CV|PERSON|0|0|('Unknown', 2716)|('Max', 700)|False|True"
+rostopic pub /to_brain --once std_msgs/String "CV|PERSON|0|0|('Unknown', 2716)|()|False|True"
+rostopic pub /to_brain --once std_msgs/String "CV|MOOD|0|0|('Neutral', 2219)"
+rostopic pub /to_brain --once std_msgs/String "CV|BODY|0|1|center|center"
+

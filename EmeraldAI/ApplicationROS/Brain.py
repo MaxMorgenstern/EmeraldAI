@@ -1,8 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import sys
-import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+from os.path import dirname, abspath
+import re
+import time
+sys.path.append(dirname(dirname(dirname(abspath(__file__)))))
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
@@ -17,9 +19,12 @@ from EmeraldAI.Pipelines.Trainer.Trainer import Trainer
 from EmeraldAI.Entities.User import User
 from EmeraldAI.Entities.Context import Context
 from EmeraldAI.Entities.PipelineArgs import PipelineArgs
+from EmeraldAI.Logic.Modules import Pid
+from EmeraldAI.Config.Config import *
 
 # TODO - global config - mute - detecting people off/on - listen to commands - sleep mode
 cancelSpeech = False
+clockPerson = time.time()
 
 def RunBrain():
     rospy.init_node('brain_node', anonymous=True)
@@ -30,20 +35,20 @@ def RunBrain():
 
 def callback(data):
     dataParts = data.data.split("|")
-    print dataParts
+    print "Just got", dataParts
 
     if dataParts[0] == "CV":
         if dataParts[1] == "PERSON":
-            ProcessPerson(dataParts[2], dataParts[3], dataParts[4], dataParts[5], dataParts[6])
+            ProcessPerson(dataParts[2], dataParts[3], dataParts[4], dataParts[5], (dataParts[6]=="True"), (dataParts[7]=="True"))
 
         if dataParts[1] == "BODY":
-            ProcessBody(dataParts[2], dataParts[3], dataParts[4])
+            ProcessBody(dataParts[2], dataParts[3], dataParts[4], dataParts[5])
 
         if dataParts[1] == "MOOD":
-            ProcessMood(dataParts[2], dataParts[3])
+            ProcessMood(dataParts[2], dataParts[3], dataParts[4])
 
         if dataParts[1] == "GENDER":
-            ProcessGender(dataParts[2], dataParts[3])
+            ProcessGender(dataParts[2], dataParts[3], dataParts[4])
 
     if dataParts[0] == "STT":
         ProcessSpeech(dataParts[1])
@@ -58,21 +63,47 @@ def callback(data):
 
 ##### CV #####
 
-def ProcessPerson(id, bestResult, bestResultPerson, thresholdReached, timeoutReached):
-    User().SetUserByCVTag("TODO")
-    # TODO
-    # ... TODO - initial greeting on person seen
+def ProcessPerson(camId, id, bestResult, bestResultPerson, thresholdReached, timeoutReached):
+    global clockPerson
 
-def ProcessBody(id, xPos, yPos):
+    personToUnknownFactor = Config().GetInt("Application.Brain", "PersonToUnknownFactor") # 1 : 5
+    personTimeout = Config().GetInt("Application.Brain", "PersonTimeout") # 10 seconds
+
+    bestResultTag = None
+    if (len(bestResult) > 2):
+        resultData = re.sub("[()'\"]", "", bestResult).split(",")
+        bestResultTag = resultData[0]
+        bestResultValue = int(resultData[1])
+
+        if (len(bestResultPerson) > 2):
+            resultData = re.sub("[()'\"]", "", bestResultPerson).split(",")
+            if(bestResultValue / personToUnknownFactor <= int(resultData[1])):
+                bestResultTag = resultData[0]
+
+    timeout = False
+    if(clockPerson <= (time.time()-personTimeout)):
+        timeout = True
+
+    unknownUserTag = Config().Get("Application.Brain", "UnknownUserTag")
+    if(not timeout and not thresholdReached and (not timeoutReached or bestResultTag == unknownUserTag)):
+        return
+
+    if(User().GetCVTag() is not bestResultTag):
+        print "set user", bestResultTag
+        User().SetUserByCVTag(bestResultTag)
+        clockPerson = time.time()
+
+
+def ProcessBody(camId, id, xPos, yPos):
     print id, xPos, yPos # center, left right, top bottom
     # TODO
     # TODO - trigger eyes to move
 
-def ProcessMood(id, mood):
+def ProcessMood(camId, id, mood):
     print id, mood
     # TODO
 
-def ProcessGender(id, gender):
+def ProcessGender(camId, id, gender):
     print id, gender
     # TODO
 
@@ -80,8 +111,10 @@ def ProcessGender(id, gender):
 ##### STT #####
 
 def ProcessSpeech(data):
-    # TODO - check if stop command
-    # cancelSpeech = True
+    cancelSpeech = False
+    stopwordList = Config().GetList("Bot", "StoppwordList")
+    if(data in stopwordList):
+        cancelSpeech = True
 
     pipelineArgs = PipelineArgs(data)
 
@@ -92,6 +125,7 @@ def ProcessSpeech(data):
     pipelineArgs = ProcessResponse().Process(pipelineArgs)
 
     if cancelSpeech:
+        print "speech canceled"
         return
 
     pipelineArgs = TTS().Process(pipelineArgs)
@@ -125,7 +159,12 @@ def ProcessPing(state):
 ##### MAIN #####
 
 if __name__ == "__main__":
+    if(Pid.HasPid("Brain")):
+        sys.exit()
+    Pid.Create("Brain")
     try:
         RunBrain()
     except KeyboardInterrupt:
         print "End"
+    finally:
+        Pid.Remove("Brain")
