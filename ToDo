@@ -47,14 +47,7 @@ LUIS: https://blogs.msdn.microsoft.com/benjaminperkins/2016/11/21/most-common-ch
 
 - microphone and camera selector - for config
 
-- deployment script
-	* checkout git Release branch into seperate folder
-	* run unit tests
-	* stop current processes
-	* if all pass copy files to live folder
-	* start processes again
-
-
+tts: http://docs.kitt.ai/snowboy/
 tts api: https://forum.sinusbot.com/threads/text-to-speech-apis-for-sinusbot.500/
 
 
@@ -179,17 +172,12 @@ pyaudio
 
 
 add iwlist to sudo "vi sudoers"
-
-
 or
-
 sudo visudo
-
 add:
-USERNAME ALL= NOPASSWD: DATEIPFAD
-
+	USERNAME ALL= NOPASSWD: DATEIPFAD
 save:
-Strg+X ; Y ; Enter
+	Strg+X ; Y ; Enter
 
 
 
@@ -201,3 +189,10 @@ rostopic pub /to_brain --once std_msgs/String "CV|PERSON|0|0|('Unknown', 2716)|(
 rostopic pub /to_brain --once std_msgs/String "CV|MOOD|0|0|('Neutral', 2219)"
 rostopic pub /to_brain --once std_msgs/String "CV|BODY|0|1|center|center"
 
+
+rostopic pub /to_faceapp --once std_msgs/String "MASTER|blink"
+
+
+Set in bashrec:
+export ROS_HOSTNAME=192.168.192.27
+export ROS_IP=192.168.192.27

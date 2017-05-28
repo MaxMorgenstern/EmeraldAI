@@ -4,7 +4,6 @@ import android.os.SystemClock;
 import android.util.Log;
 
 import org.EmeraldAI.FaceApp.R;
-import org.apache.commons.lang.ObjectUtils;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -147,6 +146,8 @@ public class EyeAnimation {
     {
         EyeState es = EyeState.getInstance();
         long now = SystemClock.uptimeMillis();
+
+        int uu = R.integer.intermediate_timeout;
 
         // if animation is currently running stop
         int intermediateAnimationTimeout = 10000;//R.integer.intermediate_timeout * 1000;
