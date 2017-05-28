@@ -35,7 +35,6 @@ import org.EmeraldAI.FaceApp.ROS.SubscriberNode;
 import org.ros.address.InetAddressFactory;
 import org.ros.android.RosActivity;
 import org.ros.node.NodeConfiguration;
-import org.ros.node.NodeMain;
 import org.ros.node.NodeMainExecutor;
 
 import java.io.IOException;
@@ -63,8 +62,6 @@ public class MainActivity extends RosActivity {
 
                 ea.BlinkUpdater();
                 ea.IdleUpdater();
-
-                //Log.i(TAG, "Main - Idle: " + es.IdleMode + " - QueueSize: " + es.GetQueueSize() + " - Timestamp: " + es.AnimationEndTimestamp);
 
                 long now = SystemClock.uptimeMillis();
                 long waitUntil = (es.CurrentAnimation != null) ?

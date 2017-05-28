@@ -142,19 +142,20 @@ public class EyeAnimation {
         }
     }
 
+
     public void BlinkUpdater()
     {
         EyeState es = EyeState.getInstance();
         long now = SystemClock.uptimeMillis();
 
         // if animation is currently running stop
-        int intermediateAnimationTimeout = R.integer.intermediate_animation_timeout * 1000;
+        int intermediateAnimationTimeout = 10000;//R.integer.intermediate_timeout * 1000;
         if(es.GetQueueSize() > 1 || es.AnimationRunning
                 || (es.CurrentAnimation != null && es.CurrentAnimation.IntermediateAnimation &&
                     (es.AnimationEndTimestamp + intermediateAnimationTimeout) >= now))
             return;
 
-        if(new Random().nextInt(100 + 1) > R.integer.blink_percentage)
+        if(new Random().nextInt(100 + 1) > 97/*R.integer.blink_percentage*/)
             this.PlayAnimation("blink");
     }
 
