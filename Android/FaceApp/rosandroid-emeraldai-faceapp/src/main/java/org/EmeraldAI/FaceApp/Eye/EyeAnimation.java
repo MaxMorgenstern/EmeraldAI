@@ -25,6 +25,13 @@ public class EyeAnimation {
     private List<String> _singleAnimation;
     private String _defaultLocation;
 
+    private int _intermediate_timeout = 30;
+    private int _blink_percentage = 97;
+    private boolean _enable_idle_mode = true;
+    private int _time_to_wait_until_idle_begins = 60;
+    private int _min_animation_delay = 1;
+    private int _max_animation_delay = 30;
+
     public EyeAnimation()
     {
         _position = Arrays.asList("center","left","right","top","bottom");
@@ -147,22 +154,18 @@ public class EyeAnimation {
         EyeState es = EyeState.getInstance();
         long now = SystemClock.uptimeMillis();
 
-        int uu = R.integer.intermediate_timeout;
-
-        // if animation is currently running stop
-        int intermediateAnimationTimeout = 10000;//R.integer.intermediate_timeout * 1000;
         if(es.GetQueueSize() > 1 || es.AnimationRunning
                 || (es.CurrentAnimation != null && es.CurrentAnimation.IntermediateAnimation &&
-                    (es.AnimationEndTimestamp + intermediateAnimationTimeout) >= now))
+                    (es.AnimationEndTimestamp + (_intermediate_timeout * 1000)) >= now))
             return;
 
-        if(new Random().nextInt(100 + 1) > 97/*R.integer.blink_percentage*/)
+        if(new Random().nextInt(100 + 1) > _blink_percentage)
             this.PlayAnimation("blink");
     }
 
     public void IdleUpdater()
     {
-        if(R.integer.enable_idle_mode == 0)
+        if(!_enable_idle_mode)
             return;
 
         EyeState es = EyeState.getInstance();
@@ -171,9 +174,8 @@ public class EyeAnimation {
         if(es.GetQueueSize() > 0)
             return;
 
-        long timeToWaitUntilIdleBegins = R.integer.time_to_wait_until_idle_begins * 1000;
         // wait x seconds since last animation to start idle
-        if(!es.IdleMode && (es.AnimationEndTimestamp + timeToWaitUntilIdleBegins) >= now)
+        if(!es.IdleMode && (es.AnimationEndTimestamp + (_time_to_wait_until_idle_begins * 1000)) >= now)
             return;
 
         if(es.IdleMode && (es.AnimationEndTimestamp + es.IdleDelay) >= now)
@@ -183,8 +185,8 @@ public class EyeAnimation {
             this.ResetAnimation();
         es.IdleMode = true;
 
-        int max = R.integer.max_animation_delay * 1000;
-        int min = R.integer.min_animation_delay * 1000;
+        int max = _max_animation_delay * 1000;
+        int min = _min_animation_delay * 1000;
         es.IdleDelay = new Random().nextInt(max - min + 1) + min;
 
         List<String> combinedList = new ArrayList<String>();

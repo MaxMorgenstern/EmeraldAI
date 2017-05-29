@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <integer name="intermediate_timeout">30</integer>
-    <integer name="blink_percentage">97</integer>
-    <integer name="enable_idle_mode">1</integer>
-    <integer name="time_to_wait_until_idle_begins">60</integer>
-    <integer name="min_animation_delay">1</integer>
-    <integer name="max_animation_delay">10</integer>
-</resources>
