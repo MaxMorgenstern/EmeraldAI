@@ -34,6 +34,8 @@ check display - if turned off --> TTS "Hey, I can't see anymore."
 - Handle Wildcard Parameter (*) in Q
 - Set Category
 
+- tell robot to sleep or be muted
+
 # EN aiml reference https://code.google.com/archive/p/aiml-en-us-foundation-alice/
 
 - Multiple Machine ROS:

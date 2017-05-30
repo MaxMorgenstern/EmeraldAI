@@ -154,5 +154,9 @@ RemoveStopwordOnlySentences = True
 #      APPLICATION
 # ----------------------
 [Application.Brain]
+Mute = False
+Listen = True
+RecognizePeople = True
+
 PersonToUnknownFactor = 5
 PersonTimeout = 10

@@ -22,14 +22,18 @@ from EmeraldAI.Entities.PipelineArgs import PipelineArgs
 from EmeraldAI.Logic.Modules import Pid
 from EmeraldAI.Config.Config import *
 
-# TODO - global config - mute - detecting people off/on - listen to commands - sleep mode
 cancelSpeech = False
 clockPerson = time.time()
+faceappPub = None
 
 def RunBrain():
+    global faceappPub
+
     rospy.init_node('brain_node', anonymous=True)
 
     rospy.Subscriber("to_brain", String, callback)
+
+    faceappPub = rospy.Publisher('to_faceapp', String, queue_size=10)
 
     rospy.spin()
 
@@ -66,6 +70,9 @@ def callback(data):
 def ProcessPerson(camId, id, bestResult, bestResultPerson, thresholdReached, timeoutReached):
     global clockPerson
 
+    if(not Config().GetBoolean("Application.Brain", "RecognizePeople")):
+        return
+
     personToUnknownFactor = Config().GetInt("Application.Brain", "PersonToUnknownFactor") # 1 : 5
     personTimeout = Config().GetInt("Application.Brain", "PersonTimeout") # 10 seconds
 
@@ -95,9 +102,21 @@ def ProcessPerson(camId, id, bestResult, bestResultPerson, thresholdReached, tim
 
 
 def ProcessBody(camId, id, xPos, yPos):
+    global faceappPub
+
+    # TODO - remove
     print id, xPos, yPos # center, left right, top bottom
-    # TODO
-    # TODO - trigger eyes to move
+
+    lookAt = "center"
+    if(yPos != "center"):
+        lookAt = yPos
+    if(xPos != "center"):
+        lookAt = xPos
+
+    lookAtData = "FACEMASTER|{0}".format(lookAt)
+    rospy.loginfo(lookAtData)
+    faceappPub.publish(lookAtData)
+
 
 def ProcessMood(camId, id, mood):
     print id, mood
@@ -111,6 +130,9 @@ def ProcessGender(camId, id, gender):
 ##### STT #####
 
 def ProcessSpeech(data):
+    if(not Config().GetBoolean("Application.Brain", "Listen")):
+        return
+
     cancelSpeech = False
     stopwordList = Config().GetList("Bot", "StoppwordList")
     if(data in stopwordList):
@@ -128,7 +150,8 @@ def ProcessSpeech(data):
         print "speech canceled"
         return
 
-    pipelineArgs = TTS().Process(pipelineArgs)
+    if(not Config().GetBoolean("Application.Brain", "Mute")):
+        pipelineArgs = TTS().Process(pipelineArgs)
 
     trainerResult = Trainer().Process(pipelineArgs)
 
