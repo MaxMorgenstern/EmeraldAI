@@ -65,8 +65,7 @@ public class PublisherNode extends AbstractNodeMain implements NodeMain {
         connectedNode.executeCancellableLoop(loop);
     }
 
-    public void ToBrain(String data)
-    {
+    public void ToBrain(String data) {
         Log.i(TAG, "Sending to 'to_brain': \"FACEAPP|" + data + "\"");
 
         std_msgs.String str = brainPublisher.newMessage();

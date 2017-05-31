@@ -36,8 +36,7 @@ public class SubscriberNode extends AbstractNodeMain implements NodeMain {
                 Log.i(TAG, "I heard: \"" + message.getData() + "\"");
                 List<String> messageData = Arrays.asList(message.getData().split("\\|"));
 
-                if(messageData.size() == 2)
-                {
+                if (messageData.size() == 2) {
                     EyeAnimation ea = new EyeAnimation();
                     ea.TriggerAnimation(messageData.get(1));
                 }

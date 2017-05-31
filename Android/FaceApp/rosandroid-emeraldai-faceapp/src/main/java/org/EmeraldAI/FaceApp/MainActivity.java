@@ -67,12 +67,10 @@ public class MainActivity extends RosActivity {
                 long waitUntil = (es.CurrentAnimation != null) ?
                         (es.AnimationEndTimestamp + es.CurrentAnimation.MinDelayAfterAnimation) : 0;
 
-                if(waitUntil <= now && !es.AnimationRunning && es.GetQueueSize() > 0)
-                {
+                if (waitUntil <= now && !es.AnimationRunning && es.GetQueueSize() > 0) {
                     EyeAnimationObject eao = es.GetFromQueue();
                     GifImageView gifImageView = (GifImageView) findViewById(R.id.GifImageView);
-                    try
-                    {
+                    try {
                         InputStream ins = getAssets().open(eao.AnimationObject + ".gif");
                         gifImageView.SetGifImageStream(ins, false);
                     } catch (IOException ex) {

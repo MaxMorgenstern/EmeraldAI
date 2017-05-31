@@ -3,8 +3,6 @@ package org.EmeraldAI.FaceApp.Eye;
 import android.os.SystemClock;
 import android.util.Log;
 
-import org.EmeraldAI.FaceApp.R;
-
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,31 +30,26 @@ public class EyeAnimation {
     private int _min_animation_delay = 1;
     private int _max_animation_delay = 30;
 
-    public EyeAnimation()
-    {
-        _position = Arrays.asList("center","left","right","top","bottom");
-        _availableAnimationPosition = Arrays.asList("center","left","right");
-        _animation = Arrays.asList("blink","bad","doubt","sad","shock");
+    public EyeAnimation() {
+        _position = Arrays.asList("center", "left", "right", "top", "bottom");
+        _availableAnimationPosition = Arrays.asList("center", "left", "right");
+        _animation = Arrays.asList("blink", "bad", "doubt", "sad", "shock");
         _singleAnimation = Arrays.asList("blink");
         _defaultLocation = "center";
     }
 
-    public void TriggerAnimation(String command)
-    {
-        if(EyeState.getInstance().IdleMode)
-        {
+    public void TriggerAnimation(String command) {
+        if (EyeState.getInstance().IdleMode) {
             this.ResetAnimation(true);
             EyeState.getInstance().IdleMode = false;
         }
 
-        if (_position.contains(command))
-        {
+        if (_position.contains(command)) {
             this.MoveTo(command);
             return;
         }
 
-        if (_animation.contains(command))
-        {
+        if (_animation.contains(command)) {
             this.PlayAnimation(command);
             return;
         }
@@ -64,20 +57,17 @@ public class EyeAnimation {
         Log.e(TAG, "TriggerAnimation(): Invalid command received: " + command);
     }
 
-    public void MoveTo(String destination)
-    {
+    public void MoveTo(String destination) {
         // Example: move_right_center
         EyeState es = EyeState.getInstance();
         EyeAnimationObject eao = es.LastAnimation;
 
         String position = "center";
-        if (eao != null)
-        {
+        if (eao != null) {
             if (eao.Position.equals(destination))
                 return;
 
-            if (!eao.Position.equals(_defaultLocation) && !destination.equals(_defaultLocation))
-            {
+            if (!eao.Position.equals(_defaultLocation) && !destination.equals(_defaultLocation)) {
                 this.MoveTo(_defaultLocation);
                 eao = es.LastAnimation;
             }
@@ -88,8 +78,7 @@ public class EyeAnimation {
         es.AddToQueue(gifToPlay, "move", destination, false);
     }
 
-    public void PlayAnimation(String animation)
-    {
+    public void PlayAnimation(String animation) {
         // Example: center_bad_end
         EyeState es = EyeState.getInstance();
         EyeAnimationObject eao = es.LastAnimation;
@@ -97,10 +86,8 @@ public class EyeAnimation {
         String position = "center";
         String state = "start";
 
-        if (eao != null)
-        {
-            if (eao.IntermediateAnimation && !eao.AnimationName.equals(animation))
-            {
+        if (eao != null) {
+            if (eao.IntermediateAnimation && !eao.AnimationName.equals(animation)) {
                 this.PlayAnimation(eao.AnimationName);
             }
 
@@ -108,14 +95,12 @@ public class EyeAnimation {
             position = eao.Position;
         }
 
-        if (_singleAnimation.contains(animation))
-        {
+        if (_singleAnimation.contains(animation)) {
             state = "full";
         }
 
         // If current position has no animations reset to center
-        if(!_availableAnimationPosition.contains(position))
-        {
+        if (!_availableAnimationPosition.contains(position)) {
             position = _defaultLocation;
             this.MoveTo(_defaultLocation);
         }
@@ -124,64 +109,58 @@ public class EyeAnimation {
         es.AddToQueue(gifToPlay, animation, position, (state.equals("start")));
     }
 
-    public void ResetAnimation()
-    {
+    public void ResetAnimation() {
         this.ResetAnimation(false);
     }
 
-    public void ResetAnimation(boolean movePositionToDefault)
-    {
+    public void ResetAnimation(boolean movePositionToDefault) {
         EyeState es = EyeState.getInstance();
         es.ClearQueue();
 
-        EyeAnimationObject currentAnimation =  es.CurrentAnimation;
+        EyeAnimationObject currentAnimation = es.CurrentAnimation;
 
-        if(currentAnimation.IntermediateAnimation)
-        {
+        if (currentAnimation.IntermediateAnimation) {
             String gifToPlay = MessageFormat.format("{0}_{1}_{2}", currentAnimation.Position, currentAnimation.AnimationName, "end");
             es.AddToQueue(gifToPlay, currentAnimation.AnimationName, currentAnimation.Position, false, 0);
         }
 
-        if(movePositionToDefault && !currentAnimation.Position.equals(_defaultLocation))
-        {
+        if (movePositionToDefault && !currentAnimation.Position.equals(_defaultLocation)) {
             this.MoveTo(_defaultLocation);
         }
     }
 
 
-    public void BlinkUpdater()
-    {
+    public void BlinkUpdater() {
         EyeState es = EyeState.getInstance();
         long now = SystemClock.uptimeMillis();
 
-        if(es.GetQueueSize() > 1 || es.AnimationRunning
+        if (es.GetQueueSize() > 1 || es.AnimationRunning
                 || (es.CurrentAnimation != null && es.CurrentAnimation.IntermediateAnimation &&
-                    (es.AnimationEndTimestamp + (_intermediate_timeout * 1000)) >= now))
+                (es.AnimationEndTimestamp + (_intermediate_timeout * 1000)) >= now))
             return;
 
-        if(new Random().nextInt(100 + 1) > _blink_percentage)
+        if (new Random().nextInt(100 + 1) > _blink_percentage)
             this.PlayAnimation("blink");
     }
 
-    public void IdleUpdater()
-    {
-        if(!_enable_idle_mode)
+    public void IdleUpdater() {
+        if (!_enable_idle_mode)
             return;
 
         EyeState es = EyeState.getInstance();
         long now = SystemClock.uptimeMillis();
 
-        if(es.GetQueueSize() > 0)
+        if (es.GetQueueSize() > 0)
             return;
 
         // wait x seconds since last animation to start idle
-        if(!es.IdleMode && (es.AnimationEndTimestamp + (_time_to_wait_until_idle_begins * 1000)) >= now)
+        if (!es.IdleMode && (es.AnimationEndTimestamp + (_time_to_wait_until_idle_begins * 1000)) >= now)
             return;
 
-        if(es.IdleMode && (es.AnimationEndTimestamp + es.IdleDelay) >= now)
+        if (es.IdleMode && (es.AnimationEndTimestamp + es.IdleDelay) >= now)
             return;
 
-        if(!es.IdleMode)
+        if (!es.IdleMode)
             this.ResetAnimation();
         es.IdleMode = true;
 

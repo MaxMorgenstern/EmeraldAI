@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.util.Log;
 
 import org.EmeraldAI.FaceApp.ROS.PublisherNode;
-import org.ros.node.NodeMain;
 
 import static android.content.ContentValues.TAG;
 
@@ -18,8 +17,7 @@ public class ActionReceiver extends BroadcastReceiver {
 
     PublisherNode node;
 
-    public ActionReceiver(PublisherNode mainNode)
-    {
+    public ActionReceiver(PublisherNode mainNode) {
         node = mainNode;
     }
 
