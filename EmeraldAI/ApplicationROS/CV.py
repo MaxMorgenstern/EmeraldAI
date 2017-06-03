@@ -8,9 +8,10 @@ sys.setdefaultencoding('utf-8')
 
 import cv2
 import time
+import numpy
 
-import rospy
-from std_msgs.msg import String
+#import rospy
+#from std_msgs.msg import String
 
 from EmeraldAI.Entities.PredictionObject import PredictionObject
 from EmeraldAI.Logic.ComputerVision.ComputerVision import ComputerVision
@@ -32,9 +33,9 @@ def EnsureModelUpdate():
 
 
 def RunCV(camID):
-    pub = rospy.Publisher('to_brain', String, queue_size=10)
-    rospy.init_node('CV_node', anonymous=True)
-    rospy.Rate(10) # 10hz
+    #pub = rospy.Publisher('to_brain', String, queue_size=10)
+    #rospy.init_node('CV_node', anonymous=True)
+    #rospy.Rate(10) # 10hz
 
     if(camID  < 0):
         camID = Config().GetInt("ComputerVision", "CameraID")
@@ -76,7 +77,13 @@ def RunCV(camID):
             print "Can't read image"
             continue
 
-        #cv2.imshow("image", image)
+        average_color_1 = numpy.uint8(numpy.average(numpy.average(image, axis=0), axis=0))
+        average_color_2 = numpy.uint8(numpy.average(numpy.average(image, axis=1), axis=1))
+
+        print average_color_1, average_color_2
+
+
+        cv2.imshow("image", image)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
@@ -104,8 +111,8 @@ def RunCV(camID):
 
                 bodyData = "CV|BODY|{0}|{1}|{2}|{3}".format(camID, bodyID, posX, posY)
                 #print bodyData
-                rospy.loginfo(bodyData)
-                pub.publish(bodyData)
+                #rospy.loginfo(bodyData)
+                #pub.publish(bodyData)
 
                 bodyID += 1
 
@@ -135,8 +142,8 @@ def RunCV(camID):
                             predictionData = "CV|GENDER|{0}|{1}|{2}".format(camID, key, bestResult)
 
                         #print predictionData
-                        rospy.loginfo(predictionData)
-                        pub.publish(predictionData)
+                        #rospy.loginfo(predictionData)
+                        #pub.publish(predictionData)
 
             if(takeImage and clockFace <= (time.time()-intervalBetweenImages) and cv.TakeImage(image, "Person", rawFaceData, grayscale=True)):
                 clockFace = time.time()
