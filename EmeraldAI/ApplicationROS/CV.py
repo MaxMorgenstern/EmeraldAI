@@ -8,10 +8,9 @@ sys.setdefaultencoding('utf-8')
 
 import cv2
 import time
-import numpy
 
-#import rospy
-#from std_msgs.msg import String
+import rospy
+from std_msgs.msg import String
 
 from EmeraldAI.Entities.PredictionObject import PredictionObject
 from EmeraldAI.Logic.ComputerVision.ComputerVision import ComputerVision
@@ -34,8 +33,8 @@ def EnsureModelUpdate():
 
 def RunCV(camID):
     #pub = rospy.Publisher('to_brain', String, queue_size=10)
-    #rospy.init_node('CV_node', anonymous=True)
-    #rospy.Rate(10) # 10hz
+    rospy.init_node('CV_node', anonymous=True)
+    rospy.Rate(10) # 10hz
 
     if(camID  < 0):
         camID = Config().GetInt("ComputerVision", "CameraID")
@@ -77,18 +76,13 @@ def RunCV(camID):
             print "Can't read image"
             continue
 
-        average_color_1 = numpy.average(numpy.average(image, axis=0), axis=0)
-        average_color_2 = numpy.average(numpy.average(image, axis=1), axis=0)
-
-        print average_color_1 # BGR
-        print average_color_2 # BGR
-
-        # Photometric/digital ITU BT.709
-        # Y = 0.2126 R + 0.7152 G + 0.0722 B
-
-        # Digital ITU BT.601 (gives more weight to the R and B components):
-        # Y = 0.299 R + 0.587 G + 0.114 B
-
+        lumaThreshold = 20 # to config
+        if (cv.GetLuma(image) < lumaThreshold):
+            bodyData = "CV|DARKNESS|{0}".format(camID)
+            #print bodyData
+            rospy.loginfo(bodyData)
+            pub.publish(bodyData)
+            continue
 
         cv2.imshow("image", image)
         if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -118,8 +112,8 @@ def RunCV(camID):
 
                 bodyData = "CV|BODY|{0}|{1}|{2}|{3}".format(camID, bodyID, posX, posY)
                 #print bodyData
-                #rospy.loginfo(bodyData)
-                #pub.publish(bodyData)
+                rospy.loginfo(bodyData)
+                pub.publish(bodyData)
 
                 bodyID += 1
 
@@ -149,8 +143,8 @@ def RunCV(camID):
                             predictionData = "CV|GENDER|{0}|{1}|{2}".format(camID, key, bestResult)
 
                         #print predictionData
-                        #rospy.loginfo(predictionData)
-                        #pub.publish(predictionData)
+                        rospy.loginfo(predictionData)
+                        pub.publish(predictionData)
 
             if(takeImage and clockFace <= (time.time()-intervalBetweenImages) and cv.TakeImage(image, "Person", rawFaceData, grayscale=True)):
                 clockFace = time.time()

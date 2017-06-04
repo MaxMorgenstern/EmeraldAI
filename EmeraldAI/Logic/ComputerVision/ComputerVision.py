@@ -188,6 +188,10 @@ class ComputerVision(object):
                             else:
                                 continue
 
+    def GetLuma(self, img):
+        averageColor = numpy.average(numpy.average(img, axis=0), axis=0)
+        return (0.299 * averageColor[2] + 0.587 * averageColor[1] + 0.114 * averageColor[0])
+
     def DetectBody(self, img):
         bodies = self.__fullBody.detectMultiScale(img, scaleFactor=self.__DetectionSettings.Scale, minNeighbors=self.__DetectionSettings.MinNeighbors, minSize=self.__DetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
         if len(bodies) > 0:

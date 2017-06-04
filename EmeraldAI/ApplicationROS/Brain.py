@@ -54,6 +54,9 @@ def callback(data):
         if dataParts[1] == "GENDER":
             ProcessGender(dataParts[2], dataParts[3], dataParts[4])
 
+        if dataParts[1] == "DARKNESS":
+            print "TODO" # TODO
+
     if dataParts[0] == "STT":
         ProcessSpeech(dataParts[1])
 
