@@ -77,10 +77,17 @@ def RunCV(camID):
             print "Can't read image"
             continue
 
-        average_color_1 = numpy.uint8(numpy.average(numpy.average(image, axis=0), axis=0))
-        average_color_2 = numpy.uint8(numpy.average(numpy.average(image, axis=1), axis=1))
+        average_color_1 = numpy.average(numpy.average(image, axis=0), axis=0)
+        average_color_2 = numpy.average(numpy.average(image, axis=1), axis=0)
 
-        print average_color_1, average_color_2
+        print average_color_1 # BGR
+        print average_color_2 # BGR
+
+        # Photometric/digital ITU BT.709
+        # Y = 0.2126 R + 0.7152 G + 0.0722 B
+
+        # Digital ITU BT.601 (gives more weight to the R and B components):
+        # Y = 0.299 R + 0.587 G + 0.114 B
 
 
         cv2.imshow("image", image)
