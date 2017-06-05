@@ -14,7 +14,7 @@ NotKnownDataTag = NotKnown
 
 # ----------------------
 [Bot]
-Name = Johnny
+Name = Otto
 Languages = Deutsch
 Gender = Männlich
 BuildDate = 20.10.2016
@@ -129,6 +129,8 @@ MySQLHost = 127.0.0.1
 CameraWidth = 640
 CameraHeight = 480
 CameraID = 0
+CameraName = STD
+#CameraName = IR
 
 Modules = Person,Mood,Gender
 

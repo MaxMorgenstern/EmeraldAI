@@ -31,13 +31,15 @@ def EnsureModelUpdate():
         monitor.Rebuild(moduleName)
 
 
-def RunCV(camID):
-    #pub = rospy.Publisher('to_brain', String, queue_size=10)
+def RunCV(camID, camName):
+    pub = rospy.Publisher('to_brain', String, queue_size=10)
     rospy.init_node('CV_node', anonymous=True)
     rospy.Rate(10) # 10hz
 
     if(camID  < 0):
         camID = Config().GetInt("ComputerVision", "CameraID")
+    if(camName == "STD"):
+        camName = Config().GetInt("ComputerVision", "CameraName")
 
     camera = cv2.VideoCapture(camID)
     camera.set(3, Config().GetInt("ComputerVision", "CameraWidth"))
@@ -78,7 +80,7 @@ def RunCV(camID):
 
         lumaThreshold = 20 # to config
         if (cv.GetLuma(image) < lumaThreshold):
-            bodyData = "CV|DARKNESS|{0}".format(camID)
+            bodyData = "CV|DARKNESS|{0}".format(camName)
             #print bodyData
             rospy.loginfo(bodyData)
             pub.publish(bodyData)
@@ -110,7 +112,7 @@ def RunCV(camID):
                 else:
                     posY = "center"
 
-                bodyData = "CV|BODY|{0}|{1}|{2}|{3}".format(camID, bodyID, posX, posY)
+                bodyData = "CV|BODY|{0}|{1}|{2}|{3}".format(camName, bodyID, posX, posY)
                 #print bodyData
                 rospy.loginfo(bodyData)
                 pub.publish(bodyData)
@@ -132,15 +134,15 @@ def RunCV(camID):
                             if(bestResult[0] != "Unknown"):
                                 takeImage = False
 
-                            predictionData = "CV|PERSON|{0}|{1}|{2}|{3}|{4}|{5}".format(camID, key, bestResult, bestResultPerson, thresholdReached, timeoutReached)
+                            predictionData = "CV|PERSON|{0}|{1}|{2}|{3}|{4}|{5}".format(camName, key, bestResult, bestResultPerson, thresholdReached, timeoutReached)
 
 
                         if (predictorObject.Name == "Mood"):
-                            predictionData = "CV|MOOD|{0}|{1}|{2}".format(camID, key, bestResult)
+                            predictionData = "CV|MOOD|{0}|{1}|{2}".format(camName, key, bestResult)
 
 
                         if (predictorObject.Name == "Gender"):
-                            predictionData = "CV|GENDER|{0}|{1}|{2}".format(camID, key, bestResult)
+                            predictionData = "CV|GENDER|{0}|{1}|{2}".format(camName, key, bestResult)
 
                         #print predictionData
                         rospy.loginfo(predictionData)
@@ -157,10 +159,13 @@ def RunCV(camID):
 
 if __name__ == "__main__":
     camID = -1
+    camName = "STD"
     if len(sys.argv) > 1:
         for arg in sys.argv:
             if (arg.lower().startswith("-cam")):
                 camID = int(arg.lower().replace("-cam", ""))
+            if (arg.lower().startswith("-name")):
+                camName = int(arg.lower().replace("-name", ""))
 
     if(Pid.HasPid("CV{0}".format(camID))):
         sys.exit()
@@ -168,7 +173,7 @@ if __name__ == "__main__":
 
     try:
         EnsureModelUpdate()
-        RunCV(camID)
+        RunCV(camID, camName)
     except KeyboardInterrupt:
         print "End"
     finally:

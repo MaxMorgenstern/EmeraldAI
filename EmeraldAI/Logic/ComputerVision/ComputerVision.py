@@ -189,7 +189,7 @@ class ComputerVision(object):
                                 continue
 
     def GetLuma(self, img):
-        averageColor = numpy.average(numpy.average(img, axis=0), axis=0)
+        averageColor = numpy.average(numpy.average(img, axis=0), axis=0) # averageColor: BGR!!!
         return (0.299 * averageColor[2] + 0.587 * averageColor[1] + 0.114 * averageColor[0])
 
     def DetectBody(self, img):

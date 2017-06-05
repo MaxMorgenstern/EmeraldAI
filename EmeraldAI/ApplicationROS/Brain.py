@@ -67,10 +67,11 @@ def callback(data):
         ProcessPing(dataParts[1])
 
 
+# TODO cameraName == IR or STD
 
 ##### CV #####
 
-def ProcessPerson(camId, id, bestResult, bestResultPerson, thresholdReached, timeoutReached):
+def ProcessPerson(cameraName, id, bestResult, bestResultPerson, thresholdReached, timeoutReached):
     global clockPerson
 
     if(not Config().GetBoolean("Application.Brain", "RecognizePeople")):
@@ -104,7 +105,7 @@ def ProcessPerson(camId, id, bestResult, bestResultPerson, thresholdReached, tim
         clockPerson = time.time()
 
 
-def ProcessBody(camId, id, xPos, yPos):
+def ProcessBody(cameraName, id, xPos, yPos):
     global faceappPub
 
     # TODO - remove
@@ -121,11 +122,11 @@ def ProcessBody(camId, id, xPos, yPos):
     faceappPub.publish(lookAtData)
 
 
-def ProcessMood(camId, id, mood):
+def ProcessMood(cameraName, id, mood):
     print id, mood
     # TODO
 
-def ProcessGender(camId, id, gender):
+def ProcessGender(cameraName, id, gender):
     print id, gender
     # TODO
 
