@@ -186,6 +186,9 @@ RemoveStopwordOnlySentences = True
 Mute = False
 Listen = True
 RecognizePeople = True
+RecognizeWithIRCam = True
+RecognizeWithIRCamOnlyOnDarkness = False
 
 PersonToUnknownFactor = 5
 PersonTimeout = 10
+DarknessTimeout = 10

@@ -22,18 +22,21 @@ from EmeraldAI.Entities.PipelineArgs import PipelineArgs
 from EmeraldAI.Logic.Modules import Pid
 from EmeraldAI.Config.Config import *
 
-cancelSpeech = False
-clockPerson = time.time()
-faceappPub = None
+STT_CancelSpeech = False
+
+CV_PersonDetectionTimestamp = time.time()
+CV_DarknessTimestamp = time.time()
+
+GLOBAL_FaceappPub = None
 
 def RunBrain():
-    global faceappPub
+    global GLOBAL_FaceappPub
 
     rospy.init_node('brain_node', anonymous=True)
 
     rospy.Subscriber("to_brain", String, callback)
 
-    faceappPub = rospy.Publisher('to_faceapp', String, queue_size=10)
+    GLOBAL_FaceappPub = rospy.Publisher('to_faceapp', String, queue_size=10)
 
     rospy.spin()
 
@@ -55,7 +58,7 @@ def callback(data):
             ProcessGender(dataParts[2], dataParts[3], dataParts[4])
 
         if dataParts[1] == "DARKNESS":
-            print "TODO" # TODO
+            ProcessDarkness(dataParts[2])
 
     if dataParts[0] == "STT":
         ProcessSpeech(dataParts[1])
@@ -67,18 +70,23 @@ def callback(data):
         ProcessPing(dataParts[1])
 
 
-# TODO cameraName == IR or STD
-
 ##### CV #####
 
 def ProcessPerson(cameraName, id, bestResult, bestResultPerson, thresholdReached, timeoutReached):
-    global clockPerson
+    global CV_PersonDetectionTimestamp
 
     if(not Config().GetBoolean("Application.Brain", "RecognizePeople")):
         return
 
     personToUnknownFactor = Config().GetInt("Application.Brain", "PersonToUnknownFactor") # 1 : 5
     personTimeout = Config().GetInt("Application.Brain", "PersonTimeout") # 10 seconds
+    darknessTimeout = Config().GetInt("Application.Brain", "DarknessTimeout") # 10 seconds
+
+    if(cameraName == "IR"):
+        if(not Config().GetBoolean("Application.Brain", "RecognizeWithIRCam")):
+            return
+        if(Config().GetBoolean("Application.Brain", "RecognizeWithIRCamOnlyOnDarkness") and CV_DarknessTimestamp <= (time.time() - darknessTimeout)):
+            return
 
     bestResultTag = None
     if (len(bestResult) > 2):
@@ -92,7 +100,7 @@ def ProcessPerson(cameraName, id, bestResult, bestResultPerson, thresholdReached
                 bestResultTag = resultData[0]
 
     timeout = False
-    if(clockPerson <= (time.time()-personTimeout)):
+    if(CV_PersonDetectionTimestamp <= (time.time()-personTimeout)):
         timeout = True
 
     unknownUserTag = Config().Get("Application.Brain", "UnknownUserTag")
@@ -102,11 +110,11 @@ def ProcessPerson(cameraName, id, bestResult, bestResultPerson, thresholdReached
     if(User().GetCVTag() is not bestResultTag):
         print "set user", bestResultTag
         User().SetUserByCVTag(bestResultTag)
-        clockPerson = time.time()
+        CV_PersonDetectionTimestamp = time.time()
 
 
 def ProcessBody(cameraName, id, xPos, yPos):
-    global faceappPub
+    global GLOBAL_FaceappPub
 
     # TODO - remove
     print id, xPos, yPos # center, left right, top bottom
@@ -119,7 +127,7 @@ def ProcessBody(cameraName, id, xPos, yPos):
 
     lookAtData = "FACEMASTER|{0}".format(lookAt)
     rospy.loginfo(lookAtData)
-    faceappPub.publish(lookAtData)
+    GLOBAL_FaceappPub.publish(lookAtData)
 
 
 def ProcessMood(cameraName, id, mood):
@@ -130,6 +138,13 @@ def ProcessGender(cameraName, id, gender):
     print id, gender
     # TODO
 
+def ProcessDarkness(cameraName):
+    global CV_DarknessTimestamp
+
+    if(cameraName == "IR"):
+        return
+    CV_DarknessTimestamp = time.time()
+
 
 ##### STT #####
 
@@ -137,10 +152,10 @@ def ProcessSpeech(data):
     if(not Config().GetBoolean("Application.Brain", "Listen")):
         return
 
-    cancelSpeech = False
+    STT_CancelSpeech = False
     stopwordList = Config().GetList("Bot", "StoppwordList")
     if(data in stopwordList):
-        cancelSpeech = True
+        STT_CancelSpeech = True
 
     pipelineArgs = PipelineArgs(data)
 
@@ -150,7 +165,7 @@ def ProcessSpeech(data):
 
     pipelineArgs = ProcessResponse().Process(pipelineArgs)
 
-    if cancelSpeech:
+    if STT_CancelSpeech:
         print "speech canceled"
         return
 
