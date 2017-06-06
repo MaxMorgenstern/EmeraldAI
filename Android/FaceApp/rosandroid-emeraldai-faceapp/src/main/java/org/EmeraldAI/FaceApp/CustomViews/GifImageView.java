@@ -80,33 +80,32 @@ public class GifImageView extends View {
 
         long now = SystemClock.uptimeMillis();
 
-        if (mStart == 0 ) {
+        if (mStart == 0) {
             mStart = now;
-            mScale = Math.min((float)getWidth() / mMovie.width(), (float)getHeight() / mMovie.height());
-            mTranslateWidth = ((float)getWidth() / mScale - (float)mMovie.width())/2f;
-            mTranslateHeight = ((float)getHeight() / mScale - (float)mMovie.height())/2f;
+            mScale = Math.min((float) getWidth() / mMovie.width(), (float) getHeight() / mMovie.height());
+            mTranslateWidth = ((float) getWidth() / mScale - (float) mMovie.width()) / 2f;
+            mTranslateHeight = ((float) getHeight() / mScale - (float) mMovie.height()) / 2f;
         }
 
         int relTime = 0;
         // loop with delay
-        if(mLoop && mDelay > 0) {
+        if (mLoop && mDelay > 0) {
             relTime = (int) ((now - mStart));
-            if(relTime >= (mDelay+mDuration)) {
+            if (relTime >= (mDelay + mDuration)) {
                 mStart = now;
             }
-        // loop without delay
-        } else if(mLoop){
+            // loop without delay
+        } else if (mLoop) {
             relTime = (int) ((now - mStart) % mDuration);
-        // play once
+            // play once
         } else {
             relTime = (int) ((now - mStart));
         }
 
         EyeState es = EyeState.getInstance();
-        if(relTime > mDuration && es.AnimationRunning)
-        {
+        if (relTime > mDuration && es.AnimationRunning) {
             es.AnimationRunning = false;
-            if(!es.CurrentAnimation.AnimationName.equals("blink"))
+            if (!es.CurrentAnimation.AnimationName.equals("blink"))
                 es.AnimationEndTimestamp = now;
         }
 
@@ -122,9 +121,11 @@ public class GifImageView extends View {
     public void SetGifImageResource(int id) {
         init(mContext.getResources().openRawResource(id), true, 0);
     }
+
     public void SetGifImageResource(int id, boolean loop) {
         init(mContext.getResources().openRawResource(id), loop, 0);
     }
+
     public void SetGifImageResource(int id, boolean loop, int delay) {
         init(mContext.getResources().openRawResource(id), loop, delay);
     }
@@ -132,9 +133,11 @@ public class GifImageView extends View {
     public void SetGifImageStream(InputStream stream) {
         init(stream, true, 0);
     }
+
     public void SetGifImageStream(InputStream stream, boolean loop) {
         init(stream, loop, 0);
     }
+
     public void SetGifImageStream(InputStream stream, boolean loop, int delay) {
         init(stream, loop, delay);
     }
@@ -146,6 +149,7 @@ public class GifImageView extends View {
             Log.e("GIfImageView", "File not found");
         }
     }
+
     public void SetGifImageUri(Uri uri, boolean loop) {
         try {
             init(mContext.getContentResolver().openInputStream(uri), loop, 0);
@@ -153,6 +157,7 @@ public class GifImageView extends View {
             Log.e("GIfImageView", "File not found");
         }
     }
+
     public void SetGifImageUri(Uri uri, boolean loop, int delay) {
         try {
             init(mContext.getContentResolver().openInputStream(uri), loop, delay);

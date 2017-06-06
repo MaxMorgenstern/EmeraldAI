@@ -14,7 +14,7 @@ NotKnownDataTag = NotKnown
 
 # ----------------------
 [Bot]
-Name = Johnny
+Name = Otto
 Languages = Deutsch
 Gender = Männlich
 BuildDate = 20.10.2016
@@ -22,6 +22,33 @@ Developer = Maximilian Porzelt
 Origin = Alzenau, Deutschland
 
 StoppwordList = Stopp, stop, Beenden, Halt, Anhalten
+
+
+# ----------------------
+[GPIO]
+# Pin 3 / 5 / 7
+#OutputPin0 = 2
+#OutputPin1 = 3
+#OutputPin2 = 4
+
+# Pin 11 / 13 / 15
+#OutputPin3 = 17
+#OutputPin4 = 27
+#OutputPin5 = 22
+
+# Pin 8 / 10 / 12
+#OutputPin6 = 14
+#OutputPin7 = 15
+#OutputPin8 = 18
+
+# Pin 32
+#OutputPin9 = 12
+
+# Pin 35 / 37 / 38 / 40
+#OutputPinSwitchA = 19
+#OutputPinSwitchB = 26
+#OutputPinSwitchC = 20
+#OutputPinSwitchD = 21
 
 
 # ----------------------
@@ -102,6 +129,8 @@ MySQLHost = 127.0.0.1
 CameraWidth = 640
 CameraHeight = 480
 CameraID = 0
+CameraName = STD
+#CameraName = IR
 
 Modules = Person,Mood,Gender
 
@@ -154,5 +183,12 @@ RemoveStopwordOnlySentences = True
 #      APPLICATION
 # ----------------------
 [Application.Brain]
+Mute = False
+Listen = True
+RecognizePeople = True
+RecognizeWithIRCam = True
+RecognizeWithIRCamOnlyOnDarkness = False
+
 PersonToUnknownFactor = 5
 PersonTimeout = 10
+DarknessTimeout = 10

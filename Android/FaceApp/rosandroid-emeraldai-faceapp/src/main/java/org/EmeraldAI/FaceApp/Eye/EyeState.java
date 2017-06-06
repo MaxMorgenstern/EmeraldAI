@@ -31,14 +31,12 @@ public class EyeState {
 
     private Queue<EyeAnimationObject> AnimationQueue;
 
-    public void AddToQueue(String animation, String name, String position, boolean isIntermediateState)
-    {
+    public void AddToQueue(String animation, String name, String position, boolean isIntermediateState) {
         this.AddToQueue(animation, name, position, isIntermediateState, 250);
     }
 
-    public void AddToQueue(String animation, String name, String position, boolean isIntermediateState, int minDelayAfterAnimation)
-    {
-        if(name.equals("blink")
+    public void AddToQueue(String animation, String name, String position, boolean isIntermediateState, int minDelayAfterAnimation) {
+        if (name.equals("blink")
                 && GetQueueSize() > 0
                 && this.LastAnimation != null
                 && this.LastAnimation.AnimationName.equals("blink"))
@@ -56,31 +54,26 @@ public class EyeState {
         this.LastAnimation = animationObject;
     }
 
-    public EyeAnimationObject GetFromQueue()
-    {
+    public EyeAnimationObject GetFromQueue() {
         EyeAnimationObject animationObject = this.AnimationQueue.poll();
         this.CurrentAnimation = animationObject;
 
         return animationObject;
     }
 
-    public EyeAnimationObject PeekAtQueue()
-    {
+    public EyeAnimationObject PeekAtQueue() {
         return this.AnimationQueue.peek();
     }
 
-    public int GetQueueSize()
-    {
+    public int GetQueueSize() {
         return this.AnimationQueue.size();
     }
 
-    public void ClearQueue()
-    {
+    public void ClearQueue() {
         this.AnimationQueue.clear();
     }
 
-    private EyeState()
-    {
+    private EyeState() {
         AnimationRunning = false;
         Loop = false;
         AnimationEndTimestamp = SystemClock.uptimeMillis();
