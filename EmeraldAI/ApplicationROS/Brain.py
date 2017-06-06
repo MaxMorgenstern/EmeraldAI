@@ -73,20 +73,15 @@ def callback(data):
 ##### CV #####
 
 def ProcessPerson(cameraName, id, bestResult, bestResultPerson, thresholdReached, timeoutReached):
-    global CV_PersonDetectionTimestamp
+    global CV_PersonDetectionTimestamp, CV_DarknessTimestamp
 
     if(not Config().GetBoolean("Application.Brain", "RecognizePeople")):
+        return
+    if(CancelCameraProcess(cameraName, CV_DarknessTimestamp)):
         return
 
     personToUnknownFactor = Config().GetInt("Application.Brain", "PersonToUnknownFactor") # 1 : 5
     personTimeout = Config().GetInt("Application.Brain", "PersonTimeout") # 10 seconds
-    darknessTimeout = Config().GetInt("Application.Brain", "DarknessTimeout") # 10 seconds
-
-    if(cameraName == "IR"):
-        if(not Config().GetBoolean("Application.Brain", "RecognizeWithIRCam")):
-            return
-        if(Config().GetBoolean("Application.Brain", "RecognizeWithIRCamOnlyOnDarkness") and CV_DarknessTimestamp <= (time.time() - darknessTimeout)):
-            return
 
     bestResultTag = None
     if (len(bestResult) > 2):
@@ -113,11 +108,25 @@ def ProcessPerson(cameraName, id, bestResult, bestResultPerson, thresholdReached
         CV_PersonDetectionTimestamp = time.time()
 
 
-def ProcessBody(cameraName, id, xPos, yPos):
-    global GLOBAL_FaceappPub
+def CancelCameraProcess(cameraName, darknessTimestamp):
+    if(cameraName == "IR"):
+        darknessTimeout = Config().GetInt("Application.Brain", "DarknessTimeout") # 10 seconds
+        if(not Config().GetBoolean("Application.Brain", "RecognizeWithIRCam")):
+            return True
+        if(Config().GetBoolean("Application.Brain", "RecognizeWithIRCamOnlyOnDarkness") and darknessTimestamp <= (time.time() - darknessTimeout)):
+            return True
+    return False
 
-    # TODO - remove
+
+def ProcessBody(cameraName, id, xPos, yPos):
+    global GLOBAL_FaceappPub, CV_DarknessTimestamp
+
+    # TODO - remove print
     print id, xPos, yPos # center, left right, top bottom
+
+    if(cameraName == "IR"):
+        if(CV_DarknessTimestamp <= (time.time() - darknessTimeout)):
+            return
 
     lookAt = "center"
     if(yPos != "center"):
@@ -140,7 +149,6 @@ def ProcessGender(cameraName, id, gender):
 
 def ProcessDarkness(cameraName):
     global CV_DarknessTimestamp
-
     if(cameraName == "IR"):
         return
     CV_DarknessTimestamp = time.time()
@@ -184,9 +192,10 @@ def ProcessSpeech(data):
 ##### FACEAPP #####
 
 def ProcessFaceApp(state):
+    # TODO remove print
     print state
-    # TODO - tablet turned off / on - trigger action
     # state == ON / OFF
+    ProcessSpeech("TRIGGER_FACEAPP_{0}".format(state))
 
 
 ##### FACEAPP #####
