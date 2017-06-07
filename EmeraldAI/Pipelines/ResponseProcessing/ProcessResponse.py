@@ -33,6 +33,7 @@ class ProcessResponse(object):
             PipelineArgs.ResponseRaw = sentence.GetSentenceString(user.Formal)
             PipelineArgs.Response = PipelineArgs.ResponseRaw
             PipelineArgs.ResponseID = sentence.ID
+            PipelineArgs.Animation = sentence.GetAnimation()
             PipelineArgs.ResponseFound = True
             PipelineArgs.BasewordTrimmedInput = NLP.TrimBasewords(PipelineArgs)
             PipelineArgs.FullyTrimmedInput = NLP.TrimStopwords(PipelineArgs.BasewordTrimmedInput, PipelineArgs.Language)
