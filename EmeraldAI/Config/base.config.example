@@ -130,7 +130,8 @@ CameraWidth = 640
 CameraHeight = 480
 CameraID = 0
 CameraName = STD
-#CameraName = IR
+#CameraName = IR -- infrared
+#CameraName = SUR -- surveillance
 
 Modules = Person,Mood,Gender
 
