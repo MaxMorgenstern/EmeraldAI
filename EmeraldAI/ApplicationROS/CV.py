@@ -39,7 +39,7 @@ def RunCV(camID, camName):
     if(camID  < 0):
         camID = Config().GetInt("ComputerVision", "CameraID")
     if(camName == "STD"):
-        camName = Config().GetInt("ComputerVision", "CameraName")
+        camName = Config().Get("ComputerVision", "CameraName")
 
     camera = cv2.VideoCapture(camID)
     camera.set(3, Config().GetInt("ComputerVision", "CameraWidth"))
