@@ -19,6 +19,15 @@ print "Start setup..."
 cp = ConfigParser.ConfigParser()
 
 # Create log config file if it does not exist
+print "Check Database"
+dbFile = os.path.join(Global.EmeraldPath, "Data", "SqliteDB", "brain.sqlite")
+if not os.path.exists(dbFile):
+    emptyDB = os.path.join(Global.EmeraldPath, "Data", "SqliteDB", "brain.sqlite.example")
+    print "Create database"
+    copyfile(emptyDB, dbFile)
+
+
+# Create log config file if it does not exist
 print "Check logging.config"
 logConfigFile = os.path.join(Global.EmeraldPath, "Config", "logging.config")
 if not os.path.exists(logConfigFile):
