@@ -11,6 +11,7 @@ import speech_recognition as sr
 from shutil import copyfile
 import ConfigParser
 import cv2
+import time
 
 from EmeraldAI.Logic.Modules import Global
 
@@ -48,9 +49,9 @@ else:
     if(inputData.lower() == "y"):
         updateConfig = True
 
-# TODO - which system are we on Brain? CV? TTS?
+# TODO - which system are we on Brain? CV? TTS? - setup for specific system
 
-if(False):
+if(updateConfig):
     cp.read(configFile)
 
     # Speech To Text
@@ -70,46 +71,77 @@ if(False):
         print "No microphone detected"
 
 
-# ComputerVision
+    # ComputerVision
+    # Set CameraID
+    print "Please set your camera"
+    print "y: Set camera"
+    print "n: Next camera"
+    print "q: quit process"
+    dump = raw_input("Press enter to confirm")
 
-# Set CameraID
-camID = 100
-camera = cv2.VideoCapture(camID)
+    camID = 0
+    updateCam = True
 
-while True:
-    # TODO timeout
-    if (camera.isOpened() != 0):
-        print "ok"
-        ret, image = camera.read()
+    timestamp = time.time()
+    runCamDetection = True
+    selectedID = 0
+    while runCamDetection:
+        if(updateCam):
+            camera = cv2.VideoCapture(camID)
+            updateCam = False
 
-        cv2.imshow("Camera {0}".format(camID), image)
+        if (camera.isOpened() != 0):
+            ret, image = camera.read()
 
-        if cv2.waitKey(1) & 0xFF == ord('y'):
-            print "Cam set"
-        if cv2.waitKey(1) & 0xFF == ord('n'):
-            print "Next camera"
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            print "Cancel camera selection"
+            cv2.imshow("Camera {0}".format(camID), image)
+
+            if cv2.waitKey(1) & 0xFF == ord('y'):
+                print "Cam set", camID
+                selectedID = camID
+                runCamDetection = False
+
+            if cv2.waitKey(1) & 0xFF == ord('n'):
+                print "Next camera"
+                camID += 1
+                updateCam = True
+
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                print "Cancel camera selection"
+                camID = 0
+                runCamDetection = False
+
+        else:
+            if(timestamp + 20 < time.time()):
+                print "Camera detection Timeout"
+                runCamDetection = False
+    print "Set camera #{0} as primary.".format(camID)
+    cp.set("ComputerVision", "CameraID", camID)
+
+
+    # Set Performance
+    print "Set the processing power."
+    print "'Precise' detection will be slower but more accurate. (Best for computer with more processing power)"
+    print "'Fast' detection will be faster but less accurate. (Best for small computer)"
+
+    print "Do you want to set 'Precise' processing?"
+    inputData = raw_input("Y/N: ")
+    if(inputData.lower() == "y"):
+        imageSize = 350
+        detectonSetting = "precise"
     else:
-        print "..."
+        imageSize = 100
+        detectonSetting = "fast"
+
+    cp.set("ComputerVision", "ImageSizeWidth", imageSize)
+    cp.set("ComputerVision", "ImageSizeHeight", imageSize)
+    cp.set("ComputerVision", "DetectionSettings", detectonSetting)
 
 
-
-#with open(configFile, 'wb') as filePointer:
-#    cp.write(filePointer)
-
+with open(configFile, 'wb') as filePointer:
+    cp.write(filePointer)
 
 
-"""
-cp.read(configFile)
-cp.set("Bot", "Name", "Helga")
-with open(configFile, 'wb') as cfpointer:
-    cp.write(cfpointer)
-"""
-# Bot
-
-
-
-
-
+print "Setup complete"
+print "Please open the config file to update API Keys and additional settings"
+print "Path: ", configFile
 
