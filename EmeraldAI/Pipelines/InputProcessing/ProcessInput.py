@@ -26,14 +26,22 @@ class ProcessInput(object):
 
     def Process(self, PipelineArgs):
         FileLogger().Info("ProcessInput, Process(): {0}".format(PipelineArgs.Input))
+
+        wordList = []
+        parameterList = []
+
+        # TODO - test
+        if(PipelineArgs.Input.startswith("TRIGGER_")):
+            wordList.append(PipelineArgs.Input)
+            PipelineArgs.WordList = wordList
+            FileLogger().Info("ProcessInput, Process(), TRIGGER Wordlist: {0}".format(PipelineArgs.WordList))
+            return PipelineArgs
+
         PipelineArgs.Language = NLP.DetectLanguage(PipelineArgs.Input)
         PipelineArgs.Normalized = NLP.Normalize(PipelineArgs.Input, PipelineArgs.Language)
 
         wordSegments = NLP.WordSegmentation(PipelineArgs.Input)
         cleanWordSegments = NLP.RemoveStopwords(wordSegments, PipelineArgs.Language)
-
-        wordList = []
-        parameterList = []
 
         for word in wordSegments:
             self.__processWorker(word, PipelineArgs.Language, wordList, parameterList, cleanWordSegments)

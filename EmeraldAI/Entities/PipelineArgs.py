@@ -29,6 +29,8 @@ class PipelineArgs(BaseObject):
         self.ResponseFound = False
         self.ResponseAudio = None
 
+        self.Animation = None
+
         self.TrainConversation = True
 
         # TODO

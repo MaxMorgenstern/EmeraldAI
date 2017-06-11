@@ -139,6 +139,20 @@ def ProcessBody(cameraName, id, xPos, yPos):
     GLOBAL_FaceappPub.publish(lookAtData)
 
 
+def ProcessAnimation(animation):
+    global GLOBAL_FaceappPub
+
+    # TODO - remove print
+    print animation
+
+    if(animation == None):
+        return
+
+    animationData = "FACEMASTER|{0}".format(animation)
+    rospy.loginfo(animationData)
+    GLOBAL_FaceappPub.publish(animationData)
+
+
 def ProcessMood(cameraName, id, mood):
     print id, mood
     # TODO
@@ -178,6 +192,9 @@ def ProcessSpeech(data):
         return
 
     if(not Config().GetBoolean("Application.Brain", "Mute")):
+        if(pipelineArgs.Animation != None):
+            ProcessAnimation(pipelineArgs.Animation)
+
         pipelineArgs = TTS().Process(pipelineArgs)
 
     trainerResult = Trainer().Process(pipelineArgs)

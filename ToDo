@@ -1,9 +1,5 @@
 Just a messy list with things to do
 
-Android:
-check display - if turned off --> TTS "Hey, I can't see anymore."
-
-
 - !!! Initial Conversation on User detection !!!
 - check is an observer pattern should be used or if we can trigger by watching ROS nodes
 
@@ -52,7 +48,11 @@ LUIS: https://blogs.msdn.microsoft.com/benjaminperkins/2016/11/21/most-common-ch
 tts: http://docs.kitt.ai/snowboy/
 tts api: https://forum.sinusbot.com/threads/text-to-speech-apis-for-sinusbot.500/
 
+Add mood to CSV / DB and trigger mood animation in brain
 
+Process surveillance cam data
+
+script: search for master server -> auto connect
 
 ---
 

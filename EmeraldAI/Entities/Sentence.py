@@ -41,6 +41,13 @@ class Sentence(BaseObject):
     def AddPriority(self, Rating):
         self.Rating += Rating
 
+    def GetAnimation(self):
+        query = "SELECT Animation FROM Conversation_Sentence WHERE ID = '{0}'"
+        sqlResult = db().Fetchall(query.format(self.ID))
+        for r in sqlResult:
+            return r[0]
+        return None
+
     def GetSentenceString(self, formal=True):
         query = "SELECT Sentence, Formal, Informal FROM Conversation_Sentence WHERE ID = '{0}'"
         sqlResult = db().Fetchall(query.format(self.ID))
