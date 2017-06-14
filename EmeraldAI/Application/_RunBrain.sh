@@ -1,16 +1,11 @@
 #!/bin/bash
+source _Initialize.sh master
 
-#echo "Activating ROS..."
-#source /opt/ros/indigo/setup.bash
-#echo "...done."
+echo "Activating ROS..."
+roscore&
 
+sleep 10
+echo "roscore has been started"
 
-#Brain shell script
-
-#.... execute Brain.py
-
-
-#same for CV and STT
-
-
-#https://github.com/duckietown/Software
+echo "Run Brain..."
+python Brain.py

@@ -5,12 +5,17 @@ then
 else
     export EMERALD_IP=`ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1 -d'/'`
 fi
-echo using IP=\'$EMERALD_IP\'
+echo "My IP='$EMERALD_IP'"
 export ROS_HOSTNAME=$EMERALD_IP
 export ROS_IP=$EMERALD_IP
 
 if [ "$1" != "master" ]
 then
-	# TODO
-	export ROS_MASTER_URI=http://1.2.3.4:11311
+    echo "Search Master Server..."
+    # TODO
+    export ROS_MASTER_URI=http://1.2.3.4:11311
 fi
+
+
+
+#nmap -n -sn $EMERALD_IP/24 | grep ‘Nmap scan report for’ | awk '{print $5}'
