@@ -108,6 +108,8 @@ def ProcessPerson(cameraName, id, bestResult, bestResultPerson, thresholdReached
         CV_PersonDetectionTimestamp = time.time()
 
 
+# TODO - surveilence camera + in CV.py
+
 def CancelCameraProcess(cameraName, darknessTimestamp):
     if(cameraName == "IR"):
         darknessTimeout = Config().GetInt("Application.Brain", "DarknessTimeout") # 10 seconds

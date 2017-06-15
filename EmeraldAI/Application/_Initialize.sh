@@ -9,13 +9,11 @@ echo "My IP='$EMERALD_IP'"
 export ROS_HOSTNAME=$EMERALD_IP
 export ROS_IP=$EMERALD_IP
 
+# set mater uri on slave machines
 if [ "$1" != "master" ]
 then
     echo "Search Master Server..."
     # TODO
+    # nmap -n -sn $EMERALD_IP/24 | grep ‘Nmap scan report for’ | awk '{print $5}'
     export ROS_MASTER_URI=http://1.2.3.4:11311
 fi
-
-
-
-#nmap -n -sn $EMERALD_IP/24 | grep ‘Nmap scan report for’ | awk '{print $5}'
