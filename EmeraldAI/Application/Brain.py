@@ -44,21 +44,11 @@ def callback(data):
     dataParts = data.data.split("|")
     print "Just got", dataParts
 
+    if dataParts[0] == "CVSURV":
+        ProcessSurveilenceData(dataParts)
+
     if dataParts[0] == "CV":
-        if dataParts[1] == "PERSON":
-            ProcessPerson(dataParts[2], dataParts[3], dataParts[4], dataParts[5], (dataParts[6]=="True"), (dataParts[7]=="True"))
-
-        if dataParts[1] == "BODY":
-            ProcessBody(dataParts[2], dataParts[3], dataParts[4], dataParts[5])
-
-        if dataParts[1] == "MOOD":
-            ProcessMood(dataParts[2], dataParts[3], dataParts[4])
-
-        if dataParts[1] == "GENDER":
-            ProcessGender(dataParts[2], dataParts[3], dataParts[4])
-
-        if dataParts[1] == "DARKNESS":
-            ProcessDarkness(dataParts[2])
+        ProcessCVData(dataParts)
 
     if dataParts[0] == "STT":
         ProcessSpeech(dataParts[1])
@@ -71,13 +61,29 @@ def callback(data):
 
 
 ##### CV #####
+def ProcessCVData(dataParts):
+    if dataParts[1] == "PERSON":
+        ProcessPerson(dataParts[2], dataParts[3], dataParts[4], dataParts[5], (dataParts[6]=="True"), (dataParts[7]=="True"))
+
+    if dataParts[1] == "BODY":
+        ProcessBody(dataParts[2], dataParts[3], dataParts[4], dataParts[5])
+
+    if dataParts[1] == "MOOD":
+        ProcessMood(dataParts[2], dataParts[3], dataParts[4])
+
+    if dataParts[1] == "GENDER":
+        ProcessGender(dataParts[2], dataParts[3], dataParts[4])
+
+    if dataParts[1] == "DARKNESS":
+        ProcessDarkness(dataParts[2])
+
 
 def ProcessPerson(cameraName, id, bestResult, bestResultPerson, thresholdReached, timeoutReached):
     global CV_PersonDetectionTimestamp, CV_DarknessTimestamp
 
     if(not Config().GetBoolean("Application.Brain", "RecognizePeople")):
         return
-    if(CancelCameraProcess(cameraName, CV_DarknessTimestamp)):
+    if(__cancelCameraProcess(cameraName, CV_DarknessTimestamp)):
         return
 
     personToUnknownFactor = Config().GetInt("Application.Brain", "PersonToUnknownFactor") # 1 : 5
@@ -108,9 +114,7 @@ def ProcessPerson(cameraName, id, bestResult, bestResultPerson, thresholdReached
         CV_PersonDetectionTimestamp = time.time()
 
 
-# TODO - surveilence camera + in CV.py
-
-def CancelCameraProcess(cameraName, darknessTimestamp):
+def __cancelCameraProcess(cameraName, darknessTimestamp):
     if(cameraName == "IR"):
         darknessTimeout = Config().GetInt("Application.Brain", "DarknessTimeout") # 10 seconds
         if(not Config().GetBoolean("Application.Brain", "RecognizeWithIRCam")):
@@ -121,10 +125,7 @@ def CancelCameraProcess(cameraName, darknessTimestamp):
 
 
 def ProcessBody(cameraName, id, xPos, yPos):
-    global GLOBAL_FaceappPub, CV_DarknessTimestamp
-
-    # TODO - remove print
-    print id, xPos, yPos # center, left right, top bottom
+    global CV_DarknessTimestamp
 
     if(cameraName == "IR"):
         if(CV_DarknessTimestamp <= (time.time() - darknessTimeout)):
@@ -136,16 +137,11 @@ def ProcessBody(cameraName, id, xPos, yPos):
     if(xPos != "center"):
         lookAt = xPos
 
-    lookAtData = "FACEMASTER|{0}".format(lookAt)
-    rospy.loginfo(lookAtData)
-    GLOBAL_FaceappPub.publish(lookAtData)
+    ProcessAnimation(lookAt)
 
 
 def ProcessAnimation(animation):
     global GLOBAL_FaceappPub
-
-    # TODO - remove print
-    print animation
 
     if(animation == None):
         return
@@ -168,6 +164,11 @@ def ProcessDarkness(cameraName):
     if(cameraName == "IR"):
         return
     CV_DarknessTimestamp = time.time()
+
+
+##### CV Surveilence #####
+def ProcessSurveilenceData(dataParts):
+    print "TODO"
 
 
 ##### STT #####
