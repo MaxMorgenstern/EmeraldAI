@@ -31,6 +31,9 @@ def DetectLanguage(input):
 
 
 def WordSegmentation(input, extended=False):
+    if input.startswith("TRIGGER_"):
+        return [input]
+
     if not extended:
         segmentationRegex = re.compile(
             "[A-Z]{2,}(?![a-z])|[A-Z][a-z]+(?=[A-Z])|[\'\wÄÖÜäöüß\-]+", flags=re.UNICODE)

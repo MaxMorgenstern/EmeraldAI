@@ -79,7 +79,7 @@ class DialogTrainer(object):
         return keywordList
 
     def SaveSentence(self, Sentence, Language, UserName, Approved = 0):
-        query = "INSERT INTO Conversation_Sentence ('Sentence', 'Language', 'Source', 'Approved') Values ('{0}', '{1}', '{2}', '{3}')".format(Sentence, Language, UserName, 0)
+        query = "INSERT INTO Conversation_Sentence ('Sentence', 'Language', 'Source', 'Approved') Values ('{0}', '{1}', '{2}', '{3}')".format(Sentence, Language, UserName, Approved)
         sentenceID = db().Execute(query)
         if(sentenceID == None):
             query = "SELECT ID FROM Conversation_Sentence WHERE Sentence = '{0}'".format(Sentence)
@@ -190,12 +190,12 @@ class DialogTrainer(object):
 
                 splitLine = line.split(";")
                 if(len(splitLine) == self.__csvColCount):
-                    qa = splitLine[0]
-                    req = splitLine[1]
-                    sent = splitLine[2]
-                    hasC = splitLine[3]
-                    setC = splitLine[4]
-                    act = splitLine[5]
+                    qa = splitLine[0]   # Question or Answer
+                    req = splitLine[1]  # Requirement
+                    sent = splitLine[2] # Sentence (Informat)
+                    hasC = splitLine[3] # Has Category
+                    setC = splitLine[4] # Set Category
+                    act = splitLine[5]  # Action
 
                     # Question
                     if(qa == "Q"):
