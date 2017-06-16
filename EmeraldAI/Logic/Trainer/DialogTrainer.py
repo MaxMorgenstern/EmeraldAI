@@ -181,7 +181,7 @@ class DialogTrainer(object):
         for key, group in itertools.groupby(data, self.__groupSeparator):
             line = ''.join(str(e) for e in group)
             line = line.strip()
-            if (len(line) > 1):
+            if (len(line) > 2):
 
                 # on empty line reset
                 if(line == ";;;;;"):
