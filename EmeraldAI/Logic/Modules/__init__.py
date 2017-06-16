@@ -1,1 +1,1 @@
-__all__ = ["Action", "Global", "Hashing" ,"Helper", "Levenshtein", "PackageManager", "Pid"]
+__all__ = ["Action", "Excel", "Global", "Hashing" ,"Helper", "Levenshtein", "PackageManager", "Pid"]

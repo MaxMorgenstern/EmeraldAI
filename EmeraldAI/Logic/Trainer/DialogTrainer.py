@@ -99,7 +99,7 @@ class DialogTrainer(object):
     def TrainSentence(self, OutputSentence, ResponseSentence, Language, UserName):
         # Train Keywords of both sentences
         outputKeywords = self.SaveKeywordsFromSentence(OutputSentence, Language)
-        responseKeywords = self.SaveKeywordsFromSentence(ResponseSentence, Language)
+        self.SaveKeywordsFromSentence(ResponseSentence, Language)
 
         # save sentence
         sentenceID = self.SaveSentence(ResponseSentence, Language, UserName)
