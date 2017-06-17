@@ -15,7 +15,7 @@ import time
 
 from EmeraldAI.Logic.Modules import Global
 
-print "Start setup..."
+print "Start config setup..."
 cp = ConfigParser.ConfigParser()
 
 # Create log config file if it does not exist
@@ -150,7 +150,14 @@ with open(configFile, 'wb') as filePointer:
     cp.write(filePointer)
 
 
-print "Setup complete"
+print "Config setup complete"
 print "Please open the config file to update API Keys and additional settings"
 print "Path: ", configFile
 
+
+print "Do you want to populate the database"
+inputData = raw_input("Y/N: ")
+if(inputData.lower() == "y"):
+    os.system("Setup_Conversation.py")
+
+print "Setup complete"

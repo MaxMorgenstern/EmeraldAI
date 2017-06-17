@@ -52,11 +52,15 @@ LUIS: https://blogs.msdn.microsoft.com/benjaminperkins/2016/11/21/most-common-ch
 tts: http://docs.kitt.ai/snowboy/
 tts api: https://forum.sinusbot.com/threads/text-to-speech-apis-for-sinusbot.500/
 
-Add mood to CSV / DB and trigger mood animation in brain
-
 Process surveillance cam data
 
 script: search for master server -> auto connect
+
+
+Add mood to CSV / DB and trigger mood animation in brain
+
+Train Conversation actions
+
 
 ---
 

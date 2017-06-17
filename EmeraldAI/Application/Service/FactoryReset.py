@@ -27,3 +27,5 @@ DELETE FROM Conversation_Sentence_Requirement;
 
 # clear images
 # clear logfiles
+
+# reset config
