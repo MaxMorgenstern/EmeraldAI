@@ -199,6 +199,7 @@ rostopic pub /to_brain --once std_msgs/String "CV|BODY|0|1|center|center"
 rostopic pub /to_faceapp --once std_msgs/String "MASTER|blink"
 
 
-Set in bashrec:
-export ROS_HOSTNAME=192.168.192.27
-export ROS_IP=192.168.192.27
+Animation:
+center, left, right, top, bottom
+blink, bad, doubt, sad, shock
+
