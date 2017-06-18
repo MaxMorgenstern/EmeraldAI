@@ -78,8 +78,8 @@ class DialogTrainer(object):
                 keywordList.append(keywordID)
         return keywordList
 
-    def SaveSentence(self, Sentence, Language, UserName, Approved = 0):
-        query = "INSERT INTO Conversation_Sentence ('Sentence', 'Language', 'Source', 'Approved') Values ('{0}', '{1}', '{2}', '{3}')".format(Sentence, Language, UserName, Approved)
+    def SaveSentence(self, Sentence, Language, UserName, Animation = None, Approved = 0):
+        query = "INSERT INTO Conversation_Sentence ('Sentence', 'Language', 'Source', 'Approved', 'Animation') Values ('{0}', '{1}', '{2}', '{3}', '{4}')".format(Sentence, Language, UserName, Approved, Animation)
         sentenceID = db().Execute(query)
         if(sentenceID == None):
             query = "SELECT ID FROM Conversation_Sentence WHERE Sentence = '{0}'".format(Sentence)
@@ -110,12 +110,12 @@ class DialogTrainer(object):
         FileLogger().Info("DialogTrainer: User sentence trained: {0}".format(ResponseSentence))
 
 
-    def TrainFullSentence(self, Sentence, Language, KeywordList, RequirementObjectList, HasCategoryList, SetCategoryList, ActionName):
+    def TrainFullSentence(self, Sentence, Language, KeywordList, RequirementObjectList, HasCategoryList, SetCategoryList, ActionName, Animation):
         # Train Keywords of sentence
         self.SaveKeywordsFromSentence(Sentence, Language)
 
         # save sentence
-        sentenceID = self.SaveSentence(Sentence, Language, "Trainer", "1")
+        sentenceID = self.SaveSentence(Sentence, Language, "Trainer", Animation, "1")
 
         # link keywords to sentence
         self.LinkKeywordAndSentence(KeywordList, Language, sentenceID)
@@ -196,6 +196,7 @@ class DialogTrainer(object):
                     hasC = splitLine[3] # Has Category
                     setC = splitLine[4] # Set Category
                     act = splitLine[5]  # Action
+                    anim = splitLine[6]  # Animation
 
                     # Question
                     if(qa == "Q"):
@@ -225,5 +226,5 @@ class DialogTrainer(object):
                         for s in setC.split("|"):
                             setCategoryList.append(s)
 
-                        self.TrainFullSentence(sent, language, qlist, requirementObjectList, hasCategoryList, setCategoryList, act)
+                        self.TrainFullSentence(sent, language, qlist, requirementObjectList, hasCategoryList, setCategoryList, act, anim)
 

@@ -79,7 +79,7 @@ AliceAsFallback = True
 # ----------------------
 [Trainer]
 Enabled = True
-CsvColumnCount = 6
+CsvColumnCount = 7
 CsvActionColumnCount = 4
 
 
