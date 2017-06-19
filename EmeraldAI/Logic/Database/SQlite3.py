@@ -41,6 +41,9 @@ class SQlite3(object):
     def Fetchall(self, sql, args=None):
         return self.FetchallDB(self.__Database, sql, args)
 
+    def FetchallCacheBreaker(self, sql, args=None):
+        return self.FetchallDB(self.__Database, sql, args)
+
     def FetchallDB(self, db, sql, args=None):
         try:
             cur = db.cursor()

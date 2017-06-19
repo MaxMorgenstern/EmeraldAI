@@ -235,6 +235,7 @@ Deployment/Update.py
 Deployment/versionfile.txt
 
 EmeraldAI/Data/SqliteDB/brain.sqlite
+EmeraldAI/Data/TrainingData/Training.csv
 
 testing/emotion/dataset/*
 EmeraldAI/Data/ComputerVisionData/Temp/*
@@ -255,4 +256,3 @@ Android/FaceApp/rosandroid-emeraldai-faceapp/src/main/assets/*.gif
 !Android/FaceApp/rosandroid-emeraldai-faceapp/src/main/assets/center_blink_full.gif
 
 .DS_Store
-

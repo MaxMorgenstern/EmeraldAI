@@ -4,6 +4,7 @@ import Database
 import GPIO
 import KnowledgeGathering
 import LocationProcessing
+import Memory
 import Modules
 import NLP
 import SpeechProcessing

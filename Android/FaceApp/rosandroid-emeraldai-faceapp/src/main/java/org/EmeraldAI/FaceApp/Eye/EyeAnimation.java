@@ -87,11 +87,11 @@ public class EyeAnimation {
         String state = "start";
 
         if (eao != null) {
+            state = (eao.IntermediateAnimation) ? "end" : "start";
             if (eao.IntermediateAnimation && !eao.AnimationName.equals(animation)) {
                 this.PlayAnimation(eao.AnimationName);
+                state = "start";
             }
-
-            state = (eao.IntermediateAnimation) ? "end" : "start";
             position = eao.Position;
         }
 

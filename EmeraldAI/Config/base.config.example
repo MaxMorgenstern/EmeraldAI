@@ -79,7 +79,7 @@ AliceAsFallback = True
 # ----------------------
 [Trainer]
 Enabled = True
-CsvColumnCount = 6
+CsvColumnCount = 7
 CsvActionColumnCount = 4
 
 
@@ -129,9 +129,10 @@ MySQLHost = 127.0.0.1
 CameraWidth = 640
 CameraHeight = 480
 CameraID = 0
-CameraName = STD
-#CameraName = IR -- infrared
-#CameraName = SUR -- surveillance
+CameraType = STD
+#CameraType = IR -- infrared
+
+SurveillanceMode = False
 
 Modules = Person,Mood,Gender
 
@@ -162,11 +163,6 @@ OWMAPIKey =
 #       ACTIONS
 # ----------------------
 [Action.Wikipedia]
-Name = Wikipedia
-Module = EmeraldAI.Logic.Actions.WikipediaAction
-Class = WikipediaAction
-Function = ProcessArticle
-
 MinCharBeforeTrim = 200
 MaxCharToNewLine = 300
 

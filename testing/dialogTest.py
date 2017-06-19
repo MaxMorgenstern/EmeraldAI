@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 import sys
 import os
-import itertools
 import time
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 reload(sys)
@@ -95,9 +94,17 @@ Q;;Was war *;;Question;
 A;;{result};Question;;Wikipedia
 """
 
+data = """Q;;TRIGGER_FACEAPP_ON;;TRIGGER;
+A;;Danke, dass Sie mein Display wieder eingeschatet haben.;TRIGGER;;
+A;;Danke! Sehr nett von Ihnen.;TRIGGER;;
+;;;;;
+Q;;TRIGGER_FACEAPP_OFF;;TRIGGER;
+A;User:Unknown;Hey, wer hat das List aus gemacht?;TRIGGER;;
+A;;{name} warum haben Sie mein Display deaktiviert?;TRIGGER;;
+A;;Das ist aber nicht nett {name}. Machen Sie bitte mein Display wieder an.;TRIGGER;;"""
+
 dt.TrainCSV(data, language)
 print("--- %s seconds ---" % (time.time() - start_time))
-
 
 # Resolving #############
 
@@ -143,6 +150,7 @@ def doWorkDyn(inputString):
 
     # THIS SHOULD BE DONE BY THE PIPELINE BEFORE - NOT SPECIFIC TO RESPLVING THE COMMAND
     pa = ProcessInput().ProcessAsync(pa)
+
     #print("processInput() done --- %s seconds ---" % (time.time() - start_time))
 
     dialogResult = AnalyzeScope().Process(pa)
@@ -175,6 +183,10 @@ param.ParameterDictionary["Result"] = "ein kleiner Troll"
 
 
 doWork("Query Warmup")
+
+doWorkDyn("TRIGGER_FACEAPP_ON")
+
+exit()
 
 start_time = time.time()
 doWork("Guten Abend Peter")
