@@ -13,8 +13,8 @@ class Base(object):
         if(parentID == None):
             parentID = self.ParentID
 
-        query = """SELECT Value FROM Memory WHERE ParentID = '{0}' AND Key = '{1}'"""
-        sqlResult = db().Fetchall(query.format(parentID, key))
+        query = """SELECT Value FROM Memory WHERE ParentID = '{0}' AND lower(Key) = '{1}'"""
+        sqlResult = db().FetchallCacheBreaker(query.format(parentID, key.lower()))
         for r in sqlResult:
             return r[0]
 
@@ -38,8 +38,8 @@ class Base(object):
         if(parentID == None):
             parentID = self.ParentID
 
-        query = """SELECT ID FROM Memory WHERE ParentID = '{0}' AND Key = '{1}'"""
-        sqlResult = db().Fetchall(query.format(parentID, key))
+        query = """SELECT ID FROM Memory WHERE ParentID = '{0}' AND lower(Key) = '{1}'"""
+        sqlResult = db().FetchallCacheBreaker(query.format(parentID, key.lower()))
 
         storedId = -1
         for r in sqlResult:

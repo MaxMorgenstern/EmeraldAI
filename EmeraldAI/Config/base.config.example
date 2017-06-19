@@ -163,11 +163,6 @@ OWMAPIKey =
 #       ACTIONS
 # ----------------------
 [Action.Wikipedia]
-Name = Wikipedia
-Module = EmeraldAI.Logic.Actions.WikipediaAction
-Class = WikipediaAction
-Function = ProcessArticle
-
 MinCharBeforeTrim = 200
 MaxCharToNewLine = 300
 

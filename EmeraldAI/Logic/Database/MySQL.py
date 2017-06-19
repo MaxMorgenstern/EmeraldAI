@@ -34,6 +34,9 @@ class MySQL(object):
     def Fetchall(self, sql, index=None):
         return self.FetchallDB(self.__Database, sql, index)
 
+    def FetchallCacheBreaker(self, sql, index=None):
+        return self.FetchallDB(self.__Database, sql, index)
+
     def FetchallDB(self, db, sql, index=None):
         result = []
         for row in execute(db, sql).fetchall():
