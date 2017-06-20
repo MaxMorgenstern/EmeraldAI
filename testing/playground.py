@@ -8,6 +8,27 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
+import re
+
+text = """INSERT INTO Conversation_Keyword ('Keyword', 'Normalized', 'Language', 'Stopword') Values ('echt', 'echt', 'de', '0')
+INSERT INTO Conversation_Keyword ('Keyword', 'Normalized', 'Language', 'Stopword') Values ('Man', 'man', 'de', '0')
+INSERT INTO Conversation_Keyword ('Keyword', 'Normalized', 'Language', 'Stopword') Values ('kann', 'kann', 'de', '1')
+INSERT INTO Conversation_Keyword ('Keyword', 'Normalized', 'Language', 'Stopword') Values ('meine', 'meine', 'de', '1')
+INSERT INTO Conversation_Keyword ('Keyword', 'Normalized', 'Language', 'Stopword') Values ('Hardware', 'hardware', 'de', '0')
+INSERT INTO Conversation_Keyword ('Keyword', 'Normalized', 'Language', 'Stopword') Values ('anfassen', 'anfassen', 'de', '0')
+INSERT INTO Conversation_Keyword ('Keyword', 'Normalized', 'Language', 'Stopword') Values ('also', 'also', 'de', '1')
+INSERT INTO Conversation_Keyword ('Keyword', 'Normalized', 'Language', 'Stopword') Values ('würde', 'wuerde', 'de', '1')
+INSERT INTO Conversation_Keyword ('Keyword', 'Normalized', 'Language', 'Stopword') Values ('ich', 'ich', 'de', '1')
+INSERT INTO Conversation_Keyword ('Keyword', 'Normalized', 'Language', 'Stopword') Values (''Ja'', ''ja'', 'de', '0')
+"""
+
+
+
+
+print re.sub("''([A-Za-z]*)''", r"'\1'", text)
+
+
+exit()
 
 
 from EmeraldAI.Entities.Bot import Bot
@@ -32,7 +53,7 @@ while True:
     if(len(locationInput) < 2):
         break
 
-    positionID = db().Execute("INSERT INTO Fingerprint_Position ('Name') Values ('{0}');".format(locationInput))
+    positionID = db().Execute("INSERT INTO Fingerprint_Position ('Name') Values ('{0}')".format(locationInput))
 
     locationLoop = 0
     while locationLoop < 5:
@@ -43,10 +64,10 @@ while True:
         wifilist = plistlib.readPlistFromString(out)
         for wifi in wifilist:
 
-            query = "INSERT INTO Fingerprint_WiFi ('BSSID', 'SSID', 'RSSI', 'Noise', 'Indicator') Values ('{0}','{1}','{2}','{3}','{4}');".format(wifi["BSSID"], wifi["SSID_STR"], wifi["RSSI"], wifi["NOISE"], (wifi["RSSI"] - wifi["NOISE"]))
+            query = "INSERT INTO Fingerprint_WiFi ('BSSID', 'SSID', 'RSSI', 'Noise', 'Indicator') Values ('{0}','{1}','{2}','{3}','{4}')".format(wifi["BSSID"], wifi["SSID_STR"], wifi["RSSI"], wifi["NOISE"], (wifi["RSSI"] - wifi["NOISE"]))
             wifientry = db().Execute(query)
 
-            query = "INSERT INTO Fingerprint_Position_WiFi ('PositionID', 'WiFiID') VALUES ('{0}','{1}');".format(positionID, wifientry)
+            query = "INSERT INTO Fingerprint_Position_WiFi ('PositionID', 'WiFiID') VALUES ('{0}','{1}')".format(positionID, wifientry)
             db().Execute(query)
 
         time.sleep( 5 )

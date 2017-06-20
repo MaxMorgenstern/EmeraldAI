@@ -129,7 +129,7 @@ class WiFiFingerprinting(object):
 
 
     def CreateLocation(self, name):
-        return db().Execute("INSERT INTO Fingerprint_Position ('Name') Values ('{0}');".format(name))
+        return db().Execute("INSERT INTO Fingerprint_Position ('Name') Values ('{0}')".format(name))
 
 
     def GetLocationID(self, name):
@@ -178,7 +178,7 @@ class WiFiFingerprinting(object):
         query = "INSERT INTO Fingerprint_WiFi ('BSSID', 'SSID', 'RSSI', 'Noise', 'Indicator') Values ('{0}','{1}','{2}','{3}','{4}');".format(wifi.BSSID, wifi.SSID, wifi.RSSI, wifi.Noise, wifi.Indicator)
         wifientry = db().Execute(query)
 
-        query = "INSERT INTO Fingerprint_Position_WiFi ('PositionID', 'WiFiID') VALUES ('{0}','{1}');".format(location, wifientry)
+        query = "INSERT INTO Fingerprint_Position_WiFi ('PositionID', 'WiFiID') VALUES ('{0}','{1}')".format(location, wifientry)
         db().Execute(query)
 
 
