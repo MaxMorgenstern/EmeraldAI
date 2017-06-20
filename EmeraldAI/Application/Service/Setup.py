@@ -22,7 +22,7 @@ cp = ConfigParser.ConfigParser()
 print "Check Database"
 dbFile = os.path.join(Global.EmeraldPath, "Data", "SqliteDB", "brain.sqlite")
 if not os.path.exists(dbFile):
-    emptyDB = os.path.join(Global.EmeraldPath, "Data", "SqliteDB", "brain.sqlite.example")
+    emptyDB = os.path.join(Global.EmeraldPath, "Data", "SqliteDB", "brain.sqlite.empty")
     print "Create database"
     copyfile(emptyDB, dbFile)
 
@@ -158,6 +158,6 @@ print "Path: ", configFile
 print "Do you want to populate the database"
 inputData = raw_input("Y/N: ")
 if(inputData.lower() == "y"):
-    os.system("Setup_Conversation.py")
+    os.system(os.path.join(Global.EmeraldPath, "Application", "Service", "Setup_Conversation.py"))
 
 print "Setup complete"
