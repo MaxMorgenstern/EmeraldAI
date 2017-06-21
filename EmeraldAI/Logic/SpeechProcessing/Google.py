@@ -77,7 +77,7 @@ class Google(object):
                 FileLogger().Warn("Google Line 75: Google Speech Recognition could not understand audio: {0}".format(e))
             except sr.RequestError as e:
                 FileLogger().Warn("Google Line 77: Could not request results from Google Speech Recognition service: {0}".format(e))
-            except Error as e:
+            except Exception as e:
                 FileLogger().Warn("Google Line 81: Error on executing Google Speech Recognition service: {0}".format(e))
 
             return data
