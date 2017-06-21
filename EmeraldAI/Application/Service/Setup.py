@@ -94,6 +94,7 @@ if(updateConfig):
     timestamp = time.time()
     runCamDetection = True
     selectedID = 0
+    print "Searching for camera... (we stop this process if we can't find any within 20 seconds)"
     while runCamDetection:
         if(updateCam):
             camera = cv2.VideoCapture(camID)
