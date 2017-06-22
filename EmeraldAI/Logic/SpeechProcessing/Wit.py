@@ -1,11 +1,13 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import speech_recognition as sr
+from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Config.Config import *
 from EmeraldAI.Logic.Logger import *
 
 
 class Wit(object):
+    __metaclass__ = Singleton
 
     __apiKey = None
 

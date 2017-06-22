@@ -124,6 +124,7 @@ if(updateConfig):
             if(timestamp + 20 < time.time()):
                 print "Camera detection Timeout"
                 runCamDetection = False
+    cv2.destroyAllWindows()
     print "Set camera #{0} as primary.".format(camID)
     cp.set("ComputerVision", "CameraID", camID)
 
