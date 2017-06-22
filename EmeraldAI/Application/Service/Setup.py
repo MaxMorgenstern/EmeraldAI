@@ -131,16 +131,20 @@ if(updateConfig):
 
     # Set Performance
     print "Set the processing power."
-    print "'Precise' detection will be slower but more accurate. (Best for computer with more processing power)"
-    print "'Fast' detection will be faster but less accurate. (Best for small computer)"
+    print "P) 'Precise' detection will be slower but more accurate. (Best for computer with more processing power)"
+    print "M) 'Medium' detection will be an avarage of both."
+    print "F) 'Fast' detection will be faster but less accurate. (Best for small computer)"
 
-    print "Do you want to set 'Precise' processing?"
-    inputData = raw_input("Y/N: ")
-    if(inputData.lower() == "y"):
+    print "Please select:"
+    inputData = raw_input("P/M/F: ")
+    if(inputData.lower() == "p"):
         imageSize = 350
         detectonSetting = "precise"
-    else:
+    elif(inputData.lower() == "m"):
         imageSize = 100
+        detectonSetting = "medium"
+    else:
+        imageSize = 50
         detectonSetting = "fast"
 
     cp.set("ComputerVision", "ImageSizeWidth", imageSize)
