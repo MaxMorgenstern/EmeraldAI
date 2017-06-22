@@ -381,8 +381,7 @@ class ComputerVision(object):
                         else:
                             predictionObject.AddPrediction(key, data['value'], int(data['distance']))
 
-        for predictionObject in predictionObjectList:
-            if predictionObject.ThresholdReached(threshold):
-                reachedThreshold = True
+                    if predictionObject.ThresholdReached(threshold):
+                        reachedThreshold = True
 
         return predictionObjectList, reachedThreshold, reachedTimeout, rawFaceData
