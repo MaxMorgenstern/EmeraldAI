@@ -184,7 +184,7 @@ class DialogTrainer(object):
             if (len(line) > 2):
 
                 # on empty line reset
-                if(line == ";;;;;"):
+                if(line == (";" * (self.__csvColCount - 1))):
                     qlist = []
                     continue
 
