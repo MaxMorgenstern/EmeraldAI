@@ -19,6 +19,8 @@ from EmeraldAI.Logic.ComputerVision.ModelMonitor import ModelMonitor
 from EmeraldAI.Logic.Modules import Pid
 
 
+BodyDetectionTimestamp = time.time()
+
 def EnsureModelUpdate():
     monitor = ModelMonitor()
     predictionModules = Config().GetList("ComputerVision", "Modules")
@@ -55,6 +57,8 @@ def RunCV(camID, camType, surveillanceMode):
     cropBodyImage = Config().GetBoolean("ComputerVision", "CropBodyImage")
     intervalBetweenImages = Config().GetInt("ComputerVision", "IntervalBetweenImages")
 
+    bodyDetectionInterval = Config().GetInt("ComputerVision", "BodyDetectionInterval")
+
     cv = ComputerVision()
 
     predictionObjectList = []
@@ -68,7 +72,6 @@ def RunCV(camID, camType, surveillanceMode):
         predictionObjectList.append(PredictionObject(moduleName, model, dictionary))
 
     clockFace = time.time()
-    clockBody = time.time()
 
     while not camera.isOpened():
         print "Waiting for camera"
@@ -97,35 +100,45 @@ def RunCV(camID, camType, surveillanceMode):
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
-        rawBodyData = cv.DetectBody(image)
-        if (len(rawBodyData) > 0):
-            bodyID = 1
+        bodyDetectionTimeout = False
+        if(BodyDetectionTimestamp <= (time.time()-bodyDetectionInterval)):
+            bodyDetectionTimeout = True
 
-            for (x, y, w, h) in rawBodyData:
-                centerX = (x + w/2)
-                centerY = (y + h/2)
+        if(surveillanceMode or bodyDetectionTimeout):
+            rawBodyData = cv.DetectBody(image)
+            if (len(rawBodyData) > 0):
+                bodyID = 1
+                bodyDetectionTimeout = False
 
-                if (centerX < imageWidth/3):
-                    posX = "left"
-                if (centerX > imageWidth/3*2):
-                    posX = "right"
-                else:
-                    posX = "center"
+                for (x, y, w, h) in rawBodyData:
+                    centerX = (x + w/2)
+                    centerY = (y + h/2)
 
-                if (centerY < imageHeight/5):
-                    posY = "top"
-                if (centerY > imageHeight/5*4):
-                    posY = "bottom"
-                else:
-                    posY = "center"
+                    if (centerX < imageWidth/3):
+                        posX = "left"
+                    elif (centerX > imageWidth/3*2):
+                        posX = "right"
+                    else:
+                        posX = "center"
 
-                bodyData = "{0}|BODY|{1}|{2}|{3}|{4}".format(cvInstanceType, camType, bodyID, posX, posY)
-                #print bodyData
-                rospy.loginfo(bodyData)
-                pub.publish(bodyData)
+                    if (centerY < imageHeight/5):
+                        posY = "top"
+                    elif (centerY > imageHeight/5*4):
+                        posY = "bottom"
+                    else:
+                        posY = "center"
 
-                bodyID += 1
+                    bodyData = "{0}|BODY|{1}|{2}|{3}|{4}".format(cvInstanceType, camType, bodyID, posX, posY)
+                    #print bodyData
+                    rospy.loginfo(bodyData)
+                    pub.publish(bodyData)
 
+                    bodyID += 1
+
+                cv.TakeImage(image, "Body", (rawBodyData if cropBodyImage else None))
+
+
+        if(surveillanceMode or not bodyDetectionTimeout):
             predictionResult, thresholdReached, timeoutReached, rawFaceData = cv.PredictStream(image, predictionObjectList, threshold=7500)
 
             takeImage = True
@@ -157,11 +170,6 @@ def RunCV(camID, camType, surveillanceMode):
 
             if(takeImage and clockFace <= (time.time()-intervalBetweenImages) and cv.TakeImage(image, "Person", rawFaceData, grayscale=True)):
                 clockFace = time.time()
-
-            passedBodyData = rawBodyData if cropBodyImage else None
-            if(clockBody <= (time.time()-intervalBetweenImages) and cv.TakeImage(image, "Body", passedBodyData)):
-                clockBody = time.time()
-
 
 
 if __name__ == "__main__":

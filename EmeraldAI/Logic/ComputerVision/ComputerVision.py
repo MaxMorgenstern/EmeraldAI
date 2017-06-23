@@ -25,13 +25,16 @@ class ComputerVision(object):
         self.__ModelFile = "myCVModel{0}.mdl"
         self.__DictionaryFile = "myCVDict{0}.npy"
 
-        # TODO: we might want to adjust this percise==350px / medium==100px / fast==50px
         if(Config().Get("ComputerVision", "DetectionSettings") == "precise"):
             self.__DetectionSettings = DetectionSettings(1.2, 4, (80, 80))
             self.__FaceDetectionSettings = DetectionSettings(1.1, 4, (45, 45))
             self.__FastDetection = False
+        elif(Config().Get("ComputerVision", "DetectionSettings") == "medium"):
+            self.__DetectionSettings = DetectionSettings(1.3, 4, (120, 120))
+            self.__FaceDetectionSettings = DetectionSettings(1.2, 4, (55, 55))
+            self.__FastDetection = True
         else:
-            self.__DetectionSettings = DetectionSettings(1.3, 4, (150, 150))
+            self.__DetectionSettings = DetectionSettings(1.4, 4, (150, 150))
             self.__FaceDetectionSettings = DetectionSettings(1.3, 4, (60, 60))
             self.__FastDetection = True
 
