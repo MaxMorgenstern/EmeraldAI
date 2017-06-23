@@ -248,6 +248,11 @@ EmeraldAI/Data/ComputerVisionData/Person/*
 !EmeraldAI/Data/ComputerVisionData/Person/100x100NotKnown1/*
 !EmeraldAI/Data/ComputerVisionData/Person/100x100NotKnown2/*
 !EmeraldAI/Data/ComputerVisionData/Person/100x100NotKnown3/*
+!EmeraldAI/Data/ComputerVisionData/Person/100x100NotKnown4/*
+!EmeraldAI/Data/ComputerVisionData/Person/50x50NotKnown1/*
+!EmeraldAI/Data/ComputerVisionData/Person/50x50NotKnown2/*
+!EmeraldAI/Data/ComputerVisionData/Person/50x50NotKnown3/*
+!EmeraldAI/Data/ComputerVisionData/Person/50x50NotKnown4/*
 
 Android/FaceApp/.gradle
 
