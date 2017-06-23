@@ -186,6 +186,7 @@ if __name__ == "__main__":
                 surveillanceMode = True
 
     if(Pid.HasPid("CV{0}".format(camID))):
+        print "Process is already runnung. Bye!"
         sys.exit()
     Pid.Create("CV{0}".format(camID))
 

@@ -31,6 +31,7 @@ def RunTTS():
 
 if __name__ == "__main__":
     if(Pid.HasPid("STT")):
+        print "Process is already runnung. Bye!"
         sys.exit()
     Pid.Create("STT")
 

@@ -45,6 +45,7 @@ def pingCallback(data):
 
 if __name__ == "__main__":
     if(Pid.HasPid("PingTest")):
+        print "Process is already runnung. Bye!"
         sys.exit()
     Pid.Create("PingTest")
 
