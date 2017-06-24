@@ -42,9 +42,14 @@ class Math(object):
         term = re.sub("(\d+)[\s.]+(\d+)", r"\1\2", term)
         # replace comma with dot
         term = term.replace(",", ".")
+
         # make sure we onky leave mathematical data
         result = self.__FindWords.findall(term)
         strippedTerm = " ".join(result)
+
+        # again replace whitespace and dots in between numbers
+        strippedTerm = re.sub("(\d+)[\s.]+(\d+)", r"\1\2", strippedTerm)
+
         #replace words with mathematical symbols
         result = self.__FindPattern.sub(lambda x: self.__replaceWordDictionary[x.group()], strippedTerm)
         return result
