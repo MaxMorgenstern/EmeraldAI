@@ -47,19 +47,17 @@ export ROS_MASTER_URI=http://url:11311
 READ!!!
 LUIS: https://blogs.msdn.microsoft.com/benjaminperkins/2016/11/21/most-common-chatbot-questions-and-how-to-answer-them/
 
-- microphone and camera selector - for config
 
 tts: http://docs.kitt.ai/snowboy/
 tts api: https://forum.sinusbot.com/threads/text-to-speech-apis-for-sinusbot.500/
 
 Process surveillance cam data
 
-script: search for master server -> auto connect
 
-
-Add mood to CSV / DB and trigger mood animation in brain
 
 Train Conversation actions
+
+Add 'und' to Math detection - at least try and convert it to +
 
 
 ---
