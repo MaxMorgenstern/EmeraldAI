@@ -34,7 +34,7 @@ class Math(object):
         values= ''
         for v in list(set(self.__replaceWordDictionary.values())):
             values += re.escape(v) + "|"
-        self.__FindWords = re.compile(values + r'[0-9]+|' + keys, flags=re.IGNORECASE)
+        self.__FindWords = re.compile(values + r'[0-9]+|\b(?:' + keys + r')\b', flags=re.IGNORECASE)
 
 
     def CleanTerm(self, term):

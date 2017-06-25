@@ -206,9 +206,9 @@ print ""
 
 start_time = time.time()
 doWorkDyn("Guten Abend Otto")
-doWorkDyn("Guten abend, Wer war Freddy Mercury")
+#   doWorkDyn("Guten abend, Wer war Freddy Mercury")
 doWorkDyn("Was ist drei plus sieben?")
-doWorkDyn("Was ist dreiundzwanzig plus sieben?")    # TODO !!!!!
+doWorkDyn("Was ist dreiundzwanzig plus sieben?")
 doWorkDyn("Was ist 23 plus 12?")
 doWorkDyn("Wer ist Barack Obama")
 doWorkDyn("Was ist Tschernobyl")
