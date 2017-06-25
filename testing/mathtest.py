@@ -19,16 +19,25 @@ loop = True
 #print m.Calculate("100 000 + 25")
 #print m.Calculate("10,5 / 25")
 
+def checkme(data):
+	print "data", data
+	print "Is Equation", m.IsEquation(data)
+	print "Clean Term", m.CleanTerm(data)
+	print "Calculate", m.Calculate(data)
+	print " - - - - - - - "
 
-print m.IsEquation("Wieviel ist drei plus sieben")
-print m.IsEquation("Wieviel ist 3 plus 7")	# T
-print m.IsEquation("Wieviel ist drei und sieben")
-print m.IsEquation("Wer sind die Rolling Stones")
-print m.IsEquation("Was ist 30")
-print m.IsEquation("Was ist 3 + 10")	# T
-print m.IsEquation("Ich male gerne")
-print m.IsEquation("Jetzt pluster dich nicht so auf")
-print m.IsEquation("64 geteilt durch 8") # T
+
+
+checkme("Wieviel ist drei plus sieben") # ---
+checkme("Wieviel ist 3 plus 7")	# T
+checkme("Wieviel ist drei und sieben") # ---
+checkme("Wieviel ist dreiundzwanzig plus sieben") # ---
+checkme("Wer sind die Rolling Stones")
+checkme("Was ist 30")
+checkme("Was ist 3 + 10")	# T
+checkme("Ich male gerne")
+checkme("Jetzt pluster dich nicht so auf")
+checkme("64 geteilt durch 8") # T
 
 print "-----"
 exit(1)

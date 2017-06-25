@@ -26,7 +26,7 @@ class Thesaurus(object):
             AND (term2.word = '{lowerword}' OR term2.normalized_word = '{lowerword}')
             AND category_link.synset_id = synset.id
             AND category_link.category_id = category.id
-            ORDER BY term.word;"""
+            ORDER BY term.word"""
         return self.__executeQuery(query, word)
 
     @cached(cache={})
@@ -37,7 +37,7 @@ class Thesaurus(object):
             AND synset.id = term.synset_id
             AND term2.synset_id = synset.id
             AND (term2.word = '{lowerword}' OR term2.normalized_word = '{lowerword}')
-            ORDER BY term.word;"""
+            ORDER BY term.word"""
         return self.__executeQuery(query, word)
 
     @cached(cache={})
@@ -48,7 +48,7 @@ class Thesaurus(object):
             AND synset.id = term.synset_id
             AND (term.word = '{lowerword}' OR term.normalized_word = '{lowerword}')
             AND category_link.synset_id = synset.id
-            AND category_link.category_id = category.id;"""
+            AND category_link.category_id = category.id"""
         return self.__executeQuery(query, word)
 
     @cached(cache={})
@@ -59,5 +59,5 @@ class Thesaurus(object):
             AND (
               (term.id = term_link.term_id AND term_link.target_term_id = term2.id)
               OR (term.id = term_link.target_term_id AND term_link.term_id = term2.id)
-            );"""
+            )"""
         return self.__executeQuery(query, word)

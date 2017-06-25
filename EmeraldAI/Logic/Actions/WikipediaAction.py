@@ -27,7 +27,7 @@ class WikipediaAction(object):
             return {'Input':inputString, 'Result':None, 'ResultType':'Error'}
 
         dotIndex = result.find('.', self.__minCharBeforeTrim)
-        newLineIndex = result.find('n\\', self.__minCharBeforeTrim)
+        newLineIndex = result.find('\n', self.__minCharBeforeTrim)
 
         if(newLineIndex > 0 and newLineIndex <= self.__maxCharToNewLine):
             trimmedResult = result[:newLineIndex+1]

@@ -1,1 +1,1 @@
-__all__ = ["WikipediaAction"]
+__all__ = ["MathAction", "WikipediaAction"]

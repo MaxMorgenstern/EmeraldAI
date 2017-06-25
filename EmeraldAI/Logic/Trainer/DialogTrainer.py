@@ -184,7 +184,7 @@ class DialogTrainer(object):
             if (len(line) > 2):
 
                 # on empty line reset
-                if(line == ";;;;;"):
+                if(line == (";" * (self.__csvColCount - 1))):
                     qlist = []
                     continue
 
@@ -192,7 +192,7 @@ class DialogTrainer(object):
                 if(len(splitLine) == self.__csvColCount):
                     qa = splitLine[0]   # Question or Answer
                     req = splitLine[1]  # Requirement
-                    sent = splitLine[2] # Sentence (Informat)
+                    sent = splitLine[2].replace("'", "") # Sentence (Informat)
                     hasC = splitLine[3] # Has Category
                     setC = splitLine[4] # Set Category
                     act = splitLine[5]  # Action

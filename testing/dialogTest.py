@@ -103,7 +103,7 @@ A;User:Unknown;Hey, wer hat das List aus gemacht?;TRIGGER;;
 A;;{name} warum haben Sie mein Display deaktiviert?;TRIGGER;;
 A;;Das ist aber nicht nett {name}. Machen Sie bitte mein Display wieder an.;TRIGGER;;"""
 
-dt.TrainCSV(data, language)
+#dt.TrainCSV(data, language)
 print("--- %s seconds ---" % (time.time() - start_time))
 
 # Resolving #############
@@ -150,17 +150,21 @@ def doWorkDyn(inputString):
 
     # THIS SHOULD BE DONE BY THE PIPELINE BEFORE - NOT SPECIFIC TO RESPLVING THE COMMAND
     pa = ProcessInput().ProcessAsync(pa)
+    #print "Wordlist", pa.WordList
+    #print "ParameterList", pa.ParameterList
 
     #print("processInput() done --- %s seconds ---" % (time.time() - start_time))
 
     dialogResult = AnalyzeScope().Process(pa)
     #print("AnalyzeScope() done --- %s seconds ---" % (time.time() - start_time))
 
-    #print dialogResult.SentenceList
+    #print "Sentence List after Scope Analyze", dialogResult.SentenceList
     #print ""
 
     #if dialogResult.SentenceList != None and len(dialogResult.SentenceList) > 0:
         #print random.choice(dialogResult.GetSentencesWithHighestValue())
+
+    #print dialogResult.toJSON()
 
     result = ProcessResponse().Process(dialogResult)
     print inputString, "  -  ", result.Response
@@ -181,49 +185,56 @@ param.ParameterDictionary["User"] = "Max"
 param.ParameterDictionary["Input"] = "Hugo"
 param.ParameterDictionary["Result"] = "ein kleiner Troll"
 
+print "Start..."
 
-doWork("Query Warmup")
+doWorkDyn("Warmup")
+print ""
+print ""
+print ""
 
-doWorkDyn("TRIGGER_FACEAPP_ON")
+#doWorkDyn("TRIGGER_FACEAPP_ON")
 
-exit()
 
-start_time = time.time()
-doWork("Guten Abend Peter")
+#start_time = time.time()
+#doWork("Guten Abend Peter")
 #doWork("Guten abend, Wer war Freddy Mercury")
 #doWork("Wer war Freddy Mercury")
-doWork("Was ist 23 plus 12?")
-doWork("Hallöchen")
-doWork("Gute Nacht")
-print("END ROW: --- %s seconds ---" % (time.time() - start_time))
+#doWork("Was ist 23 plus 12?")
+#doWork("Hallöchen")
+#doWork("Gute Nacht")
+#print("END ROW: --- %s seconds ---" % (time.time() - start_time))
 
 start_time = time.time()
-doWorkDyn("Guten Abend Peter")
-#doWorkDyn("Guten abend, Wer war Freddy Mercury")
+doWorkDyn("Guten Abend Otto")
+#   doWorkDyn("Guten abend, Wer war Freddy Mercury")
 doWorkDyn("Was ist drei plus sieben?")
+doWorkDyn("Was ist dreiundzwanzig plus sieben?")
 doWorkDyn("Was ist 23 plus 12?")
-doWorkDyn("Hallöchen")
-doWork("Gute Nacht")
+doWorkDyn("Wer ist Barack Obama")
+doWorkDyn("Was ist Tschernobyl")
+doWorkDyn("Bist du ein Mensch?")
+doWorkDyn("Hilfe")
+doWorkDyn("Gute Nacht")
 print("END DYN: --- %s seconds ---" % (time.time() - start_time))
 
-start_time = time.time()
-doWorkDyn("Guten Abend Peter")
+#start_time = time.time()
+#doWorkDyn("Guten Abend Peter")
 #doWorkDyn("Guten abend, Wer war Freddy Mercury")
-doWorkDyn("Was ist drei plus sieben?")
-doWorkDyn("Was ist 23 plus 12?")
-doWorkDyn("Hallöchen")
-doWork("Gute Nacht")
-print("END DYN: --- %s seconds ---" % (time.time() - start_time))
+#doWorkDyn("Was ist drei plus sieben?")
+#doWorkDyn("Was ist 23 plus 12?")
+#doWorkDyn("Hallöchen")
+#doWork("Gute Nacht")
+#print("END DYN: --- %s seconds ---" % (time.time() - start_time))
 
-start_time = time.time()
-doWork("Guten Abend Peter")
+#start_time = time.time()
+#doWork("Guten Abend Peter")
 #doWork("Guten abend, Wer war Freddy Mercury")
-doWork("Was ist drei plus sieben?")
-doWork("Was ist 23 plus 12?")
-doWork("Hallöchen, wie geht es dir")
+#doWork("Was ist drei plus sieben?")
+#doWork("Was ist 23 plus 12?")
+#doWork("Hallöchen, wie geht es dir")
 #doWork("Wer war Freddy Mercury")
-doWork("Gute Nacht")
-print("END ROW: --- %s seconds ---" % (time.time() - start_time))
+#doWork("Gute Nacht")
+#print("END ROW: --- %s seconds ---" % (time.time() - start_time))
 
 
 
