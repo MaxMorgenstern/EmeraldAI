@@ -17,19 +17,20 @@ google = Google()
 
 loop = True
 
-f = open('transcript_{0}.txt'.format(datetime.datetime.now().strftime('%Y%m%d_%H%M%S')),'w')
+#f = open('transcript_{0}.txt'.format(datetime.datetime.now().strftime('%Y%m%d_%H%M%S')),'w')
 
-def printfile(file, quantifyer, text):
-    file.write("{0} {1}\n".format(quantifyer, text))
+#def printfile(file, quantifyer, text):
+#    file.write("{0} {1}\n".format(quantifyer, text))
 
 print "Transcript Bot has been started"
 
 while(loop):
-    data = google.Listen()
+    data = google.ListenAsync()
     if(len(data) > 0):
         print "We got: '{0}'".format(data)
-        printfile(f, datetime.datetime.now(), data)
+        #printfile(f, datetime.datetime.now(), data)
         if(data.lower() == 'ende' or data.lower() == 'beenden'):
             loop = False
 
-f.close()
+
+#f.close()

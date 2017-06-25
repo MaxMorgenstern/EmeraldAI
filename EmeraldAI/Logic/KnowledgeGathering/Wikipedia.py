@@ -31,7 +31,7 @@ class Wikipedia(object):
                 return None
 
             if(trimBrackets):
-                summary = re.sub("[\(\[].*?[\)\]] ", "", summary)
+                summary = re.sub("[\(\[].*?[\)\]][,.;\s]", "", summary)
             return summary
         except Exception as e:
             FileLogger().Error("Wikipedia Line 36: Exception: {0}".format(e))

@@ -4,12 +4,14 @@ import speech_recognition as sr
 import httplib
 import os
 import re
+from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Logic.Modules import Global
 from EmeraldAI.Config.Config import *
 from EmeraldAI.Logic.Logger import *
 
 
 class Microsoft(object):
+    __metaclass__ = Singleton
 
     __language_2letter_cc = 'de'
     __language_4letter_cc = 'de-DE'

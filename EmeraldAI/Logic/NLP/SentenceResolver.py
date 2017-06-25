@@ -112,9 +112,10 @@ class SentenceResolver(object):
             FROM Conversation_Sentence_Requirement, Conversation_Requirement
             WHERE Conversation_Sentence_Requirement.RequirementID = Conversation_Requirement.ID
             AND Conversation_Sentence_Requirement.SentenceID='{0}'
-            GROUP BY Conversation_Sentence_Requirement.SentenceID, Conversation_Sentence_Requirement.RequirementID
+            GROUP BY Conversation_Sentence_Requirement.SentenceID,
+                Conversation_Sentence_Requirement.RequirementID,
+                Conversation_Sentence_Requirement.Comparison
             """
-
         deleteList = []
         for sentenceID, value in sentenceList.iteritems():
             sqlResult = db().Fetchall(query.format(sentenceID))
@@ -122,7 +123,7 @@ class SentenceResolver(object):
                 requirementName = r[2].title()
 
                 if requirementName not in parameterList:
-                    FileLogger().Error("SentenceResolver Line 124: Requirement missing in list: {0}".format(requirementName))
+                    FileLogger().Error("SentenceResolver Line 124: Requirement missing in parameter list: {0}".format(requirementName))
                     deleteList.append(sentenceID)
                     continue
 

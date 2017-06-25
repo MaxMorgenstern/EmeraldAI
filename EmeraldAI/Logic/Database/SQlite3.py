@@ -36,6 +36,9 @@ class SQlite3(object):
         except lite.IntegrityError as e:
             FileLogger().Error("SQlite3 Line 37: IntegrityError: {0}".format(e))
             return None
+        except lite.OperationalError as e:
+            FileLogger().Error("SQlite3 Line 40: OperationError: {0}".format(e))
+            return None
 
     @cached(cache={})
     def Fetchall(self, sql, args=None):
@@ -53,7 +56,7 @@ class SQlite3(object):
                 cur.execute(sql)
             rows = cur.fetchall()
         except Exception as e:
-            FileLogger().Error("SQlite3 Line 53: {0}".format(e))
+            FileLogger().Error("SQlite3 Line 59: {0}".format(e))
             return []
         return rows
 

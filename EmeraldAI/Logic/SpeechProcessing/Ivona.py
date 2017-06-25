@@ -43,11 +43,13 @@ import hmac
 import requests
 requests.packages.urllib3.disable_warnings()
 
+from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Logic.Modules import Global
 from EmeraldAI.Config.Config import *
 
 
 class Ivona(object):
+    __metaclass__ = Singleton
 
     __language_2letter_cc = 'de'
     __language_4letter_cc = 'de-DE'

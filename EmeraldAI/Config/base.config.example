@@ -15,8 +15,8 @@ NotKnownDataTag = NotKnown
 # ----------------------
 [Bot]
 Name = Otto
-Languages = Deutsch
-Gender = Männlich
+Languages = German
+Gender = Male
 BuildDate = 20.10.2016
 Developer = Maximilian Porzelt
 Origin = Alzenau, Deutschland
@@ -136,7 +136,9 @@ SurveillanceMode = False
 
 Modules = Person,Mood,Gender
 
+# 350 or 100 or 50
 DetectionSettings = precise
+#DetectionSettings = medium
 #DetectionSettings = fast
 
 ImageSizeWidth = 350
@@ -144,6 +146,8 @@ ImageSizeHeight = 350
 ImageLimit = 100
 CropBodyImage = True
 IntervalBetweenImages = 1
+BodyDetectionInterval = 5
+#BodyDetectionInterval = 0 -- Always scan for body
 
 
 # ----------------------

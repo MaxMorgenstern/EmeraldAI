@@ -81,7 +81,7 @@ def AnalyzeInput(data, wordlist):
 
 """
 #move
-sql = "SELECT * FROM Dialog_Keyword, Dialog_Trigger WHERE Dialog_Keyword.Normalized_Keyword IN ({wordlist}) AND Dialog_Keyword.ID = Dialog_Trigger.Keyword_ID;"
+sql = "SELECT * FROM Dialog_Keyword, Dialog_Trigger WHERE Dialog_Keyword.Normalized_Keyword IN ({wordlist}) AND Dialog_Keyword.ID = Dialog_Trigger.Keyword_ID"
 finalsql = sql.format(wordlist = ','.join(['?']*len(synonymList)))
 result = SQlite3.Fetchall(litedb, finalsql, synonymList)
 print result

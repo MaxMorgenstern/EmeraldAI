@@ -231,6 +231,7 @@ def ProcessPing(state):
 
 if __name__ == "__main__":
     if(Pid.HasPid("Brain")):
+        print "Process is already runnung. Bye!"
         sys.exit()
     Pid.Create("Brain")
     try:

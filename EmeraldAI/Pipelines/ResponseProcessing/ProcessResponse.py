@@ -57,7 +57,7 @@ class ProcessResponse(object):
                     replaceword = nlpParameterDict[keyword.title()]
                     if replaceword == None or replaceword == "Unknown":
                         replaceword = ""
-                    PipelineArgs.Response = PipelineArgs.Response.replace("{{{0}}}".format(keyword.lower()), replaceword)
+                    PipelineArgs.Response = PipelineArgs.Response.replace("{{{0}}}".format(keyword.lower()), str(replaceword))
                 else:
                     PipelineArgs.Response = PipelineArgs.Response.replace("{{{0}}}".format(keyword.lower()), "")
 

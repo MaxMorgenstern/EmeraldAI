@@ -53,7 +53,7 @@ tts api: https://forum.sinusbot.com/threads/text-to-speech-apis-for-sinusbot.500
 
 Process surveillance cam data
 
-
+SQL: add intrusion protection... check ; check for invalid '
 
 Train Conversation actions
 
@@ -185,6 +185,9 @@ save:
 
 
 
+
+sudo apt-get install portaudio19-dev
+pip install pyaudio -U --user
 
 
 rostopic pub /to_brain --once std_msgs/String "STT|Gute Nacht"
