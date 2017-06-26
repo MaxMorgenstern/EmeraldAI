@@ -18,9 +18,6 @@ from EmeraldAI.Config.Config import *
 from EmeraldAI.Logic.ComputerVision.ModelMonitor import ModelMonitor
 from EmeraldAI.Logic.Modules import Pid
 
-
-BodyDetectionTimestamp = time.time()
-
 def EnsureModelUpdate():
     monitor = ModelMonitor()
     predictionModules = Config().GetList("ComputerVision", "Modules")
@@ -80,6 +77,8 @@ def RunCV(camID, camType, surveillanceMode):
     ret, image = camera.read()
     imageHeight, imageWidth = image.shape[:2]
 
+    BodyDetectionTimestamp = time.time()
+
     while True:
         #rate.sleep()
         ret, image = camera.read()
@@ -109,6 +108,7 @@ def RunCV(camID, camType, surveillanceMode):
             if (len(rawBodyData) > 0):
                 bodyID = 1
                 bodyDetectionTimeout = False
+                BodyDetectionTimestamp = time.time()
 
                 for (x, y, w, h) in rawBodyData:
                     centerX = (x + w/2)

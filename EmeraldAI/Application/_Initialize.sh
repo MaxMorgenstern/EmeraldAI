@@ -14,7 +14,8 @@ export ROS_IP=$EMERALD_IP
 if [ "$1" != "master" ]
 then
     echo "Search Master Server..."
-    export EMERALD_MASTER_IP=`nmap $EMERALD_IP/24 -p 11311 | grep '11311/tcp open' -B3 | grep 'Nmap scan report for'| awk '{print $5}'`
+    #export EMERALD_MASTER_IP=`nmap $EMERALD_IP/24 -sS -p 11311 | grep '11311/tcp open' -B3 | grep 'Nmap scan report for'| awk '{print $5}'`
+	export EMERALD_MASTER_IP=`nmap $EMERALD_IP/24 -p 11311 | grep '11311/tcp open' -B3 | grep 'Nmap scan report for'| awk '{print $5}'`
 
     echo "Set Master Server: 'http://$EMERALD_MASTER_IP:11311'"
     export ROS_MASTER_URI=http://$EMERALD_MASTER_IP:11311
