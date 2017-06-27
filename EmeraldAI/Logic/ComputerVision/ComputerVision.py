@@ -30,11 +30,11 @@ class ComputerVision(object):
             self.__FaceDetectionSettings = DetectionSettings(1.1, 4, (45, 45))
             self.__FastDetection = False
         elif(Config().Get("ComputerVision", "DetectionSettings") == "medium"):
-            self.__DetectionSettings = DetectionSettings(1.3, 4, (120, 120))
+            self.__DetectionSettings = DetectionSettings(1.3, 4, (100, 100))
             self.__FaceDetectionSettings = DetectionSettings(1.2, 4, (55, 55))
             self.__FastDetection = True
         else:
-            self.__DetectionSettings = DetectionSettings(1.4, 4, (150, 150))
+            self.__DetectionSettings = DetectionSettings(1.4, 4, (120, 120))
             self.__FaceDetectionSettings = DetectionSettings(1.3, 4, (60, 60))
             self.__FastDetection = True
 
@@ -91,8 +91,6 @@ class ComputerVision(object):
         try:
             Global.EnsureDirectoryExists(os.path.join(self.__DatasetBasePath, datasetName))
             Global.EnsureDirectoryExists(os.path.join(self.__DatasetBasePath, datasetName, imageType))
-
-            out = cv2.resize(img, (self.__ResizeWidth, self.__ResizeHeight)) #Resize face so all images have same size
 
             cv2.imwrite(os.path.join(self.__DatasetBasePath, datasetName, imageType, fileName), out) #Write image
         except:

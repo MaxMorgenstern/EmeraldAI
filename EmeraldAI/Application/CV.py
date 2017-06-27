@@ -87,7 +87,7 @@ def RunCV(camID, camType, surveillanceMode):
             print "Can't read image"
             continue
 
-        lumaThreshold = 20 # to config
+        lumaThreshold = 50 # TODO to config
         if (cv.GetLuma(image) < lumaThreshold):
             bodyData = "{0}|DARKNESS|{1}".format(cvInstanceType, camType)
             #print bodyData
