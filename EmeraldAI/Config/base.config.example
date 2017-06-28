@@ -93,6 +93,7 @@ Microphone =
 [TextToSpeech]
 AudioPlayer = afplay
 #AudioPlayer = mpg123
+UsePygame = True
 Provider = Ivona
 
 MicrosoftVoiceGender = Female

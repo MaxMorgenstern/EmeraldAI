@@ -21,6 +21,7 @@ from EmeraldAI.Entities.Context import Context
 from EmeraldAI.Entities.PipelineArgs import PipelineArgs
 from EmeraldAI.Logic.Modules import Pid
 from EmeraldAI.Config.Config import *
+from EmeraldAI.Logic.Audio.SoundMixer import *
 
 STT_CancelSpeech = False
 
@@ -181,6 +182,7 @@ def ProcessSpeech(data):
     stopwordList = Config().GetList("Bot", "StoppwordList")
     if(data in stopwordList):
         STT_CancelSpeech = True
+        SoundMixer().Stop()
 
     pipelineArgs = PipelineArgs(data)
 
