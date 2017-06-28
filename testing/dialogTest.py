@@ -194,6 +194,7 @@ doWorkDyn("Warmup")
 print ""
 print ""
 print ""
+time.sleep(3)
 
 #doWorkDyn("TRIGGER_FACEAPP_ON")
 
@@ -208,7 +209,7 @@ print ""
 #print("END ROW: --- %s seconds ---" % (time.time() - start_time))
 
 start_time = time.time()
-#doWorkDyn("Guten Abend Otto")
+doWorkDyn("Guten Abend Otto")
 #   doWorkDyn("Guten abend, Wer war Freddy Mercury")
 #doWorkDyn("Was ist drei plus sieben?")
 #doWorkDyn("Was ist dreiundzwanzig plus sieben?")

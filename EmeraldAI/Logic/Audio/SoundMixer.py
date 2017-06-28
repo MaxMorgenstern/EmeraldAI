@@ -10,6 +10,8 @@ class SoundMixer():
         pygame.mixer.init()
 
     def Play(self, filename):
+        if(self.IsPlaying()):
+            self.Stop()
         pygame.mixer.music.load(filename)
         pygame.mixer.music.play()
 
@@ -25,3 +27,8 @@ class SoundMixer():
     def IsPlaying(self):
         return pygame.mixer.music.get_busy()
 
+    def Mute(self):
+        pygame.mixer.music.set_volume(0)
+
+    def UnMute(self):
+        pygame.mixer.music.set_volume(1)

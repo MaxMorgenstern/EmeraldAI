@@ -12,9 +12,6 @@ Just a messy list with things to do
 
 - test http://cmusphinx.sourceforge.net/
 
-- https://github.com/Uberi/speech_recognition/blob/master/examples/background_listening.py
-- https://github.com/Uberi/speech_recognition/blob/03ec480ad831f9e7b7787858d2511e6e42880811/reference/library-reference.rst
-
 - add formal <-> informal sentence converter
 
 - multi language support without config change
@@ -33,16 +30,6 @@ Just a messy list with things to do
 - tell robot to sleep or be muted
 
 # EN aiml reference https://code.google.com/archive/p/aiml-en-us-foundation-alice/
-
-- Multiple Machine ROS:
-All:
-export ROS_IP=1.2.3.4
-export ROS_HOSTNAME=1.2.3.4
-Clients:
-export ROS_MASTER_URI=http://url:11311
-
-- http://wiki.ros.org/ROS/Tutorials/MultipleMachines
-- https://books.google.de/books?id=wY2RCwAAQBAJ&pg=PA636&lpg=PA636&dq=python+ros+master&source=bl&ots=Z07kALWv3G&sig=uen0LM8FZMvKv_pW_YAVY5h-jj8&hl=de&sa=X&ved=0ahUKEwjn7o7H2q7SAhXlJZoKHRGXDu84FBDoAQgZMAA#v=onepage&q=python%20ros%20master&f=false
 
 READ!!!
 LUIS: https://blogs.msdn.microsoft.com/benjaminperkins/2016/11/21/most-common-chatbot-questions-and-how-to-answer-them/
@@ -204,3 +191,15 @@ Animation:
 center, left, right, top, bottom
 blink, bad, doubt, sad, shock
 
+
+
+
+
+
+- Multiple Machine ROS:
+All:
+export ROS_IP=1.2.3.4
+export ROS_HOSTNAME=1.2.3.4
+Clients:
+export ROS_MASTER_URI=http://url:11311
+- http://wiki.ros.org/ROS/Tutorials/MultipleMachines

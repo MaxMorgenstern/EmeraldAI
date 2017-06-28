@@ -1,16 +1,35 @@
 import unittest
-
+import random
 # https://gist.github.com/mcho421-snippets/4236879
 # https://cgoldberg.github.io/python-unittest-tutorial/
 
 
 class SimplisticTest(unittest.TestCase):
 
+    def setUp(self):
+        self.seq = range(10)
+
     def test(self):
         self.assertTrue(True)
 
     def test2(self):
         self.assertFalse(False)
+
+    def test3(self):
+        random.shuffle(self.seq)
+        self.seq.sort()
+        self.assertEqual(self.seq, range(10))
+
+
+
+class SimplisticTestTwo(unittest.TestCase):
+
+    def test(self):
+        self.assertTrue(True)
+
+    def test2(self):
+        self.assertFalse(False)
+
 
 if __name__ == '__main__':
     unittest.main()
