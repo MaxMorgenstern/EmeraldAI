@@ -56,6 +56,8 @@ def RunCV(camID, camType, surveillanceMode):
 
     bodyDetectionInterval = Config().GetInt("ComputerVision", "BodyDetectionInterval")
 
+    showCameraImage = Config().GetBoolean("ComputerVision", "ShowCameraImage")
+
     cv = ComputerVision()
 
     predictionObjectList = []
@@ -87,17 +89,20 @@ def RunCV(camID, camType, surveillanceMode):
             print "Can't read image"
             continue
 
-        lumaThreshold = 50 # TODO to config
+        if (showCameraImage):
+            cv2.imshow("image", image)
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+
+        lumaThreshold = Config().GetInt("ComputerVision", "DarknessThreshold") #
         if (cv.GetLuma(image) < lumaThreshold):
             bodyData = "{0}|DARKNESS|{1}".format(cvInstanceType, camType)
             #print bodyData
             rospy.loginfo(bodyData)
             pub.publish(bodyData)
+            time.sleep(1)
             continue
 
-        cv2.imshow("image", image)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
 
         bodyDetectionTimeout = False
         if(BodyDetectionTimestamp <= (time.time()-bodyDetectionInterval)):

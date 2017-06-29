@@ -150,6 +150,10 @@ IntervalBetweenImages = 1
 BodyDetectionInterval = 10
 #BodyDetectionInterval = 0 -- Always scan for body
 
+DarknessThreshold = 30
+
+ShowCameraImage = Fase
+
 
 # ----------------------
 [ComputerVision.Prediction]
