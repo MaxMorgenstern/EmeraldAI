@@ -3,6 +3,7 @@ import random
 # https://gist.github.com/mcho421-snippets/4236879
 # https://cgoldberg.github.io/python-unittest-tutorial/
 
+# python _example.py -v
 
 class SimplisticTest(unittest.TestCase):
 

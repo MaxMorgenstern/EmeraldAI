@@ -103,6 +103,7 @@ def RunCV(camID, camType, surveillanceMode):
         if(BodyDetectionTimestamp <= (time.time()-bodyDetectionInterval)):
             bodyDetectionTimeout = True
 
+        # Body Detection
         if(surveillanceMode or bodyDetectionTimeout):
             rawBodyData = cv.DetectBody(image)
             if (len(rawBodyData) > 0):
@@ -138,38 +139,38 @@ def RunCV(camID, camType, surveillanceMode):
                 cv.TakeImage(image, "Body", (rawBodyData if cropBodyImage else None))
 
 
-        if(surveillanceMode or not bodyDetectionTimeout):
-            predictionResult, thresholdReached, timeoutReached, rawFaceData = cv.PredictStream(image, predictionObjectList, threshold=7500)
+        # Face Detection
+        predictionResult, thresholdReached, timeoutReached, rawFaceData = cv.PredictStream(image, predictionObjectList, threshold=7500)
 
-            takeImage = True
-            for predictorObject in predictionResult:
-                if len(predictorObject.PredictionResult) > 0 and (thresholdReached or timeoutReached):
+        takeImage = True
+        for predictorObject in predictionResult:
+            if len(predictorObject.PredictionResult) > 0 and (thresholdReached or timeoutReached):
 
-                     for key, face in predictorObject.PredictionResult.iteritems():
-                        bestResult = predictorObject.GetBestPredictionResult(key, False)
+                 for key, face in predictorObject.PredictionResult.iteritems():
+                    bestResult = predictorObject.GetBestPredictionResult(key, False)
 
-                        if (predictorObject.Name == "Person"):
-                            bestResultPerson = predictorObject.GetBestPredictionResult(key, True)
+                    if (predictorObject.Name == "Person"):
+                        bestResultPerson = predictorObject.GetBestPredictionResult(key, True)
 
-                            if(bestResult[0] != "Unknown"):
-                                takeImage = False
+                        if(bestResult[0] != "Unknown"):
+                            takeImage = False
 
-                            predictionData = "{0}|PERSON|{1}|{2}|{3}|{4}|{5}|{6}".format(cvInstanceType, camType, key, bestResult, bestResultPerson, thresholdReached, timeoutReached)
-
-
-                        if (predictorObject.Name == "Mood"):
-                            predictionData = "{0}|MOOD|{1}|{2}|{3}".format(cvInstanceType, camType, key, bestResult)
+                        predictionData = "{0}|PERSON|{1}|{2}|{3}|{4}|{5}|{6}".format(cvInstanceType, camType, key, bestResult, bestResultPerson, thresholdReached, timeoutReached)
 
 
-                        if (predictorObject.Name == "Gender"):
-                            predictionData = "{0}|GENDER|{1}|{2}|{3}".format(cvInstanceType, camType, key, bestResult)
+                    if (predictorObject.Name == "Mood"):
+                        predictionData = "{0}|MOOD|{1}|{2}|{3}".format(cvInstanceType, camType, key, bestResult)
 
-                        #print predictionData
-                        rospy.loginfo(predictionData)
-                        pub.publish(predictionData)
 
-            if(takeImage and clockFace <= (time.time()-intervalBetweenImages) and cv.TakeImage(image, "Person", rawFaceData, grayscale=True)):
-                clockFace = time.time()
+                    if (predictorObject.Name == "Gender"):
+                        predictionData = "{0}|GENDER|{1}|{2}|{3}".format(cvInstanceType, camType, key, bestResult)
+
+                    #print predictionData
+                    rospy.loginfo(predictionData)
+                    pub.publish(predictionData)
+
+        if(takeImage and clockFace <= (time.time()-intervalBetweenImages) and cv.TakeImage(image, "Person", rawFaceData, grayscale=True)):
+            clockFace = time.time()
 
 
 if __name__ == "__main__":
