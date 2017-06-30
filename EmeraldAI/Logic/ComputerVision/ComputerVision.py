@@ -95,7 +95,7 @@ class ComputerVision(object):
             Global.EnsureDirectoryExists(os.path.join(self.__DatasetBasePath, datasetName))
             Global.EnsureDirectoryExists(os.path.join(self.__DatasetBasePath, datasetName, imageType))
 
-            cv2.imwrite(os.path.join(self.__DatasetBasePath, datasetName, imageType, fileName), out) #Write image
+            cv2.imwrite(os.path.join(self.__DatasetBasePath, datasetName, imageType, fileName), img) #Write image
         except:
            pass #If error, pass file
 

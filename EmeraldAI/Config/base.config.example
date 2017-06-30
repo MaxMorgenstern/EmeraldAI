@@ -152,7 +152,7 @@ BodyDetectionInterval = 10
 
 DarknessThreshold = 30
 
-ShowCameraImage = Fase
+ShowCameraImage = False
 
 
 # ----------------------
