@@ -20,7 +20,6 @@ class ModelMonitor(object):
     def CompareHash(self, datasetName, hashValue):
         path = os.path.join(self.__DatasetBasePath, datasetName)
         folderHash = Hashing.GetDirHash(path)
-
         return (folderHash == hashValue)
 
     def GetStoredHash(self, datasetName):

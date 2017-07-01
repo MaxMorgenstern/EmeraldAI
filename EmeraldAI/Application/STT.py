@@ -12,7 +12,7 @@ from std_msgs.msg import String
 from EmeraldAI.Pipelines.SpeechToText.STT import STT
 from EmeraldAI.Logic.Modules import Pid
 
-def RunTTS():
+def RunSTT():
     pub = rospy.Publisher('to_brain', String, queue_size=10)
     rospy.init_node('STT_node', anonymous=True)
     rate = rospy.Rate(10) # 10hz
@@ -36,7 +36,7 @@ if __name__ == "__main__":
     Pid.Create("STT")
 
     try:
-        RunTTS()
+        RunSTT()
     except KeyboardInterrupt:
         print "End"
     finally:
