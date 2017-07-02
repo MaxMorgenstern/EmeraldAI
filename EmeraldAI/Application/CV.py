@@ -95,8 +95,9 @@ def RunCV(camID, camType, surveillanceMode):
                 break
 
         lumaThreshold = Config().GetInt("ComputerVision", "DarknessThreshold") #
-        if (cv.GetLuma(image) < lumaThreshold):
-            bodyData = "{0}|DARKNESS|{1}".format(cvInstanceType, camType)
+        lumaValue = cv.GetLuma(image)
+        if (lumaValue < lumaThreshold):
+            bodyData = "{0}|DARKNESS|{1}|{2}".format(cvInstanceType, camType, lumaValue)
             #print bodyData
             rospy.loginfo(bodyData)
             pub.publish(bodyData)

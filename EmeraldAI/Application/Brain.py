@@ -80,7 +80,7 @@ def ProcessCVData(dataParts):
         ProcessGender(dataParts[2], dataParts[3], dataParts[4])
 
     if dataParts[1] == "DARKNESS":
-        ProcessDarkness(dataParts[2])
+        ProcessDarkness(dataParts[2], dataParts[3])
 
 
 def ProcessPerson(cameraName, id, bestResult, bestResultPerson, thresholdReached, timeoutReached):
@@ -164,7 +164,8 @@ def ProcessGender(cameraName, id, gender):
     print id, gender
     # TODO
 
-def ProcessDarkness(cameraName):
+def ProcessDarkness(cameraName, value):
+    # TODO - new parameter value added
     global CV_DarknessTimestamp
     if(cameraName == "IR"):
         return
@@ -213,7 +214,7 @@ def ProcessSpeech(data):
     print "Pipeline Args", pipelineArgs.toJSON()
     print "Main User", User().toJSON()
     print "Trainer Result: ", trainerResult
-
+    print "Response", pipelineArgs.Response
 
 ##### FACEAPP #####
 
