@@ -111,6 +111,7 @@ print("--- %s seconds ---" % (time.time() - start_time))
 from EmeraldAI.Pipelines.InputProcessing.ProcessInput import ProcessInput
 from EmeraldAI.Pipelines.ScopeAnalyzer.AnalyzeScope import AnalyzeScope
 from EmeraldAI.Pipelines.ResponseProcessing.ProcessResponse import ProcessResponse
+from EmeraldAI.Pipelines.TextToSpeech.TTS import TTS
 from EmeraldAI.Entities.PipelineArgs import PipelineArgs
 
 
@@ -145,7 +146,7 @@ def doWork(inputString):
 def doWorkDyn(inputString):
 
     #print("processInput() done --- %s seconds ---" % (time.time() - start_time))
-    #print inputString
+    print "We got", inputString
     pa = PipelineArgs(inputString)
 
     # THIS SHOULD BE DONE BY THE PIPELINE BEFORE - NOT SPECIFIC TO RESPLVING THE COMMAND
@@ -170,6 +171,8 @@ def doWorkDyn(inputString):
     print inputString, "  -  ", result.Response
     #print dialogResult.GetRandomSentenceWithHighestValue().GetSentenceString()
 
+    TTS().Process(result)
+
     #print("--- %s seconds ---" % (time.time() - start_time))
 
 """
@@ -191,6 +194,7 @@ doWorkDyn("Warmup")
 print ""
 print ""
 print ""
+time.sleep(3)
 
 #doWorkDyn("TRIGGER_FACEAPP_ON")
 
@@ -207,14 +211,14 @@ print ""
 start_time = time.time()
 doWorkDyn("Guten Abend Otto")
 #   doWorkDyn("Guten abend, Wer war Freddy Mercury")
-doWorkDyn("Was ist drei plus sieben?")
-doWorkDyn("Was ist dreiundzwanzig plus sieben?")
-doWorkDyn("Was ist 23 plus 12?")
-doWorkDyn("Wer ist Barack Obama")
-doWorkDyn("Was ist Tschernobyl")
-doWorkDyn("Bist du ein Mensch?")
-doWorkDyn("Hilfe")
-doWorkDyn("Gute Nacht")
+#doWorkDyn("Was ist drei plus sieben?")
+#doWorkDyn("Was ist dreiundzwanzig plus sieben?")
+#doWorkDyn("Was ist 23 plus 12?")
+#doWorkDyn("Wer ist Barack Obama")
+#doWorkDyn("Was ist Tschernobyl")
+#doWorkDyn("Bist du ein Mensch?")
+#doWorkDyn("Hilfe")
+#doWorkDyn("Gute Nacht")
 print("END DYN: --- %s seconds ---" % (time.time() - start_time))
 
 #start_time = time.time()
@@ -237,5 +241,9 @@ print("END DYN: --- %s seconds ---" % (time.time() - start_time))
 #print("END ROW: --- %s seconds ---" % (time.time() - start_time))
 
 
+from EmeraldAI.Logic.Audio.SoundMixer import *
+
+while SoundMixer().IsPlaying():
+    time.sleep(1)
 
 

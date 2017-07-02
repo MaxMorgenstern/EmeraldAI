@@ -9,9 +9,6 @@ sys.setdefaultencoding('utf-8')
 import cv2
 import time
 
-import rospy
-from std_msgs.msg import String
-
 from EmeraldAI.Entities.PredictionObject import PredictionObject
 from EmeraldAI.Logic.ComputerVision.ComputerVision import ComputerVision
 from EmeraldAI.Config.Config import *
@@ -31,9 +28,6 @@ def EnsureModelUpdate():
 
 
 def RunCV(camID, camType, surveillanceMode):
-    pub = rospy.Publisher('to_brain', String, queue_size=10)
-    rospy.init_node('CV_node', anonymous=True)
-    rospy.Rate(10) # 10hz
 
     if(camID  < 0):
         camID = Config().GetInt("ComputerVision", "CameraID")
@@ -55,8 +49,6 @@ def RunCV(camID, camType, surveillanceMode):
     intervalBetweenImages = Config().GetInt("ComputerVision", "IntervalBetweenImages")
 
     bodyDetectionInterval = Config().GetInt("ComputerVision", "BodyDetectionInterval")
-
-    showCameraImage = Config().GetBoolean("ComputerVision", "ShowCameraImage")
 
     cv = ComputerVision()
 
@@ -89,21 +81,18 @@ def RunCV(camID, camType, surveillanceMode):
             print "Can't read image"
             continue
 
-        if (showCameraImage):
-            cv2.imshow("image", image)
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
+        cv2.imshow("image", image)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
 
-        lumaThreshold = Config().GetInt("ComputerVision", "DarknessThreshold") #
-        lumaValue = cv.GetLuma(image)
-        if (lumaValue < lumaThreshold):
-            bodyData = "{0}|DARKNESS|{1}|{2}".format(cvInstanceType, camType, lumaValue)
-            #print bodyData
-            rospy.loginfo(bodyData)
-            pub.publish(bodyData)
+        lumaThreshold = Config().GetInt("ComputerVision", "DarknessThreshold") # 30
+        lumaVal = cv.GetLuma(image)
+        print lumaVal
+        if (lumaVal < lumaThreshold):
+            bodyData = "{0}|DARKNESS|{1}".format(cvInstanceType, camType)
+            print bodyData
             time.sleep(1)
             continue
-
 
         bodyDetectionTimeout = False
         if(BodyDetectionTimestamp <= (time.time()-bodyDetectionInterval)):
@@ -136,14 +125,11 @@ def RunCV(camID, camType, surveillanceMode):
                         posY = "center"
 
                     bodyData = "{0}|BODY|{1}|{2}|{3}|{4}".format(cvInstanceType, camType, bodyID, posX, posY)
-                    #print bodyData
-                    rospy.loginfo(bodyData)
-                    pub.publish(bodyData)
+                    print bodyData
 
                     bodyID += 1
 
                 cv.TakeImage(image, "Body", (rawBodyData if cropBodyImage else None))
-
 
         # Face Detection
         predictionResult, thresholdReached, timeoutReached, rawFaceData = cv.PredictStream(image, predictionObjectList, threshold=7500)
@@ -171,9 +157,7 @@ def RunCV(camID, camType, surveillanceMode):
                     if (predictorObject.Name == "Gender"):
                         predictionData = "{0}|GENDER|{1}|{2}|{3}".format(cvInstanceType, camType, key, bestResult)
 
-                    #print predictionData
-                    rospy.loginfo(predictionData)
-                    pub.publish(predictionData)
+                    print predictionData
 
         if(takeImage and clockFace <= (time.time()-intervalBetweenImages) and cv.TakeImage(image, "Person", rawFaceData, grayscale=True)):
             clockFace = time.time()

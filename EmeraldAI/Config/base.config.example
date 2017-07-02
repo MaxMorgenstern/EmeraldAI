@@ -93,6 +93,7 @@ Microphone =
 [TextToSpeech]
 AudioPlayer = afplay
 #AudioPlayer = mpg123
+UsePygame = True
 Provider = Ivona
 
 MicrosoftVoiceGender = Female
@@ -146,8 +147,12 @@ ImageSizeHeight = 350
 ImageLimit = 100
 CropBodyImage = True
 IntervalBetweenImages = 1
-BodyDetectionInterval = 5
+BodyDetectionInterval = 10
 #BodyDetectionInterval = 0 -- Always scan for body
+
+DarknessThreshold = 30
+
+ShowCameraImage = False
 
 
 # ----------------------
