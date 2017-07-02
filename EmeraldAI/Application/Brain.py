@@ -21,13 +21,21 @@ from EmeraldAI.Entities.Context import Context
 from EmeraldAI.Entities.PipelineArgs import PipelineArgs
 from EmeraldAI.Logic.Modules import Pid
 from EmeraldAI.Config.Config import *
-
-STT_CancelSpeech = False
+from EmeraldAI.Logic.Memory.Brain import Brain as BrainMemory
 
 CV_PersonDetectionTimestamp = time.time()
 CV_DarknessTimestamp = time.time()
 
 GLOBAL_FaceappPub = None
+
+# TODO lisen and mute to timestamps to set intervals
+def InitSettings():
+    if(not BrainMemory().Has("Listen")):
+        BrainMemory().Set("Listen", True)
+
+    if(not BrainMemory().Has("Mute")):
+        BrainMemory().Set("Mute", False)
+
 
 def RunBrain():
     global GLOBAL_FaceappPub
@@ -174,13 +182,13 @@ def ProcessSurveilenceData(dataParts):
 ##### STT #####
 
 def ProcessSpeech(data):
-    if(not Config().GetBoolean("Application.Brain", "Listen")):
+    if(not BrainMemory().GetBoolean("Listen")):
         return
 
-    STT_CancelSpeech = False
+    cancelSpeech = False
     stopwordList = Config().GetList("Bot", "StoppwordList")
     if(data in stopwordList):
-        STT_CancelSpeech = True
+        cancelSpeech = True
 
     pipelineArgs = PipelineArgs(data)
 
@@ -190,11 +198,7 @@ def ProcessSpeech(data):
 
     pipelineArgs = ProcessResponse().Process(pipelineArgs)
 
-    if STT_CancelSpeech:
-        print "speech canceled"
-        return
-
-    if(not Config().GetBoolean("Application.Brain", "Mute")):
+    if(not cancelSpeech and not BrainMemory().GetBoolean("Mute")):
         if(pipelineArgs.Animation != None):
             ProcessAnimation(pipelineArgs.Animation)
 
@@ -235,6 +239,7 @@ if __name__ == "__main__":
         sys.exit()
     Pid.Create("Brain")
     try:
+        InitSettings()
         RunBrain()
     except KeyboardInterrupt:
         print "End"

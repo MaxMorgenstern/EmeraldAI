@@ -47,8 +47,6 @@ export ROS_MASTER_URI=http://url:11311
 READ!!!
 LUIS: https://blogs.msdn.microsoft.com/benjaminperkins/2016/11/21/most-common-chatbot-questions-and-how-to-answer-them/
 
-- microphone and camera selector - for config
-
 tts: http://docs.kitt.ai/snowboy/
 tts api: https://forum.sinusbot.com/threads/text-to-speech-apis-for-sinusbot.500/
 
@@ -58,6 +56,8 @@ SQL: add intrusion protection... check ; check for invalid '
 
 
 Train Conversation actions
+
+Re-Train CV with currently used algorithm
 
 
 ---

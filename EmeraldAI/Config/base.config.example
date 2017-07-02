@@ -184,8 +184,6 @@ RemoveStopwordOnlySentences = True
 #      APPLICATION
 # ----------------------
 [Application.Brain]
-Mute = False
-Listen = True
 RecognizePeople = True
 RecognizeWithIRCam = True
 RecognizeWithIRCamOnlyOnDarkness = False

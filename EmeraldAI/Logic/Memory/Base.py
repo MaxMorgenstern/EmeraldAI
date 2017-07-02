@@ -9,6 +9,18 @@ class Base(object):
     def __init__(self, parentID):
         self.ParentID = parentID
 
+
+    def Has(self, key, parentID = None):
+        if(parentID == None):
+            parentID = self.ParentID
+
+        query = """SELECT Value FROM Memory WHERE ParentID = '{0}' AND lower(Key) = '{1}'"""
+        sqlResult = db().FetchallCacheBreaker(query.format(parentID, key.lower()))
+        for r in sqlResult:
+            return True
+        return False
+
+
     def Get(self, key, parentID = None):
         if(parentID == None):
             parentID = self.ParentID
