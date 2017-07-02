@@ -27,16 +27,19 @@ class ComputerVision(object):
 
         if(Config().Get("ComputerVision", "DetectionSettings") == "precise"):
             self.__DetectionSettings = DetectionSettings(1.2, 4, (80, 80))
-            self.__FaceDetectionSettings = DetectionSettings(1.1, 4, (45, 45))
+            self.__FaceDetectionSettings = DetectionSettings(1.1, 4, (30, 30))
             self.__FastDetection = False
-        elif(Config().Get("ComputerVision", "DetectionSettings") == "medium"):
-            self.__DetectionSettings = DetectionSettings(1.3, 4, (120, 120))
-            self.__FaceDetectionSettings = DetectionSettings(1.2, 4, (55, 55))
-            self.__FastDetection = True
+            self.__SkipUnlikelyClassifier = False
         else:
-            self.__DetectionSettings = DetectionSettings(1.4, 4, (150, 150))
-            self.__FaceDetectionSettings = DetectionSettings(1.3, 4, (60, 60))
-            self.__FastDetection = True
+            self.__DetectionSettings = DetectionSettings(1.3, 4, (100, 100))
+            self.__FaceDetectionSettings = DetectionSettings(1.2, 4, (50, 50))
+
+            self.__SkipUnlikelyClassifier = True
+            if(Config().Get("ComputerVision", "DetectionSettings") == "medium"):
+                self.__FastDetection = False
+            else:
+                self.__FastDetection = True
+
 
         self.__DatasetBasePath = os.path.join(Global.EmeraldPath, "Data", "ComputerVisionData")
         self.__TempCVFolder = "Temp"
@@ -92,9 +95,7 @@ class ComputerVision(object):
             Global.EnsureDirectoryExists(os.path.join(self.__DatasetBasePath, datasetName))
             Global.EnsureDirectoryExists(os.path.join(self.__DatasetBasePath, datasetName, imageType))
 
-            out = cv2.resize(img, (self.__ResizeWidth, self.__ResizeHeight)) #Resize face so all images have same size
-
-            cv2.imwrite(os.path.join(self.__DatasetBasePath, datasetName, imageType, fileName), out) #Write image
+            cv2.imwrite(os.path.join(self.__DatasetBasePath, datasetName, imageType, fileName), img) #Write image
         except:
            pass #If error, pass file
 
@@ -197,18 +198,18 @@ class ComputerVision(object):
         return (0.299 * averageColor[2] + 0.587 * averageColor[1] + 0.114 * averageColor[0])
 
     def DetectBody(self, img):
-        bodies = self.__fullBody.detectMultiScale(img, scaleFactor=self.__DetectionSettings.Scale, minNeighbors=self.__DetectionSettings.MinNeighbors, minSize=self.__DetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
-        if len(bodies) > 0:
-            return bodies
-
-        bodies = self.__upperBody.detectMultiScale(img, scaleFactor=self.__DetectionSettings.Scale, minNeighbors=self.__DetectionSettings.MinNeighbors, minSize=self.__DetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
-        if len(bodies) > 0:
-            return bodies
-
         bodies = self.__headShoulders.detectMultiScale(img, scaleFactor=self.__DetectionSettings.Scale, minNeighbors=self.__DetectionSettings.MinNeighbors, minSize=self.__DetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
         if len(bodies) > 0:
             return bodies
 
+        if not self.__SkipUnlikelyClassifier:
+            bodies = self.__fullBody.detectMultiScale(img, scaleFactor=self.__DetectionSettings.Scale, minNeighbors=self.__DetectionSettings.MinNeighbors, minSize=self.__DetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
+            if len(bodies) > 0:
+                return bodies
+
+            bodies = self.__upperBody.detectMultiScale(img, scaleFactor=self.__DetectionSettings.Scale, minNeighbors=self.__DetectionSettings.MinNeighbors, minSize=self.__DetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
+            if len(bodies) > 0:
+                return bodies
         return []
 
     def DetectFaceFast(self, img):
@@ -216,39 +217,44 @@ class ComputerVision(object):
         if len(face) > 0:
             return face
 
-        face2 = self.__frontalFace2.detectMultiScale(img, scaleFactor=self.__FaceDetectionSettings.Scale, minNeighbors=self.__FaceDetectionSettings.MinNeighbors, minSize=self.__FaceDetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
-        if len(face2) > 0:
-            return face2
-
-        face3 = self.__frontalFace3.detectMultiScale(img, scaleFactor=self.__FaceDetectionSettings.Scale, minNeighbors=self.__FaceDetectionSettings.MinNeighbors, minSize=self.__FaceDetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
-        if len(face3) > 0:
-            return face3
-
-        face4 = self.__frontalFace4.detectMultiScale(img, scaleFactor=self.__FaceDetectionSettings.Scale, minNeighbors=self.__FaceDetectionSettings.MinNeighbors, minSize=self.__FaceDetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
-        if len(face4) > 0:
-            return face4
-
         face5 = self.__frontalFace5.detectMultiScale(img, scaleFactor=self.__FaceDetectionSettings.Scale, minNeighbors=self.__FaceDetectionSettings.MinNeighbors, minSize=self.__FaceDetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
         if len(face5) > 0:
             return face
+
+        if not self.__SkipUnlikelyClassifier:
+            face2 = self.__frontalFace2.detectMultiScale(img, scaleFactor=self.__FaceDetectionSettings.Scale, minNeighbors=self.__FaceDetectionSettings.MinNeighbors, minSize=self.__FaceDetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
+            if len(face2) > 0:
+                return face2
+
+            face3 = self.__frontalFace3.detectMultiScale(img, scaleFactor=self.__FaceDetectionSettings.Scale, minNeighbors=self.__FaceDetectionSettings.MinNeighbors, minSize=self.__FaceDetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
+            if len(face3) > 0:
+                return face3
+
+            face4 = self.__frontalFace4.detectMultiScale(img, scaleFactor=self.__FaceDetectionSettings.Scale, minNeighbors=self.__FaceDetectionSettings.MinNeighbors, minSize=self.__FaceDetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
+            if len(face4) > 0:
+                return face4
         return []
 
     def DetectFaceBest(self, img):
         face = self.__frontalFace.detectMultiScale(img, scaleFactor=self.__FaceDetectionSettings.Scale, minNeighbors=self.__FaceDetectionSettings.MinNeighbors, minSize=self.__FaceDetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
-        face2 = self.__frontalFace2.detectMultiScale(img, scaleFactor=self.__FaceDetectionSettings.Scale, minNeighbors=self.__FaceDetectionSettings.MinNeighbors, minSize=self.__FaceDetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
-        face3 = self.__frontalFace3.detectMultiScale(img, scaleFactor=self.__FaceDetectionSettings.Scale, minNeighbors=self.__FaceDetectionSettings.MinNeighbors, minSize=self.__FaceDetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
-        face4 = self.__frontalFace4.detectMultiScale(img, scaleFactor=self.__FaceDetectionSettings.Scale, minNeighbors=self.__FaceDetectionSettings.MinNeighbors, minSize=self.__FaceDetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
         face5 = self.__frontalFace5.detectMultiScale(img, scaleFactor=self.__FaceDetectionSettings.Scale, minNeighbors=self.__FaceDetectionSettings.MinNeighbors, minSize=self.__FaceDetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
 
+        if not self.__SkipUnlikelyClassifier:
+            face2 = self.__frontalFace2.detectMultiScale(img, scaleFactor=self.__FaceDetectionSettings.Scale, minNeighbors=self.__FaceDetectionSettings.MinNeighbors, minSize=self.__FaceDetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
+            face3 = self.__frontalFace3.detectMultiScale(img, scaleFactor=self.__FaceDetectionSettings.Scale, minNeighbors=self.__FaceDetectionSettings.MinNeighbors, minSize=self.__FaceDetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
+            face4 = self.__frontalFace4.detectMultiScale(img, scaleFactor=self.__FaceDetectionSettings.Scale, minNeighbors=self.__FaceDetectionSettings.MinNeighbors, minSize=self.__FaceDetectionSettings.MinSize, flags=cv2.CASCADE_SCALE_IMAGE)
+
         bestResult = face
-        if (len(bestResult) < len(face2)):
-            bestResult = face2
-        if (len(bestResult) < len(face3)):
-            bestResult = face3
-        if (len(bestResult) < len(face4)):
-            bestResult = face4
         if (len(bestResult) < len(face5)):
             bestResult = face5
+
+        if not self.__SkipUnlikelyClassifier:
+            if (len(bestResult) < len(face2)):
+                bestResult = face2
+            if (len(bestResult) < len(face3)):
+                bestResult = face3
+            if (len(bestResult) < len(face4)):
+                bestResult = face4
         return bestResult
 
 

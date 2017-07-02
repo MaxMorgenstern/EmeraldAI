@@ -21,12 +21,13 @@ from EmeraldAI.Entities.Context import Context
 from EmeraldAI.Entities.PipelineArgs import PipelineArgs
 from EmeraldAI.Logic.Modules import Pid
 from EmeraldAI.Config.Config import *
+from EmeraldAI.Logic.Audio.SoundMixer import *
 from EmeraldAI.Logic.Memory.Brain import Brain as BrainMemory
 
 CV_PersonDetectionTimestamp = time.time()
 CV_DarknessTimestamp = time.time()
 
-GLOBAL_FaceappPub = None
+GLOBAL_FaceappPublisher = None
 
 # TODO lisen and mute to timestamps to set intervals
 def InitSettings():
@@ -38,13 +39,13 @@ def InitSettings():
 
 
 def RunBrain():
-    global GLOBAL_FaceappPub
+    global GLOBAL_FaceappPublisher
 
     rospy.init_node('brain_node', anonymous=True)
 
     rospy.Subscriber("to_brain", String, callback)
 
-    GLOBAL_FaceappPub = rospy.Publisher('to_faceapp', String, queue_size=10)
+    GLOBAL_FaceappPublisher = rospy.Publisher('to_faceapp', String, queue_size=10)
 
     rospy.spin()
 
@@ -69,6 +70,10 @@ def callback(data):
 
 
 ##### CV #####
+
+# TODO - we are getting flooded - timeouts after set
+# + checking if still user or most likely another one
+
 def ProcessCVData(dataParts):
     if dataParts[1] == "PERSON":
         ProcessPerson(dataParts[2], dataParts[3], dataParts[4], dataParts[5], (dataParts[6]=="True"), (dataParts[7]=="True"))
@@ -83,7 +88,7 @@ def ProcessCVData(dataParts):
         ProcessGender(dataParts[2], dataParts[3], dataParts[4])
 
     if dataParts[1] == "DARKNESS":
-        ProcessDarkness(dataParts[2])
+        ProcessDarkness(dataParts[2], dataParts[3])
 
 
 def ProcessPerson(cameraName, id, bestResult, bestResultPerson, thresholdReached, timeoutReached):
@@ -149,14 +154,14 @@ def ProcessBody(cameraName, id, xPos, yPos):
 
 
 def ProcessAnimation(animation):
-    global GLOBAL_FaceappPub
+    global GLOBAL_FaceappPublisher
 
     if(animation == None):
         return
 
     animationData = "FACEMASTER|{0}".format(animation)
     rospy.loginfo(animationData)
-    GLOBAL_FaceappPub.publish(animationData)
+    GLOBAL_FaceappPublisher.publish(animationData)
 
 
 def ProcessMood(cameraName, id, mood):
@@ -167,7 +172,8 @@ def ProcessGender(cameraName, id, gender):
     print id, gender
     # TODO
 
-def ProcessDarkness(cameraName):
+def ProcessDarkness(cameraName, value):
+    # TODO - new parameter value added
     global CV_DarknessTimestamp
     if(cameraName == "IR"):
         return
@@ -189,6 +195,7 @@ def ProcessSpeech(data):
     stopwordList = Config().GetList("Bot", "StoppwordList")
     if(data in stopwordList):
         cancelSpeech = True
+        SoundMixer().Stop()
 
     pipelineArgs = PipelineArgs(data)
 
@@ -211,7 +218,7 @@ def ProcessSpeech(data):
     print "Pipeline Args", pipelineArgs.toJSON()
     print "Main User", User().toJSON()
     print "Trainer Result: ", trainerResult
-
+    print "Response", pipelineArgs.Response
 
 ##### FACEAPP #####
 
