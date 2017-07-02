@@ -25,7 +25,7 @@ from EmeraldAI.Logic.Audio.SoundMixer import *
 from EmeraldAI.Logic.Memory.Brain import Brain as BrainMemory
 
 CV_PersonDetectionTimestamp = time.time()
-CV_DarknessTimestamp = time.time()
+CV_DarknessTimestamp = time.time() # TODO - Sense of the current use
 
 GLOBAL_FaceappPublisher = None
 
