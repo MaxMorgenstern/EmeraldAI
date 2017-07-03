@@ -24,13 +24,13 @@ from EmeraldAI.Config.Config import *
 from EmeraldAI.Logic.Audio.SoundMixer import *
 from EmeraldAI.Logic.Memory.Brain import Brain as BrainMemory
 
-CV_PersonDetectionTimestamp = time.time()
-CV_DarknessTimestamp = time.time() # TODO - Sense of the current use
-
 GLOBAL_FaceappPublisher = None
 
 # TODO lisen and mute to timestamps to set intervals
 def InitSettings():
+    BrainMemory().Set("PersonDetectionTimestamp", time.time())
+    BrainMemory().Set("DarknessTimestamp", time.time())
+
     if(not BrainMemory().Has("Listen")):
         BrainMemory().Set("Listen", True)
 
@@ -92,11 +92,9 @@ def ProcessCVData(dataParts):
 
 
 def ProcessPerson(cameraName, id, bestResult, bestResultPerson, thresholdReached, timeoutReached):
-    global CV_PersonDetectionTimestamp, CV_DarknessTimestamp
-
     if(not Config().GetBoolean("Application.Brain", "RecognizePeople")):
         return
-    if(__cancelCameraProcess(cameraName, CV_DarknessTimestamp)):
+    if(__cancelCameraProcess(cameraName, BrainMemory().GetFloat("DarknessTimestamp"))):
         return
 
     personToUnknownFactor = Config().GetInt("Application.Brain", "PersonToUnknownFactor") # 1 : 5
@@ -114,7 +112,7 @@ def ProcessPerson(cameraName, id, bestResult, bestResultPerson, thresholdReached
                 bestResultTag = resultData[0]
 
     timeout = False
-    if(CV_PersonDetectionTimestamp <= (time.time()-personTimeout)):
+    if(BrainMemory().GetFloat("PersonDetectionTimestamp") <= (time.time()-personTimeout)):
         timeout = True
 
     unknownUserTag = Config().Get("Application.Brain", "UnknownUserTag")
@@ -124,7 +122,7 @@ def ProcessPerson(cameraName, id, bestResult, bestResultPerson, thresholdReached
     if(User().GetCVTag() is not bestResultTag):
         print "set user", bestResultTag
         User().SetUserByCVTag(bestResultTag)
-        CV_PersonDetectionTimestamp = time.time()
+        BrainMemory().Set("PersonDetectionTimestamp", time.time())
 
 
 def __cancelCameraProcess(cameraName, darknessTimestamp):
@@ -138,9 +136,7 @@ def __cancelCameraProcess(cameraName, darknessTimestamp):
 
 
 def ProcessPosition(cameraName, id, xPos, yPos):
-    global CV_DarknessTimestamp
-
-    if(id > 0 or cameraName == "IR" and CV_DarknessTimestamp <= (time.time() - darknessTimeout)):
+    if(id > 0 or cameraName == "IR" and BrainMemory().GetFloat("DarknessTimestamp") <= (time.time() - darknessTimeout)):
             return
 
     lookAt = "center"
@@ -173,13 +169,13 @@ def ProcessGender(cameraName, id, gender):
 
 def ProcessDarkness(cameraName, value):
     # TODO - new parameter value added
-    global CV_DarknessTimestamp
     if(cameraName == "IR"):
         return
-    CV_DarknessTimestamp = time.time()
+    BrainMemory().Set("DarknessTimestamp", time.time())
 
 
 ##### CV Surveilence #####
+
 def ProcessSurveilenceData(dataParts):
     print "TODO"
 
@@ -219,6 +215,7 @@ def ProcessSpeech(data):
     print "Trainer Result: ", trainerResult
     print "Response", pipelineArgs.Response
 
+
 ##### FACEAPP #####
 
 def ProcessFaceApp(state):
@@ -228,7 +225,7 @@ def ProcessFaceApp(state):
     ProcessSpeech("TRIGGER_FACEAPP_{0}".format(state))
 
 
-##### FACEAPP #####
+##### PING #####
 
 def ProcessPing(state):
     print state
