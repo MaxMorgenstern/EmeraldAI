@@ -105,26 +105,21 @@ def RunCV(camID, camType, surveillanceMode):
             continue
 
 
-        bodyDetectionTimeout = False
-        if(BodyDetectionTimestamp <= (time.time()-bodyDetectionInterval)):
-            bodyDetectionTimeout = True
-
         # Body Detection
-        if(surveillanceMode or bodyDetectionTimeout):
+        if(surveillanceMode or BodyDetectionTimestamp <= (time.time()-bodyDetectionInterval)):
             rawBodyData = cv.DetectBody(image)
             if (len(rawBodyData) > 0):
-                bodyID = 1
-                bodyDetectionTimeout = False
                 BodyDetectionTimestamp = time.time()
-
+                """
+                bodyID = 0
                 for (x, y, w, h) in rawBodyData:
                     centerX = (x + w/2)
                     centerY = (y + h/2)
 
                     if (centerX < imageWidth/3):
-                        posX = "left"
-                    elif (centerX > imageWidth/3*2):
                         posX = "right"
+                    elif (centerX > imageWidth/3*2):
+                        posX = "left"
                     else:
                         posX = "center"
 
@@ -141,6 +136,7 @@ def RunCV(camID, camType, surveillanceMode):
                     pub.publish(bodyData)
 
                     bodyID += 1
+                """
 
                 cv.TakeImage(image, "Body", (rawBodyData if cropBodyImage else None))
 
@@ -175,6 +171,35 @@ def RunCV(camID, camType, surveillanceMode):
                     rospy.loginfo(predictionData)
                     pub.publish(predictionData)
 
+
+        # Face position detection
+        faceID = 0
+        for (x, y, w, h) in rawFaceData:
+            centerX = (x + w/2)
+            centerY = (y + h/2)
+
+            if (centerX < imageWidth/3):
+                posX = "right"
+            elif (centerX > imageWidth/3*2):
+                posX = "left"
+            else:
+                posX = "center"
+
+            if (centerY < imageHeight/5):
+                posY = "top"
+            elif (centerY > imageHeight/5*4):
+                posY = "bottom"
+            else:
+                posY = "center"
+
+            faceData = "{0}|POSITION|{1}|{2}|{3}|{4}".format(cvInstanceType, camType, faceID, posX, posY)
+            #print faceData
+            rospy.loginfo(faceData)
+            pub.publish(faceData)
+            faceID += 1
+
+
+        # Take Images
         if(takeImage and clockFace <= (time.time()-intervalBetweenImages) and cv.TakeImage(image, "Person", rawFaceData, grayscale=True)):
             clockFace = time.time()
 

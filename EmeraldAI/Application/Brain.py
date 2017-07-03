@@ -78,8 +78,8 @@ def ProcessCVData(dataParts):
     if dataParts[1] == "PERSON":
         ProcessPerson(dataParts[2], dataParts[3], dataParts[4], dataParts[5], (dataParts[6]=="True"), (dataParts[7]=="True"))
 
-    if dataParts[1] == "BODY":
-        ProcessBody(dataParts[2], dataParts[3], dataParts[4], dataParts[5])
+    if dataParts[1] == "POSITION":
+        ProcessPosition(dataParts[2], dataParts[3], dataParts[4], dataParts[5])
 
     if dataParts[1] == "MOOD":
         ProcessMood(dataParts[2], dataParts[3], dataParts[4])
@@ -137,11 +137,10 @@ def __cancelCameraProcess(cameraName, darknessTimestamp):
     return False
 
 
-def ProcessBody(cameraName, id, xPos, yPos):
+def ProcessPosition(cameraName, id, xPos, yPos):
     global CV_DarknessTimestamp
 
-    if(cameraName == "IR"):
-        if(CV_DarknessTimestamp <= (time.time() - darknessTimeout)):
+    if(id > 0 or cameraName == "IR" and CV_DarknessTimestamp <= (time.time() - darknessTimeout)):
             return
 
     lookAt = "center"
