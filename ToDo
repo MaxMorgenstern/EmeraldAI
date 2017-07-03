@@ -48,6 +48,9 @@ Re-Train CV with currently used algorithm
 Add 'und' to Math detection - at least try and convert it to +
 
 
+add intermediate position animation
+	- [left] <halfleft> [center] <halfright> [right]
+	- [left] <2_3_left> <1_3_left> [center] <1_3_right> <2_3_right> [right]
 
 ---
 
