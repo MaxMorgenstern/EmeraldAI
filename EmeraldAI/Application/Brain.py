@@ -49,6 +49,7 @@ def RunBrain():
 
     rospy.spin()
 
+
 def callback(data):
     dataParts = data.data.split("|")
     print "Just got", dataParts
@@ -67,6 +68,7 @@ def callback(data):
 
     if dataParts[0] == "PING":
         ProcessPing(dataParts[1])
+
 
 
 ##### CV #####
@@ -174,10 +176,12 @@ def ProcessDarkness(cameraName, value):
     BrainMemory().Set("DarknessTimestamp", time.time())
 
 
+
 ##### CV Surveilence #####
 
 def ProcessSurveilenceData(dataParts):
     print "TODO"
+
 
 
 ##### STT #####
@@ -216,6 +220,7 @@ def ProcessSpeech(data):
     print "Response", pipelineArgs.Response
 
 
+
 ##### FACEAPP #####
 
 def ProcessFaceApp(state):
@@ -223,6 +228,7 @@ def ProcessFaceApp(state):
     print state
     # state == ON / OFF
     ProcessSpeech("TRIGGER_FACEAPP_{0}".format(state))
+
 
 
 ##### PING #####
