@@ -27,7 +27,7 @@ class Wikipedia(object):
                         summary = wikipedia.summary(topic)
                         break
 
-            if summary == None or len(summary) < 5:
+            if summary is None or len(summary) < 5:
                 return None
 
             if(trimBrackets):
@@ -49,7 +49,7 @@ class Wikipedia(object):
                     page = wikipedia.WikipediaPage(topic)
                     break
 
-        if page == None:
+        if page is None:
             return None
 
         return page.images

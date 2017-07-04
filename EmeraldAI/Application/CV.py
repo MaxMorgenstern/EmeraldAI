@@ -65,7 +65,7 @@ def RunCV(camID, camType, surveillanceMode):
     predictionModules = Config().GetList("ComputerVision", "Modules")
     for moduleName in predictionModules:
         model, dictionary = cv.LoadModel(moduleName)
-        if (model == None or dictionary == None):
+        if (model is None or dictionary is None):
             continue
         print "load", moduleName
         predictionObjectList.append(PredictionObject(moduleName, model, dictionary))

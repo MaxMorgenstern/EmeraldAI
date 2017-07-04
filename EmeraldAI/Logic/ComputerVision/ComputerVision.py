@@ -171,7 +171,7 @@ class ComputerVision(object):
 
 
     def LimitImagesInFolder(self, datasetName, amount=None):
-        if amount == None:
+        if amount is None:
             amount = self.__ImageLimit
         amount += 2 # add one for 'Disabled' folder and one for eventual hidden file
 
@@ -258,7 +258,7 @@ class ComputerVision(object):
 
 
     def TrainModel(self, datasetName, imageSize=None):
-        if imageSize == None:
+        if imageSize is None:
             imageSize = "{0}x{1}".format(self.__ResizeWidth, self.__ResizeHeight)
         images, labels, labelDict = self.__loadImages(datasetName, imageSize)
         if len(images) == 0 or len(labels) == 0:
@@ -273,7 +273,7 @@ class ComputerVision(object):
 
 
     def LoadModel(self, datasetName, imageSize=None):
-        if imageSize == None:
+        if imageSize is None:
             imageSize = "{0}x{1}".format(self.__ResizeWidth, self.__ResizeHeight)
         path = os.path.join(self.__DatasetBasePath, datasetName)
         try:
@@ -286,10 +286,10 @@ class ComputerVision(object):
 
 
     def TakeImage(self, image, imageType, dataArray=None, datasetName=None, grayscale=False):
-        if datasetName == None:
+        if datasetName is None:
             datasetName = self.__TempCVFolder
 
-        if(dataArray == None):
+        if(dataArray is None):
             if grayscale:
                 image = self.__toGrayscale(image)
             fileName = str(self.__getHighestImageID(datasetName, imageType) + 1) + ".jpg"
@@ -357,7 +357,7 @@ class ComputerVision(object):
 
 
     def PredictStream(self, image, predictionObjectList, timeout=None):
-        if timeout == None:
+        if timeout is None:
             timeout = self.__PredictionTimeout
 
         # reset is timeout happened on last call
@@ -380,7 +380,6 @@ class ComputerVision(object):
             for data in dataArray:
                 for predictionObject in predictionObjectList:
                     if data['model'] == predictionObject.Name:
-                        print data['value']
                         if int(data['distance']) > predictionObject.MaxPredictionDistance or self.__NotKnownDataTag in data['value']:
                             predictionObject.AddPrediction(key, self.__UnknownUserTag, (int(data['distance']) - predictionObject.MaxPredictionDistance))
                         else:

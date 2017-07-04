@@ -19,11 +19,11 @@ class WikipediaAction(object):
         result = wiki().GetSummary(PipelineArgs.BasewordTrimmedInput)
         inputString = PipelineArgs.BasewordTrimmedInput
 
-        if result == None or len(result) == 0:
+        if result is None or len(result) == 0:
             result = wiki().GetSummary(PipelineArgs.FullyTrimmedInput)
             inputString = PipelineArgs.FullyTrimmedInput
 
-        if result == None or len(result) == 0:
+        if result is None or len(result) == 0:
             return {'Input':inputString, 'Result':None, 'ResultType':'Error'}
 
         dotIndex = result.find('.', self.__minCharBeforeTrim)

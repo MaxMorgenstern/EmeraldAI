@@ -40,7 +40,7 @@ class DialogTrainer(object):
             isStopword = 1
         query = "INSERT INTO Conversation_Keyword ('Keyword', 'Normalized', 'Language', 'Stopword') Values ('{0}', '{1}', '{2}', '{3}')".format(Word, NLP.Normalize(Word, Language), Language, isStopword)
         keywordID = db().Execute(query)
-        if(keywordID == None):
+        if(keywordID is None):
             query = "SELECT ID FROM Conversation_Keyword WHERE Normalized = '{0}'".format(NLP.Normalize(Word, Language))
             keywordID = db().Fetchall(query)[0][0]
         return keywordID
@@ -48,7 +48,7 @@ class DialogTrainer(object):
     def SaveRequirement(self, Name):
         query = "INSERT INTO Conversation_Requirement ('Name') Values ('{0}')".format(Name)
         requirementID = db().Execute(query)
-        if(requirementID == None):
+        if(requirementID is None):
             query = "SELECT ID FROM Conversation_Requirement WHERE Name = '{0}'".format(Name)
             requirementID = db().Fetchall(query)[0][0]
         return requirementID
@@ -56,7 +56,7 @@ class DialogTrainer(object):
     def SaveCategory(self, Name):
         query = "INSERT INTO Conversation_Category ('Name') Values ('{0}')".format(Name)
         categoryID = db().Execute(query)
-        if(categoryID == None):
+        if(categoryID is None):
             query = "SELECT ID FROM Conversation_Category WHERE Name = '{0}'".format(Name)
             categoryID = db().Fetchall(query)[0][0]
         return categoryID
@@ -64,7 +64,7 @@ class DialogTrainer(object):
     def SaveAction(self, Name, Module, Class, Function):
         query = "INSERT INTO Conversation_Action ('Name', 'Module', 'Class', 'Function') Values ('{0}')".format(Name, Module, Class, Function)
         actionID = db().Execute(query)
-        if(actionID == None):
+        if(actionID is None):
             query = "SELECT ID FROM Conversation_Action WHERE Name = '{0}'".format(Name)
             actionID = db().Fetchall(query)[0][0]
         return actionID
@@ -81,7 +81,7 @@ class DialogTrainer(object):
     def SaveSentence(self, Sentence, Language, UserName, Animation = None, Approved = 0):
         query = "INSERT INTO Conversation_Sentence ('Sentence', 'Language', 'Source', 'Approved', 'Animation') Values ('{0}', '{1}', '{2}', '{3}', '{4}')".format(Sentence, Language, UserName, Approved, Animation)
         sentenceID = db().Execute(query)
-        if(sentenceID == None):
+        if(sentenceID is None):
             query = "SELECT ID FROM Conversation_Sentence WHERE Sentence = '{0}'".format(Sentence)
             sentenceID = db().Fetchall(query)[0][0]
         return sentenceID
@@ -124,7 +124,7 @@ class DialogTrainer(object):
             # create requirement if it does not exist - or get ID
             requirementID = self.SaveRequirement(requirement.Name)
             # Link requirement - sentence
-            if(requirement.Comparison == None):
+            if(requirement.Comparison is None):
                 query = "INSERT INTO Conversation_Sentence_Requirement ('SentenceID', 'RequirementID', 'Value') Values ('{0}', '{1}', '{2}')".format(sentenceID, requirementID, requirement.Value)
             else:
                 query = "INSERT INTO Conversation_Sentence_Requirement ('SentenceID', 'RequirementID', 'Comparison', 'Value') Values ('{0}', '{1}', '{2}', '{3}')".format(sentenceID, requirementID, requirement.Comparison, requirement.Value)

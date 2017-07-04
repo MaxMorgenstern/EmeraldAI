@@ -13,7 +13,7 @@ class Base(object):
 
 
     def Has(self, key, parentID = None):
-        if(parentID == None):
+        if(parentID is None):
             parentID = self.ParentID
 
         query = """SELECT Value FROM Memory WHERE ParentID = '{0}' AND lower(Key) = '{1}'"""
@@ -24,7 +24,7 @@ class Base(object):
 
 
     def Get(self, key, parentID = None):
-        if(parentID == None):
+        if(parentID is None):
             parentID = self.ParentID
 
         query = """SELECT Value FROM Memory WHERE ParentID = '{0}' AND lower(Key) = '{1}'"""
@@ -49,7 +49,7 @@ class Base(object):
 
 
     def Set(self, key, value, parentID = None):
-        if(parentID == None):
+        if(parentID is None):
             parentID = self.ParentID
 
         query = """SELECT ID FROM Memory WHERE ParentID = '{0}' AND lower(Key) = '{1}'"""
