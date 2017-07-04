@@ -28,7 +28,6 @@ def EnsureModelUpdate():
 
 
 def RunCV(camID, camType, surveillanceMode):
-
     if(camID  < 0):
         camID = Config().GetInt("ComputerVision", "CameraID")
     if(camType == "STD"):
@@ -49,6 +48,10 @@ def RunCV(camID, camType, surveillanceMode):
     intervalBetweenImages = Config().GetInt("ComputerVision", "IntervalBetweenImages")
 
     bodyDetectionInterval = Config().GetInt("ComputerVision", "BodyDetectionInterval")
+
+    showCameraImage = Config().GetBoolean("ComputerVision", "ShowCameraImage")
+
+    predictionThreshold = Config().GetInt("ComputerVision.Prediction", "PredictionThreshold")
 
     cv = ComputerVision()
 
@@ -77,43 +80,39 @@ def RunCV(camID, camType, surveillanceMode):
         #rate.sleep()
         ret, image = camera.read()
 
-        if(image == None):
+        if(image is None):
             print "Can't read image"
             continue
 
-        cv2.imshow("image", image)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+        if (showCameraImage):
+            cv2.imshow("image", image)
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
 
-        lumaThreshold = Config().GetInt("ComputerVision", "DarknessThreshold") # 30
-        lumaVal = cv.GetLuma(image)
-        print lumaVal
-        if (lumaVal < lumaThreshold):
-            bodyData = "{0}|DARKNESS|{1}".format(cvInstanceType, camType)
+        lumaThreshold = Config().GetInt("ComputerVision", "DarknessThreshold") #
+        lumaValue = cv.GetLuma(image)
+        if (lumaValue < lumaThreshold):
+            bodyData = "{0}|DARKNESS|{1}|{2}".format(cvInstanceType, camType, lumaValue)
             print bodyData
             time.sleep(1)
             continue
 
-        bodyDetectionTimeout = False
-        if(BodyDetectionTimestamp <= (time.time()-bodyDetectionInterval)):
-            bodyDetectionTimeout = True
 
         # Body Detection
-        if(surveillanceMode or bodyDetectionTimeout):
+        if(surveillanceMode or BodyDetectionTimestamp <= (time.time()-bodyDetectionInterval)):
             rawBodyData = cv.DetectBody(image)
             if (len(rawBodyData) > 0):
-                bodyID = 1
-                bodyDetectionTimeout = False
                 BodyDetectionTimestamp = time.time()
-
+                """
+                bodyID = 0
                 for (x, y, w, h) in rawBodyData:
                     centerX = (x + w/2)
                     centerY = (y + h/2)
 
                     if (centerX < imageWidth/3):
-                        posX = "left"
-                    elif (centerX > imageWidth/3*2):
                         posX = "right"
+                    elif (centerX > imageWidth/3*2):
+                        posX = "left"
                     else:
                         posX = "center"
 
@@ -125,40 +124,73 @@ def RunCV(camID, camType, surveillanceMode):
                         posY = "center"
 
                     bodyData = "{0}|BODY|{1}|{2}|{3}|{4}".format(cvInstanceType, camType, bodyID, posX, posY)
-                    print bodyData
+                    #print bodyData
+                    rospy.loginfo(bodyData)
+                    pub.publish(bodyData)
 
                     bodyID += 1
+                """
 
                 cv.TakeImage(image, "Body", (rawBodyData if cropBodyImage else None))
 
+
         # Face Detection
-        predictionResult, thresholdReached, timeoutReached, rawFaceData = cv.PredictStream(image, predictionObjectList, threshold=7500)
+        predictionResult, timeoutReached, rawFaceData = cv.PredictStream(image, predictionObjectList)
 
         takeImage = True
-        for predictorObject in predictionResult:
-            if len(predictorObject.PredictionResult) > 0 and (thresholdReached or timeoutReached):
+        for predictionObject in predictionResult:
+            thresholdReached = predictionObject.ThresholdReached(predictionThreshold)
+            if len(predictionObject.PredictionResult) > 0 and (thresholdReached or timeoutReached):
 
-                 for key, face in predictorObject.PredictionResult.iteritems():
-                    bestResult = predictorObject.GetBestPredictionResult(key, False)
+                 for key, face in predictionObject.PredictionResult.iteritems():
+                    bestResult = predictionObject.GetBestPredictionResult(key, False)
 
-                    if (predictorObject.Name == "Person"):
-                        bestResultPerson = predictorObject.GetBestPredictionResult(key, True)
+                    if (predictionObject.Name == "Person"):
+                        bestResultPerson = predictionObject.GetBestPredictionResult(key, True)
+                        secondResultPerson = predictionObject.GetSecondBestPredictionResult(key, True)
 
                         if(bestResult[0] != "Unknown"):
                             takeImage = False
 
-                        predictionData = "{0}|PERSON|{1}|{2}|{3}|{4}|{5}|{6}".format(cvInstanceType, camType, key, bestResult, bestResultPerson, thresholdReached, timeoutReached)
+                        predictionData = "{0}|PERSON|{1}|{2}|{3}|{4}|{5}|{6}|{7}".format(cvInstanceType, camType, key, bestResult, bestResultPerson, secondResultPerson, thresholdReached, timeoutReached)
 
 
-                    if (predictorObject.Name == "Mood"):
+                    if (predictionObject.Name == "Mood"):
                         predictionData = "{0}|MOOD|{1}|{2}|{3}".format(cvInstanceType, camType, key, bestResult)
 
 
-                    if (predictorObject.Name == "Gender"):
+                    if (predictionObject.Name == "Gender"):
                         predictionData = "{0}|GENDER|{1}|{2}|{3}".format(cvInstanceType, camType, key, bestResult)
 
                     print predictionData
 
+
+        # Face position detection
+        faceID = 0
+        for (x, y, w, h) in rawFaceData:
+            centerX = (x + w/2)
+            centerY = (y + h/2)
+
+            if (centerX < imageWidth/3):
+                posX = "right"
+            elif (centerX > imageWidth/3*2):
+                posX = "left"
+            else:
+                posX = "center"
+
+            if (centerY < imageHeight/5):
+                posY = "top"
+            elif (centerY > imageHeight/5*4):
+                posY = "bottom"
+            else:
+                posY = "center"
+
+            faceData = "{0}|POSITION|{1}|{2}|{3}|{4}".format(cvInstanceType, camType, faceID, posX, posY)
+            #print faceData
+            faceID += 1
+
+
+        # Take Images
         if(takeImage and clockFace <= (time.time()-intervalBetweenImages) and cv.TakeImage(image, "Person", rawFaceData, grayscale=True)):
             clockFace = time.time()
 

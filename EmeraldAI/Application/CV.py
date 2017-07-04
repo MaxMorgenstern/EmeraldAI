@@ -154,11 +154,12 @@ def RunCV(camID, camType, surveillanceMode):
 
                     if (predictorObject.Name == "Person"):
                         bestResultPerson = predictorObject.GetBestPredictionResult(key, True)
+                        secondResultPerson = predictionObject.GetSecondBestPredictionResult(key, True)
 
                         if(bestResult[0] != "Unknown"):
                             takeImage = False
 
-                        predictionData = "{0}|PERSON|{1}|{2}|{3}|{4}|{5}|{6}".format(cvInstanceType, camType, key, bestResult, bestResultPerson, thresholdReached, timeoutReached)
+                        predictionData = "{0}|PERSON|{1}|{2}|{3}|{4}|{5}|{6}|{7}".format(cvInstanceType, camType, key, bestResult, bestResultPerson, secondResultPerson, thresholdReached, timeoutReached)
 
 
                     if (predictorObject.Name == "Mood"):

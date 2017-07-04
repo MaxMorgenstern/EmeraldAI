@@ -78,7 +78,7 @@ def callback(data):
 
 def ProcessCVData(dataParts):
     if dataParts[1] == "PERSON":
-        ProcessPerson(dataParts[2], dataParts[3], dataParts[4], dataParts[5], (dataParts[6]=="True"), (dataParts[7]=="True"))
+        ProcessPerson(dataParts[2], dataParts[3], dataParts[4], dataParts[5], dataParts[6], (dataParts[7]=="True"), (dataParts[8]=="True"))
 
     if dataParts[1] == "POSITION":
         ProcessPosition(dataParts[2], dataParts[3], dataParts[4], dataParts[5])
@@ -93,7 +93,9 @@ def ProcessCVData(dataParts):
         ProcessDarkness(dataParts[2], dataParts[3])
 
 
-def ProcessPerson(cameraName, id, bestResult, bestResultPerson, thresholdReached, timeoutReached):
+def ProcessPerson(cameraName, id, bestResult, bestResultPerson, secondBestResultPerson, thresholdReached, timeoutReached):
+    # TODO - secondBestResultPerson - handle this in formation
+
     if(not Config().GetBoolean("Application.Brain", "RecognizePeople")):
         return
     if(__cancelCameraProcess(cameraName, BrainMemory().GetFloat("DarknessTimestamp"))):
@@ -138,7 +140,7 @@ def __cancelCameraProcess(cameraName, darknessTimestamp):
 
 
 def ProcessPosition(cameraName, id, xPos, yPos):
-    if(id > 0 or cameraName == "IR" and BrainMemory().GetFloat("DarknessTimestamp") <= (time.time() - darknessTimeout)):
+    if(int(id) > 0 or cameraName == "IR" and BrainMemory().GetFloat("DarknessTimestamp") <= (time.time() - darknessTimeout)):
             return
 
     lookAt = "center"
@@ -153,7 +155,7 @@ def ProcessPosition(cameraName, id, xPos, yPos):
 def ProcessAnimation(animation):
     global GLOBAL_FaceappPublisher
 
-    if(animation == None):
+    if(animation is None):
         return
 
     animationData = "FACEMASTER|{0}".format(animation)
@@ -162,11 +164,11 @@ def ProcessAnimation(animation):
 
 
 def ProcessMood(cameraName, id, mood):
-    print id, mood
+    print int(id), mood
     # TODO
 
 def ProcessGender(cameraName, id, gender):
-    print id, gender
+    print int(id), gender
     # TODO
 
 def ProcessDarkness(cameraName, value):
