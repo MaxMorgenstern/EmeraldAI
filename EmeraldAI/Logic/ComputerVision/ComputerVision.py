@@ -54,7 +54,6 @@ class ComputerVision(object):
         self.__ResizeHeight = Config().GetInt("ComputerVision", "ImageSizeHeight") # 350
 
         self.__PredictionTimeout = Config().GetInt("ComputerVision.Prediction", "PredictionTimeout") # 5
-        self.__PredictStreamThreshold = Config().GetInt("ComputerVision.Prediction", "PredictionThreshold") # 1000
         self.__PredictStreamTimeoutDate = 0
         self.__PredictStreamTimeoutBool = False
         self.__PredictStreamMaxDistance = Config().GetInt("ComputerVision.Prediction", "MaxPredictionDistance") # 500
@@ -357,10 +356,7 @@ class ComputerVision(object):
         return result, faces
 
 
-    def PredictStream(self, image, predictionObjectList, threshold=None, timeout=None):
-        if threshold == None:
-            threshold = self.__PredictStreamThreshold
-
+    def PredictStream(self, image, predictionObjectList, timeout=None):
         if timeout == None:
             timeout = self.__PredictionTimeout
 
@@ -377,8 +373,6 @@ class ComputerVision(object):
             reachedTimeout = True
             self.__PredictStreamTimeoutBool = True
 
-        reachedThreshold = False
-
         prediction, rawFaceData = self.Predict(image, predictionObjectList)
 
         for key, value in enumerate(prediction):
@@ -386,12 +380,10 @@ class ComputerVision(object):
             for data in dataArray:
                 for predictionObject in predictionObjectList:
                     if data['model'] == predictionObject.Name:
+                        print data['value']
                         if int(data['distance']) > predictionObject.MaxPredictionDistance or self.__NotKnownDataTag in data['value']:
                             predictionObject.AddPrediction(key, self.__UnknownUserTag, (int(data['distance']) - predictionObject.MaxPredictionDistance))
                         else:
                             predictionObject.AddPrediction(key, data['value'], int(data['distance']))
 
-                    if predictionObject.ThresholdReached(threshold):
-                        reachedThreshold = True
-
-        return predictionObjectList, reachedThreshold, reachedTimeout, rawFaceData
+        return predictionObjectList, reachedTimeout, rawFaceData

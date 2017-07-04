@@ -142,11 +142,12 @@ def RunCV(camID, camType, surveillanceMode):
 
 
         # Face Detection
-        predictionResult, thresholdReached, timeoutReached, rawFaceData = cv.PredictStream(image, predictionObjectList, threshold=7500)
+        predictionResult, timeoutReached, rawFaceData = cv.PredictStream(image, predictionObjectList)
 
         takeImage = True
-        for predictorObject in predictionResult:
-            if len(predictorObject.PredictionResult) > 0 and (thresholdReached or timeoutReached):
+        for predictionObject in predictionResult:
+            thresholdReached = predictionObject.ThresholdReached(predictionThreshold)
+            if len(predictionObject.PredictionResult) > 0 and (thresholdReached or timeoutReached):
 
                  for key, face in predictorObject.PredictionResult.iteritems():
                     bestResult = predictorObject.GetBestPredictionResult(key, False)
