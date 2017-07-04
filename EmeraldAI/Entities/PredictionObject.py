@@ -29,15 +29,30 @@ class PredictionObject(object):
             return ()
         return sortedDict[0]
 
+    def GetSecondBestPredictionResult(self, id, ignoreUnknown=False):
+        resultDict = self.PredictionResult[id].copy()
+        if(ignoreUnknown):
+            resultDict = self.__RemoveUnknown(resultDict)
+
+        sortedDict = sorted(resultDict.items(), key=operator.itemgetter(1), reverse=True)
+        if (len(sortedDict) <= 1):
+            return ()
+        return sortedDict[1]
+
     def AddPrediction(self, id, key, distance):
+        if(distance > self.MaxPredictionDistance):
+            distance = self.MaxPredictionDistance
+        else:
+            distance = self.MaxPredictionDistance - distance
+
         if(self.PredictionResult.has_key(id)):
             if(self.PredictionResult[id].has_key(key)):
-                self.PredictionResult[id][key] += (self.MaxPredictionDistance - distance)
+                self.PredictionResult[id][key] += distance
             else:
-                self.PredictionResult[id][key] = (self.MaxPredictionDistance - distance)
+                self.PredictionResult[id][key] = distance
         else:
             self.PredictionResult[id] = {}
-            self.PredictionResult[id][key] = (self.MaxPredictionDistance - distance)
+            self.PredictionResult[id][key] = distance
 
     def ThresholdReached(self, threshold):
         if len(self.PredictionResult) > 0:

@@ -142,6 +142,9 @@ DetectionSettings = precise
 #DetectionSettings = medium
 #DetectionSettings = fast
 
+Recognizer = LBPH
+#Recognizer = FisherFace
+
 ImageSizeWidth = 350
 ImageSizeHeight = 350
 ImageLimit = 100

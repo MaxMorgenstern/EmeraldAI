@@ -71,10 +71,17 @@ class ComputerVision(object):
         self.__upperBody = cv2.CascadeClassifier(os.path.join(self.__haarDir, "haarcascade_upperbody.xml"))
         self.__headShoulders = cv2.CascadeClassifier(os.path.join(self.__haarDir, "haarcascade_head_shoulders.xml"))
 
-        try:
-            self.__RecognizerModel = cv2.createFisherFaceRecognizer()
-        except:
-            self.__RecognizerModel = cv2.face.createFisherFaceRecognizer()
+
+        if(Config().Get("ComputerVision", "Recognizer") == "FisherFace"):
+            try:
+                self.__RecognizerModel = cv2.createFisherFaceRecognizer()
+            except:
+                self.__RecognizerModel = cv2.face.createFisherFaceRecognizer()
+        else:
+            try:
+                self.__RecognizerModel = cv2.createLBPHFaceRecognizer()
+            except:
+                self.__RecognizerModel = cv2.face.createLBPHFaceRecognizers()
 
         self.__RecognizerDictionary = {}
 
@@ -381,7 +388,7 @@ class ComputerVision(object):
                 for predictionObject in predictionObjectList:
                     if data['model'] == predictionObject.Name:
                         if int(data['distance']) > predictionObject.MaxPredictionDistance or self.__NotKnownDataTag in data['value']:
-                            predictionObject.AddPrediction(key, self.__UnknownUserTag, (int(data['distance']) - predictionObject.MaxPredictionDistance))
+                            predictionObject.AddPrediction(key, self.__UnknownUserTag, int(data['distance']))
                         else:
                             predictionObject.AddPrediction(key, data['value'], int(data['distance']))
 
