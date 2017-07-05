@@ -58,6 +58,8 @@ def RunCV(camID, camType, surveillanceMode):
 
     showCameraImage = Config().GetBoolean("ComputerVision", "ShowCameraImage")
 
+    predictionThreshold = Config().GetInt("ComputerVision.Prediction", "PredictionThreshold")
+
     cv = ComputerVision()
 
     predictionObjectList = []
@@ -149,11 +151,11 @@ def RunCV(camID, camType, surveillanceMode):
             thresholdReached = predictionObject.ThresholdReached(predictionThreshold)
             if len(predictionObject.PredictionResult) > 0 and (thresholdReached or timeoutReached):
 
-                 for key, face in predictorObject.PredictionResult.iteritems():
-                    bestResult = predictorObject.GetBestPredictionResult(key, False)
+                 for key, face in predictionObject.PredictionResult.iteritems():
+                    bestResult = predictionObject.GetBestPredictionResult(key, False)
 
-                    if (predictorObject.Name == "Person"):
-                        bestResultPerson = predictorObject.GetBestPredictionResult(key, True)
+                    if (predictionObject.Name == "Person"):
+                        bestResultPerson = predictionObject.GetBestPredictionResult(key, True)
                         secondResultPerson = predictionObject.GetSecondBestPredictionResult(key, True)
 
                         if(bestResult[0] != "Unknown"):
@@ -162,11 +164,11 @@ def RunCV(camID, camType, surveillanceMode):
                         predictionData = "{0}|PERSON|{1}|{2}|{3}|{4}|{5}|{6}|{7}".format(cvInstanceType, camType, key, bestResult, bestResultPerson, secondResultPerson, thresholdReached, timeoutReached)
 
 
-                    if (predictorObject.Name == "Mood"):
+                    if (predictionObject.Name == "Mood"):
                         predictionData = "{0}|MOOD|{1}|{2}|{3}".format(cvInstanceType, camType, key, bestResult)
 
 
-                    if (predictorObject.Name == "Gender"):
+                    if (predictionObject.Name == "Gender"):
                         predictionData = "{0}|GENDER|{1}|{2}|{3}".format(cvInstanceType, camType, key, bestResult)
 
                     #print predictionData

@@ -160,10 +160,10 @@ ShowCameraImage = False
 
 # ----------------------
 [ComputerVision.Prediction]
-MaxPredictionDistance = 175
+MaxPredictionDistance = 80
 
 PredictionTimeout = 5
-PredictionThreshold = 500
+PredictionThreshold = 200
 
 
 # ----------------------

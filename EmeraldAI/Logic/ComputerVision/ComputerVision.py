@@ -81,7 +81,7 @@ class ComputerVision(object):
             try:
                 self.__RecognizerModel = cv2.createLBPHFaceRecognizer()
             except:
-                self.__RecognizerModel = cv2.face.createLBPHFaceRecognizers()
+                self.__RecognizerModel = cv2.face.createLBPHFaceRecognizer()
 
         self.__RecognizerDictionary = {}
 
