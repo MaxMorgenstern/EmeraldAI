@@ -87,7 +87,7 @@ def RunCV(camID, camType, surveillanceMode):
         #rate.sleep()
         ret, image = camera.read()
 
-        if(image == None):
+        if(image is None):
             print "Can't read image"
             continue
 

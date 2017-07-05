@@ -91,9 +91,8 @@ class ComputerVision(object):
         gray = cv2.equalizeHist(gray)
         return gray
 
-    # TODO - check if this should be x, y, w, h
     def __cropImage(self, img, face):
-        x, y, h, w = [result for result in face]
+        x, y, w, h = [result for result in face]
         return img[y:y+h,x:x+w]
 
     def __saveImg(self, img, datasetName, imageType, fileName):
