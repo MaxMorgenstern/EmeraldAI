@@ -78,7 +78,7 @@ def callback(data):
 
 def ProcessCVData(dataParts):
     if dataParts[1] == "PERSON":
-        ProcessPerson(dataParts[2], dataParts[3], dataParts[4], dataParts[5], dataParts[6], (dataParts[7]=="True"), (dataParts[8]=="True"))
+        ProcessPerson(dataParts[2], dataParts[3], dataParts[4], dataParts[5], (dataParts[6]=="True"), (dataParts[7]=="True"), (dataParts[8]=="True"))
 
     if dataParts[1] == "POSITION":
         ProcessPosition(dataParts[2], dataParts[3], dataParts[4], dataParts[5])
@@ -93,55 +93,59 @@ def ProcessCVData(dataParts):
         ProcessDarkness(dataParts[2], dataParts[3])
 
 
-def ProcessPerson(cameraName, id, bestResult, bestResultPerson, secondBestResultPerson, thresholdReached, timeoutReached):
-    # TODO - secondBestResultPerson - handle this in formation
-
+def ProcessPerson(cameraName, id, bestResult, secondBestResult, thresholdReached, timeoutReached, luckyShot):
     if(not Config().GetBoolean("Application.Brain", "RecognizePeople")):
         return
     if(__cancelCameraProcess(cameraName, BrainMemory().GetFloat("DarknessTimestamp"))):
         return
 
-    personToUnknownFactor = Config().GetInt("Application.Brain", "PersonToUnknownFactor") # 1 : 5
-    personTimeout = Config().GetInt("Application.Brain", "PersonTimeout") # 10 seconds
-
-    bestResultTag = None
-    if (len(bestResult) > 2):
-        resultData = re.sub("[()'\"]", "", bestResult).split(",")
-        bestResultTag = resultData[0]
-        bestResultValue = int(resultData[1])
-
-        if (len(bestResultPerson) > 2):
-            resultData = re.sub("[()'\"]", "", bestResultPerson).split(",")
-            if(bestResultValue / personToUnknownFactor <= int(resultData[1])):
-                bestResultTag = resultData[0]
-
-    timeout = False
-    if(BrainMemory().GetFloat("PersonDetectionTimestamp") <= (time.time()-personTimeout)):
-        timeout = True
-
+    currentUser = User().GetCVTag()
     unknownUserTag = Config().Get("Application.Brain", "UnknownUserTag")
-    if(not timeout and not thresholdReached and (not timeoutReached or bestResultTag == unknownUserTag)):
+
+    bestResultTag, bestResultValue = __getResult(bestResult)
+    secondBestResultTag, secondBestResultValue = __getResult(secondBestResult)
+
+    minSetPersonThreshold = Config().Get("Application.Brain", "MinSetPersonThreshold")
+    setPersonThreshold = Config().Get("Application.Brain", "SetPersonThreshold")
+
+    # skip if best is unknown
+    if(bestResultTag == unknownUserTag):
+        # expect if 2nd best is about 10% off and no other user is set
+        if(secondBestResultTag != None and
+            (secondBestResultValue*0.9) >= bestResultValue and
+            secondBestResultValue > minSetPersonThreshold and
+            (currentUser == unknownUserTag or currentUser == secondBestResultTag)):
+            __updateUser(secondBestResultTag)
         return
 
-    if(User().GetCVTag() is not bestResultTag):
-        print "set user", bestResultTag
-        User().SetUserByCVTag(bestResultTag)
-        BrainMemory().Set("PersonDetectionTimestamp", time.time())
-
-
-def __cancelCameraProcess(cameraName, darknessTimestamp):
-    if(cameraName == "IR"):
-        darknessTimeout = Config().GetInt("Application.Brain", "DarknessTimeout") # 10 seconds
-        if(not Config().GetBoolean("Application.Brain", "RecognizeWithIRCam")):
-            return True
-        if(Config().GetBoolean("Application.Brain", "RecognizeWithIRCamOnlyOnDarkness") and darknessTimestamp <= (time.time() - darknessTimeout)):
-            return True
-    return False
-
-
-def ProcessPosition(cameraName, id, xPos, yPos):
-    if(int(id) > 0 or cameraName == "IR" and BrainMemory().GetFloat("DarknessTimestamp") <= (time.time() - darknessTimeout)):
+    # if threshold is reched, set user
+    # or if we have at least 1/3 of the person threshold
+    if(thresholdReached or bestResultValue >= (setPersonThreshold/3)):
+        # if 2nd user is current user and by 10% off the first - update second
+        if(secondBestResultTag != None and
+            secondBestResultTag != unknownUserTag and
+            secondBestResultTag == currentUser and
+            (secondBestResultValue*0.9) >= bestResultValue):
+            __updateUser(secondBestResultTag)
             return
+        __updateUser(bestResultTag)
+        return
+
+    # on lucky shot
+    if(luckyShot):
+        if (currentUser != unknownUserTag and currentUser != bestResultTag):
+            return
+        if(secondBestResultTag != None and
+            secondBestResultTag != unknownUserTag and
+            (secondBestResultValue*0.9) >= bestResultValue):
+            return
+        __updateUser(bestResultTag)
+        return
+
+
+def ProcessPosition(cameraName, cameraId, xPos, yPos):
+    if(int(cameraId) > 0 or __cancelCameraProcess(cameraName, BrainMemory().GetFloat("DarknessTimestamp"))):
+        return
 
     lookAt = "center"
     if(yPos != "center"):
@@ -177,6 +181,36 @@ def ProcessDarkness(cameraName, value):
         return
     BrainMemory().Set("DarknessTimestamp", time.time())
 
+
+def __getResult(data):
+    resultTag = None
+    resultValue = 0
+    if (len(data) > 2):
+        resultData = re.sub("[()'\"]", "", data).split(",")
+        resultTag = resultData[0]
+        resultValue = int(resultData[1])
+
+    return resultTag, resultValue
+
+
+def __updateUser(cvTag)
+    print "set/update user", cvTag
+    if(User().GetCVTag() != cvTag):
+        personTimeout = Config().GetInt("Application.Brain", "PersonTimeout") # x seconds
+        if (BrainMemory().GetFloat("PersonDetectionTimestamp") > (time.time()-personTimeout)):
+            return
+    User().SetUserByCVTag(cvTag)
+    BrainMemory().Set("PersonDetectionTimestamp", time.time())
+
+
+def __cancelCameraProcess(cameraName, darknessTimestamp):
+    if(cameraName == "IR"):
+        darknessTimeout = Config().GetInt("Application.Brain", "DarknessTimeout") # 10 seconds
+        if(not Config().GetBoolean("Application.Brain", "RecognizeWithIRCam")):
+            return True
+        if(Config().GetBoolean("Application.Brain", "RecognizeWithIRCamOnlyOnDarkness") and darknessTimestamp <= (time.time() - darknessTimeout)):
+            return True
+    return False
 
 
 ##### CV Surveilence #####

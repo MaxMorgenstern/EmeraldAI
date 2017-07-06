@@ -363,8 +363,6 @@ class ComputerVision(object):
         return result, faces
 
 
-    # self.__PredictStreamLuckyShot
-
     def PredictStream(self, image, predictionObjectList, timeout=None):
         if timeout is None:
             timeout = self.__PredictionTimeout

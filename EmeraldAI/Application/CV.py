@@ -111,33 +111,6 @@ def RunCV(camID, camType, surveillanceMode):
             rawBodyData = cv.DetectBody(image)
             if (len(rawBodyData) > 0):
                 bodyDetectionTimestamp = time.time()
-                """
-                bodyID = 0
-                for (x, y, w, h) in rawBodyData:
-                    centerX = (x + w/2)
-                    centerY = (y + h/2)
-
-                    if (centerX < imageWidth/3):
-                        posX = "right"
-                    elif (centerX > imageWidth/3*2):
-                        posX = "left"
-                    else:
-                        posX = "center"
-
-                    if (centerY < imageHeight/5):
-                        posY = "top"
-                    elif (centerY > imageHeight/5*4):
-                        posY = "bottom"
-                    else:
-                        posY = "center"
-
-                    bodyData = "{0}|BODY|{1}|{2}|{3}|{4}".format(cvInstanceType, camType, bodyID, posX, posY)
-                    #print bodyData
-                    rospy.loginfo(bodyData)
-                    pub.publish(bodyData)
-
-                    bodyID += 1
-                """
 
                 cv.TakeImage(image, "Body", (rawBodyData if cropBodyImage else None))
 

@@ -196,6 +196,9 @@ RecognizePeople = True
 RecognizeWithIRCam = True
 RecognizeWithIRCamOnlyOnDarkness = False
 
-PersonToUnknownFactor = 5
 PersonTimeout = 10
 DarknessTimeout = 10
+
+MinSetPersonThreshold = 15
+# should equal ComputerVision.Prediction - PredictionThreshold
+SetPersonThreshold = 150
