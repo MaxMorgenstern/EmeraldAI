@@ -56,6 +56,7 @@ class ComputerVision(object):
         self.__PredictionTimeout = Config().GetInt("ComputerVision.Prediction", "PredictionTimeout") # 5
         self.__PredictStreamTimeoutDate = 0
         self.__PredictStreamTimeoutBool = False
+        self.__PredictStreamLuckyShot = True
         self.__PredictStreamMaxDistance = Config().GetInt("ComputerVision.Prediction", "MaxPredictionDistance") # 500
         self.__PredictStreamResult = {}
 
@@ -362,6 +363,8 @@ class ComputerVision(object):
         return result, faces
 
 
+    # self.__PredictStreamLuckyShot
+
     def PredictStream(self, image, predictionObjectList, timeout=None):
         if timeout is None:
             timeout = self.__PredictionTimeout
@@ -370,17 +373,18 @@ class ComputerVision(object):
         if self.__PredictStreamTimeoutBool:
             self.__PredictStreamTimeoutDate = time.time() + timeout
             self.__PredictStreamTimeoutBool = False
+            self.__PredictStreamLuckyShot = True
+
             for predictionObject in predictionObjectList:
                 predictionObject.ResetResult()
 
         #check if current call times out
-        reachedTimeout = False
         if time.time() > self.__PredictStreamTimeoutDate:
-            reachedTimeout = True
             self.__PredictStreamTimeoutBool = True
 
         prediction, rawFaceData = self.Predict(image, predictionObjectList)
 
+        luckyShot = False
         for key, value in enumerate(prediction):
             dataArray = value['face']['data']
             for data in dataArray:
@@ -390,5 +394,8 @@ class ComputerVision(object):
                             predictionObject.AddPrediction(key, self.__UnknownUserTag, int(data['distance']))
                         else:
                             predictionObject.AddPrediction(key, data['value'], int(data['distance']))
+                            if predictionObject.Name == "Person" and self.__PredictStreamLuckyShot:
+                                luckyShot = True
+                                self.__PredictStreamLuckyShot = False
 
-        return predictionObjectList, reachedTimeout, rawFaceData
+        return predictionObjectList, self.__PredictStreamTimeoutBool, luckyShot, rawFaceData

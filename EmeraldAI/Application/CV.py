@@ -53,12 +53,11 @@ def RunCV(camID, camType, surveillanceMode):
 
     cropBodyImage = Config().GetBoolean("ComputerVision", "CropBodyImage")
     intervalBetweenImages = Config().GetInt("ComputerVision", "IntervalBetweenImages")
-
     bodyDetectionInterval = Config().GetInt("ComputerVision", "BodyDetectionInterval")
+    predictionThreshold = Config().GetInt("ComputerVision.Prediction", "PredictionThreshold")
 
     showCameraImage = Config().GetBoolean("ComputerVision", "ShowCameraImage")
-
-    predictionThreshold = Config().GetInt("ComputerVision.Prediction", "PredictionThreshold")
+    unknownUserTag = Config().Get("ComputerVision", "UnknownUserTag")
 
     cv = ComputerVision()
 
@@ -81,7 +80,7 @@ def RunCV(camID, camType, surveillanceMode):
     ret, image = camera.read()
     imageHeight, imageWidth = image.shape[:2]
 
-    BodyDetectionTimestamp = time.time()
+    bodyDetectionTimestamp = time.time()
 
     while True:
         #rate.sleep()
@@ -108,10 +107,10 @@ def RunCV(camID, camType, surveillanceMode):
 
 
         # Body Detection
-        if(surveillanceMode or BodyDetectionTimestamp <= (time.time()-bodyDetectionInterval)):
+        if(surveillanceMode or bodyDetectionInterval < 999 and bodyDetectionTimestamp <= (time.time()-bodyDetectionInterval)):
             rawBodyData = cv.DetectBody(image)
             if (len(rawBodyData) > 0):
-                BodyDetectionTimestamp = time.time()
+                bodyDetectionTimestamp = time.time()
                 """
                 bodyID = 0
                 for (x, y, w, h) in rawBodyData:
@@ -149,19 +148,17 @@ def RunCV(camID, camType, surveillanceMode):
         takeImage = True
         for predictionObject in predictionResult:
             thresholdReached = predictionObject.ThresholdReached(predictionThreshold)
-            if len(predictionObject.PredictionResult) > 0 and (thresholdReached or timeoutReached):
+            if len(predictionObject.PredictionResult) > 0 and (thresholdReached or timeoutReached or luckyShot):
 
                  for key, face in predictionObject.PredictionResult.iteritems():
-                    bestResult = predictionObject.GetBestPredictionResult(key, False)
+                    bestResult = predictionObject.GetBestPredictionResult(key, 0)
 
                     if (predictionObject.Name == "Person"):
-                        bestResultPerson = predictionObject.GetBestPredictionResult(key, True)
-                        secondResultPerson = predictionObject.GetSecondBestPredictionResult(key, True)
-
-                        if(bestResult[0] != "Unknown"):
+                        if(bestResult[0] != unknownUserTag):
                             takeImage = False
 
-                        predictionData = "{0}|PERSON|{1}|{2}|{3}|{4}|{5}|{6}|{7}".format(cvInstanceType, camType, key, bestResult, bestResultPerson, secondResultPerson, thresholdReached, timeoutReached)
+                        secondBestResult = predictionObject.GetBestPredictionResult(key, 1)
+                        predictionData = "{0}|PERSON|{1}|{2}|{3}|{4}|{5}|{6}|{7}".format(cvInstanceType, camType, key, bestResult, secondBestResult, thresholdReached, timeoutReached, luckyShot)
 
 
                     if (predictionObject.Name == "Mood"):
