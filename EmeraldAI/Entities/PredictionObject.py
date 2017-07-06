@@ -31,10 +31,10 @@ class PredictionObject(object):
 
     def AddPrediction(self, id, key, distance):
         if(distance > self.MaxPredictionDistance):
-            delta = distance - self.MaxPredictionDistance
+            delta = int(round(distance)) - self.MaxPredictionDistance
             weightedDistance = delta if (delta < self.MaxPredictionDistance) else self.MaxPredictionDistance
         else:
-            weightedDistance = self.MaxPredictionDistance - distance
+            weightedDistance = self.MaxPredictionDistance - int(round(distance))
             weightedDistance = 1 if (weightedDistance == 0) else weightedDistance
 
         if(self.PredictionResult.has_key(id)):
