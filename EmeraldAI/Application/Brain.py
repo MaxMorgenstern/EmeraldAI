@@ -133,13 +133,14 @@ def ProcessPerson(cameraName, id, bestResult, secondBestResult, thresholdReached
 
     # on lucky shot
     if(luckyShot):
+        # if another user is set
         if (currentUser != unknownUserTag and currentUser != bestResultTag):
             return
         if(secondBestResultTag != None and
             secondBestResultTag != unknownUserTag and
             (secondBestResultValue*0.9) >= bestResultValue):
             return
-        __updateUser(bestResultTag)
+        __updateUser(bestResultTag, False)
         return
 
 
@@ -193,14 +194,15 @@ def __getResult(data):
     return resultTag, resultValue
 
 
-def __updateUser(cvTag):
+def __updateUser(cvTag, updateTimestamp=True):
     print "set/update user", cvTag
     if(User().GetCVTag() != cvTag):
         personTimeout = Config().GetInt("Application.Brain", "PersonTimeout") # x seconds
         if (BrainMemory().GetFloat("PersonDetectionTimestamp") > (time.time()-personTimeout)):
             return
     User().SetUserByCVTag(cvTag)
-    BrainMemory().Set("PersonDetectionTimestamp", time.time())
+    if(updateTimestamp):
+        BrainMemory().Set("PersonDetectionTimestamp", time.time())
 
 
 def __cancelCameraProcess(cameraName, darknessTimestamp):
