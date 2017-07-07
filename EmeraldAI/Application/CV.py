@@ -116,7 +116,7 @@ def RunCV(camID, camType, surveillanceMode):
 
 
         # Face Detection
-        predictionResult, timeoutReached, rawFaceData = cv.PredictStream(image, predictionObjectList)
+        predictionResult, timeoutReached, luckyShot, rawFaceData = cv.PredictStream(image, predictionObjectList)
 
         takeImage = True
         for predictionObject in predictionResult:

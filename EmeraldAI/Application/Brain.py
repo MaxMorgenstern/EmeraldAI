@@ -105,8 +105,8 @@ def ProcessPerson(cameraName, id, bestResult, secondBestResult, thresholdReached
     bestResultTag, bestResultValue = __getResult(bestResult)
     secondBestResultTag, secondBestResultValue = __getResult(secondBestResult)
 
-    minSetPersonThreshold = Config().Get("Application.Brain", "MinSetPersonThreshold")
-    setPersonThreshold = Config().Get("Application.Brain", "SetPersonThreshold")
+    minSetPersonThreshold = Config().GetInt("Application.Brain", "MinSetPersonThreshold")
+    setPersonThreshold = Config().GetInt("Application.Brain", "SetPersonThreshold")
 
     # skip if best is unknown
     if(bestResultTag == unknownUserTag):
@@ -125,7 +125,7 @@ def ProcessPerson(cameraName, id, bestResult, secondBestResult, thresholdReached
         if(secondBestResultTag != None and
             secondBestResultTag != unknownUserTag and
             secondBestResultTag == currentUser and
-            (secondBestResultValue*0.9) >= bestResultValue):
+            (secondBestResultValue*0.6) >= bestResultValue):
             __updateUser(secondBestResultTag)
             return
         __updateUser(bestResultTag)
@@ -193,7 +193,7 @@ def __getResult(data):
     return resultTag, resultValue
 
 
-def __updateUser(cvTag)
+def __updateUser(cvTag):
     print "set/update user", cvTag
     if(User().GetCVTag() != cvTag):
         personTimeout = Config().GetInt("Application.Brain", "PersonTimeout") # x seconds
