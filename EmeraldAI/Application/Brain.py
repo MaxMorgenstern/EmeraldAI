@@ -69,12 +69,12 @@ def callback(data):
     if dataParts[0] == "PING":
         ProcessPing(dataParts[1])
 
+    if dataParts[0] == "CLOCK":
+        ProcessClock(dataParts[1])
+
 
 
 ##### CV #####
-
-# TODO - we are getting flooded - timeouts after set
-# + checking if still user or most likely another one
 
 def ProcessCVData(dataParts):
     if dataParts[1] == "PERSON":
@@ -147,22 +147,18 @@ def ProcessPerson(cameraName, id, bestResult, secondBestResult, thresholdReached
 def ProcessPosition(cameraName, cameraId, xPos, yPos):
     if(int(cameraId) > 0 or __cancelCameraProcess(cameraName, BrainMemory().GetFloat("DarknessTimestamp"))):
         return
-
     lookAt = "center"
     if(yPos != "center"):
         lookAt = yPos
     if(xPos != "center"):
         lookAt = xPos
-
     ProcessAnimation(lookAt)
 
 
 def ProcessAnimation(animation):
     global GLOBAL_FaceappPublisher
-
     if(animation is None):
         return
-
     animationData = "FACEMASTER|{0}".format(animation)
     rospy.loginfo(animationData)
     GLOBAL_FaceappPublisher.publish(animationData)
@@ -275,6 +271,14 @@ def ProcessPing(state):
     print state
     # TODO - state = DEAD / ALIVE
     # TODO - a device we need does not ping anymore or a new device has been found
+
+
+
+##### CLOCK #####
+
+def ProcessClock(time):
+    print time
+    # TODO - timestamp
 
 
 
