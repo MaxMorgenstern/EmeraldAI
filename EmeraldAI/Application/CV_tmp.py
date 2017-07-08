@@ -9,6 +9,9 @@ sys.setdefaultencoding('utf-8')
 import cv2
 import time
 
+#import rospy
+#from std_msgs.msg import String
+
 from EmeraldAI.Entities.PredictionObject import PredictionObject
 from EmeraldAI.Logic.ComputerVision.ComputerVision import ComputerVision
 from EmeraldAI.Config.Config import *
@@ -28,6 +31,10 @@ def EnsureModelUpdate():
 
 
 def RunCV(camID, camType, surveillanceMode):
+    #pub = rospy.Publisher('to_brain', String, queue_size=10)
+    #rospy.init_node('CV_node', anonymous=True)
+    #rospy.Rate(10) # 10hz
+
     if(camID  < 0):
         camID = Config().GetInt("ComputerVision", "CameraID")
     if(camType == "STD"):
@@ -46,13 +53,10 @@ def RunCV(camID, camType, surveillanceMode):
 
     cropBodyImage = Config().GetBoolean("ComputerVision", "CropBodyImage")
     intervalBetweenImages = Config().GetInt("ComputerVision", "IntervalBetweenImages")
-
     bodyDetectionInterval = Config().GetInt("ComputerVision", "BodyDetectionInterval")
-
-    showCameraImage = Config().GetBoolean("ComputerVision", "ShowCameraImage")
-
     predictionThreshold = Config().GetInt("ComputerVision.Prediction", "PredictionThreshold")
 
+    showCameraImage = Config().GetBoolean("ComputerVision", "ShowCameraImage")
     unknownUserTag = Config().Get("ComputerVision", "UnknownUserTag")
 
     cv = ComputerVision()
@@ -62,7 +66,7 @@ def RunCV(camID, camType, surveillanceMode):
     predictionModules = Config().GetList("ComputerVision", "Modules")
     for moduleName in predictionModules:
         model, dictionary = cv.LoadModel(moduleName)
-        if (model == None or dictionary == None):
+        if (model is None or dictionary is None):
             continue
         print "load", moduleName
         predictionObjectList.append(PredictionObject(moduleName, model, dictionary))
@@ -94,15 +98,16 @@ def RunCV(camID, camType, surveillanceMode):
         lumaThreshold = Config().GetInt("ComputerVision", "DarknessThreshold") #
         lumaValue = cv.GetLuma(image)
         if (lumaValue < lumaThreshold):
-            bodyData = "{0}|DARKNESS|{1}|{2}".format(cvInstanceType, camType, lumaValue)
-            print bodyData
+            lumaData = "{0}|DARKNESS|{1}|{2}".format(cvInstanceType, camType, lumaValue)
+            print lumaData
+            #rospy.loginfo(lumaData)
+            #pub.publish(lumaData)
             time.sleep(1)
             continue
 
 
         # Body Detection
         if(surveillanceMode or bodyDetectionInterval < 999 and bodyDetectionTimestamp <= (time.time()-bodyDetectionInterval)):
-            print "waste of time"
             rawBodyData = cv.DetectBody(image)
             if (len(rawBodyData) > 0):
                 bodyDetectionTimestamp = time.time()
@@ -137,6 +142,8 @@ def RunCV(camID, camType, surveillanceMode):
                         predictionData = "{0}|GENDER|{1}|{2}|{3}".format(cvInstanceType, camType, key, bestResult)
 
                     print predictionData
+                    #rospy.loginfo(predictionData)
+                    #pub.publish(predictionData)
 
 
         # Face position detection
@@ -159,15 +166,17 @@ def RunCV(camID, camType, surveillanceMode):
             else:
                 posY = "center"
 
-            faceData = "{0}|POSITION|{1}|{2}|{3}|{4}".format(cvInstanceType, camType, faceID, posX, posY)
-            print faceData
+            positionData = "{0}|POSITION|{1}|{2}|{3}|{4}".format(cvInstanceType, camType, faceID, posX, posY)
+            print positionData
+            #rospy.loginfo(positionData)
+            #pub.publish(positionData)
             faceID += 1
 
 
         # Take Images
         if(takeImage and clockFace <= (time.time()-intervalBetweenImages) and cv.TakeImage(image, "Person", rawFaceData, grayscale=True)):
             clockFace = time.time()
-            print "cheese"
+
 
 if __name__ == "__main__":
     camID = -1

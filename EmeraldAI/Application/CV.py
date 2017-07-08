@@ -98,10 +98,10 @@ def RunCV(camID, camType, surveillanceMode):
         lumaThreshold = Config().GetInt("ComputerVision", "DarknessThreshold") #
         lumaValue = cv.GetLuma(image)
         if (lumaValue < lumaThreshold):
-            bodyData = "{0}|DARKNESS|{1}|{2}".format(cvInstanceType, camType, lumaValue)
-            #print bodyData
-            rospy.loginfo(bodyData)
-            pub.publish(bodyData)
+            lumaData = "{0}|DARKNESS|{1}|{2}".format(cvInstanceType, camType, lumaValue)
+            #print lumaData
+            rospy.loginfo(lumaData)
+            pub.publish(lumaData)
             time.sleep(1)
             continue
 
@@ -166,10 +166,10 @@ def RunCV(camID, camType, surveillanceMode):
             else:
                 posY = "center"
 
-            faceData = "{0}|POSITION|{1}|{2}|{3}|{4}".format(cvInstanceType, camType, faceID, posX, posY)
-            #print faceData
-            rospy.loginfo(faceData)
-            pub.publish(faceData)
+            positionData = "{0}|POSITION|{1}|{2}|{3}|{4}".format(cvInstanceType, camType, faceID, posX, posY)
+            #print positionData
+            rospy.loginfo(positionData)
+            pub.publish(positionData)
             faceID += 1
 
 
