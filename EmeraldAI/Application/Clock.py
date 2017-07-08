@@ -19,7 +19,7 @@ def RunClock():
     rospy.Rate(10) # 10hz
 
     while True:
-        clockData = "CLOCK|{0}".format(time.time())
+        clockData = "CLOCK|{0}".format(int(round(time.time())))
         #print clockData
         rospy.loginfo(clockData)
         pub.publish(clockData)
