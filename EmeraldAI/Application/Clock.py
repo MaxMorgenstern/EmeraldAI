@@ -21,7 +21,7 @@ def RunClock():
     while True:
         clockData = "CLOCK|{0}".format(int(round(time.time())))
         #print clockData
-        rospy.loginfo(clockData)
+        #rospy.loginfo(clockData)
         pub.publish(clockData)
         time.sleep(1)
 
