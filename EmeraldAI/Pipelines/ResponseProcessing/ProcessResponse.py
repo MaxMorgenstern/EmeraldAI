@@ -25,7 +25,7 @@ class ProcessResponse(object):
         FileLogger().Info("ProcessResponse, Process(), Sentence: ID:{0}".format(sentence))
 
         responseFound = True
-        if sentence == None or sentence.Rating < self.__sentenceRatingThreshold:
+        if sentence is None or sentence.Rating < self.__sentenceRatingThreshold:
             responseFound = False
 
         if responseFound:
@@ -55,7 +55,7 @@ class ProcessResponse(object):
             for keyword in keywords:
                 if keyword.title() in nlpParameterDict:
                     replaceword = nlpParameterDict[keyword.title()]
-                    if replaceword == None or replaceword == "Unknown":
+                    if replaceword is None or replaceword == "Unknown":
                         replaceword = ""
                     PipelineArgs.Response = PipelineArgs.Response.replace("{{{0}}}".format(keyword.lower()), str(replaceword))
                 else:

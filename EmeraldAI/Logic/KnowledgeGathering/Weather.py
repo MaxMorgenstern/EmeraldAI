@@ -19,30 +19,30 @@ class Weather(object):
         self.__owm = pyowm.OWM(API_key=Config().Get("Weather", "OWMAPIKey"), language=self.__language)
 
     def GetCurrentWeather(self, location, country=None):
-        if(country == None):
+        if(country is None):
             country = self.__defaultCountry
         forcast = self.__owm.weather_at_place(
             "{0},{1}".format(location, country))
         return forcast.get_weather()
 
     def GetFutureWeather(self, location, date=None, country=None):
-        if(country == None):
+        if(country is None):
             country = self.__defaultCountry
-        if(date == None):
+        if(date is None):
             date = datetime.date.today() + datetime.timedelta(days=1)
         forcast = self.__owm.daily_forecast(
             "{0},{1}".format(location, country))
         return forcast.get_weather_at(date)
 
     def GetThreeHoursForecast(self, location, country=None):
-        if(country == None):
+        if(country is None):
             country = self.__defaultCountry
         forcast = self.__owm.three_hours_forecast(
             "{0},{1}".format(location, country))
         return forcast.get_forecast()
 
     def GetDailyForecast(self, location, country=None):
-        if(country == None):
+        if(country is None):
             country = self.__defaultCountry
         forcast = self.__owm.daily_forecast(
             "{0},{1}".format(location, country))

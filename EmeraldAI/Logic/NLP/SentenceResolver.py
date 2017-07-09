@@ -127,7 +127,7 @@ class SentenceResolver(object):
                     deleteList.append(sentenceID)
                     continue
 
-                if r[0] == None:
+                if r[0] is None:
                     if type(parameterList[requirementName]) == list and r[1].lower() not in parameterList[requirementName]:
                         deleteList.append(sentenceID)
                     elif type(parameterList[requirementName]) == str and parameterList[requirementName].lower() != r[1].lower():

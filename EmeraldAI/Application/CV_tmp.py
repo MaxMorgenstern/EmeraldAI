@@ -9,6 +9,9 @@ sys.setdefaultencoding('utf-8')
 import cv2
 import time
 
+#import rospy
+#from std_msgs.msg import String
+
 from EmeraldAI.Entities.PredictionObject import PredictionObject
 from EmeraldAI.Logic.ComputerVision.ComputerVision import ComputerVision
 from EmeraldAI.Config.Config import *
@@ -28,6 +31,9 @@ def EnsureModelUpdate():
 
 
 def RunCV(camID, camType, surveillanceMode):
+    #pub = rospy.Publisher('to_brain', String, queue_size=10)
+    #rospy.init_node('CV_node', anonymous=True)
+    #rospy.Rate(10) # 10hz
 
     if(camID  < 0):
         camID = Config().GetInt("ComputerVision", "CameraID")
@@ -47,8 +53,11 @@ def RunCV(camID, camType, surveillanceMode):
 
     cropBodyImage = Config().GetBoolean("ComputerVision", "CropBodyImage")
     intervalBetweenImages = Config().GetInt("ComputerVision", "IntervalBetweenImages")
-
     bodyDetectionInterval = Config().GetInt("ComputerVision", "BodyDetectionInterval")
+    predictionThreshold = Config().GetInt("ComputerVision.Prediction", "PredictionThreshold")
+
+    showCameraImage = Config().GetBoolean("ComputerVision", "ShowCameraImage")
+    unknownUserTag = Config().Get("ComputerVision", "UnknownUserTag")
 
     cv = ComputerVision()
 
@@ -57,7 +66,7 @@ def RunCV(camID, camType, surveillanceMode):
     predictionModules = Config().GetList("ComputerVision", "Modules")
     for moduleName in predictionModules:
         model, dictionary = cv.LoadModel(moduleName)
-        if (model == None or dictionary == None):
+        if (model is None or dictionary is None):
             continue
         print "load", moduleName
         predictionObjectList.append(PredictionObject(moduleName, model, dictionary))
@@ -71,94 +80,100 @@ def RunCV(camID, camType, surveillanceMode):
     ret, image = camera.read()
     imageHeight, imageWidth = image.shape[:2]
 
-    BodyDetectionTimestamp = time.time()
+    bodyDetectionTimestamp = time.time()
 
     while True:
         #rate.sleep()
         ret, image = camera.read()
 
-        if(image == None):
+        if(image is None):
             print "Can't read image"
             continue
 
-        cv2.imshow("image", image)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+        if (showCameraImage):
+            cv2.imshow("image", image)
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
 
-        lumaThreshold = Config().GetInt("ComputerVision", "DarknessThreshold") # 30
-        lumaVal = cv.GetLuma(image)
-        print lumaVal
-        if (lumaVal < lumaThreshold):
-            bodyData = "{0}|DARKNESS|{1}".format(cvInstanceType, camType)
-            print bodyData
+        lumaThreshold = Config().GetInt("ComputerVision", "DarknessThreshold") #
+        lumaValue = cv.GetLuma(image)
+        if (lumaValue < lumaThreshold):
+            lumaData = "{0}|DARKNESS|{1}|{2}".format(cvInstanceType, camType, lumaValue)
+            print lumaData
+            #rospy.loginfo(lumaData)
+            #pub.publish(lumaData)
             time.sleep(1)
             continue
 
-        bodyDetectionTimeout = False
-        if(BodyDetectionTimestamp <= (time.time()-bodyDetectionInterval)):
-            bodyDetectionTimeout = True
 
         # Body Detection
-        if(surveillanceMode or bodyDetectionTimeout):
+        if(surveillanceMode or bodyDetectionInterval < 999 and bodyDetectionTimestamp <= (time.time()-bodyDetectionInterval)):
             rawBodyData = cv.DetectBody(image)
             if (len(rawBodyData) > 0):
-                bodyID = 1
-                bodyDetectionTimeout = False
-                BodyDetectionTimestamp = time.time()
-
-                for (x, y, w, h) in rawBodyData:
-                    centerX = (x + w/2)
-                    centerY = (y + h/2)
-
-                    if (centerX < imageWidth/3):
-                        posX = "left"
-                    elif (centerX > imageWidth/3*2):
-                        posX = "right"
-                    else:
-                        posX = "center"
-
-                    if (centerY < imageHeight/5):
-                        posY = "top"
-                    elif (centerY > imageHeight/5*4):
-                        posY = "bottom"
-                    else:
-                        posY = "center"
-
-                    bodyData = "{0}|BODY|{1}|{2}|{3}|{4}".format(cvInstanceType, camType, bodyID, posX, posY)
-                    print bodyData
-
-                    bodyID += 1
+                bodyDetectionTimestamp = time.time()
 
                 cv.TakeImage(image, "Body", (rawBodyData if cropBodyImage else None))
 
+
         # Face Detection
-        predictionResult, thresholdReached, timeoutReached, rawFaceData = cv.PredictStream(image, predictionObjectList, threshold=7500)
+        predictionResult, timeoutReached, luckyShot, rawFaceData = cv.PredictStream(image, predictionObjectList)
 
         takeImage = True
-        for predictorObject in predictionResult:
-            if len(predictorObject.PredictionResult) > 0 and (thresholdReached or timeoutReached):
+        for predictionObject in predictionResult:
+            thresholdReached = predictionObject.ThresholdReached(predictionThreshold)
+            if len(predictionObject.PredictionResult) > 0 and (thresholdReached or timeoutReached or luckyShot):
 
-                 for key, face in predictorObject.PredictionResult.iteritems():
-                    bestResult = predictorObject.GetBestPredictionResult(key, False)
+                 for key, face in predictionObject.PredictionResult.iteritems():
+                    bestResult = predictionObject.GetBestPredictionResult(key, 0)
 
-                    if (predictorObject.Name == "Person"):
-                        bestResultPerson = predictorObject.GetBestPredictionResult(key, True)
-
-                        if(bestResult[0] != "Unknown"):
+                    if (predictionObject.Name == "Person"):
+                        if(bestResult[0] != unknownUserTag):
                             takeImage = False
 
-                        predictionData = "{0}|PERSON|{1}|{2}|{3}|{4}|{5}|{6}".format(cvInstanceType, camType, key, bestResult, bestResultPerson, thresholdReached, timeoutReached)
+                        secondBestResult = predictionObject.GetBestPredictionResult(key, 1)
+                        predictionData = "{0}|PERSON|{1}|{2}|{3}|{4}|{5}|{6}|{7}".format(cvInstanceType, camType, key, bestResult, secondBestResult, thresholdReached, timeoutReached, luckyShot)
 
 
-                    if (predictorObject.Name == "Mood"):
+                    if (predictionObject.Name == "Mood"):
                         predictionData = "{0}|MOOD|{1}|{2}|{3}".format(cvInstanceType, camType, key, bestResult)
 
 
-                    if (predictorObject.Name == "Gender"):
+                    if (predictionObject.Name == "Gender"):
                         predictionData = "{0}|GENDER|{1}|{2}|{3}".format(cvInstanceType, camType, key, bestResult)
 
                     print predictionData
+                    #rospy.loginfo(predictionData)
+                    #pub.publish(predictionData)
 
+
+        # Face position detection
+        faceID = 0
+        for (x, y, w, h) in rawFaceData:
+            centerX = (x + w/2)
+            centerY = (y + h/2)
+
+            if (centerX < imageWidth/3):
+                posX = "right"
+            elif (centerX > imageWidth/3*2):
+                posX = "left"
+            else:
+                posX = "center"
+
+            if (centerY < imageHeight/5):
+                posY = "top"
+            elif (centerY > imageHeight/5*4):
+                posY = "bottom"
+            else:
+                posY = "center"
+
+            positionData = "{0}|POSITION|{1}|{2}|{3}|{4}".format(cvInstanceType, camType, faceID, posX, posY)
+            print positionData
+            #rospy.loginfo(positionData)
+            #pub.publish(positionData)
+            faceID += 1
+
+
+        # Take Images
         if(takeImage and clockFace <= (time.time()-intervalBetweenImages) and cv.TakeImage(image, "Person", rawFaceData, grayscale=True)):
             clockFace = time.time()
 

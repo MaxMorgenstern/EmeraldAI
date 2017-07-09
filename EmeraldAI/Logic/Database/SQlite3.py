@@ -16,7 +16,7 @@ class SQlite3(object):
         self.__Database = self.GetDB(Config().Get("Database", "SQliteDatabase"))
 
     def GetDB(self, database):
-        con = lite.connect(os.path.join(Global.EmeraldPath, "Data", "SqliteDB", database.rstrip(".sqlite") + ".sqlite"))
+        con = lite.connect(os.path.join(Global.EmeraldPath, "Data", "SqliteDB", database.rstrip(".sqlite") + ".sqlite"), check_same_thread=False)
         con.text_factory = str
         return con
 

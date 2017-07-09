@@ -53,7 +53,7 @@ class User(BaseObject):
         return None
 
     def SetUserByCVTag(self, cvTag, deepProcess=True):
-        if cvTag == None or self.CVTag == cvTag:
+        if cvTag is None or self.CVTag == cvTag:
             return
 
         self.CVTag = cvTag
@@ -63,7 +63,7 @@ class User(BaseObject):
         self.__setUser("SELECT * FROM Person WHERE CVTag = '{0}'", cvTag)
 
     def SetUserByName(self, name, deepProcess=True):
-        if name == None or self.Name == name:
+        if name is None or self.Name == name:
             return
 
         self.Name = name
@@ -71,6 +71,27 @@ class User(BaseObject):
             return
 
         self.__setUser("SELECT * FROM Person WHERE Name = '{0}'", name)
+
+    def Reset(self):
+        self.CVTag = Config().Get("DEFAULT", "UnknownUserTag")
+
+        self.Name = Config().Get("DEFAULT", "UnknownUserTag")
+        self.LastName = None
+        self.FirstName = None
+
+        self.Birthday = None
+        self.LastSeen = None
+        self.LastSpokenTo = None
+
+        self.Gender = "male"
+
+        self.Properties = []
+
+        self.Formal = True
+        self.Trainer = False
+        self.Admin = False
+
+        self.Updated = None
 
     def __setUser(self, query, name):
         sqlResult = db().Fetchall(query.format(name))

@@ -18,7 +18,7 @@ class Hotspot(BaseObject):
         self.RSSI = RSSI
         self.Noise = Noise
         self.Indicator = Indicator
-        if(ScanningOS == None):
+        if(ScanningOS is None):
             ScanningOS = Global.OS
         self.ScanningOS = ScanningOS
 

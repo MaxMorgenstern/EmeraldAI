@@ -22,13 +22,21 @@ from EmeraldAI.Entities.PipelineArgs import PipelineArgs
 from EmeraldAI.Logic.Modules import Pid
 from EmeraldAI.Config.Config import *
 from EmeraldAI.Logic.Audio.SoundMixer import *
-
-STT_CancelSpeech = False
-
-CV_PersonDetectionTimestamp = time.time()
-CV_DarknessTimestamp = time.time()
+from EmeraldAI.Logic.Memory.Brain import Brain as BrainMemory
 
 GLOBAL_FaceappPublisher = None
+
+# TODO lisen and mute to timestamps to set intervals
+def InitSettings():
+    BrainMemory().Set("PersonDetectionTimestamp", time.time())
+    BrainMemory().Set("DarknessTimestamp", time.time())
+
+    if(not BrainMemory().Has("Listen")):
+        BrainMemory().Set("Listen", True)
+
+    if(not BrainMemory().Has("Mute")):
+        BrainMemory().Set("Mute", False)
+
 
 def RunBrain():
     global GLOBAL_FaceappPublisher
@@ -40,6 +48,7 @@ def RunBrain():
     GLOBAL_FaceappPublisher = rospy.Publisher('to_faceapp', String, queue_size=10)
 
     rospy.spin()
+
 
 def callback(data):
     dataParts = data.data.split("|")
@@ -60,18 +69,19 @@ def callback(data):
     if dataParts[0] == "PING":
         ProcessPing(dataParts[1])
 
+    if dataParts[0] == "CLOCK":
+        ProcessClock(dataParts[1])
+
+
 
 ##### CV #####
 
-# TODO - we are getting flooded - timeouts after set
-# + checking if still user or most likely another one
-
 def ProcessCVData(dataParts):
     if dataParts[1] == "PERSON":
-        ProcessPerson(dataParts[2], dataParts[3], dataParts[4], dataParts[5], (dataParts[6]=="True"), (dataParts[7]=="True"))
+        ProcessPerson(dataParts[2], dataParts[3], dataParts[4], dataParts[5], (dataParts[6]=="True"), (dataParts[7]=="True"), (dataParts[8]=="True"))
 
-    if dataParts[1] == "BODY":
-        ProcessBody(dataParts[2], dataParts[3], dataParts[4], dataParts[5])
+    if dataParts[1] == "POSITION":
+        ProcessPosition(dataParts[2], dataParts[3], dataParts[4], dataParts[5])
 
     if dataParts[1] == "MOOD":
         ProcessMood(dataParts[2], dataParts[3], dataParts[4])
@@ -83,40 +93,114 @@ def ProcessCVData(dataParts):
         ProcessDarkness(dataParts[2], dataParts[3])
 
 
-def ProcessPerson(cameraName, id, bestResult, bestResultPerson, thresholdReached, timeoutReached):
-    global CV_PersonDetectionTimestamp, CV_DarknessTimestamp
-
+def ProcessPerson(cameraName, id, bestResult, secondBestResult, thresholdReached, timeoutReached, luckyShot):
     if(not Config().GetBoolean("Application.Brain", "RecognizePeople")):
         return
-    if(__cancelCameraProcess(cameraName, CV_DarknessTimestamp)):
+    if(__cancelCameraProcess(cameraName, BrainMemory().GetFloat("DarknessTimestamp"))):
         return
 
-    personToUnknownFactor = Config().GetInt("Application.Brain", "PersonToUnknownFactor") # 1 : 5
-    personTimeout = Config().GetInt("Application.Brain", "PersonTimeout") # 10 seconds
-
-    bestResultTag = None
-    if (len(bestResult) > 2):
-        resultData = re.sub("[()'\"]", "", bestResult).split(",")
-        bestResultTag = resultData[0]
-        bestResultValue = int(resultData[1])
-
-        if (len(bestResultPerson) > 2):
-            resultData = re.sub("[()'\"]", "", bestResultPerson).split(",")
-            if(bestResultValue / personToUnknownFactor <= int(resultData[1])):
-                bestResultTag = resultData[0]
-
-    timeout = False
-    if(CV_PersonDetectionTimestamp <= (time.time()-personTimeout)):
-        timeout = True
-
+    currentUser = User().GetCVTag()
     unknownUserTag = Config().Get("Application.Brain", "UnknownUserTag")
-    if(not timeout and not thresholdReached and (not timeoutReached or bestResultTag == unknownUserTag)):
+
+    bestResultTag, bestResultValue = __getResult(bestResult)
+    secondBestResultTag, secondBestResultValue = __getResult(secondBestResult)
+
+    minSetPersonThreshold = Config().GetInt("Application.Brain", "MinSetPersonThreshold")
+    setPersonThreshold = Config().GetInt("Application.Brain", "SetPersonThreshold")
+
+    # skip if best is unknown
+    if(bestResultTag == unknownUserTag):
+        # expect if 2nd best is about 10% off and no other user is set
+        if(secondBestResultTag != None and
+            (secondBestResultValue*0.9) >= bestResultValue and
+            secondBestResultValue > minSetPersonThreshold and
+            (currentUser == unknownUserTag or currentUser == secondBestResultTag)):
+            __updateUser(secondBestResultTag)
         return
 
-    if(User().GetCVTag() is not bestResultTag):
-        print "set user", bestResultTag
-        User().SetUserByCVTag(bestResultTag)
-        CV_PersonDetectionTimestamp = time.time()
+    # if threshold is reched, set user
+    # or if we have at least 1/3 of the person threshold
+    if(thresholdReached or bestResultValue >= (setPersonThreshold/3)):
+        # if 2nd user is current user and by 10% off the first - update second
+        if(secondBestResultTag != None and
+            secondBestResultTag != unknownUserTag and
+            secondBestResultTag == currentUser and
+            (secondBestResultValue*0.6) >= bestResultValue):
+            __updateUser(secondBestResultTag)
+            return
+        __updateUser(bestResultTag)
+        return
+
+    # on lucky shot
+    if(luckyShot):
+        # if another user is set
+        if (currentUser != unknownUserTag and currentUser != bestResultTag):
+            return
+        if(secondBestResultTag != None and
+            secondBestResultTag != unknownUserTag and
+            (secondBestResultValue*0.9) >= bestResultValue):
+            return
+        __updateUser(bestResultTag, True)
+        return
+
+
+def ProcessPosition(cameraName, cameraId, xPos, yPos):
+    if(int(cameraId) > 0 or __cancelCameraProcess(cameraName, BrainMemory().GetFloat("DarknessTimestamp"))):
+        return
+    lookAt = "center"
+    if(yPos != "center"):
+        lookAt = yPos
+    if(xPos != "center"):
+        lookAt = xPos
+    ProcessAnimation(lookAt)
+
+
+def ProcessAnimation(animation):
+    global GLOBAL_FaceappPublisher
+    if(animation is None):
+        return
+    animationData = "FACEMASTER|{0}".format(animation)
+    rospy.loginfo(animationData)
+    GLOBAL_FaceappPublisher.publish(animationData)
+
+
+def ProcessMood(cameraName, id, mood):
+    print int(id), mood
+    # TODO
+
+def ProcessGender(cameraName, id, gender):
+    print int(id), gender
+    # TODO
+
+def ProcessDarkness(cameraName, value):
+    # TODO - new parameter value added
+    if(cameraName == "IR"):
+        return
+    BrainMemory().Set("DarknessTimestamp", time.time())
+
+
+def __getResult(data):
+    resultTag = None
+    resultValue = 0
+    if (len(data) > 2):
+        resultData = re.sub("[()'\"]", "", data).split(",")
+        resultTag = resultData[0]
+        resultValue = int(resultData[1])
+
+    return resultTag, resultValue
+
+
+def __updateUser(cvTag, reducedTimeout=False):
+    print "set/update user", cvTag
+    personTimeout = Config().GetInt("Application.Brain", "PersonTimeout") # x seconds
+    if(User().GetCVTag() != cvTag):
+        if (BrainMemory().GetFloat("PersonDetectionTimestamp") > (time.time()-personTimeout)):
+            return
+    User().SetUserByCVTag(cvTag)
+    if(reducedTimeout):
+        BrainMemory().Set("PersonDetectionTimestamp", time.time()-round(personTimeout/3*2))
+    else:
+        BrainMemory().Set("PersonDetectionTimestamp", time.time())
 
 
 def __cancelCameraProcess(cameraName, darknessTimestamp):
@@ -129,64 +213,23 @@ def __cancelCameraProcess(cameraName, darknessTimestamp):
     return False
 
 
-def ProcessBody(cameraName, id, xPos, yPos):
-    global CV_DarknessTimestamp
-
-    if(cameraName == "IR"):
-        if(CV_DarknessTimestamp <= (time.time() - darknessTimeout)):
-            return
-
-    lookAt = "center"
-    if(yPos != "center"):
-        lookAt = yPos
-    if(xPos != "center"):
-        lookAt = xPos
-
-    ProcessAnimation(lookAt)
-
-
-def ProcessAnimation(animation):
-    global GLOBAL_FaceappPublisher
-
-    if(animation == None):
-        return
-
-    animationData = "FACEMASTER|{0}".format(animation)
-    rospy.loginfo(animationData)
-    GLOBAL_FaceappPublisher.publish(animationData)
-
-
-def ProcessMood(cameraName, id, mood):
-    print id, mood
-    # TODO
-
-def ProcessGender(cameraName, id, gender):
-    print id, gender
-    # TODO
-
-def ProcessDarkness(cameraName, value):
-    # TODO - new parameter value added
-    global CV_DarknessTimestamp
-    if(cameraName == "IR"):
-        return
-    CV_DarknessTimestamp = time.time()
-
-
 ##### CV Surveilence #####
+
 def ProcessSurveilenceData(dataParts):
     print "TODO"
+
 
 
 ##### STT #####
 
 def ProcessSpeech(data):
-    if(not Config().GetBoolean("Application.Brain", "Listen")):
+    if(not BrainMemory().GetBoolean("Listen")):
         return
 
-    STT_CancelSpeech = False
+    cancelSpeech = False
     stopwordList = Config().GetList("Bot", "StoppwordList")
     if(data in stopwordList):
-        STT_CancelSpeech = True
+        cancelSpeech = True
         SoundMixer().Stop()
 
     pipelineArgs = PipelineArgs(data)
@@ -197,11 +240,7 @@ def ProcessSpeech(data):
 
     pipelineArgs = ProcessResponse().Process(pipelineArgs)
 
-    if STT_CancelSpeech:
-        print "speech canceled"
-        return
-
-    if(not Config().GetBoolean("Application.Brain", "Mute")):
+    if(not cancelSpeech and not BrainMemory().GetBoolean("Mute")):
         if(pipelineArgs.Animation != None):
             ProcessAnimation(pipelineArgs.Animation)
 
@@ -216,6 +255,8 @@ def ProcessSpeech(data):
     print "Trainer Result: ", trainerResult
     print "Response", pipelineArgs.Response
 
+
+
 ##### FACEAPP #####
 
 def ProcessFaceApp(state):
@@ -225,12 +266,28 @@ def ProcessFaceApp(state):
     ProcessSpeech("TRIGGER_FACEAPP_{0}".format(state))
 
 
-##### FACEAPP #####
+
+##### PING #####
 
 def ProcessPing(state):
     print state
     # TODO - state = DEAD / ALIVE
     # TODO - a device we need does not ping anymore or a new device has been found
+
+
+
+##### CLOCK #####
+
+def ProcessClock(time):
+    # only check every 5 seconds
+    if (time%5 != 0):
+        return
+
+    personTimeout = Config().GetInt("Application.Brain", "PersonTimeout") # x seconds
+    if (BrainMemory().GetFloat("PersonDetectionTimestamp") > (time.time()-personTimeout)):
+        return;
+
+    User().Reset()
 
 
 
@@ -242,6 +299,7 @@ if __name__ == "__main__":
         sys.exit()
     Pid.Create("Brain")
     try:
+        InitSettings()
         RunBrain()
     except KeyboardInterrupt:
         print "End"

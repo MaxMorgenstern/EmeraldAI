@@ -54,9 +54,9 @@ class ComputerVision(object):
         self.__ResizeHeight = Config().GetInt("ComputerVision", "ImageSizeHeight") # 350
 
         self.__PredictionTimeout = Config().GetInt("ComputerVision.Prediction", "PredictionTimeout") # 5
-        self.__PredictStreamThreshold = Config().GetInt("ComputerVision.Prediction", "PredictionThreshold") # 1000
         self.__PredictStreamTimeoutDate = 0
         self.__PredictStreamTimeoutBool = False
+        self.__PredictStreamLuckyShot = True
         self.__PredictStreamMaxDistance = Config().GetInt("ComputerVision.Prediction", "MaxPredictionDistance") # 500
         self.__PredictStreamResult = {}
 
@@ -72,10 +72,17 @@ class ComputerVision(object):
         self.__upperBody = cv2.CascadeClassifier(os.path.join(self.__haarDir, "haarcascade_upperbody.xml"))
         self.__headShoulders = cv2.CascadeClassifier(os.path.join(self.__haarDir, "haarcascade_head_shoulders.xml"))
 
-        try:
-            self.__RecognizerModel = cv2.createFisherFaceRecognizer()
-        except:
-            self.__RecognizerModel = cv2.face.createFisherFaceRecognizer()
+
+        if(Config().Get("ComputerVision", "Recognizer") == "FisherFace"):
+            try:
+                self.__RecognizerModel = cv2.createFisherFaceRecognizer()
+            except:
+                self.__RecognizerModel = cv2.face.createFisherFaceRecognizer()
+        else:
+            try:
+                self.__RecognizerModel = cv2.createLBPHFaceRecognizer()
+            except:
+                self.__RecognizerModel = cv2.face.createLBPHFaceRecognizer()
 
         self.__RecognizerDictionary = {}
 
@@ -85,9 +92,8 @@ class ComputerVision(object):
         gray = cv2.equalizeHist(gray)
         return gray
 
-    # TODO - check if this should be x, y, w, h
     def __cropImage(self, img, face):
-        x, y, h, w = [result for result in face]
+        x, y, w, h = [result for result in face]
         return img[y:y+h,x:x+w]
 
     def __saveImg(self, img, datasetName, imageType, fileName):
@@ -172,7 +178,7 @@ class ComputerVision(object):
 
 
     def LimitImagesInFolder(self, datasetName, amount=None):
-        if amount == None:
+        if amount is None:
             amount = self.__ImageLimit
         amount += 2 # add one for 'Disabled' folder and one for eventual hidden file
 
@@ -259,7 +265,7 @@ class ComputerVision(object):
 
 
     def TrainModel(self, datasetName, imageSize=None):
-        if imageSize == None:
+        if imageSize is None:
             imageSize = "{0}x{1}".format(self.__ResizeWidth, self.__ResizeHeight)
         images, labels, labelDict = self.__loadImages(datasetName, imageSize)
         if len(images) == 0 or len(labels) == 0:
@@ -274,7 +280,7 @@ class ComputerVision(object):
 
 
     def LoadModel(self, datasetName, imageSize=None):
-        if imageSize == None:
+        if imageSize is None:
             imageSize = "{0}x{1}".format(self.__ResizeWidth, self.__ResizeHeight)
         path = os.path.join(self.__DatasetBasePath, datasetName)
         try:
@@ -287,10 +293,10 @@ class ComputerVision(object):
 
 
     def TakeImage(self, image, imageType, dataArray=None, datasetName=None, grayscale=False):
-        if datasetName == None:
+        if datasetName is None:
             datasetName = self.__TempCVFolder
 
-        if(dataArray == None):
+        if(dataArray is None):
             if grayscale:
                 image = self.__toGrayscale(image)
             fileName = str(self.__getHighestImageID(datasetName, imageType) + 1) + ".jpg"
@@ -357,41 +363,37 @@ class ComputerVision(object):
         return result, faces
 
 
-    def PredictStream(self, image, predictionObjectList, threshold=None, timeout=None):
-        if threshold == None:
-            threshold = self.__PredictStreamThreshold
-
-        if timeout == None:
+    def PredictStream(self, image, predictionObjectList, timeout=None):
+        if timeout is None:
             timeout = self.__PredictionTimeout
 
         # reset is timeout happened on last call
         if self.__PredictStreamTimeoutBool:
             self.__PredictStreamTimeoutDate = time.time() + timeout
             self.__PredictStreamTimeoutBool = False
+            self.__PredictStreamLuckyShot = True
+
             for predictionObject in predictionObjectList:
                 predictionObject.ResetResult()
 
         #check if current call times out
-        reachedTimeout = False
         if time.time() > self.__PredictStreamTimeoutDate:
-            reachedTimeout = True
             self.__PredictStreamTimeoutBool = True
-
-        reachedThreshold = False
 
         prediction, rawFaceData = self.Predict(image, predictionObjectList)
 
+        luckyShot = False
         for key, value in enumerate(prediction):
             dataArray = value['face']['data']
             for data in dataArray:
                 for predictionObject in predictionObjectList:
                     if data['model'] == predictionObject.Name:
                         if int(data['distance']) > predictionObject.MaxPredictionDistance or self.__NotKnownDataTag in data['value']:
-                            predictionObject.AddPrediction(key, self.__UnknownUserTag, (int(data['distance']) - predictionObject.MaxPredictionDistance))
+                            predictionObject.AddPrediction(key, self.__UnknownUserTag, int(data['distance']))
                         else:
                             predictionObject.AddPrediction(key, data['value'], int(data['distance']))
+                            if predictionObject.Name == "Person" and self.__PredictStreamLuckyShot:
+                                luckyShot = True
+                                self.__PredictStreamLuckyShot = False
 
-                    if predictionObject.ThresholdReached(threshold):
-                        reachedThreshold = True
-
-        return predictionObjectList, reachedThreshold, reachedTimeout, rawFaceData
+        return predictionObjectList, self.__PredictStreamTimeoutBool, luckyShot, rawFaceData

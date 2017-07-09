@@ -20,7 +20,7 @@ def RunSTT():
     while True:
         #rate.sleep()
         data = STT().Process(False)
-        if(data == None):
+        if(data is None):
             print "None"
             continue
         print "We got:", data

@@ -79,7 +79,7 @@ try:
             highestVestion = currentVersion
             highestVersionObject = d
 
-    if (highestVersionObject == None):
+    if (highestVersionObject is None):
         print 'Already up to date'
         Pid.Remove("Update")
         exit()

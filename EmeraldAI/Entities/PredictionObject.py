@@ -19,25 +19,32 @@ class PredictionObject(object):
             resultDict.pop(k)
         return resultDict
 
-    def GetBestPredictionResult(self, id, ignoreUnknown=False):
+    def GetBestPredictionResult(self, id, position=0, ignoreUnknown=False):
         resultDict = self.PredictionResult[id].copy()
         if(ignoreUnknown):
             resultDict = self.__RemoveUnknown(resultDict)
 
         sortedDict = sorted(resultDict.items(), key=operator.itemgetter(1), reverse=True)
-        if (len(sortedDict) == 0):
+        if (len(sortedDict) <= position):
             return ()
-        return sortedDict[0]
+        return sortedDict[position]
 
     def AddPrediction(self, id, key, distance):
+        if(distance > self.MaxPredictionDistance):
+            delta = int(round(distance)) - self.MaxPredictionDistance
+            weightedDistance = delta if (delta < self.MaxPredictionDistance) else self.MaxPredictionDistance
+        else:
+            weightedDistance = self.MaxPredictionDistance - int(round(distance))
+            weightedDistance = 1 if (weightedDistance == 0) else weightedDistance
+
         if(self.PredictionResult.has_key(id)):
             if(self.PredictionResult[id].has_key(key)):
-                self.PredictionResult[id][key] += (self.MaxPredictionDistance - distance)
+                self.PredictionResult[id][key] += weightedDistance
             else:
-                self.PredictionResult[id][key] = (self.MaxPredictionDistance - distance)
+                self.PredictionResult[id][key] = weightedDistance
         else:
             self.PredictionResult[id] = {}
-            self.PredictionResult[id][key] = (self.MaxPredictionDistance - distance)
+            self.PredictionResult[id][key] = weightedDistance
 
     def ThresholdReached(self, threshold):
         if len(self.PredictionResult) > 0:

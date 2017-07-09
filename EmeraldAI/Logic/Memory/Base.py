@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 from EmeraldAI.Config.Config import *
 if(Config().Get("Database", "ConversationDatabaseType").lower() == "sqlite"):
     from EmeraldAI.Logic.Database.SQlite3 import SQlite3 as db
@@ -9,8 +11,20 @@ class Base(object):
     def __init__(self, parentID):
         self.ParentID = parentID
 
+
+    def Has(self, key, parentID = None):
+        if(parentID is None):
+            parentID = self.ParentID
+
+        query = """SELECT Value FROM Memory WHERE ParentID = '{0}' AND lower(Key) = '{1}'"""
+        sqlResult = db().FetchallCacheBreaker(query.format(parentID, key.lower()))
+        for r in sqlResult:
+            return True
+        return False
+
+
     def Get(self, key, parentID = None):
-        if(parentID == None):
+        if(parentID is None):
             parentID = self.ParentID
 
         query = """SELECT Value FROM Memory WHERE ParentID = '{0}' AND lower(Key) = '{1}'"""
@@ -35,7 +49,7 @@ class Base(object):
 
 
     def Set(self, key, value, parentID = None):
-        if(parentID == None):
+        if(parentID is None):
             parentID = self.ParentID
 
         query = """SELECT ID FROM Memory WHERE ParentID = '{0}' AND lower(Key) = '{1}'"""
