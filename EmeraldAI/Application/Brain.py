@@ -140,7 +140,7 @@ def ProcessPerson(cameraName, id, bestResult, secondBestResult, thresholdReached
             secondBestResultTag != unknownUserTag and
             (secondBestResultValue*0.9) >= bestResultValue):
             return
-        __updateUser(bestResultTag, False)
+        __updateUser(bestResultTag, True)
         return
 
 
@@ -190,14 +190,16 @@ def __getResult(data):
     return resultTag, resultValue
 
 
-def __updateUser(cvTag, updateTimestamp=True):
+def __updateUser(cvTag, reducedTimeout=False):
     print "set/update user", cvTag
+    personTimeout = Config().GetInt("Application.Brain", "PersonTimeout") # x seconds
     if(User().GetCVTag() != cvTag):
-        personTimeout = Config().GetInt("Application.Brain", "PersonTimeout") # x seconds
         if (BrainMemory().GetFloat("PersonDetectionTimestamp") > (time.time()-personTimeout)):
             return
     User().SetUserByCVTag(cvTag)
-    if(updateTimestamp):
+    if(reducedTimeout):
+        BrainMemory().Set("PersonDetectionTimestamp", time.time()-round(personTimeout/3))
+    else:
         BrainMemory().Set("PersonDetectionTimestamp", time.time())
 
 
