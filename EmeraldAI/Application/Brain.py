@@ -198,7 +198,7 @@ def __updateUser(cvTag, reducedTimeout=False):
             return
     User().SetUserByCVTag(cvTag)
     if(reducedTimeout):
-        BrainMemory().Set("PersonDetectionTimestamp", time.time()-round(personTimeout/3))
+        BrainMemory().Set("PersonDetectionTimestamp", time.time()-round(personTimeout/3*2))
     else:
         BrainMemory().Set("PersonDetectionTimestamp", time.time())
 
