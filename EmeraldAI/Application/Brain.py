@@ -277,8 +277,15 @@ def ProcessPing(state):
 ##### CLOCK #####
 
 def ProcessClock(time):
-    print time
-    # TODO - timestamp
+    # only check every 5 seconds
+    if (time%5 != 0):
+        return
+
+    personTimeout = Config().GetInt("Application.Brain", "PersonTimeout") # x seconds
+    if (BrainMemory().GetFloat("PersonDetectionTimestamp") > (time.time()-personTimeout)):
+        return;
+
+    User().Reset()
 
 
 

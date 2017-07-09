@@ -72,6 +72,27 @@ class User(BaseObject):
 
         self.__setUser("SELECT * FROM Person WHERE Name = '{0}'", name)
 
+    def Reset(self):
+        self.CVTag = Config().Get("DEFAULT", "UnknownUserTag")
+
+        self.Name = Config().Get("DEFAULT", "UnknownUserTag")
+        self.LastName = None
+        self.FirstName = None
+
+        self.Birthday = None
+        self.LastSeen = None
+        self.LastSpokenTo = None
+
+        self.Gender = "male"
+
+        self.Properties = []
+
+        self.Formal = True
+        self.Trainer = False
+        self.Admin = False
+
+        self.Updated = None
+
     def __setUser(self, query, name):
         sqlResult = db().Fetchall(query.format(name))
         for r in sqlResult:
