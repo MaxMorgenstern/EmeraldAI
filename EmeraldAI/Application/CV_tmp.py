@@ -107,7 +107,7 @@ def RunCV(camID, camType, surveillanceMode):
 
 
         # Body Detection
-        if(surveillanceMode or bodyDetectionInterval < 999 and bodyDetectionTimestamp <= (time.time()-bodyDetectionInterval)):
+        if((surveillanceMode or bodyDetectionInterval < 999) and bodyDetectionTimestamp <= (time.time()-bodyDetectionInterval)):
             rawBodyData = cv.DetectBody(image)
             if (len(rawBodyData) > 0):
                 bodyDetectionTimestamp = time.time()
@@ -118,7 +118,8 @@ def RunCV(camID, camType, surveillanceMode):
         # Face Detection
         predictionResult, timeoutReached, luckyShot, rawFaceData = cv.PredictStream(image, predictionObjectList)
 
-        takeImage = True
+        takeImage = False
+        bestResultName = None
         for predictionObject in predictionResult:
             thresholdReached = predictionObject.ThresholdReached(predictionThreshold)
             if len(predictionObject.PredictionResult) > 0 and (thresholdReached or timeoutReached or luckyShot):
@@ -127,10 +128,11 @@ def RunCV(camID, camType, surveillanceMode):
                     bestResult = predictionObject.GetBestPredictionResult(key, 0)
 
                     if (predictionObject.Name == "Person"):
-                        if(bestResult[0] != unknownUserTag):
-                            takeImage = False
-
                         secondBestResult = predictionObject.GetBestPredictionResult(key, 1)
+                        if(bestResult[0] == unknownUserTag):
+                            takeImage = True
+                            bestResultName = bestResult[0] if (len(secondBestResult) == 0) else secondBestResult[0]
+
                         predictionData = "{0}|PERSON|{1}|{2}|{3}|{4}|{5}|{6}|{7}".format(cvInstanceType, camType, key, bestResult, secondBestResult, thresholdReached, timeoutReached, luckyShot)
 
 
@@ -174,7 +176,7 @@ def RunCV(camID, camType, surveillanceMode):
 
 
         # Take Images
-        if(takeImage and clockFace <= (time.time()-intervalBetweenImages) and cv.TakeImage(image, "Person", rawFaceData, grayscale=True)):
+        if(takeImage and clockFace <= (time.time()-intervalBetweenImages) and cv.TakeImage(image, "Person", rawFaceData, grayscale=True, prefix=bestResultName)):
             clockFace = time.time()
 
 

@@ -96,10 +96,13 @@ class ComputerVision(object):
         x, y, w, h = [result for result in face]
         return img[y:y+h,x:x+w]
 
-    def __saveImg(self, img, datasetName, imageType, fileName):
+    def __saveImg(self, img, datasetName, imageType, fileName, prefix=None):
         try:
             Global.EnsureDirectoryExists(os.path.join(self.__DatasetBasePath, datasetName))
             Global.EnsureDirectoryExists(os.path.join(self.__DatasetBasePath, datasetName, imageType))
+
+            if prefix is not None:
+                fileName = "{0}_{1}".format(prefix, fileName)
 
             cv2.imwrite(os.path.join(self.__DatasetBasePath, datasetName, imageType, fileName), img) #Write image
         except:
@@ -292,7 +295,7 @@ class ComputerVision(object):
             return None, None
 
 
-    def TakeImage(self, image, imageType, dataArray=None, datasetName=None, grayscale=False):
+    def TakeImage(self, image, imageType, dataArray=None, datasetName=None, grayscale=False, prefix=None):
         if datasetName is None:
             datasetName = self.__TempCVFolder
 
@@ -300,7 +303,7 @@ class ComputerVision(object):
             if grayscale:
                 image = self.__toGrayscale(image)
             fileName = str(self.__getHighestImageID(datasetName, imageType) + 1) + ".jpg"
-            self.__saveImg(image, datasetName, imageType, fileName)
+            self.__saveImg(image, datasetName, imageType, fileName, prefix)
             return True
 
         if len(dataArray) > 0:
@@ -311,7 +314,7 @@ class ComputerVision(object):
                 resizedImage = cv2.resize(croppedImage, (self.__ResizeWidth, self.__ResizeHeight))
 
                 fileName = str(self.__getHighestImageID(datasetName, imageType) + 1) + ".jpg"
-                self.__saveImg(resizedImage, datasetName, imageType, fileName)
+                self.__saveImg(resizedImage, datasetName, imageType, fileName, prefix)
                 return True
         return False
 
