@@ -5,7 +5,7 @@ source $directory/_Initialize.sh master
 echo "Activating ROS..."
 roscore&
 
-sleep 10
+sleep 5
 echo "roscore has been started"
 
 echo "Start Clock..."

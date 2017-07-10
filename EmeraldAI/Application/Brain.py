@@ -52,6 +52,10 @@ def RunBrain():
 
 def callback(data):
     dataParts = data.data.split("|")
+
+    if dataParts[0] == "CLOCK":
+        ProcessClock(dataParts[1])
+
     print "Just got", dataParts
 
     if dataParts[0] == "CVSURV":
@@ -68,9 +72,6 @@ def callback(data):
 
     if dataParts[0] == "PING":
         ProcessPing(dataParts[1])
-
-    if dataParts[0] == "CLOCK":
-        ProcessClock(dataParts[1])
 
 
 
@@ -278,9 +279,9 @@ def ProcessPing(state):
 
 ##### CLOCK #####
 
-def ProcessClock(time):
+def ProcessClock(timestamp):
     # only check every 5 seconds
-    if (time%5 != 0):
+    if (int(timestamp)%5 != 0):
         return
 
     personTimeout = Config().GetInt("Application.Brain", "PersonTimeout") # x seconds
