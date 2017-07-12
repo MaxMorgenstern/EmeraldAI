@@ -4,6 +4,7 @@ import sys
 from os.path import dirname, abspath
 import re
 import time
+from math import floor
 sys.path.append(dirname(dirname(dirname(abspath(__file__)))))
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -116,7 +117,7 @@ def ProcessPerson(cameraName, id, bestResult, secondBestResult, thresholdReached
             (secondBestResultValue*0.9) >= bestResultValue and
             secondBestResultValue > minSetPersonThreshold and
             (currentUser == unknownUserTag or currentUser == secondBestResultTag)):
-            __updateUser(secondBestResultTag)
+            __updateUser(secondBestResultTag, secondBestResultValue)
         return
 
     # if threshold is reched, set user
@@ -127,9 +128,9 @@ def ProcessPerson(cameraName, id, bestResult, secondBestResult, thresholdReached
             secondBestResultTag != unknownUserTag and
             secondBestResultTag == currentUser and
             (secondBestResultValue*0.6) >= bestResultValue):
-            __updateUser(secondBestResultTag)
+            __updateUser(secondBestResultTag, secondBestResultValue)
             return
-        __updateUser(bestResultTag)
+        __updateUser(bestResultTag, bestResultValue)
         return
 
     # on lucky shot
@@ -141,7 +142,7 @@ def ProcessPerson(cameraName, id, bestResult, secondBestResult, thresholdReached
             secondBestResultTag != unknownUserTag and
             (secondBestResultValue*0.9) >= bestResultValue):
             return
-        __updateUser(bestResultTag, True)
+        __updateUser(bestResultTag, bestResultValue, True)
         return
 
 
@@ -191,17 +192,23 @@ def __getResult(data):
     return resultTag, resultValue
 
 
-def __updateUser(cvTag, reducedTimeout=False):
+def __updateUser(cvTag, predictionValue=0, reducedTimeout=False):
     print "set/update user", cvTag
-    personTimeout = Config().GetInt("Application.Brain", "PersonTimeout") # x seconds
-    if(User().GetCVTag() != cvTag):
-        if (BrainMemory().GetFloat("PersonDetectionTimestamp") > (time.time()-personTimeout)):
-            return
+    personDetectionTimestamp = BrainMemory().GetFloat("PersonDetectionTimestamp")
+    if(User().GetCVTag() != cvTag and personDetectionTimestamp > time.time()):
+        return
+
+    elif personDetectionTimestamp <= time.time():
+        tmpBasePersonTimeout = Config().GetInt("Application.Brain", "PersonTimeout")
+        basePersonTimeout = round(tmpBasePersonTimeout/3) if reducedTimeout else tmpBasePersonTimeout
+        personDetectionTimestamp = time.time() + basePersonTimeout
+
     User().SetUserByCVTag(cvTag)
-    if(reducedTimeout):
-        BrainMemory().Set("PersonDetectionTimestamp", time.time()-round(personTimeout/3*2))
-    else:
-        BrainMemory().Set("PersonDetectionTimestamp", time.time())
+
+    # TODO - tuning
+    predictionValue = int(floor(predictionValue/10 if (predictionValue < 55) else predictionValue/20+3))
+
+    BrainMemory().Set("PersonDetectionTimestamp", personDetectionTimestamp+predictionValue)
 
 
 def __cancelCameraProcess(cameraName, darknessTimestamp):
@@ -284,8 +291,7 @@ def ProcessClock(timestamp):
     if (int(timestamp)%5 != 0):
         return
 
-    personTimeout = Config().GetInt("Application.Brain", "PersonTimeout") # x seconds
-    if (BrainMemory().GetFloat("PersonDetectionTimestamp") > (time.time()-personTimeout)):
+    if (BrainMemory().GetFloat("PersonDetectionTimestamp") > (time.time())):
         return;
 
     User().Reset()
