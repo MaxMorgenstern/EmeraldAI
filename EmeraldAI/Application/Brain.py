@@ -199,14 +199,19 @@ def __updateUser(cvTag, predictionValue=0, reducedTimeout=False):
         return
 
     elif personDetectionTimestamp <= time.time():
-        tmpBasePersonTimeout = Config().GetInt("Application.Brain", "PersonTimeout")
-        basePersonTimeout = round(tmpBasePersonTimeout/3) if reducedTimeout else tmpBasePersonTimeout
+        tmpBasePersonTimeout = Config().GetInt("Application.Brain", "PersonTimeout") # 3
+        basePersonTimeout = round(tmpBasePersonTimeout/2) if reducedTimeout else tmpBasePersonTimeout
         personDetectionTimestamp = time.time() + basePersonTimeout
 
     User().SetUserByCVTag(cvTag)
 
-    # TODO - tuning
-    predictionValue = int(floor(predictionValue/10 if (predictionValue < 55) else predictionValue/20+3))
+    predictionWeightLowValue = Config().GetInt("Application.Brain", "PredictionWeightLowValue") # 10
+    predictionWeightHighValue = Config().GetInt("Application.Brain", "PredictionWeightHighValue") # 20
+    predictionWeightHighValueBonus = Config().GetInt("Application.Brain", "PredictionWeightHighValueBonus") # 3
+    predictionWeightBorder = Config().GetInt("Application.Brain", "PredictionWeightBorder") # 55
+
+    predictionValue = int(floor(predictionValue/predictionWeightLowValue
+        if (predictionValue < predictionWeightBorder) else predictionValue/predictionWeightHighValue+predictionWeightHighValueBonus))
 
     BrainMemory().Set("PersonDetectionTimestamp", personDetectionTimestamp+predictionValue)
 
@@ -291,7 +296,7 @@ def ProcessClock(timestamp):
     if (int(timestamp)%5 != 0):
         return
 
-    if (BrainMemory().GetFloat("PersonDetectionTimestamp") > (time.time())):
+    if (BrainMemory().GetFloat("PersonDetectionTimestamp") > time.time()):
         return;
 
     User().Reset()

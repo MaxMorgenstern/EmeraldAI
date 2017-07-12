@@ -162,7 +162,7 @@ ShowCameraImage = False
 [ComputerVision.Prediction]
 MaxPredictionDistance = 75
 
-PredictionTimeout = 5
+PredictionTimeout = 3
 PredictionThreshold = 150
 
 
@@ -196,8 +196,13 @@ RecognizePeople = True
 RecognizeWithIRCam = True
 RecognizeWithIRCamOnlyOnDarkness = False
 
-PersonTimeout = 10
+PersonTimeout = 3
 DarknessTimeout = 10
+
+PredictionWeightLowValue = 10
+PredictionWeightHighValue = 20
+PredictionWeightHighValueBonus = 3
+PredictionWeightBorder = 55
 
 MinSetPersonThreshold = 15
 # should equal ComputerVision.Prediction - PredictionThreshold
