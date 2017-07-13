@@ -56,23 +56,29 @@ def callback(data):
 
     if dataParts[0] == "CLOCK":
         ProcessClock(dataParts[1])
+        return
 
     print "Just got", dataParts
 
     if dataParts[0] == "CVSURV":
         ProcessSurveilenceData(dataParts)
+        return
 
     if dataParts[0] == "CV":
         ProcessCVData(dataParts)
+        return
 
     if dataParts[0] == "STT":
         ProcessSpeech(dataParts[1])
+        return
 
     if dataParts[0] == "FACEAPP":
         ProcessFaceApp(dataParts[1])
+        return
 
     if dataParts[0] == "PING":
         ProcessPing(dataParts[1])
+        return
 
 
 
@@ -266,7 +272,8 @@ def ProcessSpeech(data):
     print "Pipeline Args", pipelineArgs.toJSON()
     print "Main User", User().toJSON()
     print "Trainer Result: ", trainerResult
-    print "Response", pipelineArgs.Response
+    print "Input: ", data
+    print "Response: ", pipelineArgs.Response
 
 
 
