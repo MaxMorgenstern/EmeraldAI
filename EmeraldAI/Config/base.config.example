@@ -148,6 +148,7 @@ Recognizer = LBPH
 ImageSizeWidth = 350
 ImageSizeHeight = 350
 ImageLimit = 100
+ImageSuffix = True
 CropBodyImage = True
 IntervalBetweenImages = 1
 BodyDetectionInterval = 10

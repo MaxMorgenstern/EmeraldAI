@@ -11,6 +11,7 @@ from EmeraldAI.Config.Config import *
 from EmeraldAI.Logic.Modules import Global
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Logic.Logger import *
+from EmeraldAI.Logic.Modules import Hashing
 
 class DetectionSettings(object):
     def __init__(self, scale, minNeighbors, minSize):
@@ -49,6 +50,7 @@ class ComputerVision(object):
         self.__NotKnownDataTag = Config().Get("ComputerVision", "NotKnownDataTag") # NotKnown
 
         self.__ImageLimit = Config().GetInt("ComputerVision", "ImageLimit") # 100
+        self.__ImageSuffix = Config().GetBoolean("ComputerVision", "ImageSuffix") # True
 
         self.__ResizeWidth = Config().GetInt("ComputerVision", "ImageSizeWidth") # 350
         self.__ResizeHeight = Config().GetInt("ComputerVision", "ImageSizeHeight") # 350
@@ -103,6 +105,12 @@ class ComputerVision(object):
 
             if prefix is not None:
                 fileName = "{0}_{1}".format(prefix, fileName)
+
+            if self.__ImageSuffix:
+                hashValue = Hashing.GenHash()
+                fileName = "{0}_{1}".format(fileName, hashValue)
+
+            fileName = "{0}.{1}".format(fileName, ".jpg")
 
             cv2.imwrite(os.path.join(self.__DatasetBasePath, datasetName, imageType, fileName), img) #Write image
         except:
@@ -302,7 +310,7 @@ class ComputerVision(object):
         if(dataArray is None):
             if grayscale:
                 image = self.__toGrayscale(image)
-            fileName = str(self.__getHighestImageID(datasetName, imageType) + 1) + ".jpg"
+            fileName = str(self.__getHighestImageID(datasetName, imageType) + 1)
             self.__saveImg(image, datasetName, imageType, fileName, prefix)
             return True
 
@@ -313,7 +321,7 @@ class ComputerVision(object):
                     croppedImage = self.__toGrayscale(croppedImage)
                 resizedImage = cv2.resize(croppedImage, (self.__ResizeWidth, self.__ResizeHeight))
 
-                fileName = str(self.__getHighestImageID(datasetName, imageType) + 1) + ".jpg"
+                fileName = str(self.__getHighestImageID(datasetName, imageType) + 1)
                 self.__saveImg(resizedImage, datasetName, imageType, fileName, prefix)
                 return True
         return False
