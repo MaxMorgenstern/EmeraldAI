@@ -19,15 +19,8 @@ from EmeraldAI.Logic.ComputerVision.ModelMonitor import ModelMonitor
 from EmeraldAI.Logic.Modules import Pid
 
 def EnsureModelUpdate():
-    monitor = ModelMonitor()
     predictionModules = Config().GetList("ComputerVision", "Modules")
-
-    for moduleName in predictionModules:
-        if(monitor.CompareHash(moduleName, monitor.GetStoredHash(moduleName))):
-            print "Model '{0}' up to date".format(moduleName)
-            continue
-        print "Rebuild Model '{0}'...".format(moduleName)
-        monitor.Rebuild(moduleName)
+    ModelMonitor().EnsureModelUpdate(predictionModules)
 
 
 def RunCV(camID, camType, surveillanceMode):

@@ -17,6 +17,12 @@ class ModelMonitor(object):
         self.__HashFileName = "{0}.npy"
         self.__DatasetBasePath = os.path.join(Global.EmeraldPath, "Data", "ComputerVisionData")
 
+    def EnsureModelUpdate(self, moduleList):
+        for moduleName in moduleList:
+            if(self.CompareHash(moduleName, self.GetStoredHash(moduleName))):
+                continue
+            self.Rebuild(moduleName)
+
     def CompareHash(self, datasetName, hashValue):
         path = os.path.join(self.__DatasetBasePath, datasetName)
         folderHash = Hashing.GetDirHash(path)
@@ -30,14 +36,6 @@ class ModelMonitor(object):
         return storedHash
 
     def Rebuild(self, datasetName, imageSize=None):
-        try:
-            storedHash = np.load(os.path.join(self.__DatasetBasePath, self.__HashFileName.format(datasetName))).item()
-        except Exception:
-            storedHash = 0
-
-        if (self.CompareHash(datasetName, storedHash)):
-            return
-
         FileLogger().Info("ModelMonitor: Rebuild {0} Model".format(datasetName))
         ComputerVision().TrainModel(datasetName, imageSize)
         path = os.path.join(self.__DatasetBasePath, datasetName)
