@@ -11,6 +11,9 @@ echo "roscore has been started"
 echo "Start Clock..."
 python $directory/Clock.py&
 
+echo "Start Ping Tester..."
+python $directory/PingTester.py&
+
 echo "Run Brain..."
 python $directory/Brain.py
 

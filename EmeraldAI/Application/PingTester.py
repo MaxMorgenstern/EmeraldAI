@@ -13,7 +13,7 @@ from EmeraldAI.Logic.Modules import Pid
 dictionary = {}
 publisher = None
 
-def RunPingTest():
+def RunPingTester():
     rospy.init_node('ping_test_node', anonymous=True)
 
     rospy.Subscriber("ping", String, pingCallback)
@@ -44,15 +44,15 @@ def pingCallback(data):
 
 
 if __name__ == "__main__":
-    if(Pid.HasPid("PingTest")):
+    if(Pid.HasPid("PingTester")):
         print "Process is already runnung. Bye!"
         sys.exit()
-    Pid.Create("PingTest")
+    Pid.Create("PingTester")
 
     try:
-        RunPingTest()
+        RunPingTester()
     except KeyboardInterrupt:
         print "End"
     finally:
-        Pid.Remove("PingTest")
+        Pid.Remove("PingTester")
 

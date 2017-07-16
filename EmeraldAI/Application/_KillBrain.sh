@@ -1,16 +1,21 @@
 #!/bin/bash
 directory=`dirname $0`
-file=$directory/Brain.pid
-kill -9 $(cat $file)
 
+file=$directory/Brain.pid
 if [ -f $file ] ; then
+    kill -9 $(cat $file)
     rm $file
 fi
 
 file=$directory/Clock.pid
-kill -9 $(cat $file)
-
 if [ -f $file ] ; then
+    kill -9 $(cat $file)
+    rm $file
+fi
+
+file=$directory/PingTester.pid
+if [ -f $file ] ; then
+    kill -9 $(cat $file)
     rm $file
 fi
 
