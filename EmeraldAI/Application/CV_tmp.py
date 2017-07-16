@@ -193,10 +193,11 @@ if __name__ == "__main__":
             if (arg.lower().startswith("-surveillance")):
                 surveillanceMode = True
 
-    if(Pid.HasPid("CV{0}".format(camID))):
+    tmpCamID = "" if camID == -1 else camID
+    if(Pid.HasPid("CV{0}".format(ctmpCamIDmID))):
         print "Process is already runnung. Bye!"
         sys.exit()
-    Pid.Create("CV{0}".format(camID))
+    Pid.Create("CV{0}".format(tmpCamID))
 
     try:
         EnsureModelUpdate()
@@ -204,4 +205,4 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print "End"
     finally:
-        Pid.Remove("CV{0}".format(camID))
+        Pid.Remove("CV{0}".format(tmpCamID))

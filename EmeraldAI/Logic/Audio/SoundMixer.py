@@ -10,6 +10,8 @@ class SoundMixer():
         pygame.mixer.init()
 
     def Play(self, filename):
+        if (filename is None):
+            return
         if(self.IsPlaying()):
             self.Stop()
         pygame.mixer.music.load(filename)
