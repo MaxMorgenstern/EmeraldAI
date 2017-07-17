@@ -11,6 +11,7 @@ from EmeraldAI.Config.Config import *
 from EmeraldAI.Logic.Modules import Global
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Logic.Logger import *
+from EmeraldAI.Logic.Modules import Hashing
 
 class DetectionSettings(object):
     def __init__(self, scale, minNeighbors, minSize):
@@ -49,6 +50,7 @@ class ComputerVision(object):
         self.__NotKnownDataTag = Config().Get("ComputerVision", "NotKnownDataTag") # NotKnown
 
         self.__ImageLimit = Config().GetInt("ComputerVision", "ImageLimit") # 100
+        self.__ImageSuffix = Config().GetBoolean("ComputerVision", "ImageSuffix") # True
 
         self.__ResizeWidth = Config().GetInt("ComputerVision", "ImageSizeWidth") # 350
         self.__ResizeHeight = Config().GetInt("ComputerVision", "ImageSizeHeight") # 350
@@ -96,10 +98,19 @@ class ComputerVision(object):
         x, y, w, h = [result for result in face]
         return img[y:y+h,x:x+w]
 
-    def __saveImg(self, img, datasetName, imageType, fileName):
+    def __saveImg(self, img, datasetName, imageType, fileName, prefix=None):
         try:
             Global.EnsureDirectoryExists(os.path.join(self.__DatasetBasePath, datasetName))
             Global.EnsureDirectoryExists(os.path.join(self.__DatasetBasePath, datasetName, imageType))
+
+            if prefix is not None:
+                fileName = "{0}_{1}".format(prefix, fileName)
+
+            if self.__ImageSuffix:
+                hashValue = Hashing.GenHash()
+                fileName = "{0}_{1}".format(fileName, hashValue)
+
+            fileName = "{0}.{1}".format(fileName, ".jpg")
 
             cv2.imwrite(os.path.join(self.__DatasetBasePath, datasetName, imageType, fileName), img) #Write image
         except:
@@ -292,15 +303,15 @@ class ComputerVision(object):
             return None, None
 
 
-    def TakeImage(self, image, imageType, dataArray=None, datasetName=None, grayscale=False):
+    def TakeImage(self, image, imageType, dataArray=None, datasetName=None, grayscale=False, prefix=None):
         if datasetName is None:
             datasetName = self.__TempCVFolder
 
         if(dataArray is None):
             if grayscale:
                 image = self.__toGrayscale(image)
-            fileName = str(self.__getHighestImageID(datasetName, imageType) + 1) + ".jpg"
-            self.__saveImg(image, datasetName, imageType, fileName)
+            fileName = str(self.__getHighestImageID(datasetName, imageType) + 1)
+            self.__saveImg(image, datasetName, imageType, fileName, prefix)
             return True
 
         if len(dataArray) > 0:
@@ -310,8 +321,8 @@ class ComputerVision(object):
                     croppedImage = self.__toGrayscale(croppedImage)
                 resizedImage = cv2.resize(croppedImage, (self.__ResizeWidth, self.__ResizeHeight))
 
-                fileName = str(self.__getHighestImageID(datasetName, imageType) + 1) + ".jpg"
-                self.__saveImg(resizedImage, datasetName, imageType, fileName)
+                fileName = str(self.__getHighestImageID(datasetName, imageType) + 1)
+                self.__saveImg(resizedImage, datasetName, imageType, fileName, prefix)
                 return True
         return False
 

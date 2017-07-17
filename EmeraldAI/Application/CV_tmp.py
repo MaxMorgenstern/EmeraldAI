@@ -19,15 +19,8 @@ from EmeraldAI.Logic.ComputerVision.ModelMonitor import ModelMonitor
 from EmeraldAI.Logic.Modules import Pid
 
 def EnsureModelUpdate():
-    monitor = ModelMonitor()
     predictionModules = Config().GetList("ComputerVision", "Modules")
-
-    for moduleName in predictionModules:
-        if(monitor.CompareHash(moduleName, monitor.GetStoredHash(moduleName))):
-            print "Model '{0}' up to date".format(moduleName)
-            continue
-        print "Rebuild Model '{0}'...".format(moduleName)
-        monitor.Rebuild(moduleName)
+    ModelMonitor().EnsureModelUpdate(predictionModules)
 
 
 def RunCV(camID, camType, surveillanceMode):
@@ -107,7 +100,7 @@ def RunCV(camID, camType, surveillanceMode):
 
 
         # Body Detection
-        if(surveillanceMode or bodyDetectionInterval < 999 and bodyDetectionTimestamp <= (time.time()-bodyDetectionInterval)):
+        if((surveillanceMode or bodyDetectionInterval < 999) and bodyDetectionTimestamp <= (time.time()-bodyDetectionInterval)):
             rawBodyData = cv.DetectBody(image)
             if (len(rawBodyData) > 0):
                 bodyDetectionTimestamp = time.time()
@@ -118,7 +111,8 @@ def RunCV(camID, camType, surveillanceMode):
         # Face Detection
         predictionResult, timeoutReached, luckyShot, rawFaceData = cv.PredictStream(image, predictionObjectList)
 
-        takeImage = True
+        takeImage = False
+        bestResultName = None
         for predictionObject in predictionResult:
             thresholdReached = predictionObject.ThresholdReached(predictionThreshold)
             if len(predictionObject.PredictionResult) > 0 and (thresholdReached or timeoutReached or luckyShot):
@@ -127,10 +121,11 @@ def RunCV(camID, camType, surveillanceMode):
                     bestResult = predictionObject.GetBestPredictionResult(key, 0)
 
                     if (predictionObject.Name == "Person"):
-                        if(bestResult[0] != unknownUserTag):
-                            takeImage = False
-
                         secondBestResult = predictionObject.GetBestPredictionResult(key, 1)
+                        if(bestResult[0] == unknownUserTag):
+                            takeImage = True
+                            bestResultName = bestResult[0] if (len(secondBestResult) == 0) else secondBestResult[0]
+
                         predictionData = "{0}|PERSON|{1}|{2}|{3}|{4}|{5}|{6}|{7}".format(cvInstanceType, camType, key, bestResult, secondBestResult, thresholdReached, timeoutReached, luckyShot)
 
 
@@ -174,7 +169,7 @@ def RunCV(camID, camType, surveillanceMode):
 
 
         # Take Images
-        if(takeImage and clockFace <= (time.time()-intervalBetweenImages) and cv.TakeImage(image, "Person", rawFaceData, grayscale=True)):
+        if(takeImage and clockFace <= (time.time()-intervalBetweenImages) and cv.TakeImage(image, "Person", rawFaceData, grayscale=True, prefix=bestResultName)):
             clockFace = time.time()
 
 
@@ -191,10 +186,11 @@ if __name__ == "__main__":
             if (arg.lower().startswith("-surveillance")):
                 surveillanceMode = True
 
-    if(Pid.HasPid("CV{0}".format(camID))):
+    tmpCamID = "" if camID == -1 else camID
+    if(Pid.HasPid("CV{0}".format(ctmpCamIDmID))):
         print "Process is already runnung. Bye!"
         sys.exit()
-    Pid.Create("CV{0}".format(camID))
+    Pid.Create("CV{0}".format(tmpCamID))
 
     try:
         EnsureModelUpdate()
@@ -202,4 +198,4 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print "End"
     finally:
-        Pid.Remove("CV{0}".format(camID))
+        Pid.Remove("CV{0}".format(tmpCamID))

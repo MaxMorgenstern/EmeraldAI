@@ -8,25 +8,17 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-import re
 
-text = """INSERT INTO Conversation_Keyword ('Keyword', 'Normalized', 'Language', 'Stopword') Values ('echt', 'echt', 'de', '0')
-INSERT INTO Conversation_Keyword ('Keyword', 'Normalized', 'Language', 'Stopword') Values ('Man', 'man', 'de', '0')
-INSERT INTO Conversation_Keyword ('Keyword', 'Normalized', 'Language', 'Stopword') Values ('kann', 'kann', 'de', '1')
-INSERT INTO Conversation_Keyword ('Keyword', 'Normalized', 'Language', 'Stopword') Values ('meine', 'meine', 'de', '1')
-INSERT INTO Conversation_Keyword ('Keyword', 'Normalized', 'Language', 'Stopword') Values ('Hardware', 'hardware', 'de', '0')
-INSERT INTO Conversation_Keyword ('Keyword', 'Normalized', 'Language', 'Stopword') Values ('anfassen', 'anfassen', 'de', '0')
-INSERT INTO Conversation_Keyword ('Keyword', 'Normalized', 'Language', 'Stopword') Values ('also', 'also', 'de', '1')
-INSERT INTO Conversation_Keyword ('Keyword', 'Normalized', 'Language', 'Stopword') Values ('würde', 'wuerde', 'de', '1')
-INSERT INTO Conversation_Keyword ('Keyword', 'Normalized', 'Language', 'Stopword') Values ('ich', 'ich', 'de', '1')
-INSERT INTO Conversation_Keyword ('Keyword', 'Normalized', 'Language', 'Stopword') Values (''Ja'', ''ja'', 'de', '0')
-"""
+from EmeraldAI.Logic.Modules import Hashing
 
 
-
-
-print re.sub("''([A-Za-z]*)''", r"'\1'", text)
-
+print Hashing.GenHash()
+print Hashing.GenHash()
+print Hashing.GenHash()
+print Hashing.GenHash()
+print Hashing.GenHash()
+print Hashing.GenHash()
+print Hashing.GenHash()
 
 exit()
 

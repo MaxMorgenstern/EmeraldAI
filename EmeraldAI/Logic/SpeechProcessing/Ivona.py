@@ -118,8 +118,7 @@ class Ivona(object):
                     self._generate_payload(audioString
                                            ), self.__region, self.__host)
                 if r.content.startswith(b'{'):
-                    raise Exception(
-                        'Error fetching voice: {}'.format(r.content))
+                    raise Exception('Error fetching voice: {}'.format(r.content))
                 else:
                     f.write(r.content)
 

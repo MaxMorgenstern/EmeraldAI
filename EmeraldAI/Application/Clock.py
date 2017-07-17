@@ -12,6 +12,8 @@ from std_msgs.msg import String
 
 
 def RunClock():
+    time.sleep(5)
+
     rospy.init_node('clock_node', anonymous=True)
 
     pub = rospy.Publisher('to_brain', String, queue_size=10)

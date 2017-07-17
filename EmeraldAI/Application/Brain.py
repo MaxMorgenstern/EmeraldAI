@@ -4,6 +4,7 @@ import sys
 from os.path import dirname, abspath
 import re
 import time
+from math import floor
 sys.path.append(dirname(dirname(dirname(abspath(__file__)))))
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -52,25 +53,32 @@ def RunBrain():
 
 def callback(data):
     dataParts = data.data.split("|")
+
+    if dataParts[0] == "CLOCK":
+        ProcessClock(dataParts[1])
+        return
+
     print "Just got", dataParts
 
     if dataParts[0] == "CVSURV":
         ProcessSurveilenceData(dataParts)
+        return
 
     if dataParts[0] == "CV":
         ProcessCVData(dataParts)
+        return
 
     if dataParts[0] == "STT":
         ProcessSpeech(dataParts[1])
+        return
 
     if dataParts[0] == "FACEAPP":
         ProcessFaceApp(dataParts[1])
+        return
 
     if dataParts[0] == "PING":
         ProcessPing(dataParts[1])
-
-    if dataParts[0] == "CLOCK":
-        ProcessClock(dataParts[1])
+        return
 
 
 
@@ -115,7 +123,7 @@ def ProcessPerson(cameraName, id, bestResult, secondBestResult, thresholdReached
             (secondBestResultValue*0.9) >= bestResultValue and
             secondBestResultValue > minSetPersonThreshold and
             (currentUser == unknownUserTag or currentUser == secondBestResultTag)):
-            __updateUser(secondBestResultTag)
+            __updateUser(secondBestResultTag, secondBestResultValue)
         return
 
     # if threshold is reched, set user
@@ -126,9 +134,9 @@ def ProcessPerson(cameraName, id, bestResult, secondBestResult, thresholdReached
             secondBestResultTag != unknownUserTag and
             secondBestResultTag == currentUser and
             (secondBestResultValue*0.6) >= bestResultValue):
-            __updateUser(secondBestResultTag)
+            __updateUser(secondBestResultTag, secondBestResultValue)
             return
-        __updateUser(bestResultTag)
+        __updateUser(bestResultTag, bestResultValue)
         return
 
     # on lucky shot
@@ -140,7 +148,7 @@ def ProcessPerson(cameraName, id, bestResult, secondBestResult, thresholdReached
             secondBestResultTag != unknownUserTag and
             (secondBestResultValue*0.9) >= bestResultValue):
             return
-        __updateUser(bestResultTag, True)
+        __updateUser(bestResultTag, bestResultValue, True)
         return
 
 
@@ -190,17 +198,28 @@ def __getResult(data):
     return resultTag, resultValue
 
 
-def __updateUser(cvTag, reducedTimeout=False):
+def __updateUser(cvTag, predictionValue=0, reducedTimeout=False):
     print "set/update user", cvTag
-    personTimeout = Config().GetInt("Application.Brain", "PersonTimeout") # x seconds
-    if(User().GetCVTag() != cvTag):
-        if (BrainMemory().GetFloat("PersonDetectionTimestamp") > (time.time()-personTimeout)):
-            return
+    personDetectionTimestamp = BrainMemory().GetFloat("PersonDetectionTimestamp")
+    if(User().GetCVTag() != cvTag and personDetectionTimestamp > time.time()):
+        return
+
+    elif personDetectionTimestamp <= time.time():
+        tmpBasePersonTimeout = Config().GetInt("Application.Brain", "PersonTimeout") # 3
+        basePersonTimeout = round(tmpBasePersonTimeout/2) if reducedTimeout else tmpBasePersonTimeout
+        personDetectionTimestamp = time.time() + basePersonTimeout
+
     User().SetUserByCVTag(cvTag)
-    if(reducedTimeout):
-        BrainMemory().Set("PersonDetectionTimestamp", time.time()-round(personTimeout/3*2))
-    else:
-        BrainMemory().Set("PersonDetectionTimestamp", time.time())
+
+    predictionWeightLowValue = Config().GetInt("Application.Brain", "PredictionWeightLowValue") # 10
+    predictionWeightHighValue = Config().GetInt("Application.Brain", "PredictionWeightHighValue") # 20
+    predictionWeightHighValueBonus = Config().GetInt("Application.Brain", "PredictionWeightHighValueBonus") # 3
+    predictionWeightBorder = Config().GetInt("Application.Brain", "PredictionWeightBorder") # 55
+
+    predictionValue = int(floor(predictionValue/predictionWeightLowValue
+        if (predictionValue < predictionWeightBorder) else predictionValue/predictionWeightHighValue+predictionWeightHighValueBonus))
+
+    BrainMemory().Set("PersonDetectionTimestamp", personDetectionTimestamp+predictionValue)
 
 
 def __cancelCameraProcess(cameraName, darknessTimestamp):
@@ -253,7 +272,8 @@ def ProcessSpeech(data):
     print "Pipeline Args", pipelineArgs.toJSON()
     print "Main User", User().toJSON()
     print "Trainer Result: ", trainerResult
-    print "Response", pipelineArgs.Response
+    print "Input: ", data
+    print "Response: ", pipelineArgs.Response
 
 
 
@@ -278,13 +298,12 @@ def ProcessPing(state):
 
 ##### CLOCK #####
 
-def ProcessClock(time):
+def ProcessClock(timestamp):
     # only check every 5 seconds
-    if (time%5 != 0):
+    if (int(timestamp)%5 != 0):
         return
 
-    personTimeout = Config().GetInt("Application.Brain", "PersonTimeout") # x seconds
-    if (BrainMemory().GetFloat("PersonDetectionTimestamp") > (time.time()-personTimeout)):
+    if (BrainMemory().GetFloat("PersonDetectionTimestamp") > time.time()):
         return;
 
     User().Reset()
