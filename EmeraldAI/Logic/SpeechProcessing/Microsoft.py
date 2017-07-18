@@ -72,7 +72,7 @@ class Microsoft(object):
             return
         tmpAudioFile = os.path.join(Global.EmeraldPath, "Data", "TTS", ("Microsoft_" + \
             self.__language_2letter_cc + "_" + \
-            self.CleanString(audioString) + ".wav"))
+            self.CleanString(audioString) + ".mp3"))
 
         if not os.path.isfile(tmpAudioFile):
             ssml = self.__ssmlTemplate.format(
@@ -80,7 +80,7 @@ class Microsoft(object):
             body = ssml  # .encode('utf8')
 
             headers = {"Content-type": "application/ssml+xml",
-                       "X-Microsoft-OutputFormat": "riff-16khz-16bit-mono-pcm",
+                       "X-Microsoft-OutputFormat": "audio-16khz-32kbitrate-mono-mp3",
                        "Authorization": "Bearer " + self.__accesstoken,
                        "X-Search-AppId": "07D3234E49CE426DAA29772419F436CA",
                        "X-Search-ClientID": "1ECFAE91408841A480F00935DC390960",
