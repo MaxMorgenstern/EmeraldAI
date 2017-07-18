@@ -17,8 +17,8 @@ class Microsoft(object):
     __language_4letter_cc = 'de-DE'
     __audioPlayer = "afplay '{0}'"
 
-    __voiceGender = 'Female'
-    __voiceName = 'Microsoft Server Speech Text to Speech Voice (de-DE, Hedda)'
+    __voiceGender = 'Male'
+    __voiceName = 'Microsoft Server Speech Text to Speech Voice (de-DE, Stefan, Apollo)'
     __apiKey = None
     __accesstoken = None
 
