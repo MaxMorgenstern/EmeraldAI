@@ -2,6 +2,11 @@
 # -*- coding: utf-8 -*-
 import pygame
 from EmeraldAI.Logic.Singleton import Singleton
+try:
+    import mutagen.mp3
+    isMutagenPresent = True
+except ImportError:
+    isMutagenPresent = False
 
 class SoundMixer():
     __metaclass__ = Singleton
@@ -14,6 +19,12 @@ class SoundMixer():
             return
         if(self.IsPlaying()):
             self.Stop()
+
+        if isMutagenPresent:
+            pygame.mixer.quit()
+            mp3 = mutagen.mp3.MP3(filename)
+            pygame.mixer.init(frequency=mp3.info.sample_rate)
+
         pygame.mixer.music.load(filename)
         pygame.mixer.music.play()
 
