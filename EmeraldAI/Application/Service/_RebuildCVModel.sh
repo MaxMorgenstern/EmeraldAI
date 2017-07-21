@@ -17,6 +17,8 @@ killout=$?
 echo "Rebuild Model..."
 python $directory/CVModelRebuilder.py
 
+echo "Rebuild Complete..."
+
 #if [ "$restart" = "1" ] ; then
 if [ "$killout" = "1" ] ; then
 	echo "Restart CV..."
