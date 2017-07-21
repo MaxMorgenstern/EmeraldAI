@@ -2,7 +2,7 @@
 directory=`dirname $0`
 echo "Start rebuilding CV Model..."
 
-source $directory/../_KillCV.sh
+./$directory/../_KillCV.sh
 killout=$?
 
 #cvpidfile=$directory/../CV.pid

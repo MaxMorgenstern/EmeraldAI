@@ -20,3 +20,4 @@ if [ -f $file ] ; then
 fi
 
 killall -9 roscore
+killall -9 roscmaster
