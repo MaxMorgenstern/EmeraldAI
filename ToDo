@@ -47,6 +47,10 @@ Re-Train CV with currently used algorithm
 
 Add 'und' to Math detection - at least try and convert it to +
 
+faceapp: "bottom" does a replay
+
+Use config file for specific camera - so it's simple to switch them
+
 
 add intermediate position animation
 	- [left] <halfleft> [center] <halfright> [right]
