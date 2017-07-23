@@ -49,7 +49,11 @@ Add 'und' to Math detection - at least try and convert it to +
 
 faceapp: "bottom" does a replay
 
+
 Use config file for specific camera - so it's simple to switch them
+
+use own message types instead of the pipe delimited strings
+
 
 
 add intermediate position animation
