@@ -130,6 +130,7 @@ MySQLHost = 127.0.0.1
 CameraWidth = 640
 CameraHeight = 480
 CameraID = 0
+UseThreadedVideo = True
 CameraType = STD
 #CameraType = IR -- infrared
 

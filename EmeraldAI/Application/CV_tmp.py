@@ -6,6 +6,8 @@ sys.path.append(dirname(dirname(dirname(abspath(__file__)))))
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
+from threading import Thread
+
 import cv2
 import time
 
@@ -18,18 +20,44 @@ from EmeraldAI.Config.Config import *
 from EmeraldAI.Logic.ComputerVision.ModelMonitor import ModelMonitor
 from EmeraldAI.Logic.Modules import Pid
 
+class WebcamVideoStream:
+    def __init__(self, camID):
+        self.stream = cv2.VideoCapture(camID)
+        self.stream.set(3, Config().GetInt("ComputerVision", "CameraWidth"))
+        self.stream.set(4, Config().GetInt("ComputerVision", "CameraHeight"))
+        (self.grabbed, self.frame) = self.stream.read()
+
+        self.stopped = False
+
+    def start(self):
+        Thread(target=self.update, args=()).start()
+        return self
+
+    def update(self):
+        while True:
+            if self.stopped:
+                return
+            (self.grabbed, self.frame) = self.stream.read()
+
+    def read(self):
+        returnValue = self.frame
+        self.frame = None
+        return returnValue
+
+    def stop(self):
+        self.stopped = True
+
+
 def EnsureModelUpdate():
     predictionModules = Config().GetList("ComputerVision", "Modules")
     ModelMonitor().EnsureModelUpdate(predictionModules)
 
 
-def RunCV(camID, camType, surveillanceMode):
+def RunCV(camID, camType, surveillanceMode, videoStream):
     #pub = rospy.Publisher('to_brain', String, queue_size=10)
     #rospy.init_node('CV_node', anonymous=True)
     #rospy.Rate(10) # 10hz
 
-    if(camID  < 0):
-        camID = Config().GetInt("ComputerVision", "CameraID")
     if(camType == "STD"):
         camType = Config().Get("ComputerVision", "CameraType")
     if(not surveillanceMode):
@@ -39,10 +67,12 @@ def RunCV(camID, camType, surveillanceMode):
     if(surveillanceMode):
         cvInstanceType = "CVSURV"
 
-
-    camera = cv2.VideoCapture(camID)
-    camera.set(3, Config().GetInt("ComputerVision", "CameraWidth"))
-    camera.set(4, Config().GetInt("ComputerVision", "CameraHeight"))
+    if videoStream is not None:
+        stream = videoStream.start()
+    else:
+        camera = cv2.VideoCapture(camID)
+        camera.set(3, Config().GetInt("ComputerVision", "CameraWidth"))
+        camera.set(4, Config().GetInt("ComputerVision", "CameraHeight"))
 
     cropBodyImage = Config().GetBoolean("ComputerVision", "CropBodyImage")
     intervalBetweenImages = Config().GetInt("ComputerVision", "IntervalBetweenImages")
@@ -66,21 +96,31 @@ def RunCV(camID, camType, surveillanceMode):
 
     clockFace = time.time()
 
-    while not camera.isOpened():
-        print "Waiting for camera"
-        time.sleep(1)
+    if videoStream is not None:
+        image = stream.read()
+        while image is None:
+            print "Waiting for stream"
+            time.sleep(1)
+            image = stream.read()
+    else:
+        while not camera.isOpened():
+            print "Waiting for camera"
+            time.sleep(1)
+        ret, image = camera.read()
 
-    ret, image = camera.read()
     imageHeight, imageWidth = image.shape[:2]
 
     bodyDetectionTimestamp = time.time()
 
     while True:
         #rate.sleep()
-        ret, image = camera.read()
+        if videoStream is not None:
+            image = stream.read()
+        else:
+            ret, image = camera.read()
 
         if(image is None):
-            print "Can't read image"
+            print "Skip image"
             continue
 
         if (showCameraImage):
@@ -186,16 +226,24 @@ if __name__ == "__main__":
             if (arg.lower().startswith("-surveillance")):
                 surveillanceMode = True
 
+    if(camID  < 0):
+        camID = Config().GetInt("ComputerVision", "CameraID")
+
     tmpCamID = "" if camID == -1 else camID
-    if(Pid.HasPid("CV{0}".format(ctmpCamIDmID))):
+    if(Pid.HasPid("CV{0}".format(tmpCamID))):
         print "Process is already runnung. Bye!"
         sys.exit()
     Pid.Create("CV{0}".format(tmpCamID))
 
+    videoStream = None
+    if Config().GetBoolean("ComputerVision", "UseThreadedVideo"):
+        videoStream = WebcamVideoStream(camID)
+
     try:
         EnsureModelUpdate()
-        RunCV(camID, camType, surveillanceMode)
+        RunCV(camID, camType, surveillanceMode, videoStream)
     except KeyboardInterrupt:
         print "End"
     finally:
+        videoStream.stop()
         Pid.Remove("CV{0}".format(tmpCamID))
