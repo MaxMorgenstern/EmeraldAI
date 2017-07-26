@@ -86,18 +86,23 @@ def callback(data):
 
 def ProcessCVData(dataParts):
     if dataParts[1] == "PERSON":
+        # (cameraName, id, bestResult, secondBestResult, thresholdReached, timeoutReached, luckyShot)
         ProcessPerson(dataParts[2], dataParts[3], dataParts[4], dataParts[5], (dataParts[6]=="True"), (dataParts[7]=="True"), (dataParts[8]=="True"))
 
     if dataParts[1] == "POSITION":
+        # (cameraName, cameraId, xPos, yPos)
         ProcessPosition(dataParts[2], dataParts[3], dataParts[4], dataParts[5])
 
     if dataParts[1] == "MOOD":
+        # (cameraName, id, mood)
         ProcessMood(dataParts[2], dataParts[3], dataParts[4])
 
     if dataParts[1] == "GENDER":
+        # (cameraName, id, gender)
         ProcessGender(dataParts[2], dataParts[3], dataParts[4])
 
     if dataParts[1] == "DARKNESS":
+        # (cameraName, value)
         ProcessDarkness(dataParts[2], dataParts[3])
 
 
