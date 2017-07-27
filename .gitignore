@@ -261,3 +261,4 @@ Android/FaceApp/rosandroid-emeraldai-faceapp/src/main/assets/*.gif
 !Android/FaceApp/rosandroid-emeraldai-faceapp/src/main/assets/center_blink_full.gif
 
 .DS_Store
+EmeraldAI/Data/TrainingData/Training_Action.csv
