@@ -31,7 +31,7 @@ Excel.ToCsv(xslPath, csvPath)
 csvActionPath = os.path.join(Global.EmeraldPath, "Data", "TrainingData", "Training_Action.csv")
 Excel.ToCsv(xslPath, csvActionPath, 1)
 
-rainer = DialogTrainer()
+trainer = DialogTrainer()
 
 print "Train Basic actions..."
 actionData = read(csvActionPath)
