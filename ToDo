@@ -41,8 +41,6 @@ Process surveillance cam data
 
 SQL: add intrusion protection... check ; check for invalid '
 
-Train Conversation actions
-
 Re-Train CV with currently used algorithm
 
 Add 'und' to Math detection - at least try and convert it to +

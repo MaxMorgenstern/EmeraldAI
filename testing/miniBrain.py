@@ -69,6 +69,8 @@ def ProcessSpeech(data):
 
 print "Set user..."
 User().SetUserByCVTag("Max")
+print User().toJSON()
+time.sleep(2)
 print "Start Speech processing"
 ProcessSpeech("Warmup")
 
@@ -86,9 +88,9 @@ ProcessSpeech("Wieviel ist 4 + 32 / 6")
 
 #ProcessSpeech("Was ist eine Süßkartoffel")
 
+ProcessSpeech("Welcher Tag ist heute?")
 
 exit()
-ProcessSpeech("xxx")
 
 ProcessSpeech("xxx")
 
