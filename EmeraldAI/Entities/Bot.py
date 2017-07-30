@@ -12,6 +12,8 @@ class Bot(BaseObject):
 
     def __init__(self):
         self.Name = Config().Get("Bot", "Name")
+        self.Status = "OK"
+        self.Battery = "100%"
 
     def __repr__(self):
          return "{0}".format(self.Name)

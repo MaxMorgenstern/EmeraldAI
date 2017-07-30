@@ -76,6 +76,8 @@ ProcessSpeech("Warmup")
 
 #ProcessSpeech("Guten Abend")
 
+ProcessSpeech("Wie geht es dir?")
+
 #ProcessSpeech("Wer ist Angela Merkel")
 
 ProcessSpeech("Wieviel ist 432 plus 68")
