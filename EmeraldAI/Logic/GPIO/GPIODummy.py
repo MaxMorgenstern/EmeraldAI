@@ -40,3 +40,6 @@ def cleanup(channel=None):
 
 def wait_for_edge(channel, value, timeput=None):
 	return 1
+
+def add_event_detect(channel, type, callback, bouncetime):
+	print "add_event_detect()"

@@ -1,1 +1,1 @@
-__all__ = ["GPIODummy"]
+__all__ = ["GPIODummy", "GPIOProxy"]
