@@ -44,7 +44,7 @@ class ProcessResponse(object):
                 actionResult = Action.CallFunction(sentenceAction["Module"], sentenceAction["Class"], sentenceAction["Function"], PipelineArgs)
 
                 # TODO handle error
-                # return {'Input':inputString, 'Result':None, 'ResultType':'Error'}
+                # return {'Input':inputString, 'Result':None, 'ResultType':'Error'} # ResultType: string - image
 
                 NLPParameter().SetInput(actionResult["Input"])
                 NLPParameter().SetResult(actionResult["Result"])
