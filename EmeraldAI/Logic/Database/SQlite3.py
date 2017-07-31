@@ -34,7 +34,7 @@ class SQlite3(object):
             db.commit()
             return cur.lastrowid
         except lite.IntegrityError as e:
-            if(not e.lower().startswith("unique")):
+            if(not str(e).lower().startswith("unique")):
                 FileLogger().Error("SQlite3 Line 37: IntegrityError: {0}".format(e))
             return None
         except lite.OperationalError as e:

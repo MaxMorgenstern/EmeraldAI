@@ -21,15 +21,24 @@ language = Config().Get("DEFAULT", "Language")
 print "Start conversation setup for language {0}...".format(language.upper())
 
 # Convert Excel File To CSV
+print "Convert Excel Sheet to CSV..."
+
 xslPath = os.path.join(Global.EmeraldPath, "Data", "TrainingData", "{0}_Training.xlsx".format(language.upper()))
 csvPath = os.path.join(Global.EmeraldPath, "Data", "TrainingData", "Training.csv")
+
 Excel.ToCsv(xslPath, csvPath)
 
-data = read(csvPath)
-
-print "Train Basic sentences..."
+csvActionPath = os.path.join(Global.EmeraldPath, "Data", "TrainingData", "Training_Action.csv")
+Excel.ToCsv(xslPath, csvActionPath, 1)
 
 trainer = DialogTrainer()
-trainer.TrainCSV(data, language)
+
+print "Train Basic actions..."
+actionData = read(csvActionPath)
+trainer.TrainActionCSV(actionData, language)
+
+print "Train Basic sentences..."
+conversationData = read(csvPath)
+trainer.TrainCSV(conversationData, language)
 
 print "Conversation setup completed"

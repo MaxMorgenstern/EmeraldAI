@@ -17,6 +17,7 @@ class User(BaseObject):
     def __init__(self):
         self.CVTag = Config().Get("DEFAULT", "UnknownUserTag")
 
+        self.DBID = -1
         self.Name = Config().Get("DEFAULT", "UnknownUserTag")
         self.LastName = None
         self.FirstName = None
@@ -52,29 +53,24 @@ class User(BaseObject):
             return self.Name
         return None
 
-    def SetUserByCVTag(self, cvTag, deepProcess=True):
+    def SetUserByCVTag(self, cvTag):
         if cvTag is None or self.CVTag == cvTag:
             return
 
         self.CVTag = cvTag
-        if not deepProcess:
-            return
-
         self.__setUser("SELECT * FROM Person WHERE CVTag = '{0}'", cvTag)
 
-    def SetUserByName(self, name, deepProcess=True):
+    def SetUserByName(self, name):
         if name is None or self.Name == name:
             return
 
         self.Name = name
-        if not deepProcess:
-            return
-
         self.__setUser("SELECT * FROM Person WHERE Name = '{0}'", name)
 
     def Reset(self):
         self.CVTag = Config().Get("DEFAULT", "UnknownUserTag")
 
+        self.DBID = -1
         self.Name = Config().Get("DEFAULT", "UnknownUserTag")
         self.LastName = None
         self.FirstName = None
@@ -93,9 +89,21 @@ class User(BaseObject):
 
         self.Updated = None
 
+    def Create(self):
+        query = "TODO"
+        db().Execute(query)
+
+    def Update(self):
+        if self.DBID < 1:
+            return
+        query = "UPDATE Person SET Name='{0}', LastName='{1}', FirstName='{2}', Birthday='{3}', LastSeen='{4}', LastSpokenTo='{5}', Gender='{6}' WHERE ID = '{7}'"
+        db().Execute(query.format(self.Name, self.LastName, self.FirstName, self.Birthday, self.LastSeen, self.LastSpokenTo, self.Gender, self.DBID))
+
+
     def __setUser(self, query, name):
         sqlResult = db().Fetchall(query.format(name))
         for r in sqlResult:
+            self.DBID = r[0]
             self.Name = r[1]
             self.LastName = r[2]
             self.FirstName = r[3]

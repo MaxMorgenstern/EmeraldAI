@@ -44,7 +44,7 @@ class ProcessResponse(object):
                 actionResult = Action.CallFunction(sentenceAction["Module"], sentenceAction["Class"], sentenceAction["Function"], PipelineArgs)
 
                 # TODO handle error
-                # return {'Input':inputString, 'Result':None, 'ResultType':'Error'}
+                # return {'Input':inputString, 'Result':None, 'ResultType':'Error'} # ResultType: string - image
 
                 NLPParameter().SetInput(actionResult["Input"])
                 NLPParameter().SetResult(actionResult["Result"])
@@ -60,6 +60,9 @@ class ProcessResponse(object):
                     PipelineArgs.Response = PipelineArgs.Response.replace("{{{0}}}".format(keyword.lower()), str(replaceword))
                 else:
                     PipelineArgs.Response = PipelineArgs.Response.replace("{{{0}}}".format(keyword.lower()), "")
+                    FileLogger().Error("ProcessResponse Line 63: Parameter missing: '{0}'".format(keyword))
+
+            NLPParameter().UnsetInputAndResult()
 
         elif not responseFound and self.__aliceAsFallback:
             PipelineArgs.Response  = self.__alice.GetResponse(PipelineArgs.Input)

@@ -123,7 +123,7 @@ class SentenceResolver(object):
                 requirementName = r[2].title()
 
                 if requirementName not in parameterList:
-                    FileLogger().Error("SentenceResolver Line 124: Requirement missing in parameter list: {0}".format(requirementName))
+                    FileLogger().Error("SentenceResolver Line 126: Requirement missing in parameter list: {0}".format(requirementName))
                     deleteList.append(sentenceID)
                     continue
 

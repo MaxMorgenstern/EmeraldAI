@@ -39,7 +39,8 @@ class Math(object):
 
     def CleanTerm(self, term):
         # replace whitespace and dots in between numbers
-        term = re.sub("(\d+)[\s.]+(\d+)", r"\1\2", term)
+        term = re.sub("(\d+)[\s.]+(?=\d)", r"\1", term)
+
         # replace comma with dot
         term = term.replace(",", ".")
 
@@ -48,7 +49,7 @@ class Math(object):
         strippedTerm = " ".join(result)
 
         # again replace whitespace and dots in between numbers
-        strippedTerm = re.sub("(\d+)[\s.]+(\d+)", r"\1\2", strippedTerm)
+        strippedTerm = re.sub("(\d+)[\s.]+(?=\d)", r"\1", strippedTerm)
 
         #replace words with mathematical symbols
         result = self.__FindPattern.sub(lambda x: self.__replaceWordDictionary[x.group()], strippedTerm)
