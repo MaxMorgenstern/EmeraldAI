@@ -178,9 +178,9 @@ void Calibration()
 
         for(uint8_t i = 0; i < sizeof(SpeedMapping_Motor3); ++i) {
             Serial.println("----------");
-            Serial.println(SpeedMapping_Motor1[i].value);
-            Serial.println(SpeedMapping_Motor2[i].value);
-            Serial.println(SpeedMapping_Motor3[i].value);
+            Serial.println(SpeedMapping_Motor1[i].RPM);
+            Serial.println(SpeedMapping_Motor2[i].RPM);
+            Serial.println(SpeedMapping_Motor3[i].RPM);
         }
     }
 }
