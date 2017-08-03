@@ -15,8 +15,45 @@ int motorPin3_2 = 11;
 int motorPin3_speed = 9;
 int motorPin3_A = A5;
 
-int globalSpeedInit = 255;
-int reducedSpeed = globalSpeedInit * 0.09;
+// ----------
+
+int motor1_RPMCount = 0;
+int motor1_State = 0;
+int motor1_Lookup[55];
+int motor1_MaxRPM = 0;
+
+int motor2_RPMCount = 0;
+int motor2_State = 0;
+int motor2_Lookup[55];
+int motor2_MaxRPM = 0;
+
+int motor3_RPMCount = 0;
+int motor3_State = 0;
+int motor3_Lookup[55];
+int motor3_MaxRPM = 0;
+
+// ----------
+
+typedef struct SpeedMappingEntity {
+  int RPM;
+  int Speed;
+  int MappedSpeed;
+};
+
+SpeedMappingEntity SpeedMapping_Motor1[255];
+SpeedMappingEntity SpeedMapping_Motor2[255];
+SpeedMappingEntity SpeedMapping_Motor3[255];
+
+// ----------
+
+unsigned long time = 0;
+
+int init = 0;
+unsigned long initTimestamp = 0;
+int initSpeed = 255;
+
+// ----------
+// ----------
 
 void setup()
 {
@@ -39,7 +76,6 @@ void setup()
     pinMode(motorPin3_2, OUTPUT);
     pinMode(motorPin3_speed, OUTPUT);
     pinMode(motorPin3_A, INPUT);
-
 }
 
 
@@ -64,59 +100,6 @@ void SetMotor(int pinSpeed, int pin1, int pin2, int speed)
     }
 }
 
-int motor1_RPMCount = 0;
-int motor1_State = 0;
-int motor1_Lookup[55];
-int motor1_MaxRPM = 0;
-
-int motor2_RPMCount = 0;
-int motor2_State = 0;
-int motor2_Lookup[55];
-int motor2_MaxRPM = 0;
-
-int motor3_RPMCount = 0;
-int motor3_State = 0;
-int motor3_Lookup[55];
-
-unsigned long time = 0;
-
-
-
-
-typedef struct SpeedMappingEntity {
-  int RPM;
-  int Speed;
-  int MappedSpeed;
-};
-
-SpeedMappingEntity SpeedMapping_Motor1[255];
-SpeedMappingEntity SpeedMapping_Motor2[255];
-SpeedMappingEntity SpeedMapping_Motor3[255];
-
-
-int init = 0;
-unsigned long initTimestamp = 0;
-int initSpeed = 255;
-
-
-// 1 Rotation == 80 Gearbox Ratio ==
-//      4 CPR (counts per revolution) * 80 == 320 Counts per Rotation
-int pulsesPerRotation = 320
-
-
-
-
-
-void loop()
-{
-    time = millis();
-
-    UpdateRPM();
-
-    Calibration();
-
-
-}
 
 void Calibration()
 {
@@ -132,40 +115,48 @@ void Calibration()
         motor3_RPMCount = 0;
 
         initSpeed = 255;
-
         SetWheelsTo(initSpeed);
+        delay(1000);
+
         initTimestamp = time;
         init = 1;
         return;
     }
 
-    if (initTimestamp + 250 <= time && initSpeed == 255)
+    int delta = 250;
+    if (initTimestamp + delta <= time && initSpeed == 255)
     {
-
+        motor1_MaxRPM = motor1_RPMCount;
+        motor2_MaxRPM = motor2_RPMCount;
+        motor3_MaxRPM = motor3_RPMCount;
     }
 
-    if (initTimestamp + 250 <= time && initSpeed > 0)
+    if (initTimestamp + delta <= time && initSpeed > 0)
     {
-        //motor1_Lookup[motor1_RPMCount] = initSpeed;
-        //motor2_Lookup[motor2_RPMCount] = initSpeed;
-        //motor3_Lookup[motor3_RPMCount] = initSpeed;
-
-
         SpeedMapping_Motor1[initSpeed].RPM = motor1_RPMCount
-        SpeedMapping_Motor1[initSpeed]Speed = initSpeed
-        SpeedMapping_Motor1[initSpeed]MappedSpeed =
+        SpeedMapping_Motor1[initSpeed].Speed = initSpeed
+        SpeedMapping_Motor1[initSpeed].MappedSpeed = 255 / motor1_MaxRPM * motor1_RPMCount
 
-        // 255 - 245 - 235 - 225 - 215 - 205 - 195 - 185 - 175 - 165 - 155 - 145
+        SpeedMapping_Motor2[initSpeed].RPM = motor2_RPMCount
+        SpeedMapping_Motor2[initSpeed].Speed = initSpeed
+        SpeedMapping_Motor2[initSpeed].MappedSpeed = 255 / motor2_MaxRPM * motor2_RPMCount
+
+        SpeedMapping_Motor3[initSpeed].RPM = motor3_RPMCount
+        SpeedMapping_Motor3[initSpeed].Speed = initSpeed
+        SpeedMapping_Motor3[initSpeed].MappedSpeed = 255 / motor3_MaxRPM * motor3_RPMCount
+
+
+        // 12:  255 - 245 - 235 - 225 - 215 - 205 - 195 - 185 - 175 - 165 - 155 - 145
         if (initSpeed > 150)
         {
             initSpeed -= 10;
         }
-        // 140 - 135 - 130 - 125 - 120 - 115 - 110 - 105 - 100 - 95 - 90 - 85 - 80 - 75
+        // 14:  140 - 135 - 130 - 125 - 120 - 115 - 110 - 105 - 100 - 95 - 90 - 85 - 80 - 75
         else if(initSpeed > 75)
         {
             initSpeed -= 5;
         }
-        // 75 - 0
+        // 76:  75 - 0
         else
         {
             initSpeed -= 1;
@@ -177,13 +168,23 @@ void Calibration()
         motor1_RPMCount = 0;
         motor2_RPMCount = 0;
         motor3_RPMCount = 0;
+
         return;
     }
     else if (initSpeed <= 0)
     {
         init = 2;
+        SetWheelsTo(0);
+
+        for(uint8_t i = 0; i < sizeof(SpeedMapping_Motor3); ++i) {
+            Serial.println("----------");
+            Serial.println(SpeedMapping_Motor1[i].value);
+            Serial.println(SpeedMapping_Motor2[i].value);
+            Serial.println(SpeedMapping_Motor3[i].value);
+        }
     }
 }
+
 
 void SetWheelsTo(int speed)
 {
@@ -191,7 +192,6 @@ void SetWheelsTo(int speed)
     SetMotor(motorPin2_speed, motorPin2_1, motorPin2_2, speed);
     SetMotor(motorPin3_speed, motorPin3_1, motorPin3_2, speed);
 }
-
 
 
 void UpdateRPM()
@@ -219,4 +219,23 @@ void UpdateRPM()
         motor3_State = state;
     }
 }
+
+
+
+
+
+
+
+void loop()
+{
+    time = millis();
+
+    UpdateRPM();
+
+    Calibration();
+
+
+}
+
+
 
