@@ -1,55 +1,47 @@
 #include "Arduino.h"
 
-int motorPin1_1 = 4;
-int motorPin1_2 = 5;
-int motorPin1_speed = 3;
-int motorPin1_A = A7;
+uint8_t motorPin1_1 = 4;
+uint8_t motorPin1_2 = 5;
+uint8_t motorPin1_speed = 3;
+uint8_t motorPin1_A = A7;
 
-int motorPin2_1 = 7;
-int motorPin2_2 = 8;
-int motorPin2_speed = 6;
-int motorPin2_A = A6;
+uint8_t motorPin2_1 = 7;
+uint8_t motorPin2_2 = 8;
+uint8_t motorPin2_speed = 6;
+uint8_t motorPin2_A = A6;
 
-int motorPin3_1 = 10;
-int motorPin3_2 = 11;
-int motorPin3_speed = 9;
-int motorPin3_A = A5;
-
-// ----------
-
-int motor1_RPMCount = 0;
-int motor1_State = 0;
-int motor1_MaxRPM = 0;
-
-int motor2_RPMCount = 0;
-int motor2_State = 0;
-int motor2_MaxRPM = 0;
-
-int motor3_RPMCount = 0;
-int motor3_State = 0;
-int motor3_MaxRPM = 0;
+uint8_t motorPin3_1 = 10;
+uint8_t motorPin3_2 = 11;
+uint8_t motorPin3_speed = 9;
+uint8_t motorPin3_A = A5;
 
 // ----------
 
-typedef struct {
-  int RPM;
-  int Speed;
-  long MappedSpeed;
-  bool Set;
-} SpeedMappingEntity;
+uint16_t motor1_RPMCount = 0;
+uint8_t motor1_State = 0;
+uint16_t motor1_MaxRPM = 0;
 
+uint16_t motor2_RPMCount = 0;
+uint8_t motor2_State = 0;
+uint16_t motor2_MaxRPM = 0;
+
+uint16_t motor3_RPMCount = 0;
+uint8_t motor3_State = 0;
+uint16_t motor3_MaxRPM = 0;
+
+// ----------
+
+// TODO: check if only one would be enough
 const int SpeedMappingSize = 256;
-SpeedMappingEntity SpeedMapping_Motor1[SpeedMappingSize] = {{0, 0, 0, false}};
-SpeedMappingEntity SpeedMapping_Motor2[SpeedMappingSize]= {{0, 0, 0, false}};
-SpeedMappingEntity SpeedMapping_Motor3[SpeedMappingSize]= {{0, 0, 0, false}};
+uint8_t SpeedMapping_Motor1[SpeedMappingSize];
+uint8_t SpeedMapping_Motor2[SpeedMappingSize];
+uint8_t SpeedMapping_Motor3[SpeedMappingSize];
 
 // ----------
 
-unsigned long time = 0;
-
-int initState = 0;
-unsigned long initTimestamp = 0;
-int initSpeed = 255;
+uint8_t initState = 0;
+uint32_t initTimestamp = 0;
+uint8_t initSpeed = 255;
 
 // ----------
 // ----------
@@ -109,6 +101,8 @@ void Calibration()
         return;
     }
 
+    int time = millis();
+
     if(initState == 0)
     {
         initSpeed = 255;
@@ -133,31 +127,24 @@ void Calibration()
 
     if (initState == 1 && initTimestamp + delta <= time && initSpeed > 0)
     {
-                SpeedMapping_Motor1[initSpeed].RPM = motor1_RPMCount;
-                               SpeedMapping_Motor1[initSpeed].Speed = initSpeed;
-                               SpeedMapping_Motor1[initSpeed].MappedSpeed = 255 / motor1_MaxRPM * motor1_RPMCount;
-                               SpeedMapping_Motor1[initSpeed].Set = true;
+        SpeedMapping_Motor1[initSpeed] = 255 / motor1_MaxRPM * motor1_RPMCount;
 
-        SpeedMapping_Motor2[initSpeed].RPM = motor2_RPMCount;
-        SpeedMapping_Motor2[initSpeed].Speed = initSpeed;
-        SpeedMapping_Motor2[initSpeed].MappedSpeed = 255 / motor2_MaxRPM * motor2_RPMCount;
-                               SpeedMapping_Motor3[initSpeed].Set = true;
+        SpeedMapping_Motor2[initSpeed] = 255 / motor2_MaxRPM * motor2_RPMCount;
 
-        SpeedMapping_Motor3[initSpeed].RPM = motor3_RPMCount;
-        SpeedMapping_Motor3[initSpeed].Speed = initSpeed;
-        SpeedMapping_Motor3[initSpeed].MappedSpeed = 255 / motor3_MaxRPM * motor3_RPMCount;
-                               SpeedMapping_Motor3[initSpeed].Set = true;
+        SpeedMapping_Motor3[initSpeed] = 255 / motor3_MaxRPM * motor3_RPMCount;
 
         // 12:  255 - 245 - 235 - 225 - 215 - 205 - 195 - 185 - 175 - 165 - 155 - 145
         if (initSpeed > 150)
-       {
+        {
             initSpeed -= 10;
         }
+
         // 14:  140 - 135 - 130 - 125 - 120 - 115 - 110 - 105 - 100 - 95 - 90 - 85 - 80 - 75
-        else if(initSpeed > 75)
+        else if (initSpeed > 75)
         {
             initSpeed -= 5;
         }
+
         // 76:  75 - 0
         else
         {
@@ -175,14 +162,14 @@ void Calibration()
 
     if (initState == 1 && initSpeed == 0)
     {
-                initState = 2;
+        initState = 2;
         for(int i = 0; i < SpeedMappingSize; i++)
         {
-                Serial.print(i);
+            Serial.print(i);
             Serial.println("----------");
-            //Serial.println(SpeedMapping_Motor1[i].RPM);
-            //Serial.println(SpeedMapping_Motor2[i].RPM);
-            //Serial.println(SpeedMapping_Motor3[i].RPM);
+            Serial.println(SpeedMapping_Motor1[i]);
+            Serial.println(SpeedMapping_Motor2[i]);
+            Serial.println(SpeedMapping_Motor3[i]);
         }
     }
 }
@@ -228,10 +215,8 @@ void UpdateRPM()
 
 void loop()
 {
-    time = millis();
-
     UpdateRPM();
 
     Calibration();
 
-}S
+}
