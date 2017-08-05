@@ -40,7 +40,7 @@ uint8_t SpeedMapping_Motor3[SpeedMappingSize];
 // ----------
 
 uint8_t initState = 0;
-uint32_t initTimestamp = 0;
+uint16_t initTimestamp = 0;
 uint8_t initSpeed = 255;
 
 // ----------
@@ -128,9 +128,7 @@ void Calibration()
     if (initState == 1 && initTimestamp + delta <= time && initSpeed > 0)
     {
         SpeedMapping_Motor1[initSpeed] = 255 / motor1_MaxRPM * motor1_RPMCount;
-
         SpeedMapping_Motor2[initSpeed] = 255 / motor2_MaxRPM * motor2_RPMCount;
-
         SpeedMapping_Motor3[initSpeed] = 255 / motor3_MaxRPM * motor3_RPMCount;
 
         // 12:  255 - 245 - 235 - 225 - 215 - 205 - 195 - 185 - 175 - 165 - 155 - 145
@@ -209,14 +207,9 @@ void UpdateRPM()
 
 
 
-
-
-
-
 void loop()
 {
     UpdateRPM();
 
     Calibration();
-
 }
