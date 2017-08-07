@@ -169,6 +169,11 @@ PredictionThreshold = 150
 
 
 # ----------------------
+[Trigger]
+GPIOPin = 3
+
+
+# ----------------------
 [Weather]
 OWMAPIKey =
 
@@ -209,3 +214,8 @@ PredictionWeightBorder = 55
 MinSetPersonThreshold = 15
 # should equal ComputerVision.Prediction - PredictionThreshold
 SetPersonThreshold = 150
+
+
+[Application.SpeechToText]
+Trigger=True
+TriggerTime=1000
