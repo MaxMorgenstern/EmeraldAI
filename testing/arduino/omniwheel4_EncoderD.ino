@@ -96,12 +96,12 @@ void SetMotor(int pinSpeed, int pin1, int pin2, int speed)
 
 void Calibration()
 {
-    if (initState >= 2)
+    if (initState >= 3)
     {
         return;
     }
 
-    int time = millis();
+    uint16_t time = millis();
 
     if(initState == 0)
     {
@@ -116,20 +116,46 @@ void Calibration()
         initState = 1;
     }
 
+    uint8_t delta = 150;
+    if (initState == 1 && initTimestamp + delta*2 <= time)
+    {
+        motor1_RPMCount = 0;
+        motor2_RPMCount = 0;
+        motor3_RPMCount = 0;
 
-    int delta = 150;
-    if (initState == 1 && initTimestamp + delta <= time && initSpeed == 255)
+        initTimestamp = time;
+       initState = 2;
+    }
+
+
+    if (initState == 2 && initTimestamp + delta <= time && initSpeed == 255)
     {
         motor1_MaxRPM = motor1_RPMCount;
         motor2_MaxRPM = motor2_RPMCount;
         motor3_MaxRPM = motor3_RPMCount;
     }
 
-    if (initState == 1 && initTimestamp + delta <= time && initSpeed > 0)
+    if (initState == 2 && initTimestamp + delta <= time && initSpeed > 0)
     {
-        SpeedMapping_Motor1[initSpeed] = 255 / motor1_MaxRPM * motor1_RPMCount;
-        SpeedMapping_Motor2[initSpeed] = 255 / motor2_MaxRPM * motor2_RPMCount;
-        SpeedMapping_Motor3[initSpeed] = 255 / motor3_MaxRPM * motor3_RPMCount;
+        //SpeedMapping_Motor1[initSpeed] = 255 * motor1_RPMCount / motor1_MaxRPM;
+        //SpeedMapping_Motor2[initSpeed] = 255 * motor2_RPMCount / motor2_MaxRPM;
+        //SpeedMapping_Motor3[initSpeed] = 255 * motor3_RPMCount / motor3_MaxRPM;
+
+       if(SpeedMapping_Motor1[255 * motor1_RPMCount / motor1_MaxRPM] == 0)
+       {
+             SpeedMapping_Motor1[255 * motor1_RPMCount / motor1_MaxRPM] = initSpeed;
+       }
+
+       if(SpeedMapping_Motor2[255 * motor2_RPMCount / motor2_MaxRPM] == 0)
+       {
+             SpeedMapping_Motor2[255 * motor2_RPMCount / motor2_MaxRPM] = initSpeed;
+       }
+
+       if(SpeedMapping_Motor3[255 * motor3_RPMCount / motor3_MaxRPM] == 0)
+       {
+             SpeedMapping_Motor3[255 * motor3_RPMCount / motor3_MaxRPM] = initSpeed;
+       }
+
 
         // 12:  255 - 245 - 235 - 225 - 215 - 205 - 195 - 185 - 175 - 165 - 155 - 145
         if (initSpeed > 150)
@@ -158,9 +184,9 @@ void Calibration()
     }
 
 
-    if (initState == 1 && initSpeed == 0)
+    if (initState == 2 && initSpeed == 0)
     {
-        initState = 2;
+        initState = 3;
         for(int i = 0; i < SpeedMappingSize; i++)
         {
             Serial.print(i);
