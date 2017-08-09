@@ -20,3 +20,14 @@ print GetSpeed(wheel2, a), Map(GetSpeed(wheel2, a))
 print GetSpeed(wheel3, a), Map(GetSpeed(wheel3, a))
 
 
+
+print "OR"
+
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+from EmeraldAI.Logic.Movement.Omniwheel import Omniwheel
+
+for x in range(360):
+    print x, Omniwheel().CalculateAllAsMessage(x)
+
