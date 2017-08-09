@@ -7,6 +7,7 @@ import KnowledgeGathering
 import LocationProcessing
 import Memory
 import Modules
+import Movement
 import NLP
 import SpeechProcessing
 import Trainer

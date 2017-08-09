@@ -219,3 +219,19 @@ SetPersonThreshold = 150
 [Application.SpeechToText]
 Trigger=True
 TriggerTime=1000
+
+
+# ----------------------
+#     ROBOT HARDWARE
+# ----------------------
+[Robot.Movement]
+Type=Omniwheel
+MappingRange=255
+
+Wheel1Degree=150
+Wheel2Degree=270
+Wheel3Degree=30
+Wheel4Degree=-1
+Wheel5Degree=-1
+Wheel6Degree=-1
+
