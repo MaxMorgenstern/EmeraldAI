@@ -32,7 +32,7 @@ uint16_t motor3_MaxRPM = 0;
 // ----------
 
 // TODO: check if only one would be enough
-const int SpeedMappingSize = 256;
+const int SpeedMappingSize = 101;
 uint8_t SpeedMapping_Motor1[SpeedMappingSize];
 uint8_t SpeedMapping_Motor2[SpeedMappingSize];
 uint8_t SpeedMapping_Motor3[SpeedMappingSize];
@@ -116,7 +116,7 @@ void Calibration()
         initState = 1;
     }
 
-    uint8_t delta = 150;
+    uint8_t delta = 250;
     if (initState == 1 && initTimestamp + delta*2 <= time)
     {
         motor1_RPMCount = 0;
@@ -124,7 +124,7 @@ void Calibration()
         motor3_RPMCount = 0;
 
         initTimestamp = time;
-       initState = 2;
+        initState = 2;
     }
 
 
@@ -137,39 +137,36 @@ void Calibration()
 
     if (initState == 2 && initTimestamp + delta <= time && initSpeed > 0)
     {
-        //SpeedMapping_Motor1[initSpeed] = 255 * motor1_RPMCount / motor1_MaxRPM;
-        //SpeedMapping_Motor2[initSpeed] = 255 * motor2_RPMCount / motor2_MaxRPM;
-        //SpeedMapping_Motor3[initSpeed] = 255 * motor3_RPMCount / motor3_MaxRPM;
-
-       if(SpeedMapping_Motor1[255 * motor1_RPMCount / motor1_MaxRPM] == 0)
+       int smz = SpeedMappingSize-1;
+       if(motor1_RPMCount != 0 && motor1_MaxRPM != 0 && SpeedMapping_Motor1[smz * motor1_RPMCount / motor1_MaxRPM] == 0)
        {
-             SpeedMapping_Motor1[255 * motor1_RPMCount / motor1_MaxRPM] = initSpeed;
+             SpeedMapping_Motor1[smz * motor1_RPMCount / motor1_MaxRPM] = initSpeed;
        }
 
-       if(SpeedMapping_Motor2[255 * motor2_RPMCount / motor2_MaxRPM] == 0)
+       if(motor2_RPMCount != 0 && motor2_MaxRPM != 0 && SpeedMapping_Motor2[smz * motor2_RPMCount / motor2_MaxRPM] == 0)
        {
-             SpeedMapping_Motor2[255 * motor2_RPMCount / motor2_MaxRPM] = initSpeed;
+             SpeedMapping_Motor2[smz * motor2_RPMCount / motor2_MaxRPM] = initSpeed;
        }
 
-       if(SpeedMapping_Motor3[255 * motor3_RPMCount / motor3_MaxRPM] == 0)
+       if(motor3_RPMCount != 0 && motor3_MaxRPM != 0 && SpeedMapping_Motor3[smz * motor3_RPMCount / motor3_MaxRPM] == 0)
        {
-             SpeedMapping_Motor3[255 * motor3_RPMCount / motor3_MaxRPM] = initSpeed;
+             SpeedMapping_Motor3[smz * motor3_RPMCount / motor3_MaxRPM] = initSpeed;
        }
 
 
-        // 12:  255 - 245 - 235 - 225 - 215 - 205 - 195 - 185 - 175 - 165 - 155 - 145
-        if (initSpeed > 150)
+        // 13:  255 - 245 - 235 - 225 - 215 - 205 - 195 - 185 - 175 - 165 - 155 - 145 - 135
+        if (initSpeed > 140)
         {
             initSpeed -= 10;
         }
 
-        // 14:  140 - 135 - 130 - 125 - 120 - 115 - 110 - 105 - 100 - 95 - 90 - 85 - 80 - 75
-        else if (initSpeed > 75)
+        // 10:  130 - 125 - 120 - 115 - 110 - 105 - 100 - 95 - 90 - 85
+        else if (initSpeed > 85)
         {
             initSpeed -= 5;
         }
 
-        // 76:  75 - 0
+        // 86:  85 - 0
         else
         {
             initSpeed -= 1;
@@ -180,7 +177,7 @@ void Calibration()
 
         motor1_RPMCount = 0;
         motor2_RPMCount = 0;
-        motor3_RPMCount = 0;
+       motor3_RPMCount = 0;
     }
 
 
@@ -190,10 +187,13 @@ void Calibration()
         for(int i = 0; i < SpeedMappingSize; i++)
         {
             Serial.print(i);
-            Serial.println("----------");
-            Serial.println(SpeedMapping_Motor1[i]);
-            Serial.println(SpeedMapping_Motor2[i]);
-            Serial.println(SpeedMapping_Motor3[i]);
+            Serial.print(":   ");
+            Serial.print(SpeedMapping_Motor1[i]);
+            Serial.print(" - ");
+            Serial.print(SpeedMapping_Motor2[i]);
+            Serial.print(" - ");
+            Serial.print(SpeedMapping_Motor3[i]);
+            Serial.print("\n");
         }
     }
 }
@@ -232,10 +232,25 @@ void UpdateRPM()
 }
 
 
+int WheelMapping(int speed, int wheelID)
+{
+       if(speed == 0) { return 0; }
+
+       if(wheelID == 1) { return SpeedMapping_Motor1[speed]; }
+
+       if(wheelID == 2) { return SpeedMapping_Motor2[speed]; }
+
+       if(wheelID == 3) { return SpeedMapping_Motor3[speed]; }
+
+       return 0;
+}
+
 
 void loop()
 {
     UpdateRPM();
 
     Calibration();
+
+    //SetWheelsTo(0);
 }
