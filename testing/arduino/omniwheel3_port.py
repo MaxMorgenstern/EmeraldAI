@@ -29,5 +29,6 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(
 from EmeraldAI.Logic.Movement.Omniwheel import Omniwheel
 
 for x in range(360):
-    print x, Omniwheel().CalculateAllAsMessage(x)
+    print x, Omniwheel().Move(x)
 
+print Omniwheel().Rotate(False, 0.5)

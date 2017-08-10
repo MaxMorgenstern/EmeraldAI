@@ -18,7 +18,18 @@ class Omniwheel(object):
         self.MappingRange = Config().GetInt("Robot.Movement", "MappingRange")
 
 
-    def CalculateAllAsMessage(self, angle, velocity=1):
+    def Rotate(self, cw=True, velocity=1):
+        result = ""
+        for wheel in self.wheel:
+            if wheel is None:
+                continue
+            if(cw):
+                result += "|{0}".format(velocity * self.MappingRange)
+            else:
+                result += "|-{0}".format(velocity * self.MappingRange)
+        return result.strip('|')
+
+    def Move(self, angle, velocity=1):
         result = ""
         for wheel in self.wheel:
             if wheel is None:
@@ -32,4 +43,3 @@ class Omniwheel(object):
 
     def Map(self, speed):
         return int(round(speed * self.MappingRange))
-
