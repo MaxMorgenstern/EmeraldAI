@@ -1,1 +1,1 @@
-__all__ = ["Omniwheel"]
+__all__ = ["Omniwheel", "ParallelWheels"]
