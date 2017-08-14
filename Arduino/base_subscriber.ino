@@ -2,30 +2,48 @@
 #include <std_msgs/String.h>
 #include <Arduino.h>
 
+// **********
+// Variables
+// **********
+
 ros::NodeHandle nh;
 
+String messageData[3];
 
-void messageCb( const std_msgs::String& incoming_msg )
+// **********
+// ROS Messages
+// **********
+
+void messageCallback( const std_msgs::String& incoming_msg )
 {
     messageTTL = messageTTLInit;
 
     String data = incoming_msg.data;
 
-    int splitPos = data.indexOf('|');
+    int firstDelimiter = data.indexOf('|');
+    int secondDelimiter = data.lastIndexOf('|');
 
-    String leftData = data.substring(0, splitPos);
-    String rightData = data.substring(splitPos+1);
-
+    messageData[0] = data.substring(0, firstDelimiter);
+    messageData[1] = data.substring(firstDelimiter+1, secondDelimiter);
+    messageData[2] = data.substring(secondDelimiter+1);
 
 }
 
-ros::Subscriber<std_msgs::String> sub("to_arduino", &messageCb );
+ros::Subscriber<std_msgs::String> sub("to_arduino", &messageCallback );
+
+// **********
+// Setup
+// **********
 
 void setup()
 {
     nh.initNode();
     nh.subscribe(sub);
 }
+
+// **********
+// Main Loop
+// **********
 
 void loop()
 {
