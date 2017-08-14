@@ -20,8 +20,7 @@ GLOBAL_TriggerName = "default"
 def RunTrigger():
     global GLOBAL_Publisher
 
-    # TODO: Config
-    GPIOInputChannel = 3 # Board Pin #3
+    GPIOInputChannel = Config().GetInt("Trigger", "GPIOPin")
 
     GLOBAL_Publisher = rospy.Publisher('trigger', String, queue_size=10)
     rospy.init_node('Trigger_node', anonymous=True)
@@ -34,7 +33,7 @@ def RunTrigger():
     GPIO.add_event_detect(GPIOInputChannel, GPIO.RISING, Trigger, 100)
 
     # TODO: Keyboard Trigger
-    # TODO: STT Keyword Trigger
+    # TODO: STT Keyword Trigger - snowboy
 
     while True:
         time.sleep(1)
@@ -42,7 +41,7 @@ def RunTrigger():
 def Trigger(callback):
     global GLOBAL_Publisher, GLOBAL_TriggerName
 
-    triggerData = "TRIGGER|{0}|{1}".format(time.time(), GLOBAL_TriggerName)
+    triggerData = "TRIGGER|{0}|{1}".format(GLOBAL_TriggerName, time.time())
     rospy.loginfo(triggerData)
     GLOBAL_FaceappPublisher.publish(triggerData)
 
