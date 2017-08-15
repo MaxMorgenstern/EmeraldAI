@@ -6,30 +6,42 @@
 // Variables
 // **********
 
-ros::NodeHandle nh;
+ros::NodeHandle rosNode;
 
-String messageData[3];
+uint8_t messageData[4];
+
+uint8_t messageTTL = 10;
+uint16_t messageTimestamp = 0;
 
 // **********
 // ROS Messages
 // **********
 
-void messageCallback( const std_msgs::String& incoming_msg )
+void rosMessageCallback( const std_msgs::String& incoming_msg )
 {
-    messageTTL = messageTTLInit;
+    messageTimestamp = millis();
 
     String data = incoming_msg.data;
 
     int firstDelimiter = data.indexOf('|');
-    int secondDelimiter = data.lastIndexOf('|');
+    int secondDelimiter = data.indexOf('|', firstDelimiter+1);
+    int thirdDelimiter = data.lastIndexOf('|');
 
-    messageData[0] = data.substring(0, firstDelimiter);
-    messageData[1] = data.substring(firstDelimiter+1, secondDelimiter);
-    messageData[2] = data.substring(secondDelimiter+1);
-
+    messageData[0] = data.substring(0, firstDelimiter).toInt();
+    messageData[1] = data.substring(firstDelimiter+1, secondDelimiter).toInt();
+    if(secondDelimiter == thirdDelimiter)
+    {
+        messageData[2] = data.substring(secondDelimiter+1).toInt();
+    }
+    else
+    {
+        messageData[2] = data.substring(secondDelimiter+1, thirdDelimiter).toInt();
+        messageData[3] = data.substring(thirdDelimiter+1).toInt();
+    }
 }
 
-ros::Subscriber<std_msgs::String> sub("to_arduino", &messageCallback );
+ros::Subscriber<std_msgs::String> rosSubscriber("to_arduino", &rosMessageCallback );
+
 
 // **********
 // Setup
@@ -37,8 +49,8 @@ ros::Subscriber<std_msgs::String> sub("to_arduino", &messageCallback );
 
 void setup()
 {
-    nh.initNode();
-    nh.subscribe(sub);
+    rosNode.initNode();
+    rosNode.subscribe(rosSubscriber);
 }
 
 // **********
@@ -47,5 +59,5 @@ void setup()
 
 void loop()
 {
-    nh.spinOnce();
+    rosNode.spinOnce();
 }
