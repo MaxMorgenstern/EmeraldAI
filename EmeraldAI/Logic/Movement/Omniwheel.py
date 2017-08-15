@@ -24,9 +24,9 @@ class Omniwheel(object):
             if wheel is None:
                 continue
             if(cw):
-                result += "|{0}".format(velocity * self.MappingRange)
+                result += "|{0}".format(self.Map(velocity))
             else:
-                result += "|-{0}".format(velocity * self.MappingRange)
+                result += "|-{0}".format(self.Map(velocity))
         return result.strip('|')
 
     def Move(self, angle, velocity=1):
