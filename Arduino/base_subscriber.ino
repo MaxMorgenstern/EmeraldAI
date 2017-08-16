@@ -13,6 +13,12 @@ uint8_t messageData[4];
 uint8_t messageTTL = 100;
 uint16_t messageTimestamp = 0;
 
+// Speed Pin, Pin A, Pin B
+uint8_t motor_0[] = {3, 4, 5};
+uint8_t motor_1[] = {6, 7, 8};
+uint8_t motor_2[] = {0, 0, 0};
+uint8_t motor_3[] = {0, 0, 0};
+
 // **********
 // ROS Messages
 // **********
@@ -47,6 +53,13 @@ ros::Subscriber<std_msgs::String> rosSubscriber("to_arduino", &rosMessageCallbac
 // **********
 // Motor
 // **********
+
+void SetMotorSimple(uint8_t motor[], uint8_t speed)
+{
+    if (motor[0] == 0 and motor[1] == 0 motor[3] == 0) { return; }
+
+    SetMotor(motor[0], motor[1], motor[3], speed);
+}
 
 void SetMotor(uint8_t pinSpeed, uint8_t pin1, uint8_t pin2, uint8_t speed)
 {
@@ -88,11 +101,17 @@ void loop()
 {
     if(messageTimestamp + messageTTL > millis())
     {
-        // TODO - Update pins
+        SetMotorSimple(motor_0, messageData[0]);
+        SetMotorSimple(motor_1, messageData[1]);
+        SetMotorSimple(motor_2, messageData[2]);
+        SetMotorSimple(motor_3, messageData[3]);
     }
     else
     {
-        // TODO - STOP!
+        SetMotorSimple(motor_0, 0);
+        SetMotorSimple(motor_1, 0);
+        SetMotorSimple(motor_2, 0);
+        SetMotorSimple(motor_3, 0);
     }
 
     rosNode.spinOnce();
