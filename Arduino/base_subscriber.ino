@@ -8,7 +8,7 @@
 
 ros::NodeHandle rosNode;
 
-uint8_t messageData[4];
+int16_t messageData[4];
 
 uint8_t messageTTL = 100;
 uint16_t messageTimestamp = 0;
@@ -54,14 +54,14 @@ ros::Subscriber<std_msgs::String> rosSubscriber("to_arduino", &rosMessageCallbac
 // Motor
 // **********
 
-void SetMotorSimple(uint8_t motor[], uint8_t speed)
+void SetMotorSimple(uint8_t motor[], int16_t speed)
 {
     if (motor[0] == 0 and motor[1] == 0 motor[3] == 0) { return; }
 
     SetMotor(motor[0], motor[1], motor[3], speed);
 }
 
-void SetMotor(uint8_t pinSpeed, uint8_t pin1, uint8_t pin2, uint8_t speed)
+void SetMotor(uint8_t pinSpeed, uint8_t pin1, uint8_t pin2, int16_t speed)
 {
     analogWrite(pinSpeed, abs(speed));
     if (speed == 0)
