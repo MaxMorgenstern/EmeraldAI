@@ -11,7 +11,7 @@ ros::NodeHandle rosNode;
 int16_t messageData[4];
 
 uint8_t messageTTL = 100;
-uint16_t messageTimestamp = 0;
+int messageTimestamp = 0;
 
 // Speed Pin, Pin A, Pin B
 uint8_t motor_0[] = {3, 4, 5};
