@@ -43,11 +43,13 @@ class ProcessResponse(object):
                 FileLogger().Info("ProcessResponse, Process(), Call Action: {0}, {1}, {2}".format(sentenceAction["Module"], sentenceAction["Class"], sentenceAction["Function"]))
                 actionResult = Action.CallFunction(sentenceAction["Module"], sentenceAction["Class"], sentenceAction["Function"], PipelineArgs)
 
-                # TODO handle error
-                # return {'Input':inputString, 'Result':None, 'ResultType':'Error'} # ResultType: string - image
-
-                NLPParameter().SetInput(actionResult["Input"])
-                NLPParameter().SetResult(actionResult["Result"])
+                if actionResult["ResultType"] is "Error":
+                    PipelineArgs.Response = sentence.GetErrorResponse()
+                    PipelineArgs.ResponseRaw = None
+                    PipelineArgs.Error.append("ProcessResponse - Action Error")
+                else:
+                    NLPParameter().SetInput(actionResult["Input"])
+                    NLPParameter().SetResult(actionResult["Result"])
 
             nlpParameterDict = NLPParameter().GetParameterDictionary()
 

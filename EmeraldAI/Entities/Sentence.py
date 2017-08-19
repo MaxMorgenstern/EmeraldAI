@@ -75,6 +75,9 @@ class Sentence(BaseObject):
             return {'Name':r[0], 'Module':r[1], 'Class':r[2], 'Function':r[3]}
         return None
 
+    def GetErrorResponse(self):
+        return None
+
     def __repr__(self):
          return "Rating:{0}".format(self.Rating)
 
