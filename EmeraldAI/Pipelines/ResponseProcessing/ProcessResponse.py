@@ -43,8 +43,8 @@ class ProcessResponse(object):
                 FileLogger().Info("ProcessResponse, Process(), Call Action: {0}, {1}, {2}".format(sentenceAction["Module"], sentenceAction["Class"], sentenceAction["Function"]))
                 actionResult = Action.CallFunction(sentenceAction["Module"], sentenceAction["Class"], sentenceAction["Function"], PipelineArgs)
 
-                if actionResult["ResultType"] is "Error":
-                    PipelineArgs.Response = sentence.GetErrorResponse()
+                if actionResult["ResultType"].title() is "Error":
+                    PipelineArgs.Response = sentence.GetActionErrorResponse(PipelineArgs.Language, user.Formal)
                     PipelineArgs.ResponseRaw = None
                     PipelineArgs.Error.append("ProcessResponse - Action Error")
                 else:

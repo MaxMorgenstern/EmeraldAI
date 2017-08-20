@@ -18,6 +18,8 @@ class Sentence(BaseObject):
     HasCategory = []
     SetsCategory = []
 
+    ActionID = None
+
     def __init__(self, ID, Rating, Keyword, IsStopword=True):
         self.ID = ID
         self.Rating = Rating
@@ -52,31 +54,46 @@ class Sentence(BaseObject):
         query = "SELECT Sentence, Formal, Informal FROM Conversation_Sentence WHERE ID = '{0}'"
         sqlResult = db().Fetchall(query.format(self.ID))
         for r in sqlResult:
-            if formal:
-                if r[1]:
-                    return r[1]
-                else:
-                    return r[0]
-            else:
-                if r[2]:
-                    return r[2]
-                else:
-                    return r[0]
+            data = self.__formalOrOther(r, formal)
+            if data is not None:
+                return data
         return None
 
     def GetAction(self):
         query = """SELECT Conversation_Action.Name, Conversation_Action.Module,
-            Conversation_Action.Class, Conversation_Action.Function
+            Conversation_Action.Class, Conversation_Action.Function, Conversation_Action.ID
             FROM Conversation_Sentence_Action, Conversation_Action
             WHERE Conversation_Sentence_Action.ActionID = Conversation_Action.ID
             AND Conversation_Sentence_Action.SentenceID = '{0}'"""
         sqlResult = db().Fetchall(query.format(self.ID))
         for r in sqlResult:
+            self.ActionID =int(r[4])
             return {'Name':r[0], 'Module':r[1], 'Class':r[2], 'Function':r[3]}
         return None
 
-    def GetErrorResponse(self):
+    def GetActionErrorResponse(self, language, formal=True):
+        query = """SELECT Sentence, Formal, Informal FROM Conversation_Action_Error WHERE ActionID = '{0}' and Language = '{1}'"""
+        sqlResult = db().Fetchall(query.format(self.ActionID, language))
+        for r in sqlResult:
+            data = self.__formalOrOther(r, formal)
+            if data is not None:
+                return data
         return None
+
+
+    def __formalOrOther(self, data, formal):
+        if formal:
+            if data[1]:
+                return data[1]
+            else:
+                return data[0]
+        else:
+            if data[2]:
+                return data[2]
+            else:
+                return data[0]
+        return None
+
 
     def __repr__(self):
          return "Rating:{0}".format(self.Rating)
