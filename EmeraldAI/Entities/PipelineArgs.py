@@ -36,7 +36,6 @@ class PipelineArgs(BaseObject):
         # TODO
         self.SessionID = 0
 
-        # TODO - List of Errors
         self.Error = []
 
 
