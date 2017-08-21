@@ -161,6 +161,7 @@ class DialogTrainer(object):
         return True
 
 
+    # TODO - Train error sentence
     def TrainActionCSV(self, data, language):
         for key, group in itertools.groupby(data, self.__groupSeparator):
             line = ''.join(str(e) for e in group)
