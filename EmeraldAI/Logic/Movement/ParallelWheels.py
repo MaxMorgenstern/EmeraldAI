@@ -31,7 +31,7 @@ class ParallelWheels(object):
         cw = True if (angle > 0) else False
         percent = 100 * (90 - abs(angle)) / 90
 
-        reducedValue = int(round(velocity * self.MappingRange * 100 / percent)) if percent != 0 else 0
+        reducedValue = int(round(velocity * self.MappingRange * percent / 100))
         value = int(round(velocity * self.MappingRange))
 
         if(cw):

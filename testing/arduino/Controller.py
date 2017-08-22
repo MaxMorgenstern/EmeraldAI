@@ -42,10 +42,20 @@ def talker():
                     val = ParallelWheels().Move(0)
                 if event.key == 274:
                     val = ParallelWheels().Move(180)
+
                 if event.key == 275:
-                    val = ParallelWheels().Move(90)
+                    val = ParallelWheels().Rotate()
                 if event.key == 276:
-                    val = ParallelWheels().Move(-90)
+                    val = ParallelWheels().Rotate(False)
+
+                # page up
+                if event.key == 280:
+                    val = ParallelWheels().Move(-45)
+
+                # page down
+                if event.key == 281:
+                    val = ParallelWheels().Move(45)
+
                 # Q
                 if event.key == 113:
                     val = "0|0|0"
