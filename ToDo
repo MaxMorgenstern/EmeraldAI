@@ -205,6 +205,9 @@ blink, bad, doubt, sad, shock
 
 
 
+ros-serial
+rosrun rosserial_python serial_node.py /dev/ttyUSB0
+
 
 
 
