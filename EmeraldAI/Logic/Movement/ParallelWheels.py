@@ -11,7 +11,7 @@ class ParallelWheels(object):
 
 
     def Rotate(self, cw=True, velocity=1):
-        result = "{0}|{1}"
+        result = "{0}|{1}|0"
         value = int(round(velocity * self.MappingRange))
         if(cw):
             return result.format(value, value * -1)
