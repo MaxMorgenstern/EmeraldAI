@@ -8,7 +8,7 @@
 
 ros::NodeHandle rosNode;
 
-int16_t messageData[4];
+int messageData[4];
 
 uint8_t messageTTL = 100;
 int messageTimestamp = 0;
@@ -29,9 +29,9 @@ void rosMessageCallback(const std_msgs::String& incoming_msg )
 
     String data = incoming_msg.data;
 
-    int firstDelimiter = data.indexOf('|');
-    int secondDelimiter = data.indexOf('|', firstDelimiter+1);
-    int thirdDelimiter = data.lastIndexOf('|');
+    uint8_t firstDelimiter = data.indexOf('|');
+    uint8_t secondDelimiter = data.indexOf('|', firstDelimiter+1);
+    uint8_t thirdDelimiter = data.lastIndexOf('|');
 
     messageData[0] = data.substring(0, firstDelimiter).toInt();
     messageData[1] = data.substring(firstDelimiter+1, secondDelimiter).toInt();
@@ -54,14 +54,14 @@ ros::Subscriber<std_msgs::String> rosSubscriber("to_arduino", &rosMessageCallbac
 // Motor
 // **********
 
-void SetMotorSimple(uint8_t motor[], int16_t speed)
+void SetMotorSimple(uint8_t motor[], int speed)
 {
-    if (motor[0] == 0 and motor[1] == 0 motor[3] == 0) { return; }
+    if (motor[0] == 0 and motor[1] == 0 motor[2] == 0) { return; }
 
-    SetMotor(motor[0], motor[1], motor[3], speed);
+    SetMotor(motor[0], motor[1], motor[2], speed);
 }
 
-void SetMotor(uint8_t pinSpeed, uint8_t pin1, uint8_t pin2, int16_t speed)
+void SetMotor(uint8_t pinSpeed, uint8_t pin1, uint8_t pin2, int speed)
 {
     analogWrite(pinSpeed, abs(speed));
     if (speed == 0)

@@ -50,8 +50,9 @@ faceapp: "bottom" does a replay
 
 Use config file for specific camera - so it's simple to switch them
 
-use own message types instead of the pipe delimited strings
-http://wiki.ros.org/msg
+
+battery monitor
+
 
 
 add intermediate position animation
@@ -203,6 +204,9 @@ center, left, right, top, bottom
 blink, bad, doubt, sad, shock
 
 
+
+ros-serial
+rosrun rosserial_python serial_node.py /dev/ttyUSB0
 
 
 

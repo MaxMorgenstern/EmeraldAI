@@ -11,7 +11,7 @@ class ParallelWheels(object):
 
 
     def Rotate(self, cw=True, velocity=1):
-        result = "{0}|{1}"
+        result = "{0}|{1}|0"
         value = int(round(velocity * self.MappingRange))
         if(cw):
             return result.format(value, value * -1)
@@ -19,16 +19,21 @@ class ParallelWheels(object):
 
 
     def Move(self, angle, velocity=1):
-    	if (abs(angle) > 90):
-    		return ""
+        if (abs(angle) > 90 and abs(angle) != 180):
+            return ""
 
-    	result = "{0}|{1}"
-    	cw = True if (angle > 0) else False
-    	percent = 100 * (90 - abs(angle)) / 90
+        if (abs(angle) == 180):
+            result = "-{0}|-{1}|0"
+            angle = 0
+        else:
+            result = "{0}|{1}|0"
 
-    	reducedValue = int(round(velocity * self.MappingRange * 100 / percent))
+        cw = True if (angle > 0) else False
+        percent = 100 * (90 - abs(angle)) / 90
+
+        reducedValue = int(round(velocity * self.MappingRange * percent / 100))
         value = int(round(velocity * self.MappingRange))
 
-    	if(cw):
-    		return result.format(value, reducedValue)
-    	return result.format(reducedValue, value)
+        if(cw):
+            return result.format(value, reducedValue)
+        return result.format(reducedValue, value)

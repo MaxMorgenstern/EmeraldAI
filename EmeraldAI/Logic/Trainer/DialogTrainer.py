@@ -61,12 +61,15 @@ class DialogTrainer(object):
             categoryID = db().Fetchall(query)[0][0]
         return categoryID
 
-    def SaveAction(self, Name, Module, Class, Function):
+    def SaveAction(self, Name, Module, Class, Function, Language, ErrorSentence):
         query = "INSERT INTO Conversation_Action ('Name', 'Module', 'Class', 'Function') Values ('{0}', '{1}', '{2}', '{3}')".format(Name, Module, Class, Function)
         actionID = db().Execute(query)
         if(actionID is None):
             query = "SELECT ID FROM Conversation_Action WHERE Name = '{0}'".format(Name)
             actionID = db().Fetchall(query)[0][0]
+
+        query = "INSERT INTO Conversation_Action_Error (ActionID, Sentence, Language) Values ('{0}', '{1}', '{2}')"
+        db().Execute(query.format(actionID, ErrorSentence, Language))
         return actionID
 
     def SaveKeywordsFromSentence(self, Sentence, Language):
@@ -177,13 +180,14 @@ class DialogTrainer(object):
                     moduleName = splitLine[1]
                     className = splitLine[2]
                     functionName = splitLine[3]
+                    errorSentence = splitLine[4]
                     if (name.lower() == "name"):
                         continue
 
                     if (len(name) == 0 or len(moduleName) == 0):
                         continue
 
-                    self.SaveAction(name, moduleName, className, functionName)
+                    self.SaveAction(name, moduleName, className, functionName, language, errorSentence)
 
 
     def TrainCSV(self, data, language):
