@@ -10,15 +10,22 @@ long duration;
 
 const int stepsPerRevolution = 200;
 Stepper myStepper(stepsPerRevolution, 4, 5, 6, 7);
+const int enableStepper = 3;
 
 void setup() {
-   pinMode(4, OUTPUT);
-   pinMode(5, OUTPUT);
-   pinMode(6, OUTPUT);
-   pinMode(7, OUTPUT);
-   pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
-   pinMode(echoPin, INPUT); // Sets the echoPin as an Input
-   Serial.begin(9600); // Starts the serial communication
+    pinMode(enableStepper, OUTPUT);
+    digitalWrite(enableStepper, HIGH);
+    pinMode(4, OUTPUT);
+    pinMode(5, OUTPUT);
+    pinMode(6, OUTPUT);
+    pinMode(7, OUTPUT);
+    pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
+    pinMode(echoPin, INPUT); // Sets the echoPin as an Input
+    pinMode(irTopPin, INPUT);
+
+    myStepper.setSpeed(180);
+
+    Serial.begin(9600); // Starts the serial communication
 }
 
 
@@ -32,6 +39,9 @@ long microsecondsToCentimeters(long microseconds){
 
 void loop() {
 
+    // DUMMY SENSOR 1
+    // --------------
+
     // Clears the trigPin
     digitalWrite(trigPin, LOW);
     delayMicroseconds(2);
@@ -44,11 +54,29 @@ void loop() {
     // Reads the echoPin, returns the sound wave travel time in microseconds
     duration = pulseIn(echoPin, HIGH);
 
+
+
+    // DUMMY SENSOR 2
+    // --------------
+
+    // Clears the trigPin
+    digitalWrite(trigPin, LOW);
+    delayMicroseconds(2);
+
+    // Sets the trigPin on HIGH state for 10 micro seconds
+    digitalWrite(trigPin, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(trigPin, LOW);
+
+    // Reads the echoPin, returns the sound wave travel time in microseconds
+    duration = pulseIn(echoPin, HIGH);
+
+
+
     // Prints the distance on the Serial Monitor
     //Serial.print("Distance: ");
     //Serial.print(microsecondsToCentimeters(duration));
     //Serial.println("cm ");
 
-    myStepper.setSpeed(30);
     myStepper.step(1);
 }
