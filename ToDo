@@ -209,6 +209,7 @@ ros-serial
 rosrun rosserial_python serial_node.py /dev/ttyUSB0
 
 
+sudo apt-get install ros-kinetic-rosserial-python
 
 
 - Multiple Machine ROS:
