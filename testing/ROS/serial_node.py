@@ -32,20 +32,21 @@
 # LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-
-__author__ = "mferguson@willowgarage.com (Michael Ferguson)"
+#
+# __author__ = "mferguson@willowgarage.com (Michael Ferguson)"
 
 import rospy
 from rosserial_python import SerialClient, RosSerialServer
 import multiprocessing
+import uuid
 
 import sys
 
 if __name__=="__main__":
 
-    # todo - dynamic naming
-    rospy.init_node("serial_node")
-    rospy.loginfo("ROS Serial Python Node")
+    uid = uuid.uuid4()
+    rospy.init_node("serial_node_{0}".format(uid))
+    rospy.loginfo("ROS Serial Python Node '{0}'".formst(uid))
 
     port_name = rospy.get_param('~port','/dev/ttyUSB0')
     baud = int(rospy.get_param('~baud','57600'))
@@ -60,6 +61,7 @@ if __name__=="__main__":
         port_name  = sys.argv[1]
     if len(sys.argv) == 3 :
         tcp_portnum = int(sys.argv[2])
+
 
     if port_name == "tcp" :
         server = RosSerialServer(tcp_portnum, fork_server)
