@@ -219,3 +219,19 @@ export ROS_HOSTNAME=1.2.3.4
 Clients:
 export ROS_MASTER_URI=http://url:11311
 - http://wiki.ros.org/ROS/Tutorials/MultipleMachines
+
+
+
+- possible PI alternatives:
+https://www.pine64.org/
+https://www.amazon.com/NVIDIA-Jetson-TK1-Development-Kit/dp/B00L7AWOEC
+https://www.amazon.com/ODROID-XU4-Single-Board-Computer-Gigabit/dp/B0163GEA64
+https://www.amazon.de/ASUS-Computer-Tinker-Board-2GB/dp/B01N35PQ9U
+	https://www.amazon.co.uk/Step-Down-Step-down-Power-Module/dp/B00ENE55SQ
+
+https://www.crowdsupply.com/husarion/core2
+
+
+
+cam alternative:
+http://www.ebay.de/itm/Microsoft-Xbox-360-original-KINECT-SENSOR-LEISTE-SCHWARZ-Controller-/222538161623?epid=1404729520&hash=item33d04eddd7:g:g8sAAOSwlMFZOCPG
