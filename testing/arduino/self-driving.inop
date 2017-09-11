@@ -14,6 +14,11 @@ const uint8_t motorPin2_2 = 8;
 const uint8_t motorPin2_speed = 6;
 const uint8_t motorPin2_A = A6;
 
+
+const uint8_t rangeLimit = 15;
+
+bool spinCompleted = true;
+
 /*
 const uint8_t motorPin3_1 = 10;
 const uint8_t motorPin3_2 = 11;
@@ -56,6 +61,7 @@ long MicrosecondsToCentimeters(long microseconds)
 }
 
 
+// Use library to minimize delay
 float GetUltrasoundRange()
 {
     // Clears the trigPin
@@ -102,7 +108,7 @@ void loop()
 	long range = GetUltrasoundRange();
 
 	// obstacle is further away than X cm
-	if(range > 0 && range > 20)
+	if(spinCompleted && range > 0 && range > rangeLimit)
 	{
 		// drive
 	    SetMotor(motorPin1_speed, motorPin1_1, motorPin1_2, 255);
@@ -111,10 +117,17 @@ void loop()
 	}
 	else
 	{
+		spinCompleted = false;
+
 		// rotate
 	    SetMotor(motorPin1_speed, motorPin1_1, motorPin1_2, 255);
     	SetMotor(motorPin2_speed, motorPin2_1, motorPin2_2, 0);
     	//SetMotor(motorPin3_speed, motorPin3_1, motorPin3_2, 0);
+
+    	if(range > (rangeLimit * 2))
+    	{
+    		spinCompleted = true;
+    	}
 	}
 }
 
