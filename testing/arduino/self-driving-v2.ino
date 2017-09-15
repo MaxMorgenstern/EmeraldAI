@@ -1,10 +1,13 @@
 #include "Arduino.h"
+#include "Adafruit_NeoPixel.h"
 
 // defines pins numbers
 const uint8_t trigPin = 9;
 const uint8_t echoPin = 10;
 
 const uint8_t ledPin = 11;
+
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(26, ledPin, NEO_GRB + NEO_KHZ800);
 
 const uint8_t motorPin1_1 = 4;
 const uint8_t motorPin1_2 = 5;
@@ -15,7 +18,7 @@ const uint8_t motorPin2_2 = 8;
 
 const uint8_t motorEnablePin = 3;
 
-const uint8_t rangeLimit = 15;
+const uint8_t rangeLimit = 30;
 
 bool spinCompleted = true;
 
@@ -38,6 +41,9 @@ void setup()
     pinMode(motorPin2_2, OUTPUT);
 
     Serial.begin(9600); // Starts the serial communication
+
+    strip.begin();
+    strip.show(); // Initialize all pixels to 'off'
 }
 
 
@@ -85,9 +91,21 @@ void SetMotor(int pin1, int pin2, int speed)
 }
 
 
+
+void colorSet(uint32_t c) {
+    for(uint16_t i=0; i<strip.numPixels(); i++) {
+        strip.setPixelColor(i, c);
+    }
+    strip.show();
+}
+
+
 void loop()
 {
     long range = GetUltrasoundRange();
+
+    Serial.print("Result: ");
+    Serial.println(range);
 
     // obstacle is further away than X cm
     if(spinCompleted && range > 0 && range > rangeLimit)
@@ -95,14 +113,18 @@ void loop()
         // drive
         SetMotor(motorPin1_1, motorPin1_2, 255);
         SetMotor(motorPin2_1, motorPin2_2, 255);
+
+        colorSet(strip.Color(0, 255, 0));
     }
     else
     {
         spinCompleted = false;
 
         // rotate
-        SetMotor(motorPin1_1, motorPin1_2, 255);
+        SetMotor(motorPin1_1, motorPin1_2, -255);
         SetMotor(motorPin2_1, motorPin2_2, 0);
+
+        colorSet(strip.Color(255, 0, 0));
 
         if(range > (rangeLimit * 2))
         {
