@@ -7,7 +7,7 @@ const uint8_t echoPin = 10;
 
 const uint8_t ledPin = 11;
 
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(26, ledPin, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel LEDStrip = Adafruit_NeoPixel(26, ledPin, NEO_GRB + NEO_KHZ800);
 
 const uint8_t motorPin1_1 = 4;
 const uint8_t motorPin1_2 = 5;
@@ -18,7 +18,10 @@ const uint8_t motorPin2_2 = 8;
 
 const uint8_t motorEnablePin = 3;
 
-const uint8_t rangeLimit = 30;
+const uint8_t rangeLimit_Stop = 40;
+const uint8_t rangeLimit_Warning1 = 90;
+const uint8_t rangeLimit_Warning2 = 70;
+const uint8_t rangeLimit_Warning3 = 50;
 
 bool spinCompleted = true;
 
@@ -42,8 +45,8 @@ void setup()
 
     Serial.begin(9600); // Starts the serial communication
 
-    strip.begin();
-    strip.show(); // Initialize all pixels to 'off'
+    LEDStrip.begin();
+    LEDStrip.show(); // Initialize all pixels to 'off'
 }
 
 
@@ -93,11 +96,11 @@ void SetMotor(int pin1, int pin2, int speed)
 
 
 void colorSet(uint32_t c) {
-    for(uint16_t i=0; i < strip.numPixels(); i++)
+    for(uint16_t i=0; i < LEDStrip.numPixels(); i++)
     {
-        strip.setPixelColor(i, c);
+        LEDStrip.setPixelColor(i, c);
     }
-    strip.show();
+    LEDStrip.show();
 }
 
 
@@ -105,13 +108,14 @@ void loop()
 {
     long range = GetUltrasoundRange();
 
-    Serial.print("Result: ");
-    Serial.println(range);
-
     int motorSpeed = 1 * 255;
-    if(range < 100) { motorSpeed = 0.6 * 255; }
-    if(range < 60) { motorSpeed = 0.5 * 255; }
-    if(range < 40) { motorSpeed = 0.4 * 255; }
+    uint32_t color = LEDStrip.Color(0, 255, 0);
+    if(range < rangeLimit_Warning1) { motorSpeed = 0.6 * 255; color = LEDStrip.Color(127, 255, 0);}
+    if(range < rangeLimit_Warning2) { motorSpeed = 0.5 * 255; color = LEDStrip.Color(255, 255, 0); }
+    if(range < rangeLimit_Warning3) { motorSpeed = 0.4 * 255; color = LEDStrip.Color(255, 127, 0); }
+    if(range < rangeLimit) { color = LEDStrip.Color(255, 0, 0); }
+
+    colorSet(color);
 
     // obstacle is further away than X cm
     if(spinCompleted && range > 0 && range > rangeLimit)
@@ -119,8 +123,6 @@ void loop()
         // drive
         SetMotor(motorPin1_1, motorPin1_2, motorSpeed);
         SetMotor(motorPin2_1, motorPin2_2, motorSpeed);
-
-        colorSet(strip.Color(0, 255, 0));
     }
     else
     {
@@ -129,15 +131,6 @@ void loop()
         // rotate
         SetMotor(motorPin1_1, motorPin1_2, -motorSpeed);
         SetMotor(motorPin2_1, motorPin2_2, motorSpeed);
-
-        if(range > rangeLimit)
-        {
-            colorSet(strip.Color(255, 255, 0));
-        }
-        else
-        {
-            colorSet(strip.Color(255, 0, 0));
-        }
 
         if(range > (rangeLimit * 2))
         {
