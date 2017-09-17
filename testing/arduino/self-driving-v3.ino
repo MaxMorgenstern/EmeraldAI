@@ -17,10 +17,13 @@ const uint8_t motorPin2_2 = 8;
 
 const uint8_t motorEnablePin = 3;
 
-const uint8_t rangeLimit_Stop = 40;
-const uint8_t rangeLimit_Warning1 = 90;
-const uint8_t rangeLimit_Warning2 = 70;
-const uint8_t rangeLimit_Warning3 = 50;
+const uint8_t rangeLimit_Warning1 = 50;
+const uint8_t rangeLimit_Warning2 = 40;
+const uint8_t rangeLimit_Warning3 = 25;
+const uint8_t rangeLimit_Stop = 15;
+
+const uint16_t rangeLimit_RotateFor = 250;
+unsigned long rangeLimit_Timestamp = 0;
 
 bool spinCompleted = true;
 
@@ -31,6 +34,7 @@ void setup()
     pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
     pinMode(echoPin, INPUT); // Sets the echoPin as an Input
 
+    rangeLimit_Timestamp = millis();
 
     pinMode(motorEnablePin, OUTPUT);
     analogWrite(motorEnablePin, 255);
@@ -107,31 +111,39 @@ void loop()
 {
     long range = GetUltrasoundRange();
 
+    if(range == 0 || range > 400)
+    {
+        colorSet(LEDStrip.Color(0, 0, 255));
+        return;
+    }
+
     uint8_t motorSpeed = 1 * 255;
     uint32_t color = LEDStrip.Color(0, 255, 0);
-    if(range < rangeLimit_Warning1) { motorSpeed = 0.6 * 255; color = LEDStrip.Color(127, 255, 0);}
-    if(range < rangeLimit_Warning2) { motorSpeed = 0.5 * 255; color = LEDStrip.Color(255, 255, 0); }
-    if(range < rangeLimit_Warning3) { motorSpeed = 0.4 * 255; color = LEDStrip.Color(255, 127, 0); }
-    if(range < rangeLimit) { color = LEDStrip.Color(255, 0, 0); }
+    if(range < rangeLimit_Warning1) { color = LEDStrip.Color(127, 255, 0);}
+    if(range < rangeLimit_Warning2) { color = LEDStrip.Color(255, 255, 0); }
+    if(range < rangeLimit_Warning3) { motorSpeed = 0.8 * 255; color = LEDStrip.Color(255, 127, 0); }
+    if(range < rangeLimit_Stop) { color = LEDStrip.Color(255, 0, 0); }
 
     colorSet(color);
 
     // obstacle is further away than X cm
-    if(spinCompleted && range > 0 && range > rangeLimit)
+    if(spinCompleted && range > rangeLimit_Stop)
     {
         // drive
         SetMotor(motorPin1_1, motorPin1_2, motorSpeed);
         SetMotor(motorPin2_1, motorPin2_2, motorSpeed);
+
+        rangeLimit_Timestamp = millis();
     }
     else
     {
+        // rotate
+        SetMotor(motorPin1_1, motorPin1_2, -255);
+        SetMotor(motorPin2_1, motorPin2_2, 255);
+
         spinCompleted = false;
 
-        // rotate
-        SetMotor(motorPin1_1, motorPin1_2, -motorSpeed);
-        SetMotor(motorPin2_1, motorPin2_2, motorSpeed);
-
-        if(range > (rangeLimit * 2))
+        if(range > rangeLimit_Warning3 && (rangeLimit_Timestamp + rangeLimit_RotateFor) <= millis())
         {
             spinCompleted = true;
         }
