@@ -114,6 +114,9 @@ void loop()
     if(range == 0 || range > 400)
     {
         colorSet(LEDStrip.Color(0, 0, 255));
+
+        SetMotor(motorPin1_1, motorPin1_2, 0);
+        SetMotor(motorPin2_1, motorPin2_2, 0);
         return;
     }
 
