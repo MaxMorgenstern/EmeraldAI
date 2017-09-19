@@ -6,6 +6,7 @@ const uint8_t trigPin = 9;
 const uint8_t echoPin = 10;
 
 const uint8_t ledPin = 11;
+const bool ledBatterySaving = true;
 
 Adafruit_NeoPixel LEDStrip = Adafruit_NeoPixel(26, ledPin, NEO_GRB + NEO_KHZ800);
 
@@ -101,7 +102,10 @@ void SetMotor(int pin1, int pin2, int speed)
 void colorSet(uint32_t c) {
     for(uint16_t i=0; i < LEDStrip.numPixels(); i++)
     {
-        LEDStrip.setPixelColor(i, c);
+        if(ledBatterySaving && i%4 == 0 || !ledBatterySaving)
+        {
+            LEDStrip.setPixelColor(i, c);
+        }
     }
     LEDStrip.show();
 }
