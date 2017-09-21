@@ -34,9 +34,16 @@ Servo ServoMotor;
 const uint8_t servoPin = 6;
 const uint8_t servoRotationAngel = 10;
 
+enum direction {
+  left,
+  center,
+  right
+};
+
 uint8_t servoPos = 90;
-bool servoDirectionRight = false;
-bool servoRight = false;
+direction servoMovement = right;
+direction servoLocation = center;
+
 
 void setup()
 {
@@ -126,18 +133,41 @@ void ColorSet(uint32_t c)
 
 uint8_t GetNextServoAngle()
 {
-    if(servoPos >= 180)
-    {
-        servoDirectionRight = false;
-        servoPos = 180;
-    }
+    // 0 - 80
+    // 80 - 100
+    // 100 - 180
+
     if(servoPos <= 0)
     {
-        servoDirectionRight = true;
+        servoLocation = left;
+        servoMovement = right;
         servoPos = 0;
     }
 
-    if(servoDirectionRight)
+    if(servoPos < 80)
+    {
+        servoLocation = left;
+    }
+
+    if(servoPos >= 80 && servoPos <= 100)
+    {
+        servoLocation = center;
+    }
+
+    if(servoPos > 100)
+    {
+        servoLocation = right;
+    }
+
+    if(servoPos >= 180)
+    {
+        servoLocation = right;
+        servoMovement = left;
+        servoPos = 180;
+    }
+
+
+    if(servoMovement == right)
     {
         servoPos += servoRotationAngel;
     }
@@ -145,9 +175,6 @@ uint8_t GetNextServoAngle()
     {
         servoPos -= servoRotationAngel;
     }
-
-    // todo - center would be nice as well
-    if(servoPos >= 90) { servoRight = true; } else { servoRight = false; }
 
     return servoPos;
 }
