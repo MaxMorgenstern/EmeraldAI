@@ -139,10 +139,26 @@ uint8_t GetNextServoAngle()
 
     if(servoPos <= 0)
     {
-        servoLocation = left;
         servoMovement = right;
         servoPos = 0;
     }
+
+    if(servoPos >= 180)
+    {
+        servoMovement = left;
+        servoPos = 180;
+    }
+
+
+    if(servoMovement == right)
+    {
+        servoPos += servoRotationAngel;
+    }
+    else
+    {
+        servoPos -= servoRotationAngel;
+    }
+
 
     if(servoPos < 80)
     {
@@ -157,23 +173,6 @@ uint8_t GetNextServoAngle()
     if(servoPos > 100)
     {
         servoLocation = right;
-    }
-
-    if(servoPos >= 180)
-    {
-        servoLocation = right;
-        servoMovement = left;
-        servoPos = 180;
-    }
-
-
-    if(servoMovement == right)
-    {
-        servoPos += servoRotationAngel;
-    }
-    else
-    {
-        servoPos -= servoRotationAngel;
     }
 
     return servoPos;
