@@ -24,7 +24,7 @@ const uint8_t rangeLimit_Warning2 = 40;
 const uint8_t rangeLimit_Warning3 = 25;
 const uint8_t rangeLimit_Stop = 15;
 
-const uint16_t rangeLimit_RotateFor = 250;
+const uint16_t rangeLimit_RotateFor = 500;
 unsigned long rangeLimit_Timestamp = 0;
 
 bool wheelSpinCompleted = true;
@@ -178,6 +178,17 @@ uint8_t GetNextServoAngle()
     return servoPos;
 }
 
+void SetLightByRange(long range)
+{
+    uint32_t color = LEDStrip.Color(0, 255, 0);
+    if(range < rangeLimit_Warning1) { color = LEDStrip.Color(127, 255, 0);}
+    if(range < rangeLimit_Warning2) { color = LEDStrip.Color(255, 255, 0); }
+    if(range < rangeLimit_Warning3) { color = LEDStrip.Color(255, 127, 0); }
+    if(range < rangeLimit_Stop) { color = LEDStrip.Color(255, 0, 0); }
+
+    ColorSet(color);
+}
+
 
 void loop()
 {
@@ -192,21 +203,15 @@ void loop()
         return;
     }
 
-    uint8_t motorSpeed = 1 * 255;
-    uint32_t color = LEDStrip.Color(0, 255, 0);
-    if(range < rangeLimit_Warning1) { color = LEDStrip.Color(127, 255, 0);}
-    if(range < rangeLimit_Warning2) { color = LEDStrip.Color(255, 255, 0); }
-    if(range < rangeLimit_Warning3) { motorSpeed = 0.8 * 255; color = LEDStrip.Color(255, 127, 0); }
-    if(range < rangeLimit_Stop) { color = LEDStrip.Color(255, 0, 0); }
+    SetLightByRange(range);
 
-    ColorSet(color);
 
     // obstacle is further away than X cm
     if(wheelSpinCompleted && range > rangeLimit_Stop)
     {
         // drive
-        SetMotor(motorPin1_1, motorPin1_2, motorSpeed);
-        SetMotor(motorPin2_1, motorPin2_2, motorSpeed);
+        SetMotor(motorPin1_1, motorPin1_2, 255);
+        SetMotor(motorPin2_1, motorPin2_2, 255);
 
         rangeLimit_Timestamp = millis();
     }
