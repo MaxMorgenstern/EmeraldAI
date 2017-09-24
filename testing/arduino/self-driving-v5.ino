@@ -262,24 +262,15 @@ void loop()
 
     CalculateAverageRange();
 
-    /*
-    average_Left
-    average_Center
-    average_Right
-    */
-
-    long range = average_Center;
-
-    SetLightByRange(range);
-
+    // Wait for initial scans before performing any actions
     if(millis() < initialDelay)
     {
         return;
     }
 
-    // maybe wait for x seconds before starting so a full
-    // left center right scan can be performed first
+    long range = average_Center;
 
+    SetLightByRange(range);
 
     // obstacle is further away than X cm
     if(wheelSpinCompleted && range > rangeLimit_Stop)
@@ -292,12 +283,16 @@ void loop()
     }
     else
     {
-
-        // TODO
-
-        // rotate
-        SetMotor(motorPin1_1, motorPin1_2, -255);
-        SetMotor(motorPin2_1, motorPin2_2, 255);
+        if(average_Left > average_Right)
+        {
+            SetMotor(motorPin1_1, motorPin1_2, 255);
+            SetMotor(motorPin2_1, motorPin2_2, -255);
+        }
+        else
+        {
+            SetMotor(motorPin1_1, motorPin1_2, -255);
+            SetMotor(motorPin2_1, motorPin2_2, 255);
+        }
 
         wheelSpinCompleted = false;
 
