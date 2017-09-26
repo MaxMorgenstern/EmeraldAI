@@ -3,7 +3,7 @@
 #include "Servo.h"
 
 // Base Date
-const uint8_t initialDelay = 2500;
+const uint16_t initialDelay = 2500;
 
 // Ranges and Data
 const uint8_t rangeLimit_Warning1 = 50;
@@ -112,7 +112,7 @@ long GetUltrasoundRange()
 void CalculateAverageRange()
 {
     long range = GetUltrasoundRange();
-    long **rangeData_Current;
+    long *rangeData_Current;
 
     // get current meassurement and add to array
     if(servoLocation == left)

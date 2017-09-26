@@ -2,7 +2,7 @@
 #include "Servo.h"
 
 // Base Date
-const uint8_t initialDelay = 2500;
+const uint16_t initialDelay = 2500;
 
 // Ultrasonic Sensor
 const uint8_t trigPin = 9;
@@ -72,7 +72,7 @@ long GetUltrasoundRange()
 void CalculateAverageRange()
 {
     long range = GetUltrasoundRange();
-    long **rangeData_Current;
+    long *rangeData_Current;
 
     // get current meassurement and add to array
     if(servoLocation == left)
