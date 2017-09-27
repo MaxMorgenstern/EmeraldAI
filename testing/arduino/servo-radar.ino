@@ -71,7 +71,14 @@ long GetUltrasoundRange()
 
 void CalculateAverageRange()
 {
+    // dummy call for 2nd ultrasonic
+    GetUltrasoundRange();
+    //GetUltrasoundRange();
+    //GetUltrasoundRange();
+
     long range = GetUltrasoundRange();
+    Serial.println(range);
+
     long *rangeData_Current;
 
     // get current meassurement and add to array
@@ -98,6 +105,7 @@ void CalculateAverageRange()
 
     // Get the next Angle and Move the Servo
     ServoMotor.write(GetNextServoAngle());
+    delay(25);
 
     // if the new servo location is different from the one before calculate an anverage
     if(servoLocation != servoLocationLast || servoMovement != servoMovementLast)
@@ -159,6 +167,7 @@ uint8_t GetNextServoAngle()
     {
         servoLocation = right;
     }
+
 
     return servoPos;
 }
