@@ -12,7 +12,6 @@ const uint16_t maxDistance = 300;
 
 NewPing sonar(trigPin, echoPin, maxDistance);
 
-
 long rangeData_Left[15];
 long average_Left;
 long rangeData_Center[10];
@@ -51,6 +50,15 @@ void CalculateAverageRange()
 {
     long range = sonar.ping_cm();
 
+    Serial.print(servoPos);
+    Serial.print(" - ");
+    Serial.println(range);
+
+    if(range == 0)
+    {
+        //delay(5000);
+    }
+
     long *rangeData_Current;
 
     // get current meassurement and add to array
@@ -77,7 +85,7 @@ void CalculateAverageRange()
 
     // Get the next Angle and Move the Servo
     ServoMotor.write(GetNextServoAngle());
-    delay(25);
+    delay(20);
 
     // if the new servo location is different from the one before calculate an anverage
     if(servoLocation != servoLocationLast || servoMovement != servoMovementLast)
@@ -102,16 +110,16 @@ void CalculateAverageRange()
 uint8_t GetNextServoAngle()
 {
     // 0 - 80 / 80 - 100 / 100 - 180
-    if(servoPos <= 0)
+    if(servoPos <= 10)
     {
         servoMovement = right;
-        servoPos = 0;
+        servoPos = 10;
     }
 
-    if(servoPos >= 180)
+    if(servoPos >= 170)
     {
         servoMovement = left;
-        servoPos = 180;
+        servoPos = 170;
     }
 
 
@@ -157,7 +165,7 @@ void loop()
     }
 
     long range = average_Center;
-    Serial.println(average_Center);
+    //Serial.println(average_Center);
 }
 
 
