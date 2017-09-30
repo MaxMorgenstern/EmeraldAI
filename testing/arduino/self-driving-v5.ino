@@ -184,7 +184,7 @@ void ColorSet(uint32_t c)
 {
     for(uint16_t i=0; i < LEDStrip.numPixels(); i++)
     {
-        if(ledBatterySaving && i%4 == 0 || !ledBatterySaving)
+        if(ledBatterySaving && i%8 == 0 || !ledBatterySaving)
         {
             LEDStrip.setPixelColor(i, c);
         }
@@ -196,16 +196,16 @@ void ColorSet(uint32_t c)
 uint8_t GetNextServoAngle()
 {
     // 0 - 80 / 80 - 100 / 100 - 180
-    if(servoPos <= 0)
+    if(servoPos <= 10)
     {
         servoMovement = right;
-        servoPos = 0;
+        servoPos = 10;
     }
 
-    if(servoPos >= 180)
+    if(servoPos >= 170)
     {
         servoMovement = left;
-        servoPos = 180;
+        servoPos = 170;
     }
 
 
