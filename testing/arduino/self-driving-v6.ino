@@ -46,17 +46,22 @@ const uint8_t motorEnablePin = 3;
 // Ultrasonic Servo
 Servo ServoMotor;
 const uint8_t servoPin = 10;
-uint8_t servoInitPos = 90;
 
-uint8_t servoLimitLeft = 10;
-uint8_t servoTiltLeft = 50;
-uint8_t servoLimitRight = 170;
-uint8_t servoTiltRight = 130;
-uint8_t servoCenter = 90;
+const uint8_t servoLimitLeft = 10;
+const uint8_t servoTiltLeft = 50;
+const uint8_t servoLimitRight = 170;
+const uint8_t servoTiltRight = 130;
+const uint8_t servoCenter = 90;
+
+enum direction {
+  LEFT,
+  NONE,
+  RIGHT
+};
+direction servoRangeDirection = NONE;
 
 // IR obstacle detection
 int obstaclePin = A1;
-
 
 
 void setup()
@@ -87,7 +92,7 @@ void setup()
 
     // attach servo pin and set to initial direction
     ServoMotor.attach(servoPin);
-    ServoMotor.write(servoInitPos);
+    ServoMotor.write(servoCenter);
     ServoMotor.detach();
 }
 
@@ -96,10 +101,9 @@ void GetRange(int servoPos, bool rotating)
     long range = sonar.ping_cm();
 
     // fallback if return value is out of range
-    if(range == 0) { range = lastRange; }
-    else { lastRange = range;}
-
     if(range == 0 && rotating) { range = maxDistance; }
+    if(range == 0) { range = lastRange; }
+    if(range > 0  && !rotating) { lastRange = range;}
 
     if(servoPos == servoCenter) { rangeCenter = range; }
     if(servoPos < servoCenter) { rangeLeft = range; }
@@ -183,6 +187,18 @@ void SetLightErrorState()
     SetMotor(motorPin2_1, motorPin2_2, 0);
 }
 
+void SetServoRangeDirection()
+{
+    if(rangeLeft > rangeRight)
+    {
+        servoRangeDirection = LEFT;
+    }
+    else
+    {
+        servoRangeDirection = RIGHT;
+    }
+}
+
 void loop()
 {
     uint32_t uptime = millis();
@@ -193,7 +209,6 @@ void loop()
     Serial.println(rangeCenter);
 
     GetRange(servoPos, wheelSpinCompleted);
-
 
     // Wait for initial scans before performing any actions
     if(uptime < initialDelay)
@@ -213,28 +228,54 @@ void loop()
     }
 
     // obstacle is further away than X cm
-    if(wheelSpinCompleted && rangeCenter > rangeLimit_Stop)
+    // and no obstacle in front of the IR sensor
+    if(!obstacleFound || wheelSpinCompleted && rangeCenter > rangeLimit_Stop)
     {
-        // drive
+        rangeLimit_Timestamp = uptime;
+
+        // slightly turn if side better than center
+        if(rangeCenter < rangeLimit_Warning1 && rangeRight > 0 && rangeLeft > 0)
+        {
+            if(rangeRight > rangeLeft && rangeRight > rangeCenter )
+            {
+                // drive straight
+                SetMotor(motorPin1_1, motorPin1_2, 255);
+                SetMotor(motorPin2_1, motorPin2_2, 128);
+            }
+
+            if(rangeLeft > rangeRight && rangeLeft > rangeCenter )
+            {
+                // drive straight
+                SetMotor(motorPin1_1, motorPin1_2, 128);
+                SetMotor(motorPin2_1, motorPin2_2, 255);
+            }
+        }
+
+
+        // drive straight
         SetMotor(motorPin1_1, motorPin1_2, 255);
         SetMotor(motorPin2_1, motorPin2_2, 255);
 
-        rangeLimit_Timestamp = uptime;
+        return;
     }
 
-    // TODO - slightly turn if side better than center
 
     else
     {
-        if(rangeLeft > rangeRight)
+        if(servoRangeDirection == NONE)
         {
-            SetMotor(motorPin1_1, motorPin1_2, 255);
-            SetMotor(motorPin2_1, motorPin2_2, -255);
+            SetServoRangeDirection();
         }
-        else
+
+        if(servoRangeDirection == LEFT)
         {
             SetMotor(motorPin1_1, motorPin1_2, -255);
             SetMotor(motorPin2_1, motorPin2_2, 255);
+        }
+        else
+        {
+            SetMotor(motorPin1_1, motorPin1_2, 255);
+            SetMotor(motorPin2_1, motorPin2_2, +255);
         }
 
         wheelSpinCompleted = false;
@@ -242,6 +283,7 @@ void loop()
         if(rangeCenter > rangeLimit_Warning3 && (rangeLimit_Timestamp + rangeLimit_RotateFor) <= uptime)
         {
             wheelSpinCompleted = true;
+            servoRangeDirection = NONE;
         }
     }
 }
