@@ -12,7 +12,7 @@ const uint8_t rangeLimit_Warning2 = 40;
 const uint8_t rangeLimit_Warning3 = 25;
 const uint8_t rangeLimit_Stop = 15;
 
-const uint16_t rangeLimit_RotateFor = 500;
+const uint16_t rangeLimit_RotateFor = 1000;
 unsigned long rangeLimit_Timestamp = 0;
 bool wheelSpinCompleted = true;
 
@@ -107,6 +107,7 @@ void SetServoAngle(uint8_t angle)
 {
     ServoMotor.write(angle);
     delay(20);
+    servoPos = angle;
 }
 
 
@@ -166,27 +167,47 @@ void SetLightErrorState()
 void loop()
 {
 
+    uint32_t uptime = millis();
     GetRange()
 
+    if(uptime % 5000 == 0)
+    {
+        SetServoAngle(servoTiltRight)
+    }
+
+    if(uptime % 5500 == 0)
+    {
+        SetServoAngle(servoCenter)
+    }
+
+
+    if(uptime % 9000 == 0)
+    {
+        SetServoAngle(servoTiltLeft)
+    }
+
+    if(uptime % 9500 == 0)
+    {
+        SetServoAngle(servoCenter)
+    }
+
     // Wait for initial scans before performing any actions
-    if(millis() < initialDelay)
+    if(uptime < initialDelay)
     {
         SetLightErrorState();
         return;
     }
 
-    long range = rangeCenter;
-
-    SetLightByRange(range);
+    SetLightByRange(rangeCenter);
 
     // obstacle is further away than X cm
-    if(wheelSpinCompleted && range > rangeLimit_Stop)
+    if(wheelSpinCompleted && rangeCenter > rangeLimit_Stop)
     {
         // drive
         SetMotor(motorPin1_1, motorPin1_2, 255);
         SetMotor(motorPin2_1, motorPin2_2, 255);
 
-        rangeLimit_Timestamp = millis();
+        rangeLimit_Timestamp = uptime;
     }
 
     // TODO - slightly turn if side better than center
@@ -206,7 +227,7 @@ void loop()
 
         wheelSpinCompleted = false;
 
-        if(range > rangeLimit_Warning3 && (rangeLimit_Timestamp + rangeLimit_RotateFor) <= millis())
+        if(rangeCenter > rangeLimit_Warning3 && (rangeLimit_Timestamp + rangeLimit_RotateFor) <= uptime)
         {
             wheelSpinCompleted = true;
         }
