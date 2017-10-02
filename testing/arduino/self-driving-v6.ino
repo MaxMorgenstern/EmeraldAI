@@ -48,10 +48,10 @@ const uint8_t motorEnablePin = 3;
 Servo ServoMotor;
 const uint8_t servoPin = 10;
 
-const uint8_t servoLimitLeft = 10;
-const uint8_t servoTiltLeft = 50;
-const uint8_t servoLimitRight = 170;
-const uint8_t servoTiltRight = 130;
+const uint8_t servoLimitLeft = 170;
+const uint8_t servoTiltLeft = 130;
+const uint8_t servoLimitRight = 10;
+const uint8_t servoTiltRight = 50;
 const uint8_t servoCenter = 90;
 
 enum direction {
@@ -60,6 +60,10 @@ enum direction {
   RIGHT
 };
 direction servoRangeDirection = NONE;
+bool servoTriggerActive = true;
+
+direction servoLastScan = NONE;
+int servoCountHelper = 5;
 
 // IR obstacle detection
 int obstaclePin = A1;
@@ -94,7 +98,7 @@ void setup()
     // attach servo pin and set to initial direction
     ServoMotor.attach(servoPin);
     ServoMotor.write(servoCenter);
-    ServoMotor.detach();
+    //ServoMotor.detach();
 }
 
 void GetRange(int servoPos, bool rotating)
@@ -107,8 +111,8 @@ void GetRange(int servoPos, bool rotating)
     if(range > 0  && !rotating) { lastRange = range;}
 
     if(servoPos == servoCenter) { rangeCenter = range; }
-    if(servoPos < servoCenter) { rangeLeft = range; }
-    if(servoPos > servoCenter) { rangeRight = range; }
+    if(servoPos > servoCenter) { rangeLeft = range; }
+    if(servoPos < servoCenter) { rangeRight = range; }
 }
 
 bool GetObstacle()
@@ -200,16 +204,64 @@ void SetServoRangeDirection()
     }
 }
 
+
 void loop()
 {
+
     uint32_t uptime = millis();
-    uint16_t servoPos = ServoMotor.read();
+    uint8_t servoPos = ServoMotor.read();
 
     Serial.print(servoPos);
     Serial.print(" - ");
-    Serial.println(rangeCenter);
+    Serial.print(rangeLeft);
+    Serial.print(" - ");
+    Serial.print(rangeCenter);
+    Serial.print(" - ");
+    Serial.print(rangeRight);
+    Serial.print(" - ");
+    Serial.println(uptime);
+
+
 
     GetRange(servoPos, wheelSpinCompleted);
+
+
+
+    int interval = 1000;
+    if(uptime > interval*2 && servoTriggerActive && uptime % interval < 100)
+    {
+        servoTriggerActive = false;
+
+        if(servoLastScan == RIGHT)
+        {
+            SetServoAngle(servoTiltLeft);
+            servoLastScan = LEFT;
+        }
+        else
+        {
+            SetServoAngle(servoTiltRight);
+            servoLastScan = RIGHT;
+        }
+    }
+    if(uptime % interval > 100)
+    {
+        servoTriggerActive = true;
+    }
+    if(servoPos >= servoTiltLeft || servoPos <= servoTiltRight)
+    {
+        servoCountHelper--;
+    }
+    if(servoCountHelper <= 0)
+    {
+        servoCountHelper = 5;
+        SetServoAngle(servoCenter);
+    }
+
+    return;
+
+
+
+
 
     // Wait for initial scans before performing any actions
     if(uptime < initialDelay)
