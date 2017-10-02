@@ -7,10 +7,11 @@
 const uint16_t initialDelay = 2500;
 
 // Ranges and Data
-const uint8_t rangeLimit_Warning1 = 50;
-const uint8_t rangeLimit_Warning2 = 40;
-const uint8_t rangeLimit_Warning3 = 25;
-const uint8_t rangeLimit_Stop = 15;
+const uint8_t rangeLimit_Warning1 = 60;
+const uint8_t rangeLimit_Warning2 = 50;
+const uint8_t rangeLimit_Warning3 = 40;
+const uint8_t rangeLimit_Stop = 25;
+const uint8_t motorSpeed = 255;
 
 const uint16_t rangeLimit_RotateFor = 1000;
 unsigned long rangeLimit_Timestamp = 0;
@@ -39,7 +40,7 @@ const uint8_t motorPin1_1 = 4;
 const uint8_t motorPin1_2 = 5;
 
 const uint8_t motorPin2_1 = 7;
-const uint8_t motorPin2_2 = 8;
+const uint8_t motorPin2_2 = 6;
 
 const uint8_t motorEnablePin = 3;
 
@@ -229,7 +230,7 @@ void loop()
 
     // obstacle is further away than X cm
     // and no obstacle in front of the IR sensor
-    if(!obstacleFound || wheelSpinCompleted && rangeCenter > rangeLimit_Stop)
+    if(!obstacleFound && wheelSpinCompleted && rangeCenter > rangeLimit_Stop)
     {
         rangeLimit_Timestamp = uptime;
 
@@ -239,22 +240,22 @@ void loop()
             if(rangeRight > rangeLeft && rangeRight > rangeCenter )
             {
                 // drive straight
-                SetMotor(motorPin1_1, motorPin1_2, 255);
-                SetMotor(motorPin2_1, motorPin2_2, 128);
+                SetMotor(motorPin1_1, motorPin1_2, motorSpeed);
+                SetMotor(motorPin2_1, motorPin2_2, motorSpeed/2);
             }
 
             if(rangeLeft > rangeRight && rangeLeft > rangeCenter )
             {
                 // drive straight
-                SetMotor(motorPin1_1, motorPin1_2, 128);
-                SetMotor(motorPin2_1, motorPin2_2, 255);
+                SetMotor(motorPin1_1, motorPin1_2, motorSpeed/2);
+                SetMotor(motorPin2_1, motorPin2_2, motorSpeed);
             }
         }
 
 
         // drive straight
-        SetMotor(motorPin1_1, motorPin1_2, 255);
-        SetMotor(motorPin2_1, motorPin2_2, 255);
+        SetMotor(motorPin1_1, motorPin1_2, motorSpeed);
+        SetMotor(motorPin2_1, motorPin2_2, motorSpeed);
 
         return;
     }
@@ -269,13 +270,13 @@ void loop()
 
         if(servoRangeDirection == LEFT)
         {
-            SetMotor(motorPin1_1, motorPin1_2, -255);
-            SetMotor(motorPin2_1, motorPin2_2, 255);
+            SetMotor(motorPin1_1, motorPin1_2, -motorSpeed);
+            SetMotor(motorPin2_1, motorPin2_2, motorSpeed);
         }
         else
         {
-            SetMotor(motorPin1_1, motorPin1_2, 255);
-            SetMotor(motorPin2_1, motorPin2_2, +255);
+            SetMotor(motorPin1_1, motorPin1_2, motorSpeed);
+            SetMotor(motorPin2_1, motorPin2_2, -motorSpeed);
         }
 
         wheelSpinCompleted = false;
