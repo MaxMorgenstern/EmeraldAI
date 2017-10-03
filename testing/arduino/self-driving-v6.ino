@@ -115,6 +115,7 @@ void GetRange(int servoPos, bool rotating)
     if(servoPos < servoCenter) { rangeRight = range; }
 }
 
+
 bool GetObstacle()
 {
     if(analogRead(obstaclePin) < 500)
@@ -192,41 +193,8 @@ void SetLightErrorState()
     SetMotor(motorPin2_1, motorPin2_2, 0);
 }
 
-void SetServoRangeDirection()
+void SetServo(uint32_t uptime, uint8_t servoPos)
 {
-    if(rangeLeft > rangeRight)
-    {
-        servoRangeDirection = LEFT;
-    }
-    else
-    {
-        servoRangeDirection = RIGHT;
-    }
-}
-
-
-void loop()
-{
-
-    uint32_t uptime = millis();
-    uint8_t servoPos = ServoMotor.read();
-
-    Serial.print(servoPos);
-    Serial.print(" - ");
-    Serial.print(rangeLeft);
-    Serial.print(" - ");
-    Serial.print(rangeCenter);
-    Serial.print(" - ");
-    Serial.print(rangeRight);
-    Serial.print(" - ");
-    Serial.println(uptime);
-
-
-
-    GetRange(servoPos, wheelSpinCompleted);
-
-
-
     int interval = 1000;
     if(uptime > interval*2 && servoTriggerActive && uptime % interval < 100)
     {
@@ -256,12 +224,42 @@ void loop()
         servoCountHelper = 5;
         SetServoAngle(servoCenter);
     }
+}
 
-    return;
+void SetServoRangeDirection()
+{
+    if(rangeLeft > rangeRight)
+    {
+        servoRangeDirection = LEFT;
+    }
+    else
+    {
+        servoRangeDirection = RIGHT;
+    }
+}
 
 
+void loop()
+{
 
+    uint32_t uptime = millis();
+    uint8_t servoPos = ServoMotor.read();
 
+    /*
+    Serial.print(servoPos);
+    Serial.print(" - ");
+    Serial.print(rangeLeft);
+    Serial.print(" - ");
+    Serial.print(rangeCenter);
+    Serial.print(" - ");
+    Serial.print(rangeRight);
+    Serial.print(" - ");
+    Serial.println(uptime);
+    */
+
+    GetRange(servoPos, wheelSpinCompleted);
+
+    SetServo(uptime, servoPos);
 
     // Wait for initial scans before performing any actions
     if(uptime < initialDelay)
@@ -304,15 +302,10 @@ void loop()
             }
         }
 
-
         // drive straight
         SetMotor(motorPin1_1, motorPin1_2, motorSpeed);
         SetMotor(motorPin2_1, motorPin2_2, motorSpeed);
-
-        return;
     }
-
-
     else
     {
         if(servoRangeDirection == NONE)
