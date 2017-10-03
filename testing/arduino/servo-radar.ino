@@ -1,20 +1,8 @@
 #include "Arduino.h"
-#include "Adafruit_NeoPixel.h"
 #include "Servo.h"
 
 // Base Date
 const uint16_t initialDelay = 2500;
-
-// Ranges and Data
-const uint8_t rangeLimit_Warning1 = 50;
-const uint8_t rangeLimit_Warning2 = 40;
-const uint8_t rangeLimit_Warning3 = 25;
-const uint8_t rangeLimit_Stop = 15;
-
-const uint16_t rangeLimit_RotateFor = 500;
-unsigned long rangeLimit_Timestamp = 0;
-bool wheelSpinCompleted = true;
-
 
 // Ultrasonic Sensor
 const uint8_t trigPin = 9;
@@ -27,20 +15,6 @@ long average_Center;
 long rangeData_Right[15];
 long average_Right;
 uint8_t rangeDataIndex = 0;
-
-// LED
-const uint8_t ledPin = 11;
-const bool ledBatterySaving = true;
-Adafruit_NeoPixel LEDStrip = Adafruit_NeoPixel(26, ledPin, NEO_GRB + NEO_KHZ800);
-
-// Motor / Wheels
-const uint8_t motorPin1_1 = 4;
-const uint8_t motorPin1_2 = 5;
-
-const uint8_t motorPin2_1 = 7;
-const uint8_t motorPin2_2 = 8;
-
-const uint8_t motorEnablePin = 3;
 
 // Ultrasonic Servo
 Servo ServoMotor;
@@ -64,22 +38,7 @@ void setup()
     pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
     pinMode(echoPin, INPUT); // Sets the echoPin as an Input
 
-    rangeLimit_Timestamp = millis();
-
-    pinMode(motorEnablePin, OUTPUT);
-    analogWrite(motorEnablePin, 255);
-
-    // Motor
-    pinMode(motorPin1_1, OUTPUT);
-    pinMode(motorPin1_2, OUTPUT);
-
-    pinMode(motorPin2_1, OUTPUT);
-    pinMode(motorPin2_2, OUTPUT);
-
     Serial.begin(9600); // Starts the serial communication
-
-    LEDStrip.begin();
-    LEDStrip.show(); // Initialize all pixels to 'off'
 
     // attach servo pin and set to initial direction
     ServoMotor.attach(servoPin);
@@ -109,9 +68,17 @@ long GetUltrasoundRange()
     return MicrosecondsToCentimeters(duration);
 }
 
+
 void CalculateAverageRange()
 {
+    // dummy call for 2nd ultrasonic
+    GetUltrasoundRange();
+    //GetUltrasoundRange();
+    //GetUltrasoundRange();
+
     long range = GetUltrasoundRange();
+    Serial.println(range);
+
     long *rangeData_Current;
 
     // get current meassurement and add to array
@@ -138,6 +105,7 @@ void CalculateAverageRange()
 
     // Get the next Angle and Move the Servo
     ServoMotor.write(GetNextServoAngle());
+    delay(25);
 
     // if the new servo location is different from the one before calculate an anverage
     if(servoLocation != servoLocationLast || servoMovement != servoMovementLast)
@@ -159,53 +127,19 @@ void CalculateAverageRange()
 }
 
 
-void SetMotor(int pin1, int pin2, int speed)
-{
-    if (speed < 0)
-    {
-        analogWrite(pin1, 0);
-        analogWrite(pin2, 255);
-    }
-    else
-    {
-        analogWrite(pin1, 255);
-        analogWrite(pin2, 0);
-    }
-
-    if (speed == 0)
-    {
-        analogWrite(pin1, 0);
-        analogWrite(pin2, 0);
-    }
-}
-
-
-void ColorSet(uint32_t c)
-{
-    for(uint16_t i=0; i < LEDStrip.numPixels(); i++)
-    {
-        if(ledBatterySaving && i%8 == 0 || !ledBatterySaving)
-        {
-            LEDStrip.setPixelColor(i, c);
-        }
-    }
-    LEDStrip.show();
-}
-
-
 uint8_t GetNextServoAngle()
 {
     // 0 - 80 / 80 - 100 / 100 - 180
-    if(servoPos <= 10)
+    if(servoPos <= 0)
     {
         servoMovement = right;
-        servoPos = 10;
+        servoPos = 0;
     }
 
-    if(servoPos >= 170)
+    if(servoPos >= 180)
     {
         servoMovement = left;
-        servoPos = 170;
+        servoPos = 180;
     }
 
 
@@ -234,28 +168,10 @@ uint8_t GetNextServoAngle()
         servoLocation = right;
     }
 
+
     return servoPos;
 }
 
-
-void SetLightByRange(long range)
-{
-    uint32_t color = LEDStrip.Color(0, 255, 0);
-    if(range < rangeLimit_Warning1) { color = LEDStrip.Color(127, 255, 0);}
-    if(range < rangeLimit_Warning2) { color = LEDStrip.Color(255, 255, 0); }
-    if(range < rangeLimit_Warning3) { color = LEDStrip.Color(255, 127, 0); }
-    if(range < rangeLimit_Stop) { color = LEDStrip.Color(255, 0, 0); }
-
-    ColorSet(color);
-}
-
-void ErrorState()
-{
-    ColorSet(LEDStrip.Color(0, 0, 255));
-
-    SetMotor(motorPin1_1, motorPin1_2, 0);
-    SetMotor(motorPin2_1, motorPin2_2, 0);
-}
 
 void loop()
 {
@@ -269,37 +185,6 @@ void loop()
     }
 
     long range = average_Center;
-
-    SetLightByRange(range);
-
-    // obstacle is further away than X cm
-    if(wheelSpinCompleted && range > rangeLimit_Stop)
-    {
-        // drive
-        SetMotor(motorPin1_1, motorPin1_2, 255);
-        SetMotor(motorPin2_1, motorPin2_2, 255);
-
-        rangeLimit_Timestamp = millis();
-    }
-    else
-    {
-        if(average_Left > average_Right)
-        {
-            SetMotor(motorPin1_1, motorPin1_2, 255);
-            SetMotor(motorPin2_1, motorPin2_2, -255);
-        }
-        else
-        {
-            SetMotor(motorPin1_1, motorPin1_2, -255);
-            SetMotor(motorPin2_1, motorPin2_2, 255);
-        }
-
-        wheelSpinCompleted = false;
-
-        if(range > rangeLimit_Warning3 && (rangeLimit_Timestamp + rangeLimit_RotateFor) <= millis())
-        {
-            wheelSpinCompleted = true;
-        }
-    }
 }
+
 
