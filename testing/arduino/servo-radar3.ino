@@ -21,6 +21,7 @@ NewPing sonar2(trigPin2, echoPin2, maxDistance);
 Servo ServoMotor;
 const uint8_t servoPin = 6;
 const uint8_t servoRotationAngel = 10;
+const uint8_t servoRotationAngelDetailed = 1;
 
 enum direction {
   left,
@@ -63,7 +64,7 @@ long GetRange2()
 }
 
 
-uint8_t GetNextServoAngle()
+uint8_t GetNextServoAngle(bool detailed)
 {
     if(servoPos <= 0)
     {
@@ -77,14 +78,19 @@ uint8_t GetNextServoAngle()
         servoPos = 180;
     }
 
+    uint8_t angle = servoRotationAngel;
+    if(detailed)
+    {
+        angle = servoRotationAngelDetailed
+    }
 
     if(servoMovement == right)
     {
-        servoPos += servoRotationAngel;
+        servoPos += angle;
     }
     else
     {
-        servoPos -= servoRotationAngel;
+        servoPos -= angle;
     }
 
     return servoPos;
@@ -99,7 +105,8 @@ void loop()
 
     if(servoPos == actualServoPos)
     {
-        ServoMotor.write(GetNextServoAngle());
+        // Change to true for detailed scan
+        ServoMotor.write(GetNextServoAngle(false));
     }
 
     Serial.print(actualServoPos);
