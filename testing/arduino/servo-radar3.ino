@@ -35,10 +35,10 @@ direction servoMovement = right;
 
 void setup()
 {
-    Serial.begin(9600); // Starts the serial communication
+    Serial.begin(115200); // Starts the serial communication
 
     // attach servo pin and set to initial direction
-    ServoMotor.attach(servoPin);
+    ServoMotor.attach(servoPin, 400, 2600);
     ServoMotor.write(servoPos);
 }
 
@@ -81,7 +81,7 @@ uint8_t GetNextServoAngle(bool detailed)
     uint8_t angle = servoRotationAngel;
     if(detailed)
     {
-        angle = servoRotationAngelDetailed
+        angle = servoRotationAngelDetailed;
     }
 
     if(servoMovement == right)
@@ -107,17 +107,16 @@ void loop()
     {
         // Change to true for detailed scan
         ServoMotor.write(GetNextServoAngle(false));
+        delay(10);
     }
 
+    Serial.print("#1: ");
     Serial.print(actualServoPos);
-    Serial.print("/");
+    Serial.print(" - ");
+    Serial.println(range1);
+
+    Serial.print("#2: ");
     Serial.print(actualServoPos+180);
-
-    Serial.print(" - #1: ");
-    Serial.print(range1);
-
-    Serial.print(" - #2: ");
+    Serial.print(" - ");
     Serial.println(range2);
 }
-
-
