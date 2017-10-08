@@ -36,11 +36,11 @@ const bool ledBatterySaving = true;
 Adafruit_NeoPixel LEDStrip = Adafruit_NeoPixel(26, ledPin, NEO_GRB + NEO_KHZ800);
 
 // Motor / Wheels
-const uint8_t motorPin1_1 = 4;
-const uint8_t motorPin1_2 = 5;
+const uint8_t motorPin1_1 = A7;
+const uint8_t motorPin1_2 = A6;
 
-const uint8_t motorPin2_1 = 7;
-const uint8_t motorPin2_2 = 6;
+const uint8_t motorPin2_1 = A5;
+const uint8_t motorPin2_2 = A4;
 
 const uint8_t motorEnablePin = 3;
 
@@ -78,7 +78,7 @@ void setup()
     rangeLimit_Timestamp = millis();
 
     pinMode(motorEnablePin, OUTPUT);
-    analogWrite(motorEnablePin, 255);
+    analogWrite(motorEnablePin, motorSpeed);
 
     // Motor
     pinMode(motorPin1_1, OUTPUT);
