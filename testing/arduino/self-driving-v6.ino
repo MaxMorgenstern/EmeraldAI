@@ -13,7 +13,7 @@ const uint8_t rangeLimit_Warning3 = 40;
 const uint8_t rangeLimit_Stop = 25;
 const uint8_t motorSpeed = 70;
 
-const uint16_t rangeLimit_RotateFor = 1000;
+const uint16_t rangeLimit_RotateFor = 250;
 unsigned long rangeLimit_Timestamp = 0;
 bool wheelSpinCompleted = true;
 
@@ -61,6 +61,7 @@ enum direction {
 };
 direction servoRangeDirection = NONE;
 bool servoTriggerActive = true;
+bool servoTriggerObstacleDelayFlag = true;
 
 direction servoLastScan = NONE;
 int servoCountHelper = 5;
@@ -101,7 +102,7 @@ void setup()
     ServoMotor.write(servoCenter);
     //ServoMotor.detach();
 
-    Serial.begin(9600); // Starts the serial communication
+    //Serial.begin(9600); // Starts the serial communication
 }
 
 void GetRange(int servoPos, bool rotating)
@@ -118,13 +119,21 @@ void GetRange(int servoPos, bool rotating)
     if(servoPos < servoCenter) { rangeRight = range; }
 }
 
-
 bool GetObstacle()
 {
     if(analogRead(obstaclePin) < 500)
     {
+        // TODO: check if we really need servoTriggerObstacleDelayFlag
+        if(!servoTriggerActive && servoTriggerObstacleDelayFlag)
+        {
+            servoTriggerObstacleDelayFlag = false;
+            return false;
+        }
+
+        servoTriggerObstacleDelayFlag = true;
         return true;
     }
+    servoTriggerObstacleDelayFlag = true;
     return false;
 }
 
@@ -211,7 +220,8 @@ void SetLightErrorState()
 void SetServo(uint32_t uptime, uint8_t servoPos)
 {
     int interval = 1000;
-    if(uptime > interval*2 && servoTriggerActive && uptime % interval < 100)
+    int intervalRange = 200;
+    if(uptime > interval+1 && servoTriggerActive && uptime % interval <= intervalRange)
     {
         servoTriggerActive = false;
 
@@ -226,14 +236,16 @@ void SetServo(uint32_t uptime, uint8_t servoPos)
             servoLastScan = RIGHT;
         }
     }
-    if(uptime % interval > 100)
+    if(uptime % interval > intervalRange)
     {
         servoTriggerActive = true;
     }
+
     if(servoPos >= servoTiltLeft || servoPos <= servoTiltRight)
     {
         servoCountHelper--;
     }
+
     if(servoCountHelper <= 0)
     {
         servoCountHelper = 5;
@@ -260,7 +272,7 @@ void loop()
     uint32_t uptime = millis();
     uint8_t servoPos = ServoMotor.read();
 
-
+    /*
     Serial.print(servoPos);
     Serial.print(" - ");
     Serial.print(rangeLeft);
@@ -270,11 +282,11 @@ void loop()
     Serial.print(rangeRight);
     Serial.print(" - ");
     Serial.println(uptime);
-
+    */
 
     GetRange(servoPos, wheelSpinCompleted);
 
-    //SetServo(uptime, servoPos);
+    SetServo(uptime, servoPos);
 
     // Wait for initial scans before performing any actions
     if(uptime < initialDelay)
@@ -348,5 +360,3 @@ void loop()
         }
     }
 }
-
-
