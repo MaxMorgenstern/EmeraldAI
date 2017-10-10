@@ -159,18 +159,19 @@ void SetMotor(int id, int speed)
 
 void SetMotorWorker(int pin1, int pin2, int enablePin, int speed)
 {
+    analogWrite(enablePin, abs(speed));
+
     if (speed < 0)
     {
         analogWrite(pin1, 0);
         analogWrite(pin2, 255);
     }
-    else
+
+    if (speed > 0)
     {
         analogWrite(pin1, 255);
         analogWrite(pin2, 0);
     }
-
-    analogWrite(enablePin, speed);
 
     if (speed == 0)
     {
