@@ -33,7 +33,7 @@ uint16_t lastRange;
 // LED
 const uint8_t ledPin = 11;
 const bool ledBatterySaving = true;
-Adafruit_NeoPixel LEDStrip = Adafruit_NeoPixel(26, ledPin, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel LEDStrip = Adafruit_NeoPixel(24, ledPin, NEO_GRB + NEO_KHZ800);
 
 // Motor / Wheels
 const uint8_t motorPin1_1 = A3;
