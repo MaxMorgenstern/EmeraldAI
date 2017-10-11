@@ -100,9 +100,6 @@ void setup()
     // attach servo pin and set to initial direction
     ServoMotor.attach(servoPin);
     ServoMotor.write(servoCenter);
-    //ServoMotor.detach();
-
-    //Serial.begin(9600); // Starts the serial communication
 }
 
 void GetRange(int servoPos, bool rotating)
@@ -273,18 +270,6 @@ void loop()
     uint32_t uptime = millis();
     uint8_t servoPos = ServoMotor.read();
 
-    /*
-    Serial.print(servoPos);
-    Serial.print(" - ");
-    Serial.print(rangeLeft);
-    Serial.print(" - ");
-    Serial.print(rangeCenter);
-    Serial.print(" - ");
-    Serial.print(rangeRight);
-    Serial.print(" - ");
-    Serial.println(uptime);
-    */
-
     GetRange(servoPos, wheelSpinCompleted);
 
     SetServo(uptime, servoPos);
@@ -353,6 +338,8 @@ void loop()
         }
 
         wheelSpinCompleted = false;
+
+        // TODO: if this is going on for too long - stop
 
         if(rangeCenter > rangeLimit_Warning3 && (rangeLimit_Timestamp + rangeLimit_RotateFor) <= uptime)
         {
