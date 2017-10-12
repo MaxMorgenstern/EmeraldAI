@@ -8,10 +8,10 @@ const uint16_t initialDelay = 2500;
 
 // Ranges and Data
 const uint8_t rangeLimit_Warning1 = 60;
-const uint8_t rangeLimit_Warning2 = 50;
-const uint8_t rangeLimit_Warning3 = 40;
-const uint8_t rangeLimit_Stop = 25;
-const uint8_t motorSpeed = 70;
+const uint8_t rangeLimit_Warning2 = 55;
+const uint8_t rangeLimit_Warning3 = 45;
+const uint8_t rangeLimit_Stop = 35;
+const uint8_t motorSpeed = 70; // max: 255
 
 const uint16_t rangeLimit_RotateFor = 250;
 unsigned long rangeLimit_Timestamp = 0;
@@ -98,7 +98,7 @@ void setup()
     LEDStrip.show(); // Initialize all pixels to 'off'
 
     // attach servo pin and set to initial direction
-    ServoMotor.attach(servoPin);
+    ServoMotor.attach(servoPin, 400, 2600);
     ServoMotor.write(servoCenter);
 }
 
