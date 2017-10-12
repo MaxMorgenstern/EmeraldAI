@@ -61,22 +61,21 @@ void setup()
 }
 
 
-long GetRange1()
+long GetRange(int id)
 {
-    long range = sonar1.ping_cm();
+    long range = 0
+    if(id == 1)
+    {
+        range = sonar1.ping_cm();
+    }
+
+    if(id == 2)
+    {
+        range = sonar2.ping_cm();
+    }
 
     // fallback if return value is out of range
-    if(range == 0) { range = maxDistance; }
-
-    return range;
-}
-
-long GetRange2()
-{
-    long range = sonar2.ping_cm();
-
-    // fallback if return value is out of range
-    if(range == 0) { range = maxDistance; }
+    //if(range == 0) { range = maxDistance; }
 
     return range;
 }
@@ -119,8 +118,8 @@ void SendDistance(float range_in_centimeter)
 
 void loop()
 {
-    long range1 = GetRange1();
-    long range2 = GetRange2();
+    long rangeFront = GetRange(1);
+    long rangeBack = GetRange(2);
 
     uint8_t actualServoPos = ServoMotor.read();
     if(servoPos == actualServoPos)
@@ -129,8 +128,8 @@ void loop()
         delay(5);
     }
 
-    SendDistance(range1);
-    //SendDistance(range2);
+    SendDistance(rangeFront);
+    //SendDistance(rangeBack);
 
     nh.spinOnce();
 }
