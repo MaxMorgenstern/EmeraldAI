@@ -21,6 +21,7 @@ NewPing sonar2(trigPin2, echoPin2, maxDistance);
 Servo ServoMotor;
 const uint8_t servoPin = 6;
 const uint8_t servoRotationAngel = 10;
+const uint8_t servoRotationAngelDetailed = 1;
 
 enum direction {
   left,
@@ -34,10 +35,10 @@ direction servoMovement = right;
 
 void setup()
 {
-    Serial.begin(9600); // Starts the serial communication
+    Serial.begin(115200); // Starts the serial communication
 
     // attach servo pin and set to initial direction
-    ServoMotor.attach(servoPin);
+    ServoMotor.attach(servoPin, 400, 2600);
     ServoMotor.write(servoPos);
 }
 
@@ -63,7 +64,7 @@ long GetRange2()
 }
 
 
-uint8_t GetNextServoAngle()
+uint8_t GetNextServoAngle(bool detailed)
 {
     if(servoPos <= 0)
     {
@@ -77,14 +78,19 @@ uint8_t GetNextServoAngle()
         servoPos = 180;
     }
 
+    uint8_t angle = servoRotationAngel;
+    if(detailed)
+    {
+        angle = servoRotationAngelDetailed;
+    }
 
     if(servoMovement == right)
     {
-        servoPos += servoRotationAngel;
+        servoPos += angle;
     }
     else
     {
-        servoPos -= servoRotationAngel;
+        servoPos -= angle;
     }
 
     return servoPos;
@@ -99,18 +105,18 @@ void loop()
 
     if(servoPos == actualServoPos)
     {
-        ServoMotor.write(GetNextServoAngle());
+        // Change to true for detailed scan
+        ServoMotor.write(GetNextServoAngle(false));
+        delay(10);
     }
 
+    Serial.print("#1: ");
     Serial.print(actualServoPos);
-    Serial.print("/");
+    Serial.print(" - ");
+    Serial.println(range1);
+
+    Serial.print("#2: ");
     Serial.print(actualServoPos+180);
-
-    Serial.print(" - #1: ");
-    Serial.print(range1);
-
-    Serial.print(" - #2: ");
+    Serial.print(" - ");
     Serial.println(range2);
 }
-
-

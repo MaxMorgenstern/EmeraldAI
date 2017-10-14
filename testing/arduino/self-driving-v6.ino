@@ -8,20 +8,20 @@ const uint16_t initialDelay = 2500;
 
 // Ranges and Data
 const uint8_t rangeLimit_Warning1 = 60;
-const uint8_t rangeLimit_Warning2 = 50;
-const uint8_t rangeLimit_Warning3 = 40;
-const uint8_t rangeLimit_Stop = 25;
-const uint8_t motorSpeed = 255;
+const uint8_t rangeLimit_Warning2 = 55;
+const uint8_t rangeLimit_Warning3 = 45;
+const uint8_t rangeLimit_Stop = 35;
+const uint8_t motorSpeed = 70; // max: 255
 
-const uint16_t rangeLimit_RotateFor = 1000;
+const uint16_t rangeLimit_RotateFor = 250;
 unsigned long rangeLimit_Timestamp = 0;
 bool wheelSpinCompleted = true;
 
 
 // Ultrasonic Sensor
-const uint8_t trigPin = 8;
-const uint8_t echoPin = 9;
-const uint16_t maxDistance = 200;
+const uint8_t trigPin = 9;
+const uint8_t echoPin = 8;
+const uint16_t maxDistance = 250;
 
 NewPing sonar(trigPin, echoPin, maxDistance);
 
@@ -33,16 +33,16 @@ uint16_t lastRange;
 // LED
 const uint8_t ledPin = 11;
 const bool ledBatterySaving = true;
-Adafruit_NeoPixel LEDStrip = Adafruit_NeoPixel(26, ledPin, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel LEDStrip = Adafruit_NeoPixel(24, ledPin, NEO_GRB + NEO_KHZ800);
 
 // Motor / Wheels
-const uint8_t motorPin1_1 = 4;
-const uint8_t motorPin1_2 = 5;
+const uint8_t motorPin1_1 = A3;
+const uint8_t motorPin1_2 = A2;
+const uint8_t motorEnablePin1 = 3;
 
-const uint8_t motorPin2_1 = 7;
-const uint8_t motorPin2_2 = 6;
-
-const uint8_t motorEnablePin = 3;
+const uint8_t motorPin2_1 = A5;
+const uint8_t motorPin2_2 = A4;
+const uint8_t motorEnablePin2 = 6;
 
 // Ultrasonic Servo
 Servo ServoMotor;
@@ -61,6 +61,7 @@ enum direction {
 };
 direction servoRangeDirection = NONE;
 bool servoTriggerActive = true;
+bool servoTriggerObstacleDelayFlag = true;
 
 direction servoLastScan = NONE;
 int servoCountHelper = 5;
@@ -77,8 +78,11 @@ void setup()
 
     rangeLimit_Timestamp = millis();
 
-    pinMode(motorEnablePin, OUTPUT);
-    analogWrite(motorEnablePin, 255);
+    pinMode(motorEnablePin1, OUTPUT);
+    analogWrite(motorEnablePin1, 255);
+
+    pinMode(motorEnablePin2, OUTPUT);
+    analogWrite(motorEnablePin2, 255);
 
     // Motor
     pinMode(motorPin1_1, OUTPUT);
@@ -90,15 +94,12 @@ void setup()
     // IR Detector
     pinMode(obstaclePin, INPUT);
 
-    Serial.begin(9600); // Starts the serial communication
-
     LEDStrip.begin();
     LEDStrip.show(); // Initialize all pixels to 'off'
 
     // attach servo pin and set to initial direction
-    ServoMotor.attach(servoPin);
+    ServoMotor.attach(servoPin, 400, 2600);
     ServoMotor.write(servoCenter);
-    //ServoMotor.detach();
 }
 
 void GetRange(int servoPos, bool rotating)
@@ -115,13 +116,21 @@ void GetRange(int servoPos, bool rotating)
     if(servoPos < servoCenter) { rangeRight = range; }
 }
 
-
 bool GetObstacle()
 {
     if(analogRead(obstaclePin) < 500)
     {
+        // TODO: check if we really need servoTriggerObstacleDelayFlag
+        if(!servoTriggerActive && servoTriggerObstacleDelayFlag)
+        {
+            servoTriggerObstacleDelayFlag = false;
+            return false;
+        }
+
+        servoTriggerObstacleDelayFlag = true;
         return true;
     }
+    servoTriggerObstacleDelayFlag = true;
     return false;
 }
 
@@ -132,14 +141,30 @@ void SetServoAngle(uint8_t angle)
 }
 
 
-void SetMotor(int pin1, int pin2, int speed)
+void SetMotor(int id, int speed)
 {
+    if(id == 1)
+    {
+        SetMotorWorker(motorPin1_1, motorPin1_2, motorEnablePin1, speed);
+    }
+
+    if(id == 2)
+    {
+        SetMotorWorker(motorPin2_1, motorPin2_2, motorEnablePin2, speed);
+    }
+}
+
+void SetMotorWorker(int pin1, int pin2, int enablePin, int speed)
+{
+    analogWrite(enablePin, abs(speed));
+
     if (speed < 0)
     {
         analogWrite(pin1, 0);
         analogWrite(pin2, 255);
     }
-    else
+
+    if (speed > 0)
     {
         analogWrite(pin1, 255);
         analogWrite(pin2, 0);
@@ -181,22 +206,20 @@ void SetLightInitState()
 {
     ColorSet(LEDStrip.Color(255, 255, 255));
 
-    SetMotor(motorPin1_1, motorPin1_2, 0);
-    SetMotor(motorPin2_1, motorPin2_2, 0);
+    SetMotor(1, 0);
+    SetMotor(2, 0);
 }
 
 void SetLightErrorState()
 {
     ColorSet(LEDStrip.Color(0, 0, 255));
-
-    SetMotor(motorPin1_1, motorPin1_2, 0);
-    SetMotor(motorPin2_1, motorPin2_2, 0);
 }
 
 void SetServo(uint32_t uptime, uint8_t servoPos)
 {
     int interval = 1000;
-    if(uptime > interval*2 && servoTriggerActive && uptime % interval < 100)
+    int intervalRange = 200;
+    if(uptime > interval+1 && servoTriggerActive && uptime % interval <= intervalRange)
     {
         servoTriggerActive = false;
 
@@ -211,14 +234,16 @@ void SetServo(uint32_t uptime, uint8_t servoPos)
             servoLastScan = RIGHT;
         }
     }
-    if(uptime % interval > 100)
+    if(uptime % interval > intervalRange)
     {
         servoTriggerActive = true;
     }
+
     if(servoPos >= servoTiltLeft || servoPos <= servoTiltRight)
     {
         servoCountHelper--;
     }
+
     if(servoCountHelper <= 0)
     {
         servoCountHelper = 5;
@@ -244,18 +269,6 @@ void loop()
 
     uint32_t uptime = millis();
     uint8_t servoPos = ServoMotor.read();
-
-    /*
-    Serial.print(servoPos);
-    Serial.print(" - ");
-    Serial.print(rangeLeft);
-    Serial.print(" - ");
-    Serial.print(rangeCenter);
-    Serial.print(" - ");
-    Serial.print(rangeRight);
-    Serial.print(" - ");
-    Serial.println(uptime);
-    */
 
     GetRange(servoPos, wheelSpinCompleted);
 
@@ -290,21 +303,21 @@ void loop()
             if(rangeRight > rangeLeft && rangeRight > rangeCenter )
             {
                 // drive straight
-                SetMotor(motorPin1_1, motorPin1_2, motorSpeed);
-                SetMotor(motorPin2_1, motorPin2_2, motorSpeed/2);
+                SetMotor(1, motorSpeed);
+                SetMotor(2, motorSpeed/2);
             }
 
             if(rangeLeft > rangeRight && rangeLeft > rangeCenter )
             {
                 // drive straight
-                SetMotor(motorPin1_1, motorPin1_2, motorSpeed/2);
-                SetMotor(motorPin2_1, motorPin2_2, motorSpeed);
+                SetMotor(1, motorSpeed/2);
+                SetMotor(2, motorSpeed);
             }
         }
 
         // drive straight
-        SetMotor(motorPin1_1, motorPin1_2, motorSpeed);
-        SetMotor(motorPin2_1, motorPin2_2, motorSpeed);
+        SetMotor(1, motorSpeed);
+        SetMotor(2, motorSpeed);
     }
     else
     {
@@ -315,16 +328,18 @@ void loop()
 
         if(servoRangeDirection == LEFT)
         {
-            SetMotor(motorPin1_1, motorPin1_2, -motorSpeed);
-            SetMotor(motorPin2_1, motorPin2_2, motorSpeed);
+            SetMotor(1, -motorSpeed);
+            SetMotor(2, motorSpeed);
         }
         else
         {
-            SetMotor(motorPin1_1, motorPin1_2, motorSpeed);
-            SetMotor(motorPin2_1, motorPin2_2, -motorSpeed);
+            SetMotor(1, motorSpeed);
+            SetMotor(2, -motorSpeed);
         }
 
         wheelSpinCompleted = false;
+
+        // TODO: if this is going on for too long - stop
 
         if(rangeCenter > rangeLimit_Warning3 && (rangeLimit_Timestamp + rangeLimit_RotateFor) <= uptime)
         {
@@ -333,4 +348,3 @@ void loop()
         }
     }
 }
-
