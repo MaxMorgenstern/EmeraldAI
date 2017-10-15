@@ -6,6 +6,23 @@
 #include "sensor_msgs/Range.h" // Ultrasonic Range
 #include "sensor_msgs/JointState.h" // Servo Angle
 
+/*
+warnings todo
+/sketch_oct12a/sketch_oct12a.ino:23:38: warning: deprecated conversion from string constant to 'char*' [-Wwrite-strings]
+ char *jointNames[] = {"FRONT", "BACK"};
+                                      ^
+/sketch_oct12a/sketch_oct12a.ino:23:38: warning: deprecated conversion from string constant to 'char*' [-Wwrite-strings]
+/sketch_oct12a/sketch_oct12a.ino: In function 'void loop()':
+/sketch_oct12a/sketch_oct12a.ino:162:49: warning: narrowing conversion of 'servoPos' from 'uint8_t {aka unsigned char}' to 'float' inside { } [-Wnarrowing]
+     float pos[2] = {servoPos, (servoPos+180%360)};
+                                                 ^
+/sketch_oct12a/sketch_oct12a.ino:162:40: warning: narrowing conversion of '(((int)servoPos) + 180)' from 'int' to 'float' inside { } [-Wnarrowing]
+     float pos[2] = {servoPos, (servoPos+180%360)};
+                                        ^
+
+*/
+
+
 // ROS
 ros::NodeHandle  nh;
 
