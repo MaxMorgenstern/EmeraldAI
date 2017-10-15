@@ -17,9 +17,10 @@ char rangeFrameid2[] = "/ultrasound/2";
 
 
 sensor_msgs::JointState jointMessage;
-ros::Publisher sinbot_odometry("sinbot_odometry", &jointMessage);
+ros::Publisher odometryPublisher("/odometry", &jointMessage);
 
 char jointFrameid[] = "/ultrasound/joint";
+char *jointNames[] = {"FRONT", "BACK"};
 
 
 // Ultrasonic Sensor
@@ -56,12 +57,21 @@ void setup()
 {
     nh.initNode();
     nh.advertise(rangePublisher);
+    nh.advertise(odometryPublisher);
 
     rangeMessage.radiation_type = sensor_msgs::Range::ULTRASOUND;
     rangeMessage.field_of_view = 0.1;
     rangeMessage.min_range = 0.0;
     rangeMessage.max_range = maxDistance/100; // cm to meter
 
+
+    jointMessage.header.frame_id = jointFrameid;
+    jointMessage.name_length = 2;
+    //jointMessage.velocity_length = 2;
+    jointMessage.position_length = 2;
+    //jointMessage.effort_length = 2;
+
+    jointMessage.name = jointNames;
 
 
     // attach servo pin and set to initial direction
@@ -72,7 +82,7 @@ void setup()
 
 long GetRange(int id)
 {
-    long range = 0
+    long range = 0;
     if(id == 1)
     {
         range = sonar1.ping_cm();
@@ -142,11 +152,17 @@ void loop()
     if(servoPos == actualServoPos)
     {
         ServoMotor.write(GetNextServoAngle());
-        delay(5);
+        //delay(5);
     }
 
     SendDistanceToROS(1, rangeFront);
     SendDistanceToROS(2, rangeBack);
+
+    // TODO - extra function to send
+    float pos[2] = {servoPos, (servoPos+180%360)};
+    jointMessage.position = pos;
+    jointMessage.header.stamp = nh.now();
+    odometryPublisher.publish(&jointMessage);
 
     nh.spinOnce();
 }
