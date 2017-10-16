@@ -6,22 +6,6 @@
 #include "sensor_msgs/Range.h" // Ultrasonic Range
 #include "sensor_msgs/JointState.h" // Servo Angle
 
-/*
-warnings todo
-/sketch_oct12a/sketch_oct12a.ino:23:38: warning: deprecated conversion from string constant to 'char*' [-Wwrite-strings]
- char *jointNames[] = {"FRONT", "BACK"};
-                                      ^
-/sketch_oct12a/sketch_oct12a.ino:23:38: warning: deprecated conversion from string constant to 'char*' [-Wwrite-strings]
-/sketch_oct12a/sketch_oct12a.ino: In function 'void loop()':
-/sketch_oct12a/sketch_oct12a.ino:162:49: warning: narrowing conversion of 'servoPos' from 'uint8_t {aka unsigned char}' to 'float' inside { } [-Wnarrowing]
-     float pos[2] = {servoPos, (servoPos+180%360)};
-                                                 ^
-/sketch_oct12a/sketch_oct12a.ino:162:40: warning: narrowing conversion of '(((int)servoPos) + 180)' from 'int' to 'float' inside { } [-Wnarrowing]
-     float pos[2] = {servoPos, (servoPos+180%360)};
-                                        ^
-
-*/
-
 
 // ROS
 ros::NodeHandle  nh;
@@ -29,15 +13,15 @@ ros::NodeHandle  nh;
 sensor_msgs::Range rangeMessage;
 ros::Publisher rangePublisher("/ultrasound", &rangeMessage);
 
-char rangeFrameid1[] = "/ultrasound/1";
-char rangeFrameid2[] = "/ultrasound/2";
+const char rangeFrameid1[] = "/ultrasound/1";
+const char rangeFrameid2[] = "/ultrasound/2";
 
 
 sensor_msgs::JointState jointMessage;
 ros::Publisher odometryPublisher("/odometry", &jointMessage);
 
-char jointFrameid[] = "/ultrasound/joint";
-char *jointNames[] = {"FRONT", "BACK"};
+const char jointFrameid[] = "/ultrasound/joint";
+const char *jointNames[] = {"FRONT", "BACK"};
 
 
 // Ultrasonic Sensor
@@ -176,7 +160,7 @@ void loop()
     SendDistanceToROS(2, rangeBack);
 
     // TODO - extra function to send
-    float pos[2] = {servoPos, (servoPos+180%360)};
+    float pos[2] = {float(servoPos), float(servoPos+180%360)};
     jointMessage.position = pos;
     jointMessage.header.stamp = nh.now();
     odometryPublisher.publish(&jointMessage);
