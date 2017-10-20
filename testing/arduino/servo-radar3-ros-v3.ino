@@ -11,17 +11,17 @@
 ros::NodeHandle  nh;
 
 sensor_msgs::Range rangeMessage;
-ros::Publisher rangePublisher1("/ultrasound1", &rangeMessage);
-ros::Publisher rangePublisher2("/ultrasound2", &rangeMessage);
+ros::Publisher rangePublisher1("/ultrasound/1", &rangeMessage);
+ros::Publisher rangePublisher2("/ultrasound/2", &rangeMessage);
 
 const char rangeFrameid[] = "/ultrasound";
 
 
 sensor_msgs::JointState jointMessage;
-ros::Publisher odometryPublisher("/odometry", &jointMessage);
+ros::Publisher odometryPublisher("/ultrasound/joint", &jointMessage);
 
-const char jointFrameid[] = "/ultrasound/joint";
-const char *jointNames[] = {"FRONT", "BACK"};
+const char jointFrameid[] = "/odometry";
+char* jointNames[] = {"FRONT", "BACK"};
 
 
 // Ultrasonic Sensor
@@ -77,7 +77,7 @@ void setup()
 
 
     // attach servo pin and set to initial direction
-    ServoMotor.attach(servoPin, 400, 2600); // 400, 2600 to fix rotation issues
+    ServoMotor.attach(servoPin, 400, 2350); // 400, 2600 to fix rotation issues
     ServoMotor.write(servoPos);
 }
 
