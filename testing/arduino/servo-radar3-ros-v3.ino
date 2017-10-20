@@ -45,9 +45,9 @@ const uint8_t servoPin = 6;
 const uint8_t servoRotationAngel = 5;
 
 enum direction {
-  left,
-  center,
-  right
+    left,
+    center,
+    right
 };
 
 uint8_t servoPos = 90;
@@ -127,6 +127,15 @@ uint8_t GetNextServoAngle()
 }
 
 
+void SendServoAngleToROS(int angle)
+{
+    float pos[2] = {float(angle), float(angle+180%360)};
+    jointMessage.position = pos;
+    jointMessage.header.stamp = nh.now();
+    odometryPublisher.publish(&jointMessage);
+}
+
+
 void SendDistanceToROS(int sensorID, float rangeInCentimeter)
 {
     rangeMessage.range = rangeInCentimeter/100;
@@ -141,7 +150,6 @@ void SendDistanceToROS(int sensorID, float rangeInCentimeter)
     {
         rangePublisher2.publish(&rangeMessage);
     }
-
 }
 
 
@@ -157,16 +165,17 @@ void loop()
         //delay(5);
     }
 
-    SendDistanceToROS(1, rangeFront);
-    SendDistanceToROS(2, rangeBack);
+    if(rangeFront > 0)
+    {
+        SendDistanceToROS(1, rangeFront);
+    }
 
-    // TODO - extra function to send
-    float pos[2] = {float(servoPos), float(servoPos+180%360)};
-    jointMessage.position = pos;
-    jointMessage.header.stamp = nh.now();
-    odometryPublisher.publish(&jointMessage);
+    if(rangeBack > 0)
+    {
+        SendDistanceToROS(2, rangeBack);
+    }
+
+    SendServoAngleToROS(servoPos);
 
     nh.spinOnce();
 }
-
-
