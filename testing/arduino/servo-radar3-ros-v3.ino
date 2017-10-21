@@ -53,7 +53,6 @@ enum direction {
 uint8_t servoPos = 90;
 direction servoMovement = right;
 
-
 void setup()
 {
     nh.initNode();
@@ -162,7 +161,10 @@ void loop()
     if(servoPos == actualServoPos)
     {
         ServoMotor.write(GetNextServoAngle());
-        //delay(5);
+        if(!nh.connected())
+        {
+            delay(5);
+        }
     }
 
     if(rangeFront > 0)
