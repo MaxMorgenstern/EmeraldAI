@@ -117,6 +117,8 @@ void loop()
     rangePublisher2.publish(&rangeMessage);
 
 
+      /// radian = (degree * 71) / 4068.0
+      /// degree = (radians * 4068) / 71.0
 
 
 
