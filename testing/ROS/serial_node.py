@@ -35,7 +35,7 @@
 #
 # __author__ = "mferguson@willowgarage.com (Michael Ferguson)"
 #
-# modified on Sept 2017 , MPz
+# modified Sept - Oct 2017 , MPz
 
 import rospy
 from rosserial_python import SerialClient, RosSerialServer
@@ -48,10 +48,10 @@ if __name__=="__main__":
 
     uid = uuid.uuid4()
     rospy.init_node("serial_node_{0}".format(uid))
-    rospy.loginfo("ROS Serial Python Node '{0}'".formst(uid))
+    rospy.loginfo("ROS Serial Python Node '{0}'".format(uid))
 
     port_name = "/dev/ttyUSB0"
-    baud = 57600
+    baud = 57600 # 230400
     tcp_portnum = 11411
     fork_server = False
 
@@ -59,7 +59,7 @@ if __name__=="__main__":
         port_name  = sys.argv[1]
 
     if len(sys.argv) >= 3 :
-        tcp_portnum  = sys.argv[2]
+        baud  = int(sys.argv[2])
 
     if port_name == "tcp" :
         server = RosSerialServer(tcp_portnum, fork_server)
