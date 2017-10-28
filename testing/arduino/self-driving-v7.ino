@@ -10,7 +10,7 @@ const uint16_t initialDelay = 2500;
 const uint8_t rangeLimit_Warning1 = 70;
 const uint8_t rangeLimit_Warning2 = 50;
 const uint8_t rangeLimit_Stop = 40;
-const uint8_t motorSpeed = 95; // max: 255
+const uint8_t motorSpeed = 126; // max: 255
 
 const uint16_t rangeLimit_RotateFor = 500;
 unsigned long rangeLimit_Timestamp = 0;
