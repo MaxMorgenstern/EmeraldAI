@@ -40,8 +40,8 @@
 #define i2c_write   !I2Cdev::writeBytes
 #define i2c_read    !I2Cdev::readBytes
 #define delay_ms    delay
-#define MPU9250
-//#define MPU6050
+//#define MPU9250
+#define MPU6050
 
 static inline int reg_int_cb(struct int_param_s *int_param)
 {

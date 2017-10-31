@@ -4,14 +4,19 @@
 #include "I2Cdev.h"
 
 // needs to be in inv_mpu.cpp as well
-#define MPU9250
-//#define MPU6050
+//#define MPU9250
+#define MPU6050
+
+
+//for identity matrix see inv_mpu documentation how this is calculated; this is overwritten by a config packet
+uint8_t gyro_orientation = 136;
+uint8_t mpu_addr = 0; 
 
 int ret;
 void setup() {
     Fastwire::setup(400,0);
     Serial.begin(38400);
-    ret = mympu_open(200);
+    ret = mympu_open(mpu_addr, 200, gyro_orientation);
     Serial.print("MPU init: "); Serial.println(ret);
     Serial.print("Free mem: "); Serial.println(freeRam());
 	
@@ -23,6 +28,10 @@ unsigned int err_c = 0; //cumulative number of MPU/DMP reads that brought corrup
 unsigned int err_o = 0; //cumulative number of MPU/DMP reads that had overflow bit set
 
 void loop() {
+    #if defined MPU9150 || defined MPU9250
+      ret = mympu_update_compass();
+    #endif
+  
     ret = mympu_update();
 
     switch (ret) {
@@ -70,27 +79,27 @@ void loop() {
       Serial.print(mympu.gyro[2]);
       Serial.print("|"); 
       
-      Serial.print(0);
+      
+      Serial.print(mympu.accel[0]);
       Serial.print("|"); 
-      Serial.print(0);
+      Serial.print(mympu.accel[1]);
       Serial.print("|"); 
-      Serial.print(0);
+      Serial.print(mympu.accel[2]);
+      Serial.print("|"); 
+
+      #if defined MPU9150 || defined MPU9250
+        Serial.print(mympu.comp[0]);
+        Serial.print("|"); 
+        Serial.print(mympu.comp[1]);
+        Serial.print("|"); 
+        Serial.print(mympu.comp[2]);
+        Serial.print("|"); 
+      #endif
+      #if !defined MPU9150 && !defined MPU9250
+        Serial.print("0|0|0");
+      #endif
       
       Serial.println(""); 
-
-
-
-      
-	    /*
-	    Serial.print(np); 
-	    Serial.print("  "); Serial.print(err_c); Serial.print(" "); Serial.print(err_o);
-	    Serial.print(" Y: "); Serial.print(mympu.ypr[0]);
-	    Serial.print(" P: "); Serial.print(mympu.ypr[1]);
-	    Serial.print(" R: "); Serial.print(mympu.ypr[2]);
-	    Serial.print("\tgy: "); Serial.print(mympu.gyro[0]);
-	    Serial.print(" gp: "); Serial.print(mympu.gyro[1]);
-	    Serial.print(" gr: "); Serial.println(mympu.gyro[2]);
-     */
     }
 }
 
