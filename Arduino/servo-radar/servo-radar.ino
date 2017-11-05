@@ -106,7 +106,7 @@ void loop()
 
     if(rangeFront > 0)
     {
-        Serial.print("Servo_Front");
+        Serial.print("Ultrasonic|Front");
         Serial.print("|");
         Serial.print(servoPos);
         Serial.print("|");
@@ -115,7 +115,7 @@ void loop()
 
     if(rangeBack > 0)
     {
-        Serial.print("Servo_Back");
+        Serial.print("Ultrasonic|Back");
         Serial.print("|");
         Serial.print((servoPos+180%360));
         Serial.print("|");
