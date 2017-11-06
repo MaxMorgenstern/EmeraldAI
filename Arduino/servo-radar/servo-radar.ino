@@ -41,7 +41,7 @@ void setup()
     Serial.begin(230400);
 
     // attach servo pin and set to initial direction
-    ServoMotor.attach(servoPin, 400, 2350); // 400, 2600 to fix rotation issues
+    ServoMotor.attach(servoPin, 400, 2600); // 400, 2600 to fix rotation issues
     ServoMotor.write(servoPos);
 }
 
