@@ -8,12 +8,15 @@ const uint16_t maxDistance = 250;
 // Ultrasonic Sensor #1
 const uint8_t trigPin = 9;
 const uint8_t echoPin = 10;
+const char sonar1Name[] = "Front";
+
 
 NewPing sonar1(trigPin, echoPin, maxDistance);
 
 // Ultrasonic Sensor #2
 const uint8_t trigPin2 = 11;
 const uint8_t echoPin2 = 12;
+const char sonar2Name[] = "Back";
 
 NewPing sonar2(trigPin2, echoPin2, maxDistance);
 
@@ -106,7 +109,9 @@ void loop()
 
     if(rangeFront > 0)
     {
-        Serial.print("Ultrasonic|Front");
+        Serial.print("Ultrasonic");
+        Serial.print("|");
+        Serial.print(sonar1Name);
         Serial.print("|");
         Serial.print(servoPos);
         Serial.print("|");
@@ -115,7 +120,9 @@ void loop()
 
     if(rangeBack > 0)
     {
-        Serial.print("Ultrasonic|Back");
+        Serial.print("Ultrasonic");
+        Serial.print("|");
+        Serial.print(sonar2Name);
         Serial.print("|");
         Serial.print((servoPos+180%360));
         Serial.print("|");

@@ -7,7 +7,7 @@ import os
 import sys
 import math
 
-from sensor_msgs.msg import LaserScan, Range
+from sensor_msgs.msg import Range
 
 if __name__=="__main__":
 
@@ -15,8 +15,8 @@ if __name__=="__main__":
 	rospy.init_node("serial_reader_{0}".format(uid))
 	rospy.loginfo("ROS Serial Python Node '{0}'".format(uid))
 
-	laserPub = rospy.Publisher('/radar/Laser', LaserScan, queue_size=10)
-	ultasonicPub = rospy.Publisher('/radar/Ultrasonic', Range, queue_size=10)
+	ultasonicPubFront = rospy.Publisher('/radar/Ultrasonic/Front', Range, queue_size=10)
+	ultasonicPubBack = rospy.Publisher('/radar/Ultrasonic/Back', Range, queue_size=10)
 
 
 	port_name = "/dev/ttyUSB0"
@@ -31,19 +31,7 @@ if __name__=="__main__":
 
 	ser = serial.Serial(port_name, baud)
 
-
-	laserFrameID = "/radar_laser/{0}"
-	laserScan = LaserScan()
-	laserScan.angle_min = math.pi/4 - 0.05
-	laserScan.angle_max = math.pi/4 + 0.05
-	laserScan.angle_increment = 0.1
-	laserScan.time_increment = 0.0
-	laserScan.range_min = 0.05
-	laserScan.range_max = 2.50
-	laserScan.header.stamp = rospy.Time.now()
-
-
-	rangeFrameID = "radar_ultrasonic/{0}"
+	rangeFrameID = "/radar_ultrasonic_{0}"
 	rangeMsg = Range()
 	rangeMsg.radiation_type = 0
 	rangeMsg.min_range = 0.05
@@ -68,44 +56,20 @@ if __name__=="__main__":
 		
 
 		messageType = data[0]
-		moduleName = data[1]
+		moduleName = data[1].lower()
 		modulePosition = data[2]
 		moduleRange = int(data[3])
 
-		laserScan.header.frame_id = laserFrameID.format(moduleName)
-		laserScan.ranges = [moduleRange / 100]
-		laserScan.header.stamp = rospy.Time.now()
-
 		rangeMsg.header.frame_id = rangeFrameID.format(moduleName)
-		rangeMsg.range = moduleRange / 100
+		rangeMsg.range = moduleRange / 100.0
 		rangeMsg.header.stamp = rospy.Time.now()
 
 
-
-		"""
-		sensor = data[0]
-		timestamp = data[1]
-
-		Y = data[2]
-		P = data[3]
-		R = data[4]
-
-		GyroX = data[5]
-		GyroY = data[6]
-		GyroZ = data[7]
-
-		AccelX = data[8]
-		AccelY = data[9]
-		AccelZ = data[10]
-
-		MagnetX = data[11]
-		MagnetY = data[12]
-		MagnetZ = data[13]
-		"""
-		rospy.loginfo(laserScan)
-		laserPub.publish(laserScan)
 		rospy.loginfo(rangeMsg)
-		ultasonicPub.publish(rangeMsg)
+		if moduleName == "front":
+			ultasonicPubFront.publish(rangeMsg)
+		if moduleName == "back":	
+			ultasonicPubBack.publish(rangeMsg)
 
 		
 
