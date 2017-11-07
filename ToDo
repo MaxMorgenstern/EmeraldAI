@@ -235,3 +235,9 @@ https://www.crowdsupply.com/husarion/core2
 
 cam alternative:
 http://www.ebay.de/itm/Microsoft-Xbox-360-original-KINECT-SENSOR-LEISTE-SCHWARZ-Controller-/222538161623?epid=1404729520&hash=item33d04eddd7:g:g8sAAOSwlMFZOCPG
+
+
+
+ll /sys/class/tty/ttyUSB*
+
+
