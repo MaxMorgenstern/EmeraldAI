@@ -6,8 +6,17 @@ import rospy
 import os
 import sys
 import math
+import tf
 
-from sensor_msgs.msg import Range
+from sensor_msgs.msg import Imu
+
+
+def RadianToDegree(rad):
+    return (rad * 4068) / 71.0
+
+def DegreeToRadian(deg):
+    return (deg * 71) / 4068.0
+
 
 if __name__=="__main__":
 
@@ -15,9 +24,8 @@ if __name__=="__main__":
 	rospy.init_node("serial_reader_{0}".format(uid))
 	rospy.loginfo("ROS Serial Python Node '{0}'".format(uid))
 
-	ultasonicPubFront = rospy.Publisher('/radar/Ultrasonic/Front', Range, queue_size=10)
-	ultasonicPubBack = rospy.Publisher('/radar/Ultrasonic/Back', Range, queue_size=10)
-
+	imuPub = rospy.Publisher('/imu', Imu, queue_size=10)
+	transformBroadcaster = tf.TransformBroadcaster()
 
 	port_name = "/dev/ttyUSB0"
 	#baud = 57600 # 230400
@@ -31,14 +39,10 @@ if __name__=="__main__":
 
 	ser = serial.Serial(port_name, baud)
 
-	rangeFrameID = "/radar_ultrasonic_{0}"
-	rangeMsg = Range()
-	rangeMsg.radiation_type = 0
-	rangeMsg.min_range = 0.05
-	rangeMsg.max_range = 2.50
-	rangeMsg.field_of_view = (math.pi/4/45*10) # 10deg
-	rangeMsg.radiation_type = 0
-
+	imuParentFrameID = "/odom"
+	imuFrameID = "/imu_sensor"
+	imuMessage = Imu()
+	imuMessage.header.frame_id = imuFrameID
 
 	while True:
 		line = ser.readline().rstrip()
@@ -50,26 +54,58 @@ if __name__=="__main__":
 			continue
 		print data
 
-		# we expect 4 values from the ultrasonic node
-		if(len(data) > 4):
+		# we expect 14 values from the ultrasonic node
+		if(len(data) != 14):
 			continue
-		
+		sensor = data[0]
+		timestamp = data[1]
 
-		messageType = data[0]
-		moduleName = data[1].lower()
-		modulePosition = data[2]
-		moduleRange = int(data[3])
+		Y = DegreeToRadian(float(data[2]))
+		P = DegreeToRadian(float(data[3]))
+		R = DegreeToRadian(float(data[4]))
 
-		rangeMsg.header.frame_id = rangeFrameID.format(moduleName)
-		rangeMsg.range = moduleRange / 100.0
-		rangeMsg.header.stamp = rospy.Time.now()
+		GyroX = float(data[5])
+		GyroY = float(data[6])
+		GyroZ = float(data[7])
+
+		AccelX = float(data[8])
+		AccelY = float(data[9])
+		AccelZ = float(data[10])
+
+		MagnetX = float(data[11])
+		MagnetY = float(data[12])
+		MagnetZ = float(data[13])
 
 
-		rospy.loginfo(rangeMsg)
-		if moduleName == "front":
-			ultasonicPubFront.publish(rangeMsg)
-		if moduleName == "back":	
-			ultasonicPubBack.publish(rangeMsg)
+
+		imuMessage.header.stamp = rospy.Time.now()
+		quaternion = tf.transformations.quaternion_from_euler(Y, P, R)
+		imuMessage.orientation.x = quaternion[0]
+		imuMessage.orientation.y = quaternion[1]
+		imuMessage.orientation.z = quaternion[2]
+		imuMessage.orientation.w = quaternion[3]
+
+		imuMessage.linear_acceleration.x = AccelX
+		imuMessage.linear_acceleration.y = AccelY
+		imuMessage.linear_acceleration.z = AccelZ
+
+		imuMessage.orientation_covariance = [1e-6, 0, 0, 0, 1e-6, 0, 0, 0, 1e-6]
+		imuMessage.angular_velocity_covariance = [1e-6, 0, 0, 0, 1e-6, 0, 0, 0, 1e-6]
+		imuMessage.linear_acceleration_covariance = [1e-6, 0, 0, 0, 1e-6, 0, 0, 0, 1e-6]
+		imuMessage.angular_velocity.x = 5.13*10*math.pi/180
+		imuMessage.angular_velocity.y = -2.93*10*math.pi/180
+		imuMessage.angular_velocity.z = 2.63*10*math.pi/180
+
+
+		rospy.loginfo(imuMessage)
+		imuPub.publish(imuMessage)
+
+		# translation (x,y,z), rotation(yaw-pitch-roll (ZYX) ), time, child, parent
+		transformBroadcaster.sendTransform((0, 0, 1),
+			tf.transformations.quaternion_from_euler(0, 0, 0),
+			rospy.Time.now(),
+			imuMessage.header.frame_id,
+			imuParentFrameID)
 
 		
 
