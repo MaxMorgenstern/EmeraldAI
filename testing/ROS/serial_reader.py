@@ -52,7 +52,8 @@ if __name__=="__main__":
 		data = line.split("|")
 		if(len(data) <= 1):
 			continue
-		print data
+		
+		#print data
 
 		# we expect 14 values from the ultrasonic node
 		if(len(data) != 14):
@@ -79,25 +80,26 @@ if __name__=="__main__":
 
 
 		imuMessage.header.stamp = rospy.Time.now()
-		quaternion = tf.transformations.quaternion_from_euler(Y, P, R)
+		quaternion = tf.transformations.quaternion_from_euler(Y, P, R, 'rzyx')
+		
 		imuMessage.orientation.x = quaternion[0]
 		imuMessage.orientation.y = quaternion[1]
 		imuMessage.orientation.z = quaternion[2]
 		imuMessage.orientation.w = quaternion[3]
-
+		imuMessage.orientation_covariance = [0.0025, 0, 0, 0, 0.0025, 0, 0, 0, 0.0025]
+		
 		imuMessage.linear_acceleration.x = AccelX
 		imuMessage.linear_acceleration.y = AccelY
 		imuMessage.linear_acceleration.z = AccelZ
+		imuMessage.linear_acceleration_covariance = [0.02, 0, 0, 0, 0.02, 0, 0, 0, 0.02]
+		
+		imuMessage.angular_velocity.x = GyroX
+		imuMessage.angular_velocity.y = GyroY
+		imuMessage.angular_velocity.z = GyroZ
+		imuMessage.angular_velocity_covariance = [0.04, 0, 0, 0, 0.04, 0, 0, 0, 0.04]
+		
 
-		imuMessage.orientation_covariance = [1e-6, 0, 0, 0, 1e-6, 0, 0, 0, 1e-6]
-		imuMessage.angular_velocity_covariance = [1e-6, 0, 0, 0, 1e-6, 0, 0, 0, 1e-6]
-		imuMessage.linear_acceleration_covariance = [1e-6, 0, 0, 0, 1e-6, 0, 0, 0, 1e-6]
-		imuMessage.angular_velocity.x = 5.13*10*math.pi/180
-		imuMessage.angular_velocity.y = -2.93*10*math.pi/180
-		imuMessage.angular_velocity.z = 2.63*10*math.pi/180
-
-
-		rospy.loginfo(imuMessage)
+		#rospy.loginfo(imuMessage)
 		imuPub.publish(imuMessage)
 
 		# translation (x,y,z), rotation(yaw-pitch-roll (ZYX) ), time, child, parent
