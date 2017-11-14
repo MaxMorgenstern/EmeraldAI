@@ -6,8 +6,11 @@ import subprocess
 #command = "ls -al /sys/class/tty/ttyUSB*"
 command = """ls -al /sys/class/tty/ttyUSB* | grep -o "/sys/class/tty/ttyUSB.*"| sed 's/ -> .*//'"""
 
-#data = os.system(command)
+proc = subprocess.Popen([command], stdout=subprocess.PIPE, shell=True)
+(out, err) = proc.communicate()
 
-data = os.popen(command).read()
+if len(out) < 2:
+	print "no data"
 
-print data
+print "program output:", out
+
