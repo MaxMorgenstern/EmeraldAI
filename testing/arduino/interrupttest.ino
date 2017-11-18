@@ -1,22 +1,31 @@
-const byte ledPin = 13;
 const byte interruptPin = 2;
-volatile byte state = LOW;
-int count = 0;
-bool lock = false;
+int interruptCount = 0;
+int stepsPerRevelation = 20;
+int distanceInMMPerRevelation = 220;
 
 void setup() {
-    pinMode(ledPin, OUTPUT);
-    pinMode(interruptPin, INPUT_PULLUP);
+    pinMode(interruptPin, INPUT);
     attachInterrupt(digitalPinToInterrupt(interruptPin), trigger, RISING);
     Serial.begin(230400);
 }
 
 void loop() {
-    digitalWrite(ledPin, state);
-    Serial.println(count);
+    int wheelID = 1;
+    Serial.print("Wheel");
+    Serial.print("|");
+    Serial.print(wheelID);
+    Serial.print("|");
+    Serial.print(interruptCount);
+    Serial.print("|");
+    Serial.print(stepsPerRevelation);
+    Serial.print("|");
+    Serial.print(distanceInMMPerRevelation);
+    Serial.print("|");
+    Serial.print(distanceInMMPerRevelation/stepsPerRevelation*interruptCount);
+    Serial.println("");
+    delay(200);
 }
 
 void trigger() {
-    state = !state;
-    count++;
+    interruptCount++;
 }
