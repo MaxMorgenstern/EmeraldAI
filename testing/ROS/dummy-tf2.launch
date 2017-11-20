@@ -1,0 +1,8 @@
+<launch>
+	<node pkg="tf2_ros" type="static_transform_publisher" name="link1_broadcaster" args="1 0 0 0 0 0 1 link1_parent link1" />
+	<node pkg="tf2_ros" type="static_transform_publisher" name="odom_broadcaster1" args="1 0 0 0 0 0 1 odom link1_parent" />
+	<node pkg="tf2_ros" type="static_transform_publisher" name="odom_broadcaster2" args="0 0 1 0 0 0 1 odom servo_base" />
+	<node pkg="tf2_ros" type="static_transform_publisher" name="servo_broadcaster1" args="0 0 1 0 0 0 1 servo_base servo_gear" />
+	<node pkg="tf2_ros" type="static_transform_publisher" name="ultrasonic_broadcaster1" args="1 1 0 0 0 0 1 servo_gear ultrasonic_1" />
+	<node pkg="tf2_ros" type="static_transform_publisher" name="ultrasonic_broadcaster2" args="-1 -1 0 0 0 0 1 servo_gear ultrasonic_2" />
+</launch>

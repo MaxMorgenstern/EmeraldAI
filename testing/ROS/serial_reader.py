@@ -5,53 +5,62 @@ import serial
 import rospy
 import os
 import sys
-import math
-import tf
 import time
+import subprocess
 
-from threading import Thread
+class SerialHelper():
+	SerialPointer = None
+	ReadTimestamp = None
+	InitialTimestampDelay = 10
 
-from sensor_msgs.msg import Imu
+	def __init__ (self, port_name, baud, timeout=1):
+		self._port_name = port_name
+		self._baud = baud
+		self._timeout = timeout
 
-class SerialReader:
-	def __init__(self, port, baud):
-		self.port = port_name
-		self.baud = baud
+		self.SerialPointer = serial.Serial(port_name, baud, timeout=timeout)
+		self.ReadTimestamp = time.time() + self.InitialTimestampDelay
 
-		self.data = None
+	def Read(self):
+		# if nothing to read, sleep for 10 milliseconds and check timeout
+		while self.SerialPointer.inWaiting() == 0:
+			time.sleep(0.01)
+			if(self.ReadTimestamp + 5 < time.time()):
+				print "reconnect..."
+				self.SerialPointer.close()
+				time.sleep(1)
+				self.SerialPointer = serial.Serial(self._port_name, self._baud, timeout=self._timeout)
+				self.ReadTimestamp = time.time() + self.InitialTimestampDelay
+		return self.SerialPointer.readline().rstrip()
 
-		self.stopped = True
+	def ValidateAndProcess(self, line, length):
+		if(len(line) <= 1):
+			return None
 
-	def start(self):
-		self.stopped = False
-		self.serial = serial.Serial(self.port, self.baud, timeout=1)
-		Thread(target=self.update, args=()).start()
-		return self
+		data = line.split("|")
+		if(len(data) <= 1):
+			return None
 
-	def update(self):
-		while True:
-			if self.stopped:
-				return
-			self.data = self.serial.readline().rstrip()
+		if(len(data) != length):
+			return None
 
-	def read(self):
-		returnValue = self.data
-		self.data = None
-		return returnValue
-
-	def stop(self):
-		self.stopped = True
-		self.serial.close()
-
+		self.ReadTimestamp = time.time()
+		return data
 
 
+class SerialFinder():
+	_command = """ls -al /sys/class/tty/ttyUSB* | grep -o "/sys/class/tty/ttyUSB.*"| sed 's/ -> .*//'"""
 
+	def Find(self):
 
-def RadianToDegree(rad):
-	return (rad * 4068) / 71.0
+		proc = subprocess.Popen([self._command], stdout=subprocess.PIPE, shell=True)
+		(out, err) = proc.communicate()
 
-def DegreeToRadian(deg):
-	return (deg * 71) / 4068.0
+		if len(out) < 2:
+			return None
+		
+		print out
+
 
 
 if __name__=="__main__":
@@ -59,9 +68,6 @@ if __name__=="__main__":
 	uid = str(os.getpid())
 	rospy.init_node("serial_reader_{0}".format(uid))
 	rospy.loginfo("ROS Serial Python Node '{0}'".format(uid))
-
-	imuPub = rospy.Publisher('/imu', Imu, queue_size=10)
-	transformBroadcaster = tf.TransformBroadcaster()
 
 	port_name = "/dev/ttyUSB0"
 	baud = 230400
@@ -72,37 +78,17 @@ if __name__=="__main__":
 	if len(sys.argv) >= 3 :
 		baud  = int(sys.argv[2])
 
-	ser2 = SerialReader(port_name, baud).start()
-
-	#ser = serial.Serial(port_name, baud, timeout=1)
+	sh = SerialHelper(port_name, baud, timeout=1)
 	
-	readTimestamp = time.time()
-
 	while True:
-		line = ser2.read()
-		if line == None:
-			if (readTimestamp + 5 < time.time()):
-				print "timeout"
-				ser2.stop()
-				ser2.start()
-			continue
-
-		#line = ser.readline().rstrip()
-		if(len(line) <= 1):
-			continue
-
-		data = line.split("|")
-		if(len(data) <= 1):
-			continue
-
-		readTimestamp = time.time()
-		print data
-
-		# we expect 14 values from the ultrasonic node
-		#if(len(data) != 14):
-		#	continue
+		line = sh.Read()
 		
-		#print "working"
+		data = sh.ValidateAndProcess(line, 14)
+
+		if(data == None):
+			continue
+
+		print data
 		
 
 print "Bye!"
