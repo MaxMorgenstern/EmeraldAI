@@ -56,18 +56,30 @@ if __name__=="__main__":
 			continue
 		#print data
 
-		# we expect 4 values from the ultrasonic node
-		if(len(data) > 8):
+		# we expect 10 values from the ultrasonic node
+		if(len(data) > 10):
 			continue
 		
 		messageType = data[0]
-		moduleID = int(data[1])
-		timestamp = int(data[2])
-		count = int(data[3])
-		timestampDelta = int(data[4])
-		countDelata = int(data[5])
-		stepsPerRevelation = int(data[6])
-		distanceInMMPerRevelation = int(data[7])
+		timestamp = int(data[1])
+
+		moduleID1 = int(data[2])
+		timestampDelta1 = int(data[3])
+		count1 = int(data[4])
+		countDelata1 = int(data[5])
+
+		moduleID2 = int(data[6])
+		timestampDelta2 = int(data[7])
+		count2 = int(data[8])
+		countDelata2 = int(data[9])
+
+
+
+
+
+
+
+
 
 		odomMsg.header.stamp = rospy.Time.now()
 
