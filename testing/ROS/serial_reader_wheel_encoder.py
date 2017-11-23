@@ -7,10 +7,11 @@ import os
 import sys
 import math
 
-from nav_msgs.msg import Odometry
-
 import tf2_ros as tf
 import tf_conversions as tf_conv
+
+from nav_msgs.msg import Odometry
+from geometry_msgs.msg import Point, Pose, Quaternion, Twist, Vector3, TransformStamped
 
 
 def RadianToDegree(rad):
@@ -46,7 +47,7 @@ if __name__=="__main__":
     rospy.loginfo("ROS Serial Python Node '{0}'".format(uid))
 
     odomPub = rospy.Publisher('/odom', Odometry, queue_size=25)
-    odomTFBroadcaster = tf.TransformBroadcaster()
+    transformBroadcaster = tf.TransformBroadcaster()
 
     port_name = "/dev/ttyUSB0"
     #baud = 57600 # 230400
@@ -64,7 +65,7 @@ if __name__=="__main__":
     odomFrameID = "/base_link"
     odomMsg = Odometry()
     odomMsg.header.frame_id = odomParentFrameID
-    odom.child_frame_id = odomFrameID
+    odomMsg.child_frame_id = odomFrameID
 
 
     wheelDiameter = 70 # mm
@@ -115,18 +116,23 @@ if __name__=="__main__":
 
         #####
 
-        distanceLeft = clicksLeft * wheelDistancePerTickLeft
-        distanceRight = clicksRight * wheelDistancePerTickRight
+        clicksLeft = clickCount1Delata
+        clicksRight = clickCount2Delata
+
+        distanceLeft = clicksLeft * wheelDistancePerTickLeft / 1000 # mm to m
+        distanceRight = clicksRight * wheelDistancePerTickRight / 1000 # mm to m
 
         estimatedDistance = (distanceRight + distanceLeft) / 2
         estimatedRotation = (distanceLeft - distanceRight) / wheelBaseline
 
+        print distanceLeft, distanceRight
+        print estimatedDistance, estimatedRotation
 
 
         # compute odometry in a typical way given the velocities of the robot
         dt = (currentTime - lastTime).to_sec()
-        delta_x = (estimatedDistance * cos(estimatedRotation)) * dt
-        delta_y = (estimatedDistance * sin(estimatedRotation)) * dt
+        delta_x = (estimatedDistance * math.cos(estimatedRotation)) * dt
+        delta_y = (estimatedDistance * math.sin(estimatedRotation)) * dt
         delta_th = estimatedRotation * dt
 
         x += delta_x
@@ -145,19 +151,19 @@ if __name__=="__main__":
             odomParentFrameID)
 
         # next, we'll publish the odometry message over ROS
-        odomMsg.header.stamp = current_time
+        odomMsg.header.stamp = currentTime
 
         # set the position
         odomMsg.pose.pose = Pose(Point(x, y, 0.), Quaternion(*odomQuaternion))
 
         # set the velocity
-        odomMsg.twist.twist = Twist(Vector3(vx, vy, 0), Vector3(0, 0, vth))
+        odomMsg.twist.twist = Twist(Vector3(estimatedDistance, 0, 0), Vector3(0, 0, estimatedRotation))
 
         # publish the message
-        rospy.loginfo(odomMsg)
-        odom_pub.publish(odomMsg)
+        #rospy.loginfo(odomMsg)
+        odomPub.publish(odomMsg)
 
-        last_time = current_time
+        lastTime = currentTime
         
 
 print "Bye!"
