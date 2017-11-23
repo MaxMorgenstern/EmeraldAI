@@ -68,13 +68,13 @@ if __name__=="__main__":
     odomMsg.child_frame_id = odomFrameID
 
 
-    wheelDiameter = 70 # mm
-    wheelBaseline = 100 # distance between wheels in mm
+    #wheelDiameter = 64 # mm
+    wheelDiameter = 318 # mm - tank
+    wheelBaseline = 180 # distance between wheels in mm - tank
     encoderTicksPerRevelation = 20
 
     wheelDistancePerTickLeft = math.pi * wheelDiameter / encoderTicksPerRevelation
     wheelDistancePerTickRight = math.pi * wheelDiameter / encoderTicksPerRevelation
-
 
     # start position
     x = 0.0
@@ -119,15 +119,11 @@ if __name__=="__main__":
         clicksLeft = clickCount1Delata
         clicksRight = clickCount2Delata
 
-        distanceLeft = clicksLeft * wheelDistancePerTickLeft / 1000 # mm to m
-        distanceRight = clicksRight * wheelDistancePerTickRight / 1000 # mm to m
+        distanceLeft = clicksLeft * wheelDistancePerTickLeft
+        distanceRight = clicksRight * wheelDistancePerTickRight
 
-        estimatedDistance = (distanceRight + distanceLeft) / 2
+        estimatedDistance = (distanceRight + distanceLeft) / 2  / 1000 # mm to m
         estimatedRotation = (distanceLeft - distanceRight) / wheelBaseline
-
-        print distanceLeft, distanceRight
-        print estimatedDistance, estimatedRotation
-
 
         # compute odometry in a typical way given the velocities of the robot
         dt = (currentTime - lastTime).to_sec()
@@ -138,8 +134,7 @@ if __name__=="__main__":
         x += delta_x
         y += delta_y
         th += delta_th
-
-
+        
         # since all odometry is 6DOF we'll need a quaternion created from yaw
         odomQuaternion = tf_conv.transformations.quaternion_from_euler(0, 0, th)
 
