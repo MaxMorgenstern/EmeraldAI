@@ -39,7 +39,7 @@ Adafruit_NeoPixel LEDStrip = Adafruit_NeoPixel(24, ledPin, NEO_GRB + NEO_KHZ800)
 // Motor / Wheels
 const uint8_t motorPin1_1 = A3;
 const uint8_t motorPin1_2 = A2;
-const uint8_t motorEnablePin1 = 3;
+const uint8_t motorEnablePin1 = 5;
 
 const uint8_t motorPin2_1 = A5;
 const uint8_t motorPin2_2 = A4;
@@ -67,11 +67,12 @@ uint32_t servoLastScanTimestamp = 0;
 direction servoLastScan = NONE;
 
 // IR obstacle detection
-int obstaclePin = A1;
+int obstaclePin = A7;
 
 
 void setup()
 {
+    Serial.begin(115200);
     // Scanner
     pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
     pinMode(echoPin, INPUT); // Sets the echoPin as an Input
@@ -110,36 +111,42 @@ void GetRange(int servoPos, bool rotating)
     if(range == 0 && rotating) { range = maxDistance; }
     if(range > maxDistance) { range = maxDistance; }
 
-
+    
     //if(range == 0) { range = lastRange; }
     //if(range > 0  && !rotating) { lastRange = range;}
 
     long avgRange;
 
-    if(servoPos == servoCenter)
+    if(servoPos == servoCenter) 
     {
         if(range == 0) { range = lastRangeCenter; }
         avgRange = (range + lastRangeCenter) / 2;
         lastRangeCenter = range;
 
-        rangeCenter = avgRange;
+        rangeCenter = avgRange; 
     }
-    if(servoPos > servoCenter)
-    {
+    if(servoPos > servoCenter) 
+    { 
         if(range == 0) { range = lastRangeLeft; }
         avgRange = (range + lastRangeLeft) / 2;
         lastRangeLeft = range;
 
-        rangeLeft = avgRange;
+        rangeLeft = avgRange; 
     }
-    if(servoPos < servoCenter)
-    {
+    if(servoPos < servoCenter) 
+    { 
         if(range == 0) { range = lastRangeRight; }
         avgRange = (range + lastRangeRight) / 2;
         lastRangeRight = range;
-
-        rangeRight = avgRange;
+        
+        rangeRight = avgRange; 
     }
+
+    Serial.print(range);
+    Serial.print(" - ");
+    Serial.print(avgRange);
+    Serial.print(" - ");
+    Serial.println(servoPos);
 }
 
 bool GetObstacle()
@@ -235,7 +242,7 @@ void SetServo(uint32_t uptime, uint8_t servoPos)
 {
     uint32_t interval = 1000;
     uint32_t returnInterval = 300;
-
+    
     if(uptime < interval+1)
     {
         return;
@@ -283,6 +290,7 @@ void SetServoRangeDirection()
 
 void loop()
 {
+
     uint32_t uptime = millis();
     uint8_t servoPos = ServoMotor.read();
 
