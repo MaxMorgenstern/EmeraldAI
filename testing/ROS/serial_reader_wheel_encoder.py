@@ -8,7 +8,6 @@ import sys
 import math
 
 import tf2_ros as tf
-import tf_conversions as tf_conv
 
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Point, Pose, Quaternion, Twist, Vector3, TransformStamped
@@ -22,7 +21,7 @@ def DegreeToRadian(deg):
 
 def SendTF2Transform(transformBroadcaster, translation, rotation, time, child_frame_id, frame_id):
     t = TransformStamped()
- 
+
     t.header.stamp = time
     t.header.frame_id = frame_id
     t.child_frame_id = child_frame_id
@@ -100,7 +99,7 @@ if __name__=="__main__":
 
 
         currentTime = rospy.Time.now()
-        
+
         messageType = data[0]
         timestamp = int(data[1])
 
@@ -123,24 +122,32 @@ if __name__=="__main__":
         distanceRight = clicksRight * wheelDistancePerTickRight
 
         estimatedDistance = (distanceRight + distanceLeft) / 2  / 1000 # mm to m
-        estimatedRotation = (distanceLeft - distanceRight) / wheelBaseline
+        estimatedRotation = (distanceRight - distanceLeft) / wheelBaseline
 
-        # compute odometry in a typical way given the velocities of the robot
+
         dt = (currentTime - lastTime).to_sec()
-        delta_x = (estimatedDistance * math.cos(estimatedRotation)) * dt
-        delta_y = (estimatedDistance * math.sin(estimatedRotation)) * dt
-        delta_th = estimatedRotation * dt
 
-        x += delta_x
-        y += delta_y
-        th += delta_th
-        
-        # since all odometry is 6DOF we'll need a quaternion created from yaw
-        odomQuaternion = tf_conv.transformations.quaternion_from_euler(0, 0, th)
+        if (estimatedDistance != 0):
+            # calculate distance traveled in x and y
+            xTmp = math.cos(estimatedRotation) * estimatedDistance
+            yTmp = -math.sin(estimatedRotation) * estimatedDistance
+            # calculate the final position of the robot
+            x += (math.cos(th) * xTmp - math.sin(th) * yTmp) * dt
+            y += (math.sin(th) * xTmp + math.cos(th) * yTmp) * dt
+
+        if (estimatedRotation != 0):
+            th += estimatedRotation * dt
+
+        # create the quaternion
+        quaternion = Quaternion()
+        quaternion.x = 0.0
+        quaternion.y = 0.0
+        quaternion.z = math.sin(th / 2)
+        quaternion.w = math.cos(th / 2)
 
         SendTF2Transform(transformBroadcaster,
             (x, y, 0.),
-            odomQuaternion,
+            (quaternion.x, quaternion.y, quaternion.z, quaternion.w),
             currentTime,
             odomFrameID,
             odomParentFrameID)
@@ -149,7 +156,7 @@ if __name__=="__main__":
         odomMsg.header.stamp = currentTime
 
         # set the position
-        odomMsg.pose.pose = Pose(Point(x, y, 0.), Quaternion(*odomQuaternion))
+        odomMsg.pose.pose = Pose(Point(x, y, 0.), quaternion)
 
         # set the velocity
         odomMsg.twist.twist = Twist(Vector3(estimatedDistance, 0, 0), Vector3(0, 0, estimatedRotation))
@@ -159,6 +166,6 @@ if __name__=="__main__":
         odomPub.publish(odomMsg)
 
         lastTime = currentTime
-        
+
 
 print "Bye!"
