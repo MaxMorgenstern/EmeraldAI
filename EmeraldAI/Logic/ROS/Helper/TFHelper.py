@@ -18,7 +18,3 @@ def SendTF2Transform(transformBroadcaster, translation, rotation, time, childFra
     t.transform.rotation.w = rotation[3]
 
     transformBroadcaster.sendTransform(t)
-
-
-
-

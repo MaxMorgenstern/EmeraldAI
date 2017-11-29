@@ -9,6 +9,7 @@ import Memory
 import Modules
 import Movement
 import NLP
+import ROS
 import SpeechProcessing
 import Trainer
 __all__ = ["Logger", "Singleton"]

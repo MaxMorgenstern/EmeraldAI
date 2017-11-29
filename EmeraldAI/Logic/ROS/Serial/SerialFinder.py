@@ -1,5 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+import subprocess
+import itertools
 
 class SerialFinder():
     _command = """ls -al /sys/class/tty/ttyUSB* | grep -o "/sys/class/tty/ttyUSB.*"| sed 's/ -> .*//'"""
@@ -12,4 +14,16 @@ class SerialFinder():
         if len(out) < 2:
             return None
 
-        print out
+        return self.__split(out)
+
+    def __groupSeparator(line):
+        return line=='\n'
+
+    def __split(data):
+        lines = []
+        for key, group in itertools.groupby(data, __groupSeparator):
+            line = ''.join(str(e) for e in group)
+            line = line.strip()
+            if (len(line) > 1):
+                lines.append(line.replace(replace, replaceWith))
+        return lines

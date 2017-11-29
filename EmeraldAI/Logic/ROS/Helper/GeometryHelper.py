@@ -7,6 +7,3 @@ def RadianToDegree(rad):
 
 def DegreeToRadian(deg):
     return (deg * 71) / 4068.0
-
-
-
