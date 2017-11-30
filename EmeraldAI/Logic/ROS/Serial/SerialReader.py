@@ -1,20 +1,19 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-from EmeraldAI.Logic.Singleton import Singleton
+import serial
+import time
 
 class SerialReader():
-    __metaclass__ = Singleton
-
     SerialPointer = None
     ReadTimestamp = None
     InitialTimestampDelay = 10
 
-    def __init__(self, port_name, baud, timeout=1):
-        self._port_name = port_name
+    def __init__(self, portName, baud, timeout=1):
+        self._portName = portName
         self._baud = baud
         self._timeout = timeout
 
-        self.SerialPointer = serial.Serial(port_name, baud, timeout=timeout)
+        self.SerialPointer = serial.Serial(portName, baud, timeout=timeout)
         self.ReadTimestamp = time.time() + self.InitialTimestampDelay
 
     def Read(self):
@@ -25,7 +24,7 @@ class SerialReader():
                 print "reconnect..."
                 self.SerialPointer.close()
                 time.sleep(1)
-                self.SerialPointer = serial.Serial(self._port_name, self._baud, timeout=self._timeout)
+                self.SerialPointer = serial.Serial(self._portName, self._baud, timeout=self._timeout)
                 self.ReadTimestamp = time.time() + self.InitialTimestampDelay
         return self.SerialPointer.readline().rstrip()
 
