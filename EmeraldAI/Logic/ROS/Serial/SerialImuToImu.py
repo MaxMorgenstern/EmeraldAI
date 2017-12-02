@@ -26,7 +26,14 @@ class SerialImuToImu():
     def Validate(self, data):
         if(data is None):
             return False
-        return (len(data) == self.Length)
+        if(len(data) != self.Length):
+            return False
+        if(data[0].lower() == "MPU6050".lower() || 
+            data[0].lower() == "MPU6500".lower() || 
+            data[0].lower() == "MPU9150".lower() || 
+            data[0].lower() == "MPU9250".lower()):
+            return True
+        return False
 
     def Process(self, data, imuFrameID, imuParentFrameID, translation):
         Y = GeometryHelper.DegreeToRadian(float(data[2]))
@@ -68,7 +75,10 @@ class SerialImuToImu():
         imuMessage.angular_velocity_covariance = [0.04, 0, 0, 0, 0.04, 0, 0, 0, 0.04]
 
 
+        rospy.loginfo(imuMessage)
+
         self.__imuPublisher.publish(imuMessage)
+        
         TFHelper.SendTF2Transform(
             translation,
             quaternion,
