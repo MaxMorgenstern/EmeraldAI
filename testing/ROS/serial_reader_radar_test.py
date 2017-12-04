@@ -15,33 +15,35 @@ from EmeraldAI.Logic.ROS.Serial.SerialRadarToRange import SerialRadarToRange
 
 if __name__=="__main__":
 
-	# TODO - determin portName
+    # TODO - determin portName
 
-	portName = "/dev/ttyUSB0"
-	baud = 230400
+    portName = "/dev/ttyUSB0"
+    baud = 230400
 
-	finderResult = SerialFinder().Find()
-	if(len(finderResult) == 0):
-		# TODO
-		exit()
+    finderResult = SerialFinder().Find()
+    if(not finderResult or len(finderResult) == 0):
+        # TODO
+        exit()
 
-	portName = finderResult[0]
+    portName = finderResult[0]
 
-	reader = SerialReader(portName, baud)
+    reader = SerialReader(portName, baud)
 
-	while True:
-		line = reader.Read()
+    radarToRange = SerialRadarToRange()
 
-		data = reader.Validate(line)
+    while True:
+        line = reader.Read()
 
-		if(not SerialRadarToRange().Validate(data)):
-			continue
+        data = reader.Validate(line)
 
-
-		rangeFrameID = "/radar_ultrasonic"
-		rangeParentFrameID = "/radar_ultrasonic_mount"
-		translation = (0, 0, 0)
-		SerialRadarToRange().Process(data, rangeFrameID, rangeParentFrameID, translation)
+        if(not radarToRange.Validate(data)):
+            continue
 
 
-		exit()
+        rangeFrameID = "/radar_ultrasonic"
+        rangeParentFrameID = "/radar_ultrasonic_mount"
+        translation = (0, 0, 0)
+        radarToRange.Process(data, rangeFrameID, rangeParentFrameID, translation)
+
+
+        exit()

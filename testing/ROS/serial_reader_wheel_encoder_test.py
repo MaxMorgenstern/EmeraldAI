@@ -1,6 +1,4 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
+#!/usr/bin/env python
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -9,7 +7,7 @@ sys.setdefaultencoding('utf-8')
 
 from EmeraldAI.Logic.ROS.Serial.SerialFinder import SerialFinder
 from EmeraldAI.Logic.ROS.Serial.SerialReader import SerialReader
-from EmeraldAI.Logic.ROS.Serial.SerialImuToImu import SerialImuToImu
+from EmeraldAI.Logic.ROS.Serial.SerialWheelToOdometry import SerialWheelToOdometry
 
 
 
@@ -29,22 +27,20 @@ if __name__=="__main__":
 
     reader = SerialReader(portName, baud)
 
-    imuToImu = SerialImuToImu()
+    radarToRange = SerialWheelToOdometry(318, 100, 20)
 
     while True:
         line = reader.Read()
 
         data = reader.Validate(line)
 
-        if(not imuToImu.Validate(data)):
+        if(not radarToRange.Validate(data)):
             continue
 
 
-        imuFrameID = "/imu_sensor"
-        imuParentFrameID = "/odom"
-        translation = (0, 0, 0.5)
-        imuToImu.Process(data, imuFrameID, imuParentFrameID, translation)
+        rangeFrameID = "/base_link"
+        rangeParentFrameID = "/odom"
+        radarToRange.Process(data, rangeFrameID, rangeParentFrameID)
 
 
-
-        exit()
+print "Bye!"
