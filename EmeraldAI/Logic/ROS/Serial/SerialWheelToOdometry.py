@@ -99,17 +99,31 @@ class SerialWheelToOdometry():
 
         # set the position
         odomMessage.pose.pose = Pose(Point(self.__x, self.__y, 0.), quaternion)
+        odomMessage.pose.covariance[0] = 0.01
+        odomMessage.pose.covariance[7] = 0.01
+        odomMessage.pose.covariance[14] = 0.01
+        odomMessage.pose.covariance[21] = 0.01
+        odomMessage.pose.covariance[28] = 0.01
+        odomMessage.pose.covariance[35] = 0.01
 
         # set the velocity
         odomMessage.twist.twist = Twist(Vector3(estimatedDistance, 0, 0), Vector3(0, 0, estimatedRotation))
+        odomMessage.twist.covariance[0] = 0.01
+        odomMessage.twist.covariance[7] = 0.01
+        odomMessage.twist.covariance[14] = 0.01
+        odomMessage.twist.covariance[21] = 0.01
+        odomMessage.twist.covariance[28] = 0.01
+        odomMessage.twist.covariance[35] = 0.01
 
         rospy.loginfo(odomMessage)
         
         self.__odomPublisher.publish(odomMessage)
 
+        """
         TFHelper.SendTF2Transform(
             (self.__x, self.__y, 0.),
             (quaternion.x, quaternion.y, quaternion.z, quaternion.w),
             odomMessage.header.stamp,
             odomFrameID,
             odomParentFrameID)
+        """
