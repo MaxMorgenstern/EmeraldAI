@@ -37,6 +37,7 @@
 
       <param name="print_diagnostics" value="false"/>
       <param name="publish_tf" value="true"/>
+      <param name="publish_acceleration" value="true"/>
 
       <param name="odom0_queue_size" value="5"/>
       <param name="imu0_queue_size" value="5"/>
