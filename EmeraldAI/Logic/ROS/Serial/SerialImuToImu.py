@@ -32,7 +32,7 @@ class SerialImuToImu():
             return True
         return False
 
-    def Process(self, data, imuFrameID, imuParentFrameID, translation):
+    def Process(self, data, imuFrameID="/imu_sensor", imuParentFrameID="/base_link", translation=(0, 0, 0), sendTF=False):
         Y = GeometryHelper.DegreeToRadian(float(data[2]))
         P = GeometryHelper.DegreeToRadian(float(data[3]))
         R = GeometryHelper.DegreeToRadian(float(data[4]))
@@ -76,11 +76,10 @@ class SerialImuToImu():
 
         self.__imuPublisher.publish(imuMessage)
         
-        """
-        TFHelper.SendTF2Transform(
-            translation,
-            quaternion,
-            imuMessage.header.stamp,
-            imuFrameID,
-            imuParentFrameID)
-        """
+        if(sendTF):
+            TFHelper.SendTF2Transform(
+                translation,
+                quaternion,
+                imuMessage.header.stamp,
+                imuFrameID,
+                imuParentFrameID)

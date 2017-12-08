@@ -27,20 +27,20 @@ if __name__=="__main__":
 
     reader = SerialReader(portName, baud)
 
-    radarToRange = SerialWheelToOdometry(318, 100, 20)
+    wheelToOdom = SerialWheelToOdometry(318, 100, 20)
 
     while True:
         line = reader.Read()
 
         data = reader.Validate(line)
 
-        if(not radarToRange.Validate(data)):
+        if(not wheelToOdom.Validate(data)):
             continue
 
 
         rangeFrameID = "/base_link"
         rangeParentFrameID = "/odom"
-        radarToRange.Process(data, rangeFrameID, rangeParentFrameID)
+        wheelToOdom.Process(data)
 
 
 print "Bye!"

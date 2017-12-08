@@ -17,7 +17,7 @@ if __name__=="__main__":
 
     # TODO - determin portName
 
-    portName = "/dev/ttyUSB0"
+    portName = "/dev/ttyUSB1"
     baud = 230400
 
     finderResult = SerialFinder().Find()
@@ -25,7 +25,7 @@ if __name__=="__main__":
         # TODO
         exit()
 
-    portName = finderResult[0]
+    #portName = finderResult[0]
 
     reader = SerialReader(portName, baud)
 
@@ -33,6 +33,7 @@ if __name__=="__main__":
 
     while True:
         line = reader.Read()
+        #print line
 
         data = reader.Validate(line)
 
@@ -43,8 +44,8 @@ if __name__=="__main__":
         imuFrameID = "/imu_sensor"
         imuParentFrameID = "/odom"
         translation = (0, 0, 0.5)
-        imuToImu.Process(data, imuFrameID, imuParentFrameID, translation)
+        imuToImu.Process(data)
 
 
 
-        exit()
+        #exit()

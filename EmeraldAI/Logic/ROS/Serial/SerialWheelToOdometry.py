@@ -54,7 +54,7 @@ class SerialWheelToOdometry():
         return False
 
 
-    def Process(self, data, odomFrameID, odomParentFrameID):
+    def Process(self, data, odomFrameID="/base_link", odomParentFrameID="/odom", sendTF=False):
         clicksLeft = int(data[4])
         clicksLeftDelta = int(data[5])
 
@@ -119,11 +119,10 @@ class SerialWheelToOdometry():
         
         self.__odomPublisher.publish(odomMessage)
 
-        """
-        TFHelper.SendTF2Transform(
-            (self.__x, self.__y, 0.),
-            (quaternion.x, quaternion.y, quaternion.z, quaternion.w),
-            odomMessage.header.stamp,
-            odomFrameID,
-            odomParentFrameID)
-        """
+        if(sendTF):
+            TFHelper.SendTF2Transform(
+                (self.__x, self.__y, 0.),
+                (quaternion.x, quaternion.y, quaternion.z, quaternion.w),
+                odomMessage.header.stamp,
+                odomFrameID,
+                odomParentFrameID)

@@ -34,13 +34,14 @@ class SerialRadarToRange():
             return True
         return False
 
-    def Process(self, data, rangeFrameID, rangeParentFrameID, translation):
+    def Process(self, data, rangeFrameID="/radar_ultrasonic", rangeParentFrameID="/radar_ultrasonic_mount", translation=(0, 0, 0), sendTF=False):
         moduleName = data[1].lower()
         modulePosition = int(data[2])
         moduleRange = int(data[3])
 
         rangeFrameIDTemplate = "{0}_{1}"
         calculatedRangeFrameID = rangeFrameIDTemplate.format(rangeFrameID, moduleName)
+
 
         rangeMessage = Range()
         rangeMessage.radiation_type = 0
@@ -61,11 +62,11 @@ class SerialRadarToRange():
         if moduleName == "back":    
             self.__rangePublisherBack.publish(rangeMessage)
 
-
-        quaternion = tf_conv.transformations.quaternion_from_euler(0, 0, GeometryHelper.DegreeToRadian(modulePosition))
-        TFHelper.SendTF2Transform(
-            translation,
-            quaternion,
-            rangeMessage.header.stamp,
-            calculatedRangeFrameID,
-            rangeParentFrameID)
+        if (sendTF):
+            quaternion = tf_conv.transformations.quaternion_from_euler(0, 0, GeometryHelper.DegreeToRadian(modulePosition))
+            TFHelper.SendTF2Transform(
+                translation,
+                quaternion,
+                rangeMessage.header.stamp,
+                calculatedRangeFrameID,
+                rangeParentFrameID)

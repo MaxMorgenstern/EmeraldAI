@@ -43,7 +43,7 @@ if __name__=="__main__":
         rangeFrameID = "/radar_ultrasonic"
         rangeParentFrameID = "/radar_ultrasonic_mount"
         translation = (0, 0, 0)
-        radarToRange.Process(data, rangeFrameID, rangeParentFrameID, translation)
+        radarToRange.Process(data)
 
 
         exit()
