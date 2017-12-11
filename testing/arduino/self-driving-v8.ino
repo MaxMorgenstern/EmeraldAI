@@ -4,7 +4,7 @@
 #include "NewPing.h"
 
 // Base Date
-const uint16_t initialDelay = 2500;
+const uint16_t initialDelay = 1500;
 
 // Ranges and Data
 const uint8_t rangeLimit_Warning1 = 70;
@@ -39,7 +39,7 @@ Adafruit_NeoPixel LEDStrip = Adafruit_NeoPixel(24, ledPin, NEO_GRB + NEO_KHZ800)
 // Motor / Wheels
 const uint8_t motorPin1_1 = A3;
 const uint8_t motorPin1_2 = A2;
-const uint8_t motorEnablePin1 = 3;
+const uint8_t motorEnablePin1 = 5;
 
 const uint8_t motorPin2_1 = A5;
 const uint8_t motorPin2_2 = A4;
@@ -54,7 +54,7 @@ const uint8_t servoTiltLeft = 130;
 const uint8_t servoLimitRight = 10;
 const uint8_t servoTiltRight = 50;
 const uint8_t servoCenter = 90;
-const uint8_t seroRotationDurationPerAngle = 2;
+const uint8_t seroRotationDurationPerAngle = 4;
 
 enum direction {
   LEFT,
@@ -63,11 +63,13 @@ enum direction {
 };
 direction servoRangeDirection = NONE;
 uint32_t servoLastScanTimestamp = 0;
+bool servoMoveCenterDenied = true;
 
 direction servoLastScan = NONE;
 
 // IR obstacle detection
-int obstaclePin = A1;
+int obstaclePin = A7;
+int obstaclePin2 = A6;
 
 
 void setup()
@@ -93,6 +95,7 @@ void setup()
 
     // IR Detector
     pinMode(obstaclePin, INPUT);
+    pinMode(obstaclePin2, INPUT);
 
     LEDStrip.begin();
     LEDStrip.show(); // Initialize all pixels to 'off'
@@ -102,24 +105,19 @@ void setup()
     ServoMotor.write(servoCenter);
 }
 
-void GetRange(int servoPos, bool rotating)
+void GetRange(int servoPos, bool rotateRobot)
 {
     long range = sonar.ping_cm();
 
     // fallback if return value is out of range
-    if(range == 0 && rotating) { range = maxDistance; }
+    if(range == 0 && rotateRobot) { range = maxDistance; }
     if(range > maxDistance) { range = maxDistance; }
 
-
-    //if(range == 0) { range = lastRange; }
-    //if(range > 0  && !rotating) { lastRange = range;}
-
     long avgRange;
-
     if(servoPos == servoCenter)
     {
         if(range == 0) { range = lastRangeCenter; }
-        avgRange = (range + lastRangeCenter) / 2;
+        avgRange = (range * 2 + lastRangeCenter) / 3;
         lastRangeCenter = range;
 
         rangeCenter = avgRange;
@@ -127,7 +125,7 @@ void GetRange(int servoPos, bool rotating)
     if(servoPos > servoCenter)
     {
         if(range == 0) { range = lastRangeLeft; }
-        avgRange = (range + lastRangeLeft) / 2;
+        avgRange = (range * 2 + lastRangeLeft) / 3;
         lastRangeLeft = range;
 
         rangeLeft = avgRange;
@@ -135,7 +133,7 @@ void GetRange(int servoPos, bool rotating)
     if(servoPos < servoCenter)
     {
         if(range == 0) { range = lastRangeRight; }
-        avgRange = (range + lastRangeRight) / 2;
+        avgRange = (range * 2 + lastRangeRight) / 3;
         lastRangeRight = range;
 
         rangeRight = avgRange;
@@ -147,6 +145,11 @@ bool GetObstacle()
     if(analogRead(obstaclePin) < 500)
     {
         return true;
+    }
+    if(analogRead(obstaclePin2) < 500)
+    {
+        // TODO
+        // return true;
     }
     return false;
 }
@@ -230,20 +233,17 @@ void SetLightErrorState()
     ColorSet(LEDStrip.Color(0, 0, 255));
 }
 
-
 void SetServo(uint32_t uptime, uint8_t servoPos)
 {
     uint32_t interval = 1000;
     uint32_t returnInterval = 300;
 
-    if(uptime < interval+1)
-    {
-        return;
-    }
+    if(uptime < returnInterval) { return; }
 
-    if(servoLastScanTimestamp < uptime - interval)
+    if(servoLastScanTimestamp + interval < uptime)
     {
         servoLastScanTimestamp = uptime;
+        servoMoveCenterDenied = false;
 
         if(servoLastScan == RIGHT)
         {
@@ -261,10 +261,12 @@ void SetServo(uint32_t uptime, uint8_t servoPos)
         return;
     }
 
-    if(servoLastScanTimestamp < uptime - returnInterval)
+    if(!servoMoveCenterDenied && servoLastScanTimestamp + returnInterval < uptime)
     {
         SetServoAngle(servoCenter);
         delay(seroRotationDurationPerAngle * (abs(servoCenter - servoPos)));
+        servoMoveCenterDenied = true;
+
     }
 }
 
@@ -283,6 +285,7 @@ void SetServoRangeDirection()
 
 void loop()
 {
+
     uint32_t uptime = millis();
     uint8_t servoPos = ServoMotor.read();
 
