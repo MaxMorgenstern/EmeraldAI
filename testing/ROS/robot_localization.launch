@@ -46,8 +46,11 @@
     <param name="publish_tf" value="true"/>
     <param name="publish_acceleration" value="true"/>
 
-    <param name="odom0_queue_size" value="5"/>
-    <param name="imu0_queue_size" value="5"/>
+    <param name="odom0_queue_size" value="3"/>
+    <param name="imu0_queue_size" value="8"/>
+
+    <param name="debug" value="false"/>
+    <param name="debug_out_file" value="/log/debug_ekf_localization.txt"/>
 
   </node>
 </launch>
