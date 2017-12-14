@@ -3,15 +3,10 @@
 from __future__ import division
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Logic.ROS.Helper import TFHelper
-from EmeraldAI.Logic.ROS.Helper import GeometryHelper
 
 import rospy
 import os
-import sys
 import math
-
-import tf2_ros as tf
-import tf_conversions as tf_conv
 
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Point, Pose, Quaternion, Twist, Vector3
@@ -55,10 +50,10 @@ class SerialWheelToOdometry():
 
 
     def Process(self, data, odomFrameID="/base_link", odomParentFrameID="/odom", sendTF=False):
-        clicksLeft = int(data[4])
+        #clicksLeft = int(data[4])
         clicksLeftDelta = int(data[5])
 
-        clicksRight = int(data[8])
+        #clicksRight = int(data[8])
         clicksRightDelata = int(data[9])
 
         self.__currentTime = rospy.Time.now()
@@ -72,7 +67,7 @@ class SerialWheelToOdometry():
         dt = (self.__currentTime - self.__lastTime).to_sec()
         self.__lastTime = self.__currentTime
 
-        if (estimatedDistance != 0): 
+        if (estimatedDistance != 0):
             # calculate distance traveled in x and y
             xTmp = math.cos(estimatedRotation) * estimatedDistance
             yTmp = -math.sin(estimatedRotation) * estimatedDistance
@@ -82,7 +77,7 @@ class SerialWheelToOdometry():
 
         if (estimatedRotation != 0):
             self.__th += estimatedRotation * dt
-        
+
         # create the quaternion
         quaternion = Quaternion()
         quaternion.x = 0.0
@@ -116,7 +111,7 @@ class SerialWheelToOdometry():
         odomMessage.twist.covariance[35] = 0.01
 
         rospy.loginfo(odomMessage)
-        
+
         self.__odomPublisher.publish(odomMessage)
 
         if(sendTF):

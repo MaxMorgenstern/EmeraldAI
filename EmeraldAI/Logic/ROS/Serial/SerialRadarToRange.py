@@ -22,8 +22,8 @@ class SerialRadarToRange():
         rospy.init_node("serial_reader_range_{0}".format(uid))
         rospy.loginfo("ROS Serial Python Node '{0}'".format(uid))
 
-        self.__rangePublisherFront = rospy.Publisher('/Range/Radar/Front', Range, queue_size=10)
-        self.__rangePublisherBack = rospy.Publisher('/Range/Radar/Back', Range, queue_size=10)
+        self.__rangePublisherFront = rospy.Publisher('/range/radar/front', Range, queue_size=10)
+        self.__rangePublisherBack = rospy.Publisher('/range/radar/back', Range, queue_size=10)
 
     def Validate(self, data):
         if(data is None):
@@ -59,7 +59,7 @@ class SerialRadarToRange():
 
         if moduleName == "front":
             self.__rangePublisherFront.publish(rangeMessage)
-        if moduleName == "back":    
+        if moduleName == "back":
             self.__rangePublisherBack.publish(rangeMessage)
 
         if (sendTF):

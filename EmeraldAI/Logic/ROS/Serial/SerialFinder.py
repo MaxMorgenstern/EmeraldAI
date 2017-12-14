@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 import subprocess
 import itertools
-import os
 
 class SerialFinder():
     _command = """ls -al /sys/class/tty/ttyUSB* | grep -o "/sys/class/tty/ttyUSB.*"| sed 's/ -> .*//'"""
