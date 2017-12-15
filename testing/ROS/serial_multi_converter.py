@@ -25,6 +25,8 @@ def Processing(port, baud):
     while True:
         line = reader.Read()
 
+        print line
+
         data = reader.Validate(line)
 
         if(wheelToOdom.Validate(data)):
@@ -50,7 +52,6 @@ if __name__=="__main__":
 
     while True:
         finderResult = SerialFinder().Find()
-        
         if(not finderResult or len(finderResult) == 0):
             time.sleep(10)
             continue

@@ -18,7 +18,11 @@ class SerialImuToImu():
 
     def __init__(self):
         uid = str(os.getpid())
-        rospy.init_node("serial_reader_imu_{0}".format(uid))
+        try:
+            print "Initialize: serial_converter_{0}".format(uid)
+            rospy.init_node("serial_converter_{0}".format(uid))
+        except:
+            print "Node already initialized: ".format(rospy.get_caller_id())
         rospy.loginfo("ROS Serial Python Node '{0}'".format(uid))
 
         self.__imuPublisher = rospy.Publisher('/imu_data', Imu, queue_size=10)

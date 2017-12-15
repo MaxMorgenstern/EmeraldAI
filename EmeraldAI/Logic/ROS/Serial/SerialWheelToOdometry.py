@@ -18,7 +18,11 @@ class SerialWheelToOdometry():
 
     def __init__(self, wheelDiameter, wheelBaseline, encoderTicksPerRevelation):
         uid = str(os.getpid())
-        rospy.init_node("serial_reader_odometry_{0}".format(uid))
+        try:
+            print "Initialize: serial_converter_{0}".format(uid)
+            rospy.init_node("serial_converter_{0}".format(uid))
+        except:
+            print "Node already initialized: ".format(rospy.get_caller_id())
         rospy.loginfo("ROS Serial Python Node '{0}'".format(uid))
 
         self.__odomPublisher = rospy.Publisher('/odom', Odometry, queue_size=10)
@@ -50,10 +54,10 @@ class SerialWheelToOdometry():
 
 
     def Process(self, data, odomFrameID="/base_link", odomParentFrameID="/odom", sendTF=False):
-        #clicksLeft = int(data[4])
+        clicksLeft = int(data[4])
         clicksLeftDelta = int(data[5])
 
-        #clicksRight = int(data[8])
+        clicksRight = int(data[8])
         clicksRightDelata = int(data[9])
 
         self.__currentTime = rospy.Time.now()
