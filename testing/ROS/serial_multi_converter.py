@@ -23,11 +23,15 @@ def Processing(port, baud):
     radarToRange = SerialRadarToRange()
 
     while True:
-        line = reader.Read()
-
-        print line
+        try:
+            line = reader.Read()
+        except IOError:
+            return
 
         data = reader.Validate(line)
+
+        if(data is None):
+            continue
 
         if(wheelToOdom.Validate(data)):
             wheelToOdom.Process(data)
@@ -48,12 +52,22 @@ if __name__=="__main__":
     portName = "/dev/ttyUSB0"
     baud = 230400
 
+    timeToSleep = 10
+
     processList = {}
 
     while True:
         finderResult = SerialFinder().Find()
-        if(not finderResult or len(finderResult) == 0):
-            time.sleep(10)
+
+        tmpProcessList = list(processList)
+        for process in tmpProcessList:
+            if process not in finderResult or not processList[process].is_alive():
+                print "Terminste", process
+                processList[process].terminate()
+                del processList[process]
+
+        if(len(finderResult) == 0):
+            time.sleep(timeToSleep)
             continue
 
         for port in finderResult:
@@ -65,11 +79,6 @@ if __name__=="__main__":
                 process.start()
                 processList[port] = process
 
-        for process in processList:
-            if process not in finderResult:
-                # todo
-                del processList[process]
-
-        time.sleep(30)
+        time.sleep(timeToSleep)
 
 print "Bye!"

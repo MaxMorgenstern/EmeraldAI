@@ -20,7 +20,7 @@ class SerialImuToImu():
         uid = str(os.getpid())
         try:
             print "Initialize: serial_converter_{0}".format(uid)
-            rospy.init_node("serial_converter_{0}".format(uid))
+            rospy.init_node("serial_converter_{0}".format(uid), log_level=rospy.WARN)
         except:
             print "Node already initialized: ".format(rospy.get_caller_id())
         rospy.loginfo("ROS Serial Python Node '{0}'".format(uid))

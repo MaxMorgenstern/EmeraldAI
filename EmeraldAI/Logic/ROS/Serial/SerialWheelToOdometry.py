@@ -20,7 +20,7 @@ class SerialWheelToOdometry():
         uid = str(os.getpid())
         try:
             print "Initialize: serial_converter_{0}".format(uid)
-            rospy.init_node("serial_converter_{0}".format(uid))
+            rospy.init_node("serial_converter_{0}".format(uid), log_level=rospy.WARN)
         except:
             print "Node already initialized: ".format(rospy.get_caller_id())
         rospy.loginfo("ROS Serial Python Node '{0}'".format(uid))
@@ -71,7 +71,7 @@ class SerialWheelToOdometry():
         dt = (self.__currentTime - self.__lastTime).to_sec()
         self.__lastTime = self.__currentTime
 
-        if (estimatedDistance != 0):
+        if (estimatedDistance != 0): 
             # calculate distance traveled in x and y
             xTmp = math.cos(estimatedRotation) * estimatedDistance
             yTmp = -math.sin(estimatedRotation) * estimatedDistance
