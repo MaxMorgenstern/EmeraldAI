@@ -10,12 +10,11 @@ class SerialFinder():
 
 
     def Find(self):
-
         proc = subprocess.Popen([self._command], stdout=subprocess.PIPE, shell=True)
         (out, err) = proc.communicate()
 
         if len(out) < 2:
-            return None
+            return []
 
         return self.__split(out)
 
