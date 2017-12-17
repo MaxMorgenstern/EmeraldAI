@@ -38,7 +38,7 @@ class SerialRadarToRange():
             return True
         return False
 
-    def Process(self, data, rangeFrameID="/radar_ultrasonic", rangeParentFrameID="/radar_ultrasonic_mount", translation=(0, 0, 0), sendTF=False):
+    def Process(self, data, rangeFrameID="/radar_ultrasonic", rangeParentFrameID="/radar_ultrasonic_mount", translation=(0, 0, 0), sendTF=True):
         moduleName = data[1].lower()
         modulePosition = int(data[2])
         moduleRange = int(data[3])
