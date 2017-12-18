@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import sys
-import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+from os.path import dirname, abspath
+sys.path.append(dirname(dirname(dirname(dirname(abspath(__file__))))))
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
@@ -52,7 +52,7 @@ if __name__=="__main__":
     portName = "/dev/ttyUSB0"
     baud = 230400
 
-    timeToSleep = 10
+    timeToSleep = 5
 
     processList = {}
 

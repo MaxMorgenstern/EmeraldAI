@@ -19,11 +19,15 @@ class SerialRadarToRange():
 
     def __init__(self):
         uid = str(os.getpid())
-        rospy.init_node("serial_reader_range_{0}".format(uid))
+        try:
+            print "Initialize: serial_converter_{0}".format(uid)
+            rospy.init_node("serial_converter_{0}".format(uid), log_level=rospy.WARN)
+        except:
+            print "Node already initialized: ".format(rospy.get_caller_id())
         rospy.loginfo("ROS Serial Python Node '{0}'".format(uid))
 
-        self.__rangePublisherFront = rospy.Publisher('/Range/Radar/Front', Range, queue_size=10)
-        self.__rangePublisherBack = rospy.Publisher('/Range/Radar/Back', Range, queue_size=10)
+        self.__rangePublisherFront = rospy.Publisher('/range/radar/front', Range, queue_size=10)
+        self.__rangePublisherBack = rospy.Publisher('/range/radar/back', Range, queue_size=10)
 
     def Validate(self, data):
         if(data is None):
@@ -34,7 +38,7 @@ class SerialRadarToRange():
             return True
         return False
 
-    def Process(self, data, rangeFrameID="/radar_ultrasonic", rangeParentFrameID="/radar_ultrasonic_mount", translation=(0, 0, 0), sendTF=False):
+    def Process(self, data, rangeFrameID="/radar_ultrasonic", rangeParentFrameID="/radar_ultrasonic_mount", translation=(0, 0, 0), sendTF=True):
         moduleName = data[1].lower()
         modulePosition = int(data[2])
         moduleRange = int(data[3])
@@ -59,7 +63,7 @@ class SerialRadarToRange():
 
         if moduleName == "front":
             self.__rangePublisherFront.publish(rangeMessage)
-        if moduleName == "back":    
+        if moduleName == "back":
             self.__rangePublisherBack.publish(rangeMessage)
 
         if (sendTF):

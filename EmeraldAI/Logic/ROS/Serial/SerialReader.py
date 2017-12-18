@@ -21,7 +21,7 @@ class SerialReader():
         while self.SerialPointer.inWaiting() == 0:
             time.sleep(0.01)
             if(self.ReadTimestamp + 5 < time.time()):
-                print "reconnect..."
+                print "Reconnect...", self._portName
                 self.SerialPointer.close()
                 time.sleep(1)
                 self.SerialPointer = serial.Serial(self._portName, self._baud, timeout=self._timeout)

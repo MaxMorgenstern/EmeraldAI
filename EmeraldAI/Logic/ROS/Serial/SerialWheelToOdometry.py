@@ -3,15 +3,10 @@
 from __future__ import division
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Logic.ROS.Helper import TFHelper
-from EmeraldAI.Logic.ROS.Helper import GeometryHelper
 
 import rospy
 import os
-import sys
 import math
-
-import tf2_ros as tf
-import tf_conversions as tf_conv
 
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Point, Pose, Quaternion, Twist, Vector3
@@ -23,7 +18,11 @@ class SerialWheelToOdometry():
 
     def __init__(self, wheelDiameter, wheelBaseline, encoderTicksPerRevelation):
         uid = str(os.getpid())
-        rospy.init_node("serial_reader_odometry_{0}".format(uid))
+        try:
+            print "Initialize: serial_converter_{0}".format(uid)
+            rospy.init_node("serial_converter_{0}".format(uid), log_level=rospy.WARN)
+        except:
+            print "Node already initialized: ".format(rospy.get_caller_id())
         rospy.loginfo("ROS Serial Python Node '{0}'".format(uid))
 
         self.__odomPublisher = rospy.Publisher('/odom', Odometry, queue_size=10)
@@ -82,7 +81,7 @@ class SerialWheelToOdometry():
 
         if (estimatedRotation != 0):
             self.__th += estimatedRotation * dt
-        
+
         # create the quaternion
         quaternion = Quaternion()
         quaternion.x = 0.0
@@ -116,7 +115,7 @@ class SerialWheelToOdometry():
         odomMessage.twist.covariance[35] = 0.01
 
         rospy.loginfo(odomMessage)
-        
+
         self.__odomPublisher.publish(odomMessage)
 
         if(sendTF):

@@ -1,6 +1,17 @@
 <launch>
+  <arg name="path" /> 
 
-    <!-- Run the map server -->
-   <node name="map_server" pkg="map_server" type="map_server" args="/maps/map.yaml" output="screen"/>
+  <!-- Run the map server -->
+  <node name="map_server" pkg="map_server" type="map_server" args="$(arg path)/map/map.yaml" output="screen"/>
+
+  <!-- Publishes the voxel grid to rviz for display -->
+  <node pkg="costmap_2d" type="costmap_2d_markers" name="voxel_visualizer">
+    <remap from="voxel_grid" to="costmap/voxel_grid"/>
+  </node>
+
+  <!-- Run the costmap node -->
+  <node name="costmap_node" pkg="costmap_2d" type="costmap_2d_node" >
+    <rosparam file="$(arg path)/map/costmap_params.yaml" command="load" ns="costmap" />
+  </node>
 
 </launch>

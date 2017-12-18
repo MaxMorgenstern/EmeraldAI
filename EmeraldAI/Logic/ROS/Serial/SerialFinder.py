@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 import subprocess
 import itertools
-import os
 
 class SerialFinder():
     _command = """ls -al /sys/class/tty/ttyUSB* | grep -o "/sys/class/tty/ttyUSB.*"| sed 's/ -> .*//'"""
@@ -11,12 +10,11 @@ class SerialFinder():
 
 
     def Find(self):
-
         proc = subprocess.Popen([self._command], stdout=subprocess.PIPE, shell=True)
         (out, err) = proc.communicate()
 
         if len(out) < 2:
-            return None
+            return []
 
         return self.__split(out)
 
