@@ -6,7 +6,7 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 from EmeraldAI.Logic.ROS.Serial.SerialFinder import SerialFinder
-from EmeraldAI.Logic.ROS.Serial.SerialReader import SerialReader
+from EmeraldAI.Logic.ROS.Serial.SerialConnector import SerialConnector
 from EmeraldAI.Logic.ROS.Serial.SerialWheelToOdometry import SerialWheelToOdometry
 
 
@@ -25,7 +25,7 @@ if __name__=="__main__":
 
     portName = finderResult[0]
 
-    reader = SerialReader(portName, baud)
+    reader = SerialConnector(portName, baud)
 
     wheelToOdom = SerialWheelToOdometry(318, 100, 20)
 
