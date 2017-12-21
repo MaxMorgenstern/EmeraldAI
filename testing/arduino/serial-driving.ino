@@ -25,9 +25,12 @@ const uint8_t motorPin2_2 = A4;
 const uint8_t motorEnablePin2 = 6;
 bool motorDirectionIsForward2 = true;
 
+uint32_t motorTimestamp;
+uint32_t motorTimeout = 250;
 
 
-void setup() {
+void setup() 
+{
     //Wheel encoder
     pinMode(interrupt1Pin, INPUT);
     pinMode(interrupt2Pin, INPUT);
@@ -41,7 +44,6 @@ void setup() {
 
     pinMode(motorPin2_1, OUTPUT);
     pinMode(motorPin2_2, OUTPUT);
-
 
     Serial.begin(230400);
 }
@@ -90,7 +92,8 @@ void SendSerialDataHelper(int id)
     Serial.print(interruptCountDelta);
 }
 
-void EncoderRotationCount1() {
+void EncoderRotationCount1() 
+{
     if(motorDirectionIsForward1)
     {
         interrupt1Count++;
@@ -101,7 +104,8 @@ void EncoderRotationCount1() {
     }
 }
 
-void EncoderRotationCount2() {
+void EncoderRotationCount2() 
+{
     if(motorDirectionIsForward2)
     {
         interrupt2Count++;
@@ -111,8 +115,6 @@ void EncoderRotationCount2() {
         interrupt2Count--;
     }
 }
-
-
 
 
 void SetMotor(int id, int speed)
@@ -155,15 +157,38 @@ void SetMotorWorker(int pin1, int pin2, int enablePin, int speed)
 
 
 
+void loop() 
+{
+    SendWheelData();
 
+    String data;
+    if (Serial.available() > 0) { 
+      //Serial.read();
+      data = Serial.readString();
 
+      int splitPos = data.indexOf('|');
 
+      String serialPart1 = data.substring(0, splitPos);
+      String serialPart2 = data.substring(splitPos+1);
+      
+      char buffer[10];
+      serialPart1.toCharArray(buffer, 10);
+      float firstValue = atof(buffer);
+      
+      serialPart2.toCharArray(buffer, 10);
+      float secondValue = atof(buffer);
 
+      SetMotor(1, firstValue);
+      SetMotor(2, secondValue);
 
-void loop() {
-    SendWheelData()
+      motorTimestamp = millis();
+    }
 
-
-    delay(200);
+    if(motorTimestamp + motorTimeout < millis())
+    {
+      SetMotor(1, 0);
+      SetMotor(2, 0);
+    }
+    
 }
 
