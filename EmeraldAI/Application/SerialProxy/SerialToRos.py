@@ -16,25 +16,22 @@ from EmeraldAI.Logic.ROS.Serial.SerialImuToImu import SerialImuToImu
 
 
 def Processing(port, baud):
-    reader = SerialConnector(port, baud)
+    serialConnect = SerialConnector(port, baud)
 
-    wheelToOdom = SerialWheelToOdometry(318, 100, 20)
     imuToImu = SerialImuToImu()
     radarToRange = SerialRadarToRange()
+    wheelToOdom = SerialWheelToOdometry(318, 100, 20)
+    #twistToWheel = TwistToSerialWheel()
 
     while True:
         try:
-            line = reader.Read()
+            line = serialConnect.Read()
         except IOError:
             return
 
-        data = reader.Validate(line)
+        data = serialConnect.Validate(line)
 
         if(data is None):
-            continue
-
-        if(wheelToOdom.Validate(data)):
-            wheelToOdom.Process(data)
             continue
 
         if(imuToImu.Validate(data)):
@@ -45,6 +42,13 @@ def Processing(port, baud):
             radarToRange.Process(data)
             continue
 
+        if(wheelToOdom.Validate(data)):
+            wheelToOdom.Process(data)
+
+        #if(twistToWheel.Validate(data):
+        #   twistToWheel.Process()
+
+        #twistToWheel.Sender()
 
 
 if __name__=="__main__":

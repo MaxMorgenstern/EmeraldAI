@@ -29,7 +29,7 @@ uint32_t motorTimestamp;
 uint32_t motorTimeout = 250;
 
 
-void setup() 
+void setup()
 {
     //Wheel encoder
     pinMode(interrupt1Pin, INPUT);
@@ -46,18 +46,6 @@ void setup()
     pinMode(motorPin2_2, OUTPUT);
 
     Serial.begin(230400);
-}
-
-void SendWheelData()
-{
-    Serial.print("Wheel");
-    Serial.print("|");
-    Serial.print(millis());
-    Serial.print("|");
-    SendSerialDataHelper(1);
-    Serial.print("|");
-    SendSerialDataHelper(2);
-    Serial.println("");
 }
 
 
@@ -92,7 +80,19 @@ void SendSerialDataHelper(int id)
     Serial.print(interruptCountDelta);
 }
 
-void EncoderRotationCount1() 
+void SendWheelData()
+{
+    Serial.print("Wheel");
+    Serial.print("|");
+    Serial.print(millis());
+    Serial.print("|");
+    SendSerialDataHelper(1);
+    Serial.print("|");
+    SendSerialDataHelper(2);
+    Serial.println("");
+}
+
+void EncoderRotationCount1()
 {
     if(motorDirectionIsForward1)
     {
@@ -104,7 +104,7 @@ void EncoderRotationCount1()
     }
 }
 
-void EncoderRotationCount2() 
+void EncoderRotationCount2()
 {
     if(motorDirectionIsForward2)
     {
@@ -155,40 +155,47 @@ void SetMotorWorker(int pin1, int pin2, int enablePin, int speed)
     }
 }
 
+void ReadDataAndSetMotor()
+{
+    String data;
+    if (Serial.available() > 0) {
+        data = Serial.readString();
+
+        int splitPos = data.indexOf('|');
+
+        String serialPart1 = data.substring(0, splitPos);
+        String serialPart2 = data.substring(splitPos+1);
+
+        char buffer[10];
+        serialPart1.toCharArray(buffer, 10);
+        float firstValue = atof(buffer);
+
+        serialPart2.toCharArray(buffer, 10);
+        float secondValue = atof(buffer);
+
+        SetMotor(1, firstValue);
+        SetMotor(2, secondValue);
+
+        motorTimestamp = millis();
+    }
+}
+
+void CheckTimeout()
+{
+    if(motorTimestamp + motorTimeout < millis())
+    {
+        SetMotor(1, 0);
+        SetMotor(2, 0);
+    }
+}
 
 
-void loop() 
+void loop()
 {
     SendWheelData();
 
-    String data;
-    if (Serial.available() > 0) { 
-      //Serial.read();
-      data = Serial.readString();
+    ReadDataAndSetMotor();
 
-      int splitPos = data.indexOf('|');
-
-      String serialPart1 = data.substring(0, splitPos);
-      String serialPart2 = data.substring(splitPos+1);
-      
-      char buffer[10];
-      serialPart1.toCharArray(buffer, 10);
-      float firstValue = atof(buffer);
-      
-      serialPart2.toCharArray(buffer, 10);
-      float secondValue = atof(buffer);
-
-      SetMotor(1, firstValue);
-      SetMotor(2, secondValue);
-
-      motorTimestamp = millis();
-    }
-
-    if(motorTimestamp + motorTimeout < millis())
-    {
-      SetMotor(1, 0);
-      SetMotor(2, 0);
-    }
-    
+    CheckTimeout();
 }
 
