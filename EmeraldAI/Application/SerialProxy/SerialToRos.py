@@ -11,6 +11,7 @@ import time
 from EmeraldAI.Logic.ROS.Serial.SerialFinder import SerialFinder
 from EmeraldAI.Logic.ROS.Serial.SerialConnector import SerialConnector
 from EmeraldAI.Logic.ROS.Serial.SerialWheelToOdometry import SerialWheelToOdometry
+from EmeraldAI.Logic.ROS.Serial.TwistToSerialWheel import TwistToSerialWheel
 from EmeraldAI.Logic.ROS.Serial.SerialRadarToRange import SerialRadarToRange
 from EmeraldAI.Logic.ROS.Serial.SerialImuToImu import SerialImuToImu
 
@@ -21,7 +22,8 @@ def Processing(port, baud):
     imuToImu = SerialImuToImu()
     radarToRange = SerialRadarToRange()
     wheelToOdom = SerialWheelToOdometry(318, 100, 20)
-    #twistToWheel = TwistToSerialWheel()
+    twistToWheel = TwistToSerialWheel(318, 100, 20)
+    wheelData = False
 
     while True:
         try:
@@ -44,11 +46,13 @@ def Processing(port, baud):
 
         if(wheelToOdom.Validate(data)):
             wheelToOdom.Process(data)
+            wheelData = True
 
-        #if(twistToWheel.Validate(data):
-        #   twistToWheel.Process()
+        if(wheelData):
+           if(twistToWheel.Validate(data)):
+               twistToWheel.ProcessPID(data)
 
-        #twistToWheel.Sender()
+           serialConnect.Write(twistToWheel.ProcessTwist())
 
 
 if __name__=="__main__":
