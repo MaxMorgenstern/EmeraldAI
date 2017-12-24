@@ -57,7 +57,6 @@ def Processing(port, baud):
 
 if __name__=="__main__":
 
-    portName = "/dev/ttyUSB0"
     baud = 230400
 
     timeToSleep = 5
@@ -82,8 +81,8 @@ if __name__=="__main__":
             if port in processList:
                 continue
             else:
-                print "Launching Process for", portName
-                process = multiprocessing.Process(name=portName, target=Processing, args=(portName,baud,))
+                print "Launching Process for", port
+                process = multiprocessing.Process(name=port, target=Processing, args=(port,baud,))
                 process.start()
                 processList[port] = process
 
