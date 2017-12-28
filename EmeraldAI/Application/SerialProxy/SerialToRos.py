@@ -49,10 +49,12 @@ def Processing(port, baud):
             wheelData = True
 
         if(wheelData):
-           if(twistToWheel.Validate(data)):
-               twistToWheel.ProcessPID(data)
+            twistToWheel.ProcessTwist()
+            if(twistToWheel.Validate(data)):
+                twistToWheel.ProcessPID(data)
 
-           serialConnect.Write(twistToWheel.ProcessTwist())
+            rightMotorValue, leftMotorValue = twistToWheel.GetMotorInstructions()
+            serialConnect.Write("{0}|{1}".format(leftMotorValue, rightMotorValue))
 
 
 if __name__=="__main__":

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
 from EmeraldAI.Logic.Singleton import Singleton
+from EmeraldAI.Logic.ROS.Helper import PIDController
 
 import rospy
 import os
@@ -39,6 +40,9 @@ class TwistToSerialWheel():
         self.__currentTime = rospy.Time.now()
         self.__lastTime = rospy.Time.now()
 
+        self.__leftPidController = PIDController()
+        self.__rightPidController = PIDController()
+
         rospy.Subscriber('/navigation/twist', Twist, self.__twistCallback)
 
 
@@ -64,7 +68,10 @@ class TwistToSerialWheel():
         if (self.__ticksSinceLastTwistInstruction < self.__timeoutTicks):
             if(self.__ticksSinceLastTwistInstruction == 0):
                 self.__right = 1.0 * self.__dx + self.__dr * self.__wheelBaseline / 2
+                self.__rightPidController.SetTarget(self.__right)
                 self.__left = 1.0 * self.__dx - self.__dr * self.__wheelBaseline / 2
+                self.__leftPidController.SetTarget(self.__left)
+
             self.__ticksSinceLastTwistInstruction += 1
 
 
@@ -75,65 +82,14 @@ class TwistToSerialWheel():
         clicksRight = int(data[8])
         clicksRightDelata = int(data[9])
 
-        #self.__currentTime = rospy.Time.now()
+        self.__rightPidController.SetWheel(clicksRight)
+        self.__leftPidController.SetWheel(clicksLeft)
+
+        self.__rightVel = __rightPidController.MainLoop()
+        self.__leftVel = __leftPidController.MainLoop()
 
 
-
-
-
-
-
-
-
-
-
-
-    def spinOnce(self):
-        self.previous_error = 0.0
-        self.prev_vel = [0.0] * self.rolling_pts
-        self.integral = 0.0
-        self.error = 0.0
-        self.derivative = 0.0
-        self.vel = 0.0
-
-        # only do the loop if we've recently recieved a target velocity message
-        while not rospy.is_shutdown() and self.ticks_since_target < self.timeout_ticks:
-            self.calcVelocity()
-            self.doPid()
-            self.pub_motor.publish(self.motor)
-            self.r.sleep()
-            self.ticks_since_target += 1
-            if self.ticks_since_target == self.timeout_ticks:
-                self.pub_motor.publish(0)
-
-
-
-    def doPid(self):
-    #####################################################
-        pid_dt_duration = rospy.Time.now() - self.prev_pid_time
-        pid_dt = pid_dt_duration.to_sec()
-        self.prev_pid_time = rospy.Time.now()
-
-        self.error = self.target - self.vel
-        self.integral = self.integral + (self.error * pid_dt)
-        # rospy.loginfo("i = i + (e * dt):  %0.3f = %0.3f + (%0.3f * %0.3f)" % (self.integral, self.integral, self.error, pid_dt))
-        self.derivative = (self.error - self.previous_error) / pid_dt
-        self.previous_error = self.error
-
-        self.motor = (self.Kp * self.error) + (self.Ki * self.integral) + (self.Kd * self.derivative)
-
-        if self.motor > self.out_max:
-            self.motor = self.out_max
-            self.integral = self.integral - (self.error * pid_dt)
-        if self.motor < self.out_min:
-            self.motor = self.out_min
-            self.integral = self.integral - (self.error * pid_dt)
-
-        if (self.target == 0):
-            self.motor = 0
-
-        rospy.logdebug("vel:%0.2f tar:%0.2f err:%0.2f int:%0.2f der:%0.2f ## motor:%d " %
-                      (self.vel, self.target, self.error, self.integral, self.derivative, self.motor))
-
+    def GetMotorInstructions(self):
+        return (self.__rightVel, self.__leftVel)
 
 
