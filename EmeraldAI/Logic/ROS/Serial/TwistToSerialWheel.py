@@ -40,8 +40,8 @@ class TwistToSerialWheel():
         self.__currentTime = rospy.Time.now()
         self.__lastTime = rospy.Time.now()
 
-        self.__leftPidController = PIDController()
-        self.__rightPidController = PIDController()
+        self.__leftPidController = PIDController(rospy.Time.now())
+        self.__rightPidController = PIDController(rospy.Time.now())
 
         rospy.Subscriber('/navigation/twist', Twist, self.__twistCallback)
 
@@ -85,8 +85,8 @@ class TwistToSerialWheel():
         self.__rightPidController.SetWheel(clicksRight)
         self.__leftPidController.SetWheel(clicksLeft)
 
-        self.__rightVel = __rightPidController.MainLoop()
-        self.__leftVel = __leftPidController.MainLoop()
+        self.__rightVel = __rightPidController.MainLoop(rospy.Time.now())
+        self.__leftVel = __leftPidController.MainLoop(rospy.Time.now())
 
 
     def GetMotorInstructions(self):

@@ -3,7 +3,7 @@
 
 class PIDController():
 
-    def __init__(self):
+    def __init__(self, timeNow):
         ### initialize variables
         self.target = 0
         self.motor = 0
@@ -27,7 +27,6 @@ class PIDController():
         self.Kd = rospy.get_param('~Kd',0.001)
         self.outMin = rospy.get_param('~out_min',-255)
         self.outMax = rospy.get_param('~out_max',255)
-        self.rate = rospy.get_param('~rate',30)
         self.rollingPts = rospy.get_param('~rolling_pts',2)
         self.timeoutTicks = rospy.get_param('~timeout_ticks',4)
         self.ticksPerMeter = rospy.get_param('ticks_meter', 20)
@@ -38,7 +37,7 @@ class PIDController():
         self.encoderHighWrap = rospy.get_param('wheel_high_wrap', (self.encoderMax - self.encoderMin) * 0.7 + self.encoderMin )
         self.prevVel = [0.0] * self.rollingPts
         self.wheelLatest = 0.0
-        self.prevPidTime = 0
+        self.prevPidTime = timeNow
 
 
     def SetWheel(self, data):
