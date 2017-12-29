@@ -18,6 +18,9 @@ class PIDController():
         self.wheelMult = 0
         self.prevEncoder = 0
 
+
+        # TODO !!!!!!!!!!!!!!!!
+
         ### get parameters ####
         self.Kp = rospy.get_param('~Kp',10)
         self.Ki = rospy.get_param('~Ki',10)
@@ -38,15 +41,15 @@ class PIDController():
         self.prevPidTime = 0
 
 
-    def SetWheel(self, enc):
-        if (enc < self.encoderLowWrap and self.prevEncoder > self.encoderHighWrap) :
+    def SetWheel(self, data):
+        if (data < self.encoderLowWrap and self.prevEncoder > self.encoderHighWrap) :
             self.wheelMult = self.wheelMult + 1
 
-        if (enc > self.encoderHighWrap and self.prevEncoder < self.encoderLowWrap) :
+        if (data > self.encoderHighWrap and self.prevEncoder < self.encoderLowWrap) :
             self.wheelMult = self.wheelMult - 1
 
-        self.wheelLatest = 1.0 * (enc + self.wheelMult * (self.encoderMax - self.encoderMin)) / self.ticksPerMeter
-        self.prevEncoder = enc
+        self.wheelLatest = 1.0 * (data + self.wheelMult * (self.encoderMax - self.encoderMin)) / self.ticksPerMeter
+        self.prevEncoder = data
 
 
     def SetTarget(self, data):
