@@ -36,26 +36,31 @@ def Processing(port, baud):
         if(data is None):
             continue
 
-        if(imuToImu.Validate(data)):
-            imuToImu.Process(data)
-            continue
+        try:
+            if(imuToImu.Validate(data)):
+                imuToImu.Process(data)
+                continue
 
-        if(radarToRange.Validate(data)):
-            radarToRange.Process(data)
-            continue
+            if(radarToRange.Validate(data)):
+                radarToRange.Process(data)
+                continue
 
-        if(wheelToOdom.Validate(data)):
-            wheelToOdom.Process(data)
-            wheelData = True
+            if(wheelToOdom.Validate(data)):
+                wheelToOdom.Process(data)
+                wheelData = True
 
-        if(wheelData):
-            twistToWheel.ProcessTwist()
-            if(twistToWheel.Validate(data)):
-                twistToWheel.ProcessPID(data)
+            if(wheelData):
+                twistToWheel.ProcessTwist()
+                if(twistToWheel.Validate(data)):
+                    twistToWheel.ProcessPID(data)
 
-            rightMotorValue, leftMotorValue = twistToWheel.GetMotorInstructions()
-            serialConnect.Write("{0}|{1}".format(leftMotorValue, rightMotorValue))
-
+                rightMotorValue, leftMotorValue = twistToWheel.GetMotorInstructions()
+                serialConnect.Write("{0}|{1}".format(leftMotorValue, rightMotorValue))
+        except Exception as ex:
+            # TODO for debugging
+            print "Data", data
+            print "Error", ex
+            raise Exception(ex)
 
 if __name__=="__main__":
 

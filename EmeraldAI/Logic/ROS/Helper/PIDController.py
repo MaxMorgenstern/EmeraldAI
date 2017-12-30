@@ -22,22 +22,23 @@ class PIDController():
         # TODO !!!!!!!!!!!!!!!!
 
         ### get parameters ####
-        self.Kp = rospy.get_param('~Kp',10)
-        self.Ki = rospy.get_param('~Ki',10)
-        self.Kd = rospy.get_param('~Kd',0.001)
-        self.outMin = rospy.get_param('~out_min',-255)
-        self.outMax = rospy.get_param('~out_max',255)
-        self.rollingPts = rospy.get_param('~rolling_pts',2)
-        self.timeoutTicks = rospy.get_param('~timeout_ticks',4)
-        self.ticksPerMeter = rospy.get_param('ticks_meter', 20)
-        self.velThreshold = rospy.get_param('~vel_threshold', 0.001)
-        self.encoderMin = rospy.get_param('encoder_min', -32768)
-        self.encoderMax = rospy.get_param('encoder_max', 32768)
-        self.encoderLowWrap = rospy.get_param('wheel_low_wrap', (self.encoderMax - self.encoderMin) * 0.3 + self.encoderMin )
-        self.encoderHighWrap = rospy.get_param('wheel_high_wrap', (self.encoderMax - self.encoderMin) * 0.7 + self.encoderMin )
+        self.Kp = 10#rospy.get_param('~Kp',10)
+        self.Ki = 10#rospy.get_param('~Ki',10)
+        self.Kd = 0.001#rospy.get_param('~Kd',0.001)
+        self.outMin = -255#rospy.get_param('~out_min',-255)
+        self.outMax = 255#rospy.get_param('~out_max',255)
+        self.rollingPts = 2#rospy.get_param('~rolling_pts',2)
+        self.timeoutTicks = 4#rospy.get_param('~timeout_ticks',4)
+        self.ticksPerMeter = 20#rospy.get_param('ticks_meter', 20)
+        self.velThreshold = 0.001#rospy.get_param('~vel_threshold', 0.001)
+        self.encoderMin = -32768#rospy.get_param('encoder_min', -32768)
+        self.encoderMax = 32768#rospy.get_param('encoder_max', 32768)
+        self.encoderLowWrap = (self.encoderMax - self.encoderMin) * 0.3 + self.encoderMin#rospy.get_param('wheel_low_wrap', (self.encoderMax - self.encoderMin) * 0.3 + self.encoderMin )
+        self.encoderHighWrap = (self.encoderMax - self.encoderMin) * 0.7 + self.encoderMin#rospy.get_param('wheel_high_wrap', (self.encoderMax - self.encoderMin) * 0.7 + self.encoderMin )
         self.prevVel = [0.0] * self.rollingPts
         self.wheelLatest = 0.0
         self.prevPidTime = timeNow
+        self.ticksSinceLastTarget = self.timeoutTicks
 
 
     def SetWheel(self, data):
