@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
 from EmeraldAI.Logic.Singleton import Singleton
-from EmeraldAI.Logic.ROS.Helper import PIDController
+from EmeraldAI.Logic.ROS.Helper.PIDController import PIDController
 
 import rospy
 import os
@@ -85,8 +85,8 @@ class TwistToSerialWheel():
         self.__rightPidController.SetWheel(clicksRight)
         self.__leftPidController.SetWheel(clicksLeft)
 
-        self.__rightVel = __rightPidController.MainLoop(rospy.Time.now())
-        self.__leftVel = __leftPidController.MainLoop(rospy.Time.now())
+        self.__rightVel = self.__rightPidController.MainLoop(rospy.Time.now())
+        self.__leftVel = self.__leftPidController.MainLoop(rospy.Time.now())
 
 
     def GetMotorInstructions(self):
