@@ -45,7 +45,8 @@ void setup()
     pinMode(motorPin2_1, OUTPUT);
     pinMode(motorPin2_2, OUTPUT);
 
-    Serial.begin(230400);
+    //Serial.begin(230400);
+    Serial.begin(115200);
 }
 
 
@@ -198,4 +199,3 @@ void loop()
 
     CheckTimeout();
 }
-

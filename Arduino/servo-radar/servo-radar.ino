@@ -41,7 +41,7 @@ direction servoMovement = right;
 
 void setup()
 {
-    Serial.begin(230400);
+    Serial.begin(115200);
 
     // attach servo pin and set to initial direction
     ServoMotor.attach(servoPin, 400, 2600); // 400, 2600 to fix rotation issues
