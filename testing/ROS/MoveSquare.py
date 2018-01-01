@@ -23,12 +23,14 @@ def move():
 
 
     for i in range(4):
+        print "forward"
         # move forward
         vel_msg.linear.x = speed
         vel_msg.angular.z = 0
         velocity_publisher.publish(vel_msg)
         time.sleep(timeToSleep)
 
+        print "move CCW"
         #rotate ccw
         vel_msg.linear.x = 0
         vel_msg.angular.z = speed * 2 * math.pi / 360

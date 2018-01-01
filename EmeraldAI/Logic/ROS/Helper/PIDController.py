@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+from numpy import array
 
 class PIDController():
 
@@ -14,7 +15,7 @@ class PIDController():
         self.previousError = 0
         self.wheelPrev = 0
         self.wheelLatest = 0
-        self.then = 0
+        self.then = timeNow
         self.wheelMult = 0
         self.prevEncoder = 0
 
