@@ -29,7 +29,7 @@ class PIDController():
         self.outMin = -255#rospy.get_param('~out_min',-255)
         self.outMax = 255#rospy.get_param('~out_max',255)
         self.rollingPts = 2#rospy.get_param('~rolling_pts',2)
-        self.timeoutTicks = 4#rospy.get_param('~timeout_ticks',4)
+        self.timeoutTicks = 5#rospy.get_param('~timeout_ticks',4)
         self.ticksPerMeter = 20#rospy.get_param('ticks_meter', 20)
         self.velThreshold = 0.001#rospy.get_param('~vel_threshold', 0.001)
         self.encoderMin = -32768#rospy.get_param('encoder_min', -32768)
@@ -130,10 +130,10 @@ class PIDController():
         if self.motor > self.outMax:
             self.motor = self.outMax
             self.integral = self.integral - (self.error * pidDt)
+
         if self.motor < self.outMin:
             self.motor = self.outMin
             self.integral = self.integral - (self.error * pidDt)
 
         if (self.target == 0):
             self.motor = 0
-

@@ -23,7 +23,9 @@ def Processing(port, baud):
     radarToRange = SerialRadarToRange()
     wheelToOdom = SerialWheelToOdometry(318, 100, 20)
     twistToWheel = TwistToSerialWheel(318, 100, 20)
-    wheelData = False
+    
+    wheelDataSendZeroTimestamp = int(round(time.time() * 1000))
+    wheelDataSendZeroDelay = 250
 
     while True:
         try:
@@ -46,14 +48,17 @@ def Processing(port, baud):
 
         if(wheelToOdom.Validate(data)):
             wheelToOdom.Process(data)
-            wheelData = True
 
-        if(wheelData):
             twistToWheel.ProcessTwist()
-            if(twistToWheel.Validate(data)):
-                twistToWheel.ProcessPID(data)
+            twistToWheel.ProcessPID(data)
 
             rightMotorValue, leftMotorValue = twistToWheel.GetMotorInstructions()
+            currentTime = int(round(time.time() * 1000))
+            if(rightMotorValue == 0 and leftMotorValue == 0 and
+                wheelDataSendZeroTimestamp + wheelDataSendZeroDelay > currentTime):
+                continue
+
+            wheelDataSendZeroTimestamp = currentTime
             serialConnect.Write("{0}|{1}".format(leftMotorValue, rightMotorValue))
 
 
