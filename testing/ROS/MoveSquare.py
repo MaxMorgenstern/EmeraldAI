@@ -27,15 +27,23 @@ def move():
         # move forward
         vel_msg.linear.x = speed
         vel_msg.angular.z = 0
-        velocity_publisher.publish(vel_msg)
+        count = 0;
+        while count < 100:
+            velocity_publisher.publish(vel_msg)
+            time.sleep(0.01)
+            count+=1;
         time.sleep(timeToSleep)
 
         print "move CCW"
         #rotate ccw
         vel_msg.linear.x = 0
         vel_msg.angular.z = speed * 2 * math.pi / 360
-        velocity_publisher.publish(vel_msg)
-        time.sleep(timeToSleep)
+        count = 0;
+        while count < 100:
+            velocity_publisher.publish(vel_msg)
+            count+=1;
+            time.sleep(0.01)
+        time.sleep(timeToSleep*2)
 
     # stop
     vel_msg.linear.x = 0

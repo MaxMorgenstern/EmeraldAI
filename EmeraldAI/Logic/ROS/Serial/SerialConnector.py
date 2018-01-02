@@ -41,5 +41,5 @@ class SerialConnector():
 
     def Write(self, data):
         if(data is not None):
-            self.SerialPointer.write(data)
+            self.SerialPointer.write("{0};".format(data))
             self.SerialPointer.flush()

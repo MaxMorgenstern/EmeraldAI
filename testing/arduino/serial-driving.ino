@@ -14,19 +14,20 @@ const int stepsPerRevelation = 20;
 const int distanceInMMPerRevelation = 220;
 
 
-// Motor
+// Motor 1 - Left
 const uint8_t motorPin1_1 = A3;
 const uint8_t motorPin1_2 = A2;
 const uint8_t motorEnablePin1 = 5;
 bool motorDirectionIsForward1 = true;
 
+// Motor 2 - Right
 const uint8_t motorPin2_1 = A5;
 const uint8_t motorPin2_2 = A4;
 const uint8_t motorEnablePin2 = 6;
 bool motorDirectionIsForward2 = true;
 
 uint32_t motorTimestamp;
-uint32_t motorTimeout = 250;
+uint32_t motorTimeout = 500;
 
 
 void setup()
@@ -160,22 +161,22 @@ void ReadDataAndSetMotor()
 {
     String data;
     if (Serial.available() > 0) {
-        data = Serial.readString();
+        data = Serial.readStringUntil(';');
 
         int splitPos = data.indexOf('|');
 
-        String serialPart1 = data.substring(0, splitPos);
-        String serialPart2 = data.substring(splitPos+1);
+        String serialPartLeft = data.substring(0, splitPos);
+        String serialPartRight = data.substring(splitPos+1);
 
         char buffer[10];
-        serialPart1.toCharArray(buffer, 10);
-        float firstValue = atof(buffer);
+        serialPartLeft.toCharArray(buffer, 10);
+        float valueLeft = atof(buffer);
 
-        serialPart2.toCharArray(buffer, 10);
-        float secondValue = atof(buffer);
+        serialPartRight.toCharArray(buffer, 10);
+        float valueRight = atof(buffer);
 
-        SetMotor(1, firstValue);
-        SetMotor(2, secondValue);
+        SetMotor(1, valueLeft);
+        SetMotor(2, valueRight);
 
         motorTimestamp = millis();
     }
