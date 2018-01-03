@@ -23,7 +23,11 @@ NewPing sonar2(trigPin2, echoPin2, maxDistance);
 // Ultrasonic Servo
 Servo ServoMotor;
 const uint8_t servoPin = 6;
-const uint8_t servoRotationAngel = 5;
+uint8_t servoRotationAngel = 5;
+const uint8_t servoRotationAngelFast = 10;
+const uint8_t servoRotationAngelMedium = 5;
+const uint8_t servoRotationAngelDetailed = 1;
+
 const uint8_t seroRotationDurationPerAngle = 2;
 
 enum direction {
@@ -46,6 +50,7 @@ void setup()
     // attach servo pin and set to initial direction
     ServoMotor.attach(servoPin, 400, 2600); // 400, 2600 to fix rotation issues
     ServoMotor.write(servoPos);
+    servoRotationAngel = servoRotationAngelMedium;
 }
 
 
@@ -94,8 +99,37 @@ uint8_t GetNextServoAngle()
 }
 
 
+void ReadDataAndSetSpeed()
+{
+    String data;
+    if (Serial.available() > 0) {
+        data = Serial.readStringUntil(';');
+
+        if(data = "fast")
+        {
+            servoRotationAngel = servoRotationAngelFast;
+            return;
+        }
+        
+        if(data = "medium")
+        {
+            servoRotationAngel = servoRotationAngelMedium;
+            return;
+        }
+
+        if(data = "detail")
+        {
+            servoRotationAngel = servoRotationAngelDetailed;
+            return;
+        }
+    }
+}
+
+
 void loop()
 {
+    ReadDataAndSetSpeed();
+    
     long rangeFront = GetRange(1);
     long rangeBack = GetRange(2);
 
