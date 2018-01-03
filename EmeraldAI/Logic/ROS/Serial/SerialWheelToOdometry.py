@@ -54,10 +54,10 @@ class SerialWheelToOdometry():
 
 
     def Process(self, data, odomFrameID="/base_link", odomParentFrameID="/odom", sendTF=False):
-        clicksLeft = int(data[4])
+        #clicksLeft = int(data[4])
         clicksLeftDelta = int(data[5])
 
-        clicksRight = int(data[8])
+        #clicksRight = int(data[8])
         clicksRightDelata = int(data[9])
 
         self.__currentTime = rospy.Time.now()
