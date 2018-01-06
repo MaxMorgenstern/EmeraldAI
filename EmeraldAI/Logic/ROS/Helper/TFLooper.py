@@ -7,7 +7,7 @@ from geometry_msgs.msg import TransformStamped
 
 from EmeraldAI.Logic.Singleton import Singleton
 
-class TFsLooper():
+class TFLooper():
     __metaclass__ = Singleton
 
     def __init__(self):
@@ -18,8 +18,8 @@ class TFsLooper():
 
     def add(self, transform, ttl=10):
         key = "{0}_{1}".format(transform.header.frame_id, transform.child_frame_id)
-        if(key in self.__trandformDict):
-            self.remove(key)
+        #if(key in self.__trandformDict):
+        #    self.remove(key)
         self.__trandformDict[key] = transform
         self.__trandformTTL[key] = ttl
 
@@ -29,7 +29,7 @@ class TFsLooper():
         del self.__trandformTTL[key]
 
 
-    def loop():
+    def loop(self):
         tmpTrandformDict = dict(self.__trandformDict)
         tmpTrandformTTL = dict(self.__trandformTTL)
 
@@ -39,7 +39,5 @@ class TFsLooper():
             self.__transformBroadcaster.sendTransform(tmpTrandformDict[key])
 
             tmpTrandformTTL[key] -= 1
-
             if tmpTrandformTTL[key] <= 0:
                 self.remove(key)
-

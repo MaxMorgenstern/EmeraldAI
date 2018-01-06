@@ -64,11 +64,8 @@ def Processing(port, baud):
 
 if __name__=="__main__":
 
-    #baud = 230400
     baud = 115200
-
     timeToSleep = 5
-
     processList = {}
 
     while True:
@@ -96,4 +93,3 @@ if __name__=="__main__":
 
         time.sleep(timeToSleep)
 
-print "Bye!"
