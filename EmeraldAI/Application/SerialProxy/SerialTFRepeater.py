@@ -15,9 +15,10 @@ from geometry_msgs.msg import TransformStamped
 from tf2_msgs.msg import TFMessage
 
 nodeName = 'serial_tf_repeater'
+nodeNameToRepeat = 'serial_converter_'
 
 def callback(data):
-    if data._connection_header['callerid'].strip("/") == nodeName:
+    if not data._connection_header['callerid'].strip('/').startswith(nodeNameToRepeat):
         return
 
     for t in data.transforms:
@@ -27,7 +28,7 @@ def callback(data):
 def listener():
     rateInHz = 20 # in Hz
     rospy.init_node(nodeName)
-    rospy.Subscriber("tf", TFMessage, callback)
+    rospy.Subscriber('tf', TFMessage, callback)
 
     rate = rospy.Rate(rateInHz) # hz
     while not rospy.is_shutdown():
@@ -35,5 +36,5 @@ def listener():
         rate.sleep()
 
 
-if __name__=="__main__":
+if __name__=='__main__':
     listener()
