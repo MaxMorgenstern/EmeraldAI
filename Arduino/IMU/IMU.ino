@@ -15,7 +15,7 @@ uint8_t mpu_addr = 0;
 int ret;
 void setup() {
     Fastwire::setup(400,0);
-    Serial.begin(230400);
+    Serial.begin(115200);
     ret = mympu_open(mpu_addr, 200, gyro_orientation);
     Serial.print("MPU init: "); Serial.println(ret);
     Serial.print("Free mem: "); Serial.println(freeRam());

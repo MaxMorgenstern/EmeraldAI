@@ -17,7 +17,7 @@ void setup() {
     pinMode(interrupt2Pin, INPUT);
     attachInterrupt(digitalPinToInterrupt(interrupt1Pin), countRotation1, RISING);
     attachInterrupt(digitalPinToInterrupt(interrupt2Pin), countRotation2, RISING);
-    Serial.begin(230400);
+    Serial.begin(115200);
 }
 
 void sendData(int id)

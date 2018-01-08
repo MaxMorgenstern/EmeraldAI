@@ -3,7 +3,7 @@
 import serial
 import time
 
-class SerialReader():
+class SerialConnector():
     SerialPointer = None
     ReadTimestamp = None
     InitialTimestampDelay = 10
@@ -38,3 +38,8 @@ class SerialReader():
 
         self.ReadTimestamp = time.time()
         return data
+
+    def Write(self, data):
+        if(data is not None):
+            self.SerialPointer.write("{0};".format(data))
+            self.SerialPointer.flush()
