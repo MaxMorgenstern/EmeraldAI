@@ -8,6 +8,7 @@ sys.setdefaultencoding('utf-8')
 import multiprocessing
 import time
 
+from EmeraldAI.Logic.Modules import Pid
 from EmeraldAI.Logic.ROS.Serial.SerialFinder import SerialFinder
 from EmeraldAI.Logic.ROS.Serial.SerialConnector import SerialConnector
 from EmeraldAI.Logic.ROS.Serial.SerialWheelToOdometry import SerialWheelToOdometry
@@ -62,8 +63,7 @@ def Processing(port, baud):
             serialConnect.Write("{0}|{1}".format(leftMotorValue, rightMotorValue))
 
 
-if __name__=="__main__":
-
+def mainLoop():
     baud = 115200
     timeToSleep = 5
     processList = {}
@@ -92,4 +92,20 @@ if __name__=="__main__":
                 processList[port] = process
 
         time.sleep(timeToSleep)
+
+
+
+if __name__=="__main__":
+    
+    if(Pid.HasPid("SerialToRos")):
+        print "Process is already runnung. Bye!"
+        sys.exit()
+    Pid.Create("SerialToRos")
+    try:
+        mainLoop()
+    except KeyboardInterrupt:
+        print "End"
+    finally:
+        Pid.Remove("SerialToRos")
+   
 

@@ -7,6 +7,7 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 from EmeraldAI.Logic.ROS.Helper.TFLooper import TFLooper
+from EmeraldAI.Logic.Modules import Pid
 
 import rospy
 import tf2_ros as tf
@@ -25,7 +26,7 @@ def callback(data):
         TFLooper().add(t)
 
 
-def listener():
+def mainLoop():
     rateInHz = 20 # in Hz
     rospy.init_node(nodeName)
     rospy.Subscriber('tf', TFMessage, callback)
@@ -37,4 +38,14 @@ def listener():
 
 
 if __name__=='__main__':
-    listener()
+    if(Pid.HasPid("SerialTFRepeater")):
+        print "Process is already runnung. Bye!"
+        sys.exit()
+    Pid.Create("SerialTFRepeater")
+    try:
+        mainLoop()
+    except KeyboardInterrupt:
+        print "End"
+    finally:
+        Pid.Remove("SerialTFRepeater")
+   
