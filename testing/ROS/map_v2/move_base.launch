@@ -1,5 +1,21 @@
 <?xml version="1.0"?>
 <launch>
+
+	<!-- Just for testing -->
+	<!-- x y z qx qy qz qw -->
+ 	<node pkg="tf2_ros" type="static_transform_publisher" name="base_to_ultrasonic" args="0 0 0.1 0 0 0 1 base_link radar_ultrasonic_mount" />
+
+ 	<node pkg="tf2_ros" type="static_transform_publisher" name="odom_to_base" args="0 0 0.05 0 0 0 1 odom base_link" />
+
+ 	<node pkg="tf2_ros" type="static_transform_publisher" name="map_to_odom" args="0 0 0.1 0 0 0 1 map odom" />
+	<!-- Just for testing -->
+
+	<!-- Run the map server -->
+  	<!--<node name="map_server" pkg="map_server" type="map_server" args="map.pgm 0.05"/>-->
+
+ 	<node name="map_server" pkg="map_server" type="map_server" args="map.yaml" output="screen"/>
+
+
 	<node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
 		<param name="controller_frequency" value="4.0" />
 		<rosparam file="costmap_common_params.yaml" command="load" ns="global_costmap" />
