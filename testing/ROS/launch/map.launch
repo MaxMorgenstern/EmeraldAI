@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<launch>
+
+	<!-- Run the map server -->
+	<!-- TODO: no output to screen -->
+ 	<node name="map_server" pkg="map_server" type="map_server" args="/home/maximilian/Github/EmeraldAI/testing/ROS/launch/map_data/map.yaml" output="screen"/>
+
+	<!-- range_sensor_layer -->
+	<!-- costmap_2d -->
+
+	<node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+		<param name="controller_frequency" value="4.0" />
+		<rosparam file="map_data/costmap_common_params.yaml" command="load" ns="global_costmap" />
+		<rosparam file="map_data/costmap_common_params.yaml" command="load" ns="local_costmap" />
+		<rosparam file="map_data/global_costmap_params.yaml" command="load" />
+		<rosparam file="map_data/local_costmap_params.yaml" command="load" />
+		<rosparam file="map_data/base_local_planner_params.yaml" command="load" />
+	</node>
+</launch>
