@@ -11,7 +11,8 @@ footprint_padding: 0.1
 
 plugins:
 - {name: sonar_layer, type: "range_sensor_layer::RangeSensorLayer"}
-- {name: inflater_layer, type: "costmap_2d::InflationLayer"}
+- {name: inflation_layer, type: "costmap_2d::InflationLayer"}
+- {name: obstacle_layer, type: "costmap_2d::ObstacleLayer"}
 
 sonar_layer:
   ns: "/range/radar"
