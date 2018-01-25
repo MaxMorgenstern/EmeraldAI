@@ -13,18 +13,23 @@ from EmeraldAI.Logic.ROS.Serial.SerialFinder import SerialFinder
 from EmeraldAI.Logic.ROS.Serial.SerialConnector import SerialConnector
 from EmeraldAI.Logic.ROS.Serial.SerialWheelToOdometry import SerialWheelToOdometry
 from EmeraldAI.Logic.ROS.Serial.TwistToSerialWheel import TwistToSerialWheel
-from EmeraldAI.Logic.ROS.Serial.SerialRadarToRangeAndLaser import SerialRadarToRangeAndLaser
+from EmeraldAI.Logic.ROS.Serial.SerialRadarToRange import SerialRadarToRange
+from EmeraldAI.Logic.ROS.Serial.SerialRadarToLaser import SerialRadarToLaser
 from EmeraldAI.Logic.ROS.Serial.SerialImuToImu import SerialImuToImu
 
+# TODO: Add to config: UseRange ... UseLaser
+UseRange = True
+UseLaser = True
 
 def Processing(port, baud):
     serialConnect = SerialConnector(port, baud)
 
     imuToImu = SerialImuToImu()
-    radarToRangeAndLaser = SerialRadarToRangeAndLaser()
+    radarToRange = SerialRadarToRange()
+    radarToLaser = SerialRadarToLaser()
     wheelToOdom = SerialWheelToOdometry(318, 100, 20)
     twistToWheel = TwistToSerialWheel(318, 100, 20)
-    
+
     wheelDataSendZeroTimestamp = int(round(time.time() * 1000))
     wheelDataSendZeroDelay = 250
 
@@ -43,8 +48,12 @@ def Processing(port, baud):
             imuToImu.Process(data)
             continue
 
-        if(radarToRangeAndLaser.Validate(data)):
-            radarToRangeAndLaser.Process(data)
+        if(UseRange && radarToRange.Validate(data)):
+            radarToRange.Process(data)
+            continue
+
+        if(UseLaser && radarToLaser.Validate(data)):
+            radarToLaser.Process(data)
             continue
 
         if(wheelToOdom.Validate(data)):
@@ -74,7 +83,7 @@ def mainLoop():
         tmpProcessList = list(processList)
         for process in tmpProcessList:
             if process not in finderResult or not processList[process].is_alive():
-                print "Terminste", process
+                print "Terminate", process
                 processList[process].terminate()
                 del processList[process]
 
@@ -96,7 +105,7 @@ def mainLoop():
 
 
 if __name__=="__main__":
-    
+
     if(Pid.HasPid("SerialToRos")):
         print "Process is already runnung. Bye!"
         sys.exit()
@@ -107,5 +116,5 @@ if __name__=="__main__":
         print "End"
     finally:
         Pid.Remove("SerialToRos")
-   
+
 
