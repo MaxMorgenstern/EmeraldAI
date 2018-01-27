@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+	<include file="$(arg path)/_testing_static_transform.launch" />
+	<!--include file="$(arg path)/ekf_localization.launch" /-->
+	<!--include file="$(arg path)/map.launch" /-->
+</launch>

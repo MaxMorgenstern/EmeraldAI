@@ -1,5 +1,7 @@
 Just a messy list with things to do
 
+- add "emerald_ai" namespace to all internally used topics (like to_brain)
+
 - !!! Initial Conversation on User detection !!!
 - check is an observer pattern should be used or if we can trigger by watching ROS nodes
 
@@ -243,5 +245,12 @@ http://www.ebay.de/itm/Microsoft-Xbox-360-original-KINECT-SENSOR-LEISTE-SCHWARZ-
 
 Ultrasonic Map:
 http://wiki.ros.org/range_sensor_layer
+
+
+
+
+rosbag play --clock -l testing/ROS/map_v2/ultrasonic-and-tf.bag 
+
+
 
 

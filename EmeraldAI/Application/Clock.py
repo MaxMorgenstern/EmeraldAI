@@ -9,23 +9,29 @@ from EmeraldAI.Logic.Modules import Pid
 
 import rospy
 from std_msgs.msg import String
+from rosgraph_msgs.msg import Clock
 
 
 def RunClock():
     time.sleep(5)
 
-    rospy.init_node('clock_node', anonymous=True)
+    rospy.init_node('clock_node', anonymous=False)
 
-    pub = rospy.Publisher('to_brain', String, queue_size=10)
+    systemTime = rospy.Publisher('to_brain', String, queue_size=2)
+    rosTime = rospy.Publisher('clock', Clock, queue_size=2)
 
-    rospy.Rate(10) # 10hz
+    rate = rospy.Rate(20) # Herz
+
+    clockMessage = Clock()
 
     while True:
         clockData = "CLOCK|{0}".format(int(round(time.time())))
-        #print clockData
-        #rospy.loginfo(clockData)
-        pub.publish(clockData)
-        time.sleep(1)
+        systemTime.publish(clockData)
+
+        clockMessage.clock = rospy.Time.now()
+        rosTime.publish(clockMessage)
+
+        rate.sleep()
 
 
 

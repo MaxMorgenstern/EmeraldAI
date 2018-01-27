@@ -10,9 +10,9 @@ import math
 
 import tf_conversions as tf_conv
 
-from sensor_msgs.msg import Range
+from sensor_msgs.msg import LaserScan
 
-class SerialRadarToRange():
+class SerialRadarToLaser():
     __metaclass__ = Singleton
 
     Length = 4
@@ -26,16 +26,17 @@ class SerialRadarToRange():
             print "Node already initialized: ".format(rospy.get_caller_id())
         rospy.loginfo("ROS Serial Python Node '{0}'".format(uid))
 
-        self.__rangePublisherFront = rospy.Publisher('/radar/range/front', Range, queue_size=10)
-        self.__rangePublisherBack = rospy.Publisher('/radar/range/back', Range, queue_size=10)
+        self.__laserPublisherFront = rospy.Publisher('/radar/laser/front', LaserScan, queue_size=20)
+        self.__laserPublisherBack = rospy.Publisher('/radar/laser/back', LaserScan, queue_size=20)
 
         # TODO - hardcoded values - min and max range to config
-        self.__rangeMessage = Range()
-        self.__rangeMessage.radiation_type = 0
-        self.__rangeMessage.min_range = 0.05
-        self.__rangeMessage.max_range = 2.00
-        self.__rangeMessage.field_of_view = (math.pi/4/45*20) # 20deg
-        self.__rangeMessage.radiation_type = 0
+        self.__laserMessage = LaserScan()
+        self.__laserMessage.angle_min = -0.4
+        self.__laserMessage.angle_max = 0.4
+        self.__laserMessage.angle_increment = 0.4
+        self.__laserMessage.time_increment = 0.01
+        self.__laserMessage.range_min = 0.05
+        self.__laserMessage.range_max = 2.00
 
     def Validate(self, data):
         if(data is None):
@@ -46,31 +47,30 @@ class SerialRadarToRange():
             return True
         return False
 
-    def Process(self, data, rangeFrameID="/radar_ultrasonic", rangeParentFrameID="/radar_mount", translation=(0, 0, 0), sendTF=True:
+    def Process(self, data, rangeFrameID="/radar_laser", rangeParentFrameID="/radar_mount", translation=(0, 0, 0), sendTF=True):
         moduleName = data[1].lower()
         modulePosition = int(data[2])
         moduleRange = int(data[3])
 
-        calculatedRangeFrameID = "{0}_{1}".format(rangeFrameID, moduleName)
+        calculatedLaserFrameID = "{0}_{1}".format(rangeFrameID, moduleName)
 
         moduleRangeInMeter = moduleRange / 100.0
 
-        self.__rangeMessage.range = moduleRangeInMeter
-        self.__rangeMessage.header.stamp = rospy.Time.now()
-        self.__rangeMessage.header.frame_id = calculatedRangeFrameID
-        rospy.loginfo(self.__rangeMessage)
+        self.__laserMessage.ranges = [moduleRangeInMeter, moduleRangeInMeter, moduleRangeInMeter]
+        self.__laserMessage.header.stamp = rospy.Time.now()
+        self.__laserMessage.header.frame_id = calculatedLaserFrameID
+        rospy.loginfo(self.__laserMessage)
 
         if moduleName == "front":
-            self.__rangePublisherFront.publish(self.__rangeMessage)
+            self.__laserPublisherFront.publish(self.__laserMessage)
         if moduleName == "back":
-            self.__rangePublisherBack.publish(self.__rangeMessage)
+            self.__laserPublisherBack.publish(self.__laserMessage)
 
         if (sendTF):
             quaternion = tf_conv.transformations.quaternion_from_euler(0, 0, GeometryHelper.DegreeToRadian(modulePosition))
             TFHelper.SendTF2Transform(
                 translation,
                 quaternion,
-                self.__rangeMessage.header.stamp,
-                calculatedRangeFrameID,
+                self.__laserMessage.header.stamp,
+                calculatedLaserFrameID,
                 rangeParentFrameID)
-

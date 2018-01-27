@@ -1,1 +1,1 @@
-__all__ = ["SerialConnector", "SerialFinder", "SerialImuToImu", "SerialRadarToRange", "SerialWheelToOdometry", "TwistToSerialWheel"]
+__all__ = ["SerialConnector", "SerialFinder", "SerialImuToImu", "SerialRadarToLaser", "SerialRadarToRange", "SerialWheelToOdometry", "TwistToSerialWheel"]
