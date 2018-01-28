@@ -15,8 +15,8 @@ static_map: false
 rolling_window: true
 
 always_send_full_costmap: true
-width: 6.0
-height: 6.0
+width: 10.0
+height: 10.0
 resolution: 0.05
 
 observation_sources: range_layer
@@ -31,7 +31,7 @@ range_layer:
     ns: "/radar/range"
     topics: ["back", "front"]
     no_readings_timeout: 1.0
-    clear_on_max_reading: true
+    clear_on_max_reading: false
 
 inflater_layer:
     inflation_radius: 0.3
