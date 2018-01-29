@@ -1,6 +1,6 @@
 Just a messy list with things to do
 
-- add "emerald_ai" namespace to all internally used topics (like to_brain)
+- add "emerald_ai" namespace to all internally published topics (like to_brain)
 
 - !!! Initial Conversation on User detection !!!
 - check is an observer pattern should be used or if we can trigger by watching ROS nodes
@@ -251,6 +251,10 @@ http://wiki.ros.org/range_sensor_layer
 
 rosbag play --clock -l testing/ROS/map_v2/ultrasonic-and-tf.bag 
 
+
+
+rosrun tf view_frames
+rosrun rqt_graph rqt_graph
 
 
 
