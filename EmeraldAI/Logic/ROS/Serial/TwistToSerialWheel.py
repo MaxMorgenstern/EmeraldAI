@@ -16,7 +16,7 @@ class TwistToSerialWheel():
 
     Length = 10
 
-    def __init__(self, wheelDiameter, wheelBaseline, encoderTicksPerRevelation):
+    def __init__(self, wheelDiameter, wheelBaseline, encoderTicksPerRevelation, topic="/cmd_vel"):
         uid = str(os.getpid())
         try:
             print "Initialize: serial_converter_{0}".format(uid)
@@ -30,12 +30,7 @@ class TwistToSerialWheel():
         self.__left = 0
         self.__right = 0
 
-        #self.__wheelDiameter = wheelDiameter # mm
         self.__wheelBaseline = wheelBaseline # distance between wheels in mm
-        #self.__encoderTicksPerRevelation = encoderTicksPerRevelation
-
-        #self.__wheelDistancePerTickLeft = math.pi * self.__wheelDiameter / self.__encoderTicksPerRevelation
-        #self.__wheelDistancePerTickRight = math.pi * self.__wheelDiameter / self.__encoderTicksPerRevelation
 
         self.__currentTime = rospy.Time.now()
         self.__lastTime = rospy.Time.now()
@@ -43,7 +38,7 @@ class TwistToSerialWheel():
         self.__leftPidController = PIDController(rospy.Time.now())
         self.__rightPidController = PIDController(rospy.Time.now())
 
-        rospy.Subscriber('/navigation/twist', Twist, self.__twistCallback)
+        rospy.Subscriber(topic, Twist, self.__twistCallback)
 
 
     def __twistCallback(self, msg):
