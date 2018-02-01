@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
 <launch>
-	<include file="/home/maximilian/Github/EmeraldAI/testing/ROS/launch/_testing_static_transform.launch" />
-	<!--include file="/home/maximilian/Github/EmeraldAI/testing/ROS/launch/ekf_localization.launch" /-->
+	<!--include file="/home/maximilian/Github/EmeraldAI/testing/ROS/launch/_testing_static_transform.launch" /-->
+ 	<node pkg="tf" type="static_transform_publisher" name="base_to_ultrasonic" args="0 0 0.1 0 0 0 1 base_link radar_mount 100" />
+ 	<node pkg="tf" type="static_transform_publisher" name="map_to_odom" args="0 0 0 0 0 0 1 map odom 100" />
+
+	<include file="/home/maximilian/Github/EmeraldAI/testing/ROS/launch/ekf_localization.launch" />
 	<include file="/home/maximilian/Github/EmeraldAI/testing/ROS/launch/map.launch" />
 </launch>
