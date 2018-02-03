@@ -30,7 +30,7 @@
         <rosparam file="map_data/costmap_common_params.yaml" command="load" ns="local_costmap" />
         <rosparam file="map_data/global_costmap_params.yaml" command="load" />
         <rosparam file="map_data/local_costmap_params.yaml" command="load" />
-        <!--<rosparam file="map_data/base_local_planner_params.yaml" command="load" />-->
+        <rosparam file="map_data/base_local_planner_params.yaml" command="load" />
     </node>
 
 </launch>

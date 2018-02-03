@@ -31,9 +31,9 @@ class SerialRadarToLaser():
 
         # TODO - hardcoded values - min and max range to config
         self.__laserMessage = LaserScan()
-        self.__laserMessage.angle_min = -0.4
-        self.__laserMessage.angle_max = 0.4
-        self.__laserMessage.angle_increment = 0.4
+        self.__laserMessage.angle_min = -0.025
+        self.__laserMessage.angle_max = 0.025
+        self.__laserMessage.angle_increment = 0.025
         self.__laserMessage.time_increment = 0.01
         self.__laserMessage.range_min = 0.05
         self.__laserMessage.range_max = 2.00

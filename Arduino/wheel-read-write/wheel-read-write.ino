@@ -30,7 +30,7 @@ uint32_t motorTimestamp;
 uint32_t motorTimeout = 500;
 
 uint32_t motorDataSendTimestamp;
-uint32_t motorDataSendTimeout = 200;
+uint32_t motorDataSendTimeout = 100;
 
 
 void setup()

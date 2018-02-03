@@ -1,1 +1,1 @@
-__all__ = ["Config"]
+__all__ = ["BaseConfig", "Config", "HardwareConfig"]

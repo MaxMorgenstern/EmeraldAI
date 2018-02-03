@@ -1,0 +1,25 @@
+[DEFAULT]
+Test = root
+
+
+# ----------------------
+[GPIO]
+# Pin 3 / 5 / 7
+#OutputPin0 = 2
+#OutputPin1 = 3
+#OutputPin2 = 4
+
+# ----------------------
+[Movement]
+Type=Differential
+
+MotorMappingMin=0
+MotorMappingMax=255
+
+Wheel1Degree=150
+Wheel2Degree=270
+Wheel3Degree=30
+Wheel4Degree=-1
+Wheel5Degree=-1
+Wheel6Degree=-1
+
