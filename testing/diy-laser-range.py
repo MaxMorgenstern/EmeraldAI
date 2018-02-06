@@ -1,18 +1,31 @@
 import cv2
 from numpy import *
 import math
-
-
-#variables
-loop = 1
-dot_dist = 0
-obj_dist = 0
+import time
  
-cv2.namedWindow("preview")
-vc = cv2.VideoCapture(1)
+camera = cv2.VideoCapture(1)
 
 imageWidth = 640
 imageHeight = 480
+colorThreshold = 220
+
+
+"""
+pixel   distance
+2       380
+4       320
+5       280
+7       230
+9       200
+10      180
+12      150
+16      120
+20      100
+27       80
+43       50
+76       30
+178      10
+"""
 
 
 """
@@ -30,68 +43,55 @@ pixel   distance
 160     0.160
 """
 
-pixel = [0, 2, 6.5, 9.5, 12.5, 16, 27.5, 45.5, 98, 106, 160]
-distance = [663, 440, 286, 222, 173, 136, 90, 57, 30, 22, 16]
+# office
+pixel = [2, 4, 5, 7, 9, 10, 12, 16, 20, 27, 43, 76, 178]
+distance = [380, 320, 280,230, 200, 180, 150, 120, 100, 80, 50, 30, 10]
+
+# home
+#pixel = [0, 2, 6.5, 9.5, 12.5, 16, 27.5, 45.5, 98, 106, 160]
+#distance = [663, 440, 286, 222, 173, 136, 90, 57, 30, 22, 16]
 
 def GetDistanceByPixel(x):
-    numpy.interp(x, pixel, distance)
+    return interp(x, pixel, distance)
 
+ret = camera.set(3, imageWidth)
+ret = camera.set(4, imageHeight)
 
-ret = vc.set(3, imageWidth)
-ret = vc.set(4, imageHeight)
- 
-if vc.isOpened(): # try to get the first frame
-    rval, frame = vc.read()
- 
-else:
-    rval = False
-    #print "failed to open webcam"
- 
-if rval == 1 :
- 
-    while loop == 1:
-        if (vc.isOpened() != 0):
-            rval, frame = vc.read()
+FPSstartTime = time.time()
+FPSx = 1
+counter = 0
 
-            frame = frame[(imageHeight/2-40):(imageHeight/2+40), 0:imageWidth]
+while True:
+    if (camera.isOpened() != 0):
 
-            num = (frame[...,...,2] > 230)
-            xy_val =  num.nonzero()
- 
-            y_val = median(xy_val[0])
-            x_val = median(xy_val[1])
+        rval, frame = camera.read()
+        
+        if frame is None:
+            continue
 
-            cv2.line(frame, (0,imageHeight/2), (imageWidth,imageHeight/2), (255,0,0), 2)
-            cv2.line(frame, (imageWidth/2,0),  (imageWidth/2,imageHeight), (255,0,0), 2)
+        
+        frame = frame[(imageHeight/2-20):(imageHeight/2+25), 0:imageWidth]
 
-            if(math.isnan(x_val) or math.isnan(y_val)):
-                cv2.imshow("preview", frame)
-                continue
+        num = (frame[...,...,2] > colorThreshold)
+        xy_val =  num.nonzero()
 
-            cv2.circle(frame, (int(x_val), int(y_val)), 7, (255, 255, 0), -1)
+        x_val = median(xy_val[1])
 
-            #distInPixel = ((x_val - imageWidth/2)**2 + (y_val - imageHeight/2)**2 )**0.5 # distance of dot from center pixel
-            distInPixel = abs(x_val - imageWidth/2) # distance of dot from center x_axis only
+        if(math.isnan(x_val)):
+            continue
 
-            print "Dist from center pixel is:", str(distInPixel)
-            print "Estimated distance: ", GetDistanceByPixel(distInPixel)
+        distInPixel = abs(x_val - imageWidth/2) # distance of dot from center x_axis
 
+        print "Dist from center pixel is:", str(distInPixel)
+        print "Estimated distance: ", GetDistanceByPixel(distInPixel)
+        
+        counter += 1
+        if((time.time() - FPSstartTime) > FPSx):
+            counter = 0
+            FPSstartTime = time.time()
 
-            """
-            # work out distance using D = h/tan(theta)
-            theta =0.0011450*distInPixel + 0.0154
-            tan_theta = math.tan(theta)
- 
-            if tan_theta > 0: # bit of error checking
-                obj_dist =  int(5.33 / tan_theta)
-            #print "The dot is " + str(obj_dist) + "cm  away"
-            """
+        print "FPS:", (counter / (time.time() - FPSstartTime))
 
-            cv2.imshow("preview", frame)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
 
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
-
-
-elif rval == 0:
-        print " webcam error "
