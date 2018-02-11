@@ -4,12 +4,12 @@ z_voxels: 2
 
 robot_base_frame: base_link
 
-obstacle_range: 2.0 # max distance the sensor is able to meassure - in meters
-raytrace_range: 2.0 
+obstacle_range: 1.75 # max distance the sensor will set obstacles - in meters
+raytrace_range: 2 
 
 footprint: [[-0.1, -0.1], [-0.1, 0.1], [0.1, 0.1], [0.1, -0.1]]
 
-footprint_padding: 0.1s
+footprint_padding: 0.1
 
 static_map: false
 rolling_window: true
@@ -30,7 +30,9 @@ plugins:
 range_layer:
     ns: "/radar/range"
     topics: ["back", "front"]
-    no_readings_timeout: 1.0
+    no_readings_timeout: 0.0
+    clear_threshold: 0.2
+    mark_threshold: 0.8
     clear_on_max_reading: false
 
 inflater_layer:
