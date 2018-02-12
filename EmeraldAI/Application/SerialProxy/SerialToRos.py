@@ -31,7 +31,7 @@ def Processing(port, baud):
     twistToWheel = TwistToSerialWheel(318, 100, 20)
 
     wheelDataSendZeroTimestamp = int(round(time.time() * 1000))
-    wheelDataSendZeroDelay = 250
+    wheelDataSendZeroDelay = 100
 
     while True:
         try:
@@ -48,11 +48,11 @@ def Processing(port, baud):
             imuToImu.Process(data)
             continue
 
-        if(UseRange && radarToRange.Validate(data)):
+        if(UseRange and radarToRange.Validate(data)):
             radarToRange.Process(data)
             continue
 
-        if(UseLaser && radarToLaser.Validate(data)):
+        if(UseLaser and radarToLaser.Validate(data)):
             radarToLaser.Process(data)
             continue
 
