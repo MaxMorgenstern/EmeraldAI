@@ -16,10 +16,10 @@ from EmeraldAI.Logic.ROS.Serial.TwistToSerialWheel import TwistToSerialWheel
 from EmeraldAI.Logic.ROS.Serial.SerialRadarToRange import SerialRadarToRange
 from EmeraldAI.Logic.ROS.Serial.SerialRadarToLaser import SerialRadarToLaser
 from EmeraldAI.Logic.ROS.Serial.SerialImuToImu import SerialImuToImu
+from EmeraldAI.Config.HardwareConfig import *
 
-# TODO: Add to config: UseRange ... UseLaser
-UseRange = True
-UseLaser = True
+UseUltrasonic = HardwareConfig().GetBoolean("Sensor", "UseUltrasonic")
+UseLaser = HardwareConfig().GetBoolean("Sensor", "UseLaser")
 
 def Processing(port, baud):
     serialConnect = SerialConnector(port, baud)
@@ -27,8 +27,8 @@ def Processing(port, baud):
     imuToImu = SerialImuToImu()
     radarToRange = SerialRadarToRange()
     radarToLaser = SerialRadarToLaser()
-    wheelToOdom = SerialWheelToOdometry(318, 100, 20)
-    twistToWheel = TwistToSerialWheel(318, 100, 20)
+    wheelToOdom = SerialWheelToOdometry()
+    twistToWheel = TwistToSerialWheel()
 
     wheelDataSendZeroTimestamp = int(round(time.time() * 1000))
     wheelDataSendZeroDelay = 100
@@ -48,7 +48,7 @@ def Processing(port, baud):
             imuToImu.Process(data)
             continue
 
-        if(UseRange and radarToRange.Validate(data)):
+        if(UseUltrasonic and radarToRange.Validate(data)):
             radarToRange.Process(data)
             continue
 

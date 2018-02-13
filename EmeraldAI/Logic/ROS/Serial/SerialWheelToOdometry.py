@@ -3,6 +3,7 @@
 from __future__ import division
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Logic.ROS.Helper import TFHelper
+from EmeraldAI.Config.HardwareConfig import *
 
 import rospy
 import os
@@ -16,7 +17,7 @@ class SerialWheelToOdometry():
 
     Length = 10
 
-    def __init__(self, wheelDiameter, wheelBaseline, encoderTicksPerRevelation):
+    def __init__(self):
         uid = str(os.getpid())
         try:
             print "Initialize: serial_converter_{0}".format(uid)
@@ -27,9 +28,9 @@ class SerialWheelToOdometry():
 
         self.__odomPublisher = rospy.Publisher('/odom', Odometry, queue_size=10)
 
-        self.__wheelDiameter = wheelDiameter # mm
-        self.__wheelBaseline = wheelBaseline # distance between wheels in mm
-        self.__encoderTicksPerRevelation = encoderTicksPerRevelation
+        self.__wheelDiameter = HardwareConfig().GetInt("Wheel", "Diameter") # in mm
+        self.__wheelBaseline = HardwareConfig().GetInt("Wheel", "BaseWidth") # in mm
+        self.__encoderTicksPerRevelation = HardwareConfig().GetInt("Wheel", "EncoderTicksPerRevelation")
 
         self.__wheelDistancePerTickLeft = math.pi * self.__wheelDiameter / self.__encoderTicksPerRevelation
         self.__wheelDistancePerTickRight = math.pi * self.__wheelDiameter / self.__encoderTicksPerRevelation

@@ -3,6 +3,7 @@
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Logic.ROS.Helper import TFHelper
 from EmeraldAI.Logic.ROS.Helper import GeometryHelper
+from EmeraldAI.Config.HardwareConfig import *
 
 import rospy
 import os
@@ -31,14 +32,13 @@ class SerialRadarToLaser():
         self.__laserPublisherThree = rospy.Publisher('/radar/laser/three', LaserScan, queue_size=20)
         self.__laserPublisherFour = rospy.Publisher('/radar/laser/four', LaserScan, queue_size=20)
 
-        # TODO - hardcoded values - min and max range to config
         self.__laserMessage = LaserScan()
-        self.__laserMessage.angle_min = -0.0058 # 0.332 degree
-        self.__laserMessage.angle_max = 0.0058 # 0.332 degree
-        self.__laserMessage.angle_increment = 0.0058 # 0.332 degree
-        self.__laserMessage.time_increment = 0.01
-        self.__laserMessage.range_min = 0.05
-        self.__laserMessage.range_max = 2.00
+        self.__laserMessage.angle_min = HardwareConfig().GetFloat("Laser.SinglePoint", "AngleMin")
+        self.__laserMessage.angle_max = HardwareConfig().GetFloat("Laser.SinglePoint", "AngleMax")
+        self.__laserMessage.angle_increment = HardwareConfig().GetFloat("Laser.SinglePoint", "AngleIncrement")
+        self.__laserMessage.time_increment = HardwareConfig().GetFloat("Laser.SinglePoint", "TimeIncrement")
+        self.__laserMessage.range_min = HardwareConfig().GetFloat("Laser.SinglePoint", "RangeMin")
+        self.__laserMessage.range_max = HardwareConfig().GetFloat("Laser.SinglePoint", "RangeMax")
 
     def Validate(self, data):
         if(data is None):

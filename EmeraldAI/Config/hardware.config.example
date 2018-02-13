@@ -1,5 +1,78 @@
 [DEFAULT]
-Test = root
+
+
+# ----------------------
+[Sensor]
+UseLaser = True
+UseUltrasonic = True
+
+# ----------------------
+[Ultrasonic]
+# Angle in Rad
+FieldOfView = 0.349066
+
+# Range in mm
+RangeMin = 5
+RangeMax = 200
+
+
+# ----------------------
+[Laser.SinglePoint]
+# Angle in Rad
+AngleMin = -0.0058
+AngelMax = 0.0058
+AngleIncrement  0.0058
+
+TimeIncrement = 0.01
+
+# Range in mm
+RangeMin = 5
+RangeMax = 200
+
+
+# ----------------------
+[Dimensions]
+Width = 20
+Length = 20
+Height = 10
+
+
+# ----------------------
+[Wheel]
+# The distance between the robot's wheels in mm. 
+BaseWidth = 100
+
+# Wheel diameter in mm
+Diameter = 318
+
+EncoderTicksPerRevelation = 20
+EncoderTicksPerMeter = 20
+
+# Delay until we stop wheels if no message recieved
+MessageTimeout = 100
+
+
+[Wheel.PID]
+# Proportional gain to the PID controller. 
+Kp = 10
+# Integral gain to the PID controller. 
+Ki = 10
+# Derivative gain to the PID controller. 
+Kd = 0.001
+# Minimum output of the wheel_vel topic. 
+OutMin = -255
+# Maximum output of the wheel_vel topic. 
+OutMax = 255
+# The velocity used in the PID calculations and published as wheel_vel is calculated from rolling_pts points. 
+RollingPts = 2
+# If no wheel_vtarget messages are received in timeout_ticks ticks, the wheels are stopped. (I.E. timeout_ticks / rate seconds) 
+TimeoutTicks = 5
+# If the velocity drops below vel_threshold, we consider the wheel stopped.
+VelThreshold = 0.001
+# The min and max value the encoder should output. Used to calculate odometry when the values wrap around. 
+EncoderMin = -32768
+EncoderMax = 32768
+
 
 
 # ----------------------
@@ -8,6 +81,7 @@ Test = root
 #OutputPin0 = 2
 #OutputPin1 = 3
 #OutputPin2 = 4
+
 
 # ----------------------
 [Movement]
@@ -22,4 +96,3 @@ Wheel3Degree=30
 Wheel4Degree=-1
 Wheel5Degree=-1
 Wheel6Degree=-1
-

@@ -3,6 +3,7 @@
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Logic.ROS.Helper import TFHelper
 from EmeraldAI.Logic.ROS.Helper import GeometryHelper
+from EmeraldAI.Config.HardwareConfig import *
 
 import rospy
 import os
@@ -32,9 +33,9 @@ class SerialRadarToRange():
         # TODO - hardcoded values - min and max range to config
         self.__rangeMessage = Range()
         self.__rangeMessage.radiation_type = 0
-        self.__rangeMessage.min_range = 0.05
-        self.__rangeMessage.max_range = 2.00
-        self.__rangeMessage.field_of_view = (math.pi/4/45*20) # 20deg
+        self.__rangeMessage.min_range = HardwareConfig().GetFloat("Ultrasonic", "RangeMin")
+        self.__rangeMessage.max_range = HardwareConfig().GetFloat("Ultrasonic", "RangeMax")
+        self.__rangeMessage.field_of_view = HardwareConfig().GetFloat("Ultrasonic", "FieldOfView")
         self.__rangeMessage.radiation_type = 0
 
     def Validate(self, data):
