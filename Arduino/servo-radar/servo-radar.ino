@@ -2,13 +2,12 @@
 #include "Servo.h"
 #include "NewPing.h"
 
-// Ultrasonic Sensor
-const uint16_t maxDistance = 200;
 
-uint8_t averageScanAmount = 3;
-const uint8_t averageScanAmountFast = 2;
-const uint8_t averageScanAmountMedium = 3;
-const uint8_t averageScanAmountDetailed = 3;
+// Ultrasonic Sensor
+const uint16_t minDistance = 5;
+const uint16_t maxDistance = 200;
+uint8_t averageScanAmount = 1;
+
 
 // Ultrasonic Sensor #1
 const uint8_t trigPin = 9;
@@ -26,7 +25,7 @@ const char sonar2Name[] = "Back";
 NewPing sonar2(trigPin2, echoPin2, maxDistance);
 
 
-// Ultrasonic Servo
+// Servo
 Servo ServoMotor;
 const uint8_t servoPin = 6;
 uint8_t servoRotationAngel = 5;
@@ -36,7 +35,6 @@ const uint8_t servoRotationAngelDetailed = 1;
 
 const uint8_t seroRotationDurationPerAngle = 2;
 
-
 enum direction {
     left,
     center,
@@ -45,6 +43,7 @@ enum direction {
 
 uint8_t servoPos = 90;
 direction servoMovement = right;
+
 
 // ------------------------------
 //            SETUP
@@ -57,6 +56,7 @@ void setup()
     // attach servo pin and set to initial direction
     ServoMotor.attach(servoPin, 450, 2400); // 400, 2600 to fix rotation issues
     ServoMotor.write(servoPos);
+    
     servoRotationAngel = servoRotationAngelMedium;
 }
 
@@ -118,21 +118,18 @@ void ReadDataAndSetSpeed()
         if(data == "fast")
         {
             servoRotationAngel = servoRotationAngelFast;
-            averageScanAmount = averageScanAmountFast;
             return;
         }
         
         if(data == "medium")
         {
             servoRotationAngel = servoRotationAngelMedium;
-            averageScanAmount = averageScanAmountMedium;
             return;
         }
 
         if(data == "detail")
         {
             servoRotationAngel = servoRotationAngelDetailed;
-            averageScanAmount = averageScanAmountDetailed;
             return;
         }
     }
@@ -154,7 +151,7 @@ void loop()
         delay(seroRotationDurationPerAngle * (abs(nextAngle - actualServoPos)));
     }
 
-    if(rangeFront < 5) { rangeFront = maxDistance; }
+    if(rangeFront < minDistance) { rangeFront = maxDistance; }
     if(rangeFront > maxDistance) { rangeFront = maxDistance; }
     Serial.print("Ultrasonic");
     Serial.print("|");
@@ -164,7 +161,7 @@ void loop()
     Serial.print("|");
     Serial.println(rangeFront);
 
-    if(rangeBack < 5) { rangeBack = maxDistance; }
+    if(rangeBack < minDistance) { rangeBack = maxDistance; }
     if(rangeBack > maxDistance) { rangeBack = maxDistance; }
     Serial.print("Ultrasonic");
     Serial.print("|");
