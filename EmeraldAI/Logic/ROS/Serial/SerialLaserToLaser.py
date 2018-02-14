@@ -13,7 +13,7 @@ import tf_conversions as tf_conv
 
 from sensor_msgs.msg import LaserScan
 
-class SerialRadarToLaser():
+class SerialLaserToLaser():
     __metaclass__ = Singleton
 
     Length = 4

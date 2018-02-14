@@ -14,7 +14,7 @@ from EmeraldAI.Logic.ROS.Serial.SerialConnector import SerialConnector
 from EmeraldAI.Logic.ROS.Serial.SerialWheelToOdometry import SerialWheelToOdometry
 from EmeraldAI.Logic.ROS.Serial.TwistToSerialWheel import TwistToSerialWheel
 from EmeraldAI.Logic.ROS.Serial.SerialRadarToRange import SerialRadarToRange
-from EmeraldAI.Logic.ROS.Serial.SerialRadarToLaser import SerialRadarToLaser
+from EmeraldAI.Logic.ROS.Serial.SerialLaserToLaser import SerialLaserToLaser
 from EmeraldAI.Logic.ROS.Serial.SerialImuToImu import SerialImuToImu
 from EmeraldAI.Config.HardwareConfig import *
 
@@ -26,7 +26,7 @@ def Processing(port, baud):
 
     imuToImu = SerialImuToImu()
     radarToRange = SerialRadarToRange()
-    radarToLaser = SerialRadarToLaser()
+    laserToLaser = SerialLaserToLaser()
     wheelToOdom = SerialWheelToOdometry()
     twistToWheel = TwistToSerialWheel()
 
@@ -52,8 +52,8 @@ def Processing(port, baud):
             radarToRange.Process(data)
             continue
 
-        if(UseLaser and radarToLaser.Validate(data)):
-            radarToLaser.Process(data)
+        if(UseLaser and laserToLaser.Validate(data)):
+            laserToLaser.Process(data)
             continue
 
         if(wheelToOdom.Validate(data)):

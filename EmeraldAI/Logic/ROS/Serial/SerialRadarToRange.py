@@ -30,7 +30,6 @@ class SerialRadarToRange():
         self.__rangePublisherFront = rospy.Publisher('/radar/range/front', Range, queue_size=10)
         self.__rangePublisherBack = rospy.Publisher('/radar/range/back', Range, queue_size=10)
 
-        # TODO - hardcoded values - min and max range to config
         self.__rangeMessage = Range()
         self.__rangeMessage.radiation_type = 0
         self.__rangeMessage.min_range = HardwareConfig().GetFloat("Ultrasonic", "RangeMin")
