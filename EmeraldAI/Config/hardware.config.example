@@ -20,8 +20,8 @@ RangeMax = 200
 [Laser.SinglePoint]
 # Angle in Rad
 AngleMin = -0.0058
-AngelMax = 0.0058
-AngleIncrement  0.0058
+AngleMax = 0.0058
+AngleIncrement = 0.0058
 
 TimeIncrement = 0.01
 
@@ -32,21 +32,23 @@ RangeMax = 200
 
 # ----------------------
 [Dimensions]
-Width = 20
-Length = 20
-Height = 10
+# INTEGER VALUES - In mm
+Width = 200
+Length = 200
+Height = 100
 
 
 # ----------------------
 [Wheel]
 # The distance between the robot's wheels in mm. 
-BaseWidth = 100
+BaseWidth = 131
 
 # Wheel diameter in mm
-Diameter = 318
+Diameter = 65
 
+# INTEGER VALUES
 EncoderTicksPerRevelation = 20
-EncoderTicksPerMeter = 20
+EncoderTicksPerMeter = 95
 
 # Delay until we stop wheels if no message recieved
 MessageTimeout = 100
@@ -63,9 +65,9 @@ Kd = 0.001
 OutMin = -255
 # Maximum output of the wheel_vel topic. 
 OutMax = 255
-# The velocity used in the PID calculations and published as wheel_vel is calculated from rolling_pts points. 
+# INTEGER - The velocity used in the PID calculations and published as wheel_vel is calculated from rolling_pts points. 
 RollingPts = 2
-# If no wheel_vtarget messages are received in timeout_ticks ticks, the wheels are stopped. (I.E. timeout_ticks / rate seconds) 
+# INTEGER - If no wheel_vtarget messages are received in timeout_ticks ticks, the wheels are stopped. (I.E. timeout_ticks / rate seconds) 
 TimeoutTicks = 5
 # If the velocity drops below vel_threshold, we consider the wheel stopped.
 VelThreshold = 0.001
