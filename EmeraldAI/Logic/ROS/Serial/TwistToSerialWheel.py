@@ -10,6 +10,7 @@ import os
 import math
 
 from geometry_msgs.msg import Twist
+from std_msgs.msg import String
 
 
 class TwistToSerialWheel():
@@ -41,6 +42,8 @@ class TwistToSerialWheel():
         self.__rightPidController = PIDController(rospy.Time.now())
 
         rospy.Subscriber(topic, Twist, self.__twistCallback)
+
+        self.__serialPublisher = rospy.Publisher('{0}/raw_serial'.format(topic), String, queue_size=3)
 
 
     def __twistCallback(self, msg):
@@ -87,6 +90,15 @@ class TwistToSerialWheel():
 
 
     def GetMotorInstructions(self):
+        right = "{0:.4f}".format(self.__rightVel)
+        left = "{0:.4f}".format(self.__leftVel)
+
+        # TODO
+
+        message = "Right:{0} | Left:{1}".format(self.__rightVel, self.__leftVel)
+        rospy.loginfo(message)
+        self.__serialPublisher.publish(message)
+
         return (self.__rightVel, self.__leftVel)
 
 
