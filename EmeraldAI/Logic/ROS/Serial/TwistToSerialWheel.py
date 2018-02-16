@@ -92,13 +92,11 @@ class TwistToSerialWheel():
     def GetMotorInstructions(self):
         right = "{0:.4f}".format(self.__rightVel)
         left = "{0:.4f}".format(self.__leftVel)
-
-        # TODO
-
-        message = "Right:{0} | Left:{1}".format(self.__rightVel, self.__leftVel)
+        
+        message = "Right:{0} | Left:{1}".format(right, left)
         rospy.loginfo(message)
         self.__serialPublisher.publish(message)
 
-        return (self.__rightVel, self.__leftVel)
+        return (right, left)
 
 
