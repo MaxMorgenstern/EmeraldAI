@@ -3,6 +3,7 @@
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Logic.ROS.Helper import TFHelper
 from EmeraldAI.Logic.ROS.Helper import GeometryHelper
+from EmeraldAI.Config.HardwareConfig import *
 
 import rospy
 import os
@@ -12,7 +13,7 @@ import tf_conversions as tf_conv
 
 from sensor_msgs.msg import LaserScan
 
-class SerialRadarToLaser():
+class SerialLaserToLaser():
     __metaclass__ = Singleton
 
     Length = 4
@@ -26,24 +27,25 @@ class SerialRadarToLaser():
             print "Node already initialized: ".format(rospy.get_caller_id())
         rospy.loginfo("ROS Serial Python Node '{0}'".format(uid))
 
-        self.__laserPublisherFront = rospy.Publisher('/radar/laser/front', LaserScan, queue_size=20)
-        self.__laserPublisherBack = rospy.Publisher('/radar/laser/back', LaserScan, queue_size=20)
+        self.__laserPublisherOne = rospy.Publisher('/radar/laser/one', LaserScan, queue_size=20)
+        self.__laserPublisherTwo = rospy.Publisher('/radar/laser/two', LaserScan, queue_size=20)
+        self.__laserPublisherThree = rospy.Publisher('/radar/laser/three', LaserScan, queue_size=20)
+        self.__laserPublisherFour = rospy.Publisher('/radar/laser/four', LaserScan, queue_size=20)
 
-        # TODO - hardcoded values - min and max range to config
         self.__laserMessage = LaserScan()
-        self.__laserMessage.angle_min = -0.025
-        self.__laserMessage.angle_max = 0.025
-        self.__laserMessage.angle_increment = 0.025
-        self.__laserMessage.time_increment = 0.01
-        self.__laserMessage.range_min = 0.05
-        self.__laserMessage.range_max = 2.00
+        self.__laserMessage.angle_min = HardwareConfig().GetFloat("Laser.SinglePoint", "AngleMin")
+        self.__laserMessage.angle_max = HardwareConfig().GetFloat("Laser.SinglePoint", "AngleMax")
+        self.__laserMessage.angle_increment = HardwareConfig().GetFloat("Laser.SinglePoint", "AngleIncrement")
+        self.__laserMessage.time_increment = HardwareConfig().GetFloat("Laser.SinglePoint", "TimeIncrement")
+        self.__laserMessage.range_min = HardwareConfig().GetFloat("Laser.SinglePoint", "RangeMin")
+        self.__laserMessage.range_max = HardwareConfig().GetFloat("Laser.SinglePoint", "RangeMax")
 
     def Validate(self, data):
         if(data is None):
             return False
         if(len(data) != self.Length):
             return False
-        if(data[0].lower() == "Ultrasonic".lower()):
+        if(data[0].lower() == "Laser".lower()):
             return True
         return False
 
@@ -61,10 +63,14 @@ class SerialRadarToLaser():
         self.__laserMessage.header.frame_id = calculatedLaserFrameID
         rospy.loginfo(self.__laserMessage)
 
-        if moduleName == "front":
-            self.__laserPublisherFront.publish(self.__laserMessage)
-        if moduleName == "back":
-            self.__laserPublisherBack.publish(self.__laserMessage)
+        if moduleName == "one":
+            self.__laserPublisherOne.publish(self.__laserMessage)
+        if moduleName == "two":
+            self.__laserPublisherTwo.publish(self.__laserMessage)
+        if moduleName == "three":
+            self.__laserPublisherThree.publish(self.__laserMessage)
+        if moduleName == "four":
+            self.__laserPublisherFour.publish(self.__laserMessage)
 
         if (sendTF):
             quaternion = tf_conv.transformations.quaternion_from_euler(0, 0, GeometryHelper.DegreeToRadian(modulePosition))

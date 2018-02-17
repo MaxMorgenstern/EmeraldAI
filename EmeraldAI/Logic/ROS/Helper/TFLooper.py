@@ -18,8 +18,6 @@ class TFLooper():
 
     def add(self, transform, ttl=10):
         key = "{0}_{1}".format(transform.header.frame_id, transform.child_frame_id)
-        #if(key in self.__trandformDict):
-        #    self.remove(key)
         self.__trandformDict[key] = transform
         self.__trandformTTL[key] = ttl
 

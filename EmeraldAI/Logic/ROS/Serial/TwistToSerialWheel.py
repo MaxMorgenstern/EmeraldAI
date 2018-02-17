@@ -3,12 +3,14 @@
 from __future__ import division
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Logic.ROS.Helper.PIDController import PIDController
+from EmeraldAI.Config.HardwareConfig import *
 
 import rospy
 import os
 import math
 
 from geometry_msgs.msg import Twist
+from std_msgs.msg import String
 
 
 class TwistToSerialWheel():
@@ -16,7 +18,7 @@ class TwistToSerialWheel():
 
     Length = 10
 
-    def __init__(self, wheelDiameter, wheelBaseline, encoderTicksPerRevelation, topic="/cmd_vel"):
+    def __init__(self, topic="/cmd_vel"):
         uid = str(os.getpid())
         try:
             print "Initialize: serial_converter_{0}".format(uid)
@@ -24,13 +26,14 @@ class TwistToSerialWheel():
         except:
             print "Node already initialized: ".format(rospy.get_caller_id())
         rospy.loginfo("ROS Serial Python Node '{0}'".format(uid))
-
-        self.__timeoutTicks = 5
-        self.__ticksSinceLastTwistInstruction = self.__timeoutTicks
+        
         self.__left = 0
         self.__right = 0
 
-        self.__wheelBaseline = wheelBaseline # distance between wheels in mm
+        self.__timeoutTicks = HardwareConfig().GetInt("Wheel.PID", "TimeoutTicks")
+        self.__ticksSinceLastTwistInstruction = self.__timeoutTicks
+
+        self.__wheelBaseline = HardwareConfig().GetInt("Wheel", "BaseWidth") # in mm
 
         self.__currentTime = rospy.Time.now()
         self.__lastTime = rospy.Time.now()
@@ -39,6 +42,8 @@ class TwistToSerialWheel():
         self.__rightPidController = PIDController(rospy.Time.now())
 
         rospy.Subscriber(topic, Twist, self.__twistCallback)
+
+        self.__serialPublisher = rospy.Publisher('{0}/raw_serial'.format(topic), String, queue_size=3)
 
 
     def __twistCallback(self, msg):
@@ -85,6 +90,13 @@ class TwistToSerialWheel():
 
 
     def GetMotorInstructions(self):
-        return (self.__rightVel, self.__leftVel)
+        right = "{0:.4f}".format(self.__rightVel)
+        left = "{0:.4f}".format(self.__leftVel)
+        
+        message = "Right:{0} | Left:{1}".format(right, left)
+        rospy.loginfo(message)
+        self.__serialPublisher.publish(message)
+
+        return (right, left)
 
 

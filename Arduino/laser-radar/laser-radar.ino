@@ -1,28 +1,24 @@
 #include "Arduino.h"
 #include "Servo.h"
-#include "NewPing.h"
+#include "Wire.h"
+#include "VL53L0X.h"
 
+// Laser
+#define XSHUT_pin4 8
+#define XSHUT_pin3 7
+#define XSHUT_pin2 6
+#define XSHUT_pin1 5
 
-// Ultrasonic Sensor
-const uint16_t minDistance = 5;
-const uint16_t maxDistance = 200;
-uint8_t averageScanAmount = 1;
+//ADDRESS_DEFAULT 0b0101001 or 41
+//#define Sensor1_newAddress 41 not required address change
+#define Sensor2_newAddress 42
+#define Sensor3_newAddress 43
+#define Sensor4_newAddress 44
 
-
-// Ultrasonic Sensor #1
-const uint8_t trigPin = 9;
-const uint8_t echoPin = 10;
-const char sonar1Name[] = "Front";
-
-NewPing sonar1(trigPin, echoPin, maxDistance);
-
-
-// Ultrasonic Sensor #2
-const uint8_t trigPin2 = 11;
-const uint8_t echoPin2 = 12;
-const char sonar2Name[] = "Back";
-
-NewPing sonar2(trigPin2, echoPin2, maxDistance);
+VL53L0X Sensor1;
+VL53L0X Sensor2;
+VL53L0X Sensor3;
+VL53L0X Sensor4;
 
 
 // Servo
@@ -44,19 +40,51 @@ enum direction {
 uint8_t servoPos = 90;
 direction servoMovement = right;
 
-
 // ------------------------------
 //            SETUP
 // ------------------------------
 
 void setup()
 {
+    pinMode(XSHUT_pin1, OUTPUT);
+    pinMode(XSHUT_pin2, OUTPUT);
+    pinMode(XSHUT_pin3, OUTPUT);
+    pinMode(XSHUT_pin4, OUTPUT);
+
     Serial.begin(115200);
+
+    Wire.begin();
+
+    Sensor4.setAddress(Sensor4_newAddress);
+    pinMode(XSHUT_pin3, INPUT);
+    delay(10);
+
+    Sensor3.setAddress(Sensor3_newAddress);
+    pinMode(XSHUT_pin2, INPUT);
+    delay(10);
+
+    Sensor2.setAddress(Sensor2_newAddress);
+    pinMode(XSHUT_pin1, INPUT);
+    delay(10);
+
+    Sensor1.init();
+    Sensor2.init();
+    Sensor3.init();
+    Sensor4.init();
+
+    Sensor1.setTimeout(500);
+    Sensor2.setTimeout(500);
+    Sensor3.setTimeout(500);
+    Sensor4.setTimeout(500);
+
+    Sensor1.startContinuous();
+    Sensor2.startContinuous();
+    Sensor3.startContinuous();
+    Sensor4.startContinuous();
 
     // attach servo pin and set to initial direction
     ServoMotor.attach(servoPin, 450, 2400); // 400, 2600 to fix rotation issues
     ServoMotor.write(servoPos);
-    
     servoRotationAngel = servoRotationAngelMedium;
 }
 
@@ -65,14 +93,22 @@ long GetRange(int id)
 {
     if(id == 1)
     {
-        return sonar1.convert_cm(sonar1.ping_median(averageScanAmount));
-        //return sonar1.ping_cm();
+        return Sensor1.readRangeContinuousMillimeters();
     }
 
     if(id == 2)
     {
-        return sonar2.convert_cm(sonar2.ping_median(averageScanAmount));
-        // return sonar2.ping_cm();
+        return Sensor2.readRangeContinuousMillimeters();
+    }
+
+    if(id == 2)
+    {
+        return Sensor3.readRangeContinuousMillimeters();
+    }
+
+    if(id == 2)
+    {
+        return Sensor4.readRangeContinuousMillimeters();
     }
 
     return 0;
@@ -92,7 +128,7 @@ uint8_t GetNextServoAngle()
         servoMovement = left;
         servoPos = 180;
     }
-    
+
     if(servoMovement == right)
     {
         servoPos += servoRotationAngel;
@@ -101,10 +137,10 @@ uint8_t GetNextServoAngle()
     {
         servoPos -= servoRotationAngel;
     }
-    
+
     if(servoPos <= 0) { servoPos = 0; }
     if(servoPos >= 180) { servoPos = 180; }
-    
+
     return servoPos;
 }
 
@@ -118,31 +154,42 @@ void ReadDataAndSetSpeed()
         if(data == "fast")
         {
             servoRotationAngel = servoRotationAngelFast;
+            averageScanAmount = averageScanAmountFast;
             return;
         }
-        
+
         if(data == "medium")
         {
             servoRotationAngel = servoRotationAngelMedium;
+            averageScanAmount = averageScanAmountMedium;
             return;
         }
 
         if(data == "detail")
         {
             servoRotationAngel = servoRotationAngelDetailed;
+            averageScanAmount = averageScanAmountDetailed;
             return;
         }
     }
+}
+
+void SendData(name, position, distance)
+{
+    Serial.print("Laser");
+    Serial.print("|");
+    Serial.print(name);
+    Serial.print("|");
+    Serial.print(position);
+    Serial.print("|");
+    Serial.println(distance);
 }
 
 
 void loop()
 {
     ReadDataAndSetSpeed();
-    
-    long rangeFront = GetRange(1);
-    long rangeBack = GetRange(2);
-    
+
     uint8_t actualServoPos = ServoMotor.read();
     if(servoPos == actualServoPos)
     {
@@ -151,24 +198,14 @@ void loop()
         delay(seroRotationDurationPerAngle * (abs(nextAngle - actualServoPos)));
     }
 
-    if(rangeFront < minDistance) { rangeFront = maxDistance; }
-    if(rangeFront > maxDistance) { rangeFront = maxDistance; }
-    Serial.print("Ultrasonic");
-    Serial.print("|");
-    Serial.print(sonar1Name);
-    Serial.print("|");
-    Serial.print(servoPos);
-    Serial.print("|");
-    Serial.println(rangeFront);
+    long laserOne = GetRange(1);
+    long laserTwo = GetRange(2);
+    long laserThree = GetRange(3);
+    long laserFrour = GetRange(4);
 
-    if(rangeBack < minDistance) { rangeBack = maxDistance; }
-    if(rangeBack > maxDistance) { rangeBack = maxDistance; }
-    Serial.print("Ultrasonic");
-    Serial.print("|");
-    Serial.print(sonar2Name);
-    Serial.print("|");
-    Serial.print((servoPos+180%360));
-    Serial.print("|");
-    Serial.println(rangeBack);
+    SendData("One", servoPos, laserOne);
+    SendData("Two", (servoPos+90%360), laserTwo);
+    SendData("Three", (servoPos+180%360), laserThree);
+    SendData("Four", (servoPos+270%360), laserFour);
 }
 

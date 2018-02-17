@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+ 	<!--node pkg="tf" type="static_transform_publisher" name="odom_to_base" args="0 0 0.05 0 0 0 1 odom base_link 100" /-->
+ 	<node pkg="tf" type="static_transform_publisher" name="base_to_ultrasonic" args="0 0 0.1 0 0 0 1 base_link radar_mount 100" />
+ 	<node pkg="tf" type="static_transform_publisher" name="map_to_odom" args="0 0 0 0 0 0 1 map odom 100" />
+ </launch>

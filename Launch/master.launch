@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<!--
+	roslaunch master.launch path:=$(pwd)
+-->
+<launch>
+	<include file="$(arg path)/static_transforms.launch" />
+	<include file="$(arg path)/ekf_localization.launch" />
+	<include file="$(arg path)/map.launch" />
+</launch>

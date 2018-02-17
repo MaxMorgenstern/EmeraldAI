@@ -14,24 +14,24 @@ from EmeraldAI.Logic.ROS.Serial.SerialConnector import SerialConnector
 from EmeraldAI.Logic.ROS.Serial.SerialWheelToOdometry import SerialWheelToOdometry
 from EmeraldAI.Logic.ROS.Serial.TwistToSerialWheel import TwistToSerialWheel
 from EmeraldAI.Logic.ROS.Serial.SerialRadarToRange import SerialRadarToRange
-from EmeraldAI.Logic.ROS.Serial.SerialRadarToLaser import SerialRadarToLaser
+from EmeraldAI.Logic.ROS.Serial.SerialLaserToLaser import SerialLaserToLaser
 from EmeraldAI.Logic.ROS.Serial.SerialImuToImu import SerialImuToImu
+from EmeraldAI.Config.HardwareConfig import *
 
-# TODO: Add to config: UseRange ... UseLaser
-UseRange = True
-UseLaser = True
+UseUltrasonic = HardwareConfig().GetBoolean("Sensor", "UseUltrasonic")
+UseLaser = HardwareConfig().GetBoolean("Sensor", "UseLaser")
 
 def Processing(port, baud):
     serialConnect = SerialConnector(port, baud)
 
     imuToImu = SerialImuToImu()
     radarToRange = SerialRadarToRange()
-    radarToLaser = SerialRadarToLaser()
-    wheelToOdom = SerialWheelToOdometry(318, 100, 20)
-    twistToWheel = TwistToSerialWheel(318, 100, 20)
+    laserToLaser = SerialLaserToLaser()
+    wheelToOdom = SerialWheelToOdometry()
+    twistToWheel = TwistToSerialWheel()
 
     wheelDataSendZeroTimestamp = int(round(time.time() * 1000))
-    wheelDataSendZeroDelay = 250
+    wheelDataSendZeroDelay = 100
 
     while True:
         try:
@@ -48,12 +48,12 @@ def Processing(port, baud):
             imuToImu.Process(data)
             continue
 
-        if(UseRange && radarToRange.Validate(data)):
+        if(UseUltrasonic and radarToRange.Validate(data)):
             radarToRange.Process(data)
             continue
 
-        if(UseLaser && radarToLaser.Validate(data)):
-            radarToLaser.Process(data)
+        if(UseLaser and laserToLaser.Validate(data)):
+            laserToLaser.Process(data)
             continue
 
         if(wheelToOdom.Validate(data)):
