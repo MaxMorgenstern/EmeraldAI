@@ -38,8 +38,8 @@ class TwistToSerialWheel():
         self.__currentTime = rospy.Time.now()
         self.__lastTime = rospy.Time.now()
 
-        self.__leftPidController = PIDController(rospy.Time.now())
-        self.__rightPidController = PIDController(rospy.Time.now())
+        self.__leftPidController = PIDController(rospy.Time.now(), "left")
+        self.__rightPidController = PIDController(rospy.Time.now(), "right")
 
         rospy.Subscriber(topic, Twist, self.__twistCallback)
 
@@ -67,9 +67,11 @@ class TwistToSerialWheel():
     def ProcessTwist(self):
         if (self.__ticksSinceLastTwistInstruction < self.__timeoutTicks):
             if(self.__ticksSinceLastTwistInstruction == 0):
-                self.__right = 1.0 * self.__dx + self.__dr * self.__wheelBaseline / 2
+                # / 1000 = millimeter in meter 
+                self.__right = 1.0 * self.__dx + self.__dr * (self.__wheelBaseline / 1000) / 2
                 self.__rightPidController.SetTarget(self.__right)
-                self.__left = 1.0 * self.__dx - self.__dr * self.__wheelBaseline / 2
+
+                self.__left = 1.0 * self.__dx - self.__dr * (self.__wheelBaseline / 1000) / 2
                 self.__leftPidController.SetTarget(self.__left)
 
             self.__ticksSinceLastTwistInstruction += 1
@@ -90,8 +92,8 @@ class TwistToSerialWheel():
 
 
     def GetMotorInstructions(self):
-        right = "{0:.4f}".format(self.__rightVel)
-        left = "{0:.4f}".format(self.__leftVel)
+        right = "{0:.2f}".format(self.__rightVel)
+        left = "{0:.2f}".format(self.__leftVel)
         
         message = "Right:{0} | Left:{1}".format(right, left)
         rospy.loginfo(message)

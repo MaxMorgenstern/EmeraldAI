@@ -5,7 +5,9 @@ from EmeraldAI.Config.HardwareConfig import *
 
 class PIDController():
 
-    def __init__(self, timeNow):
+    def __init__(self, timeNow, pidId):
+        self.PIDID = pidId
+
         ### initialize variables
         self.target = 0
         self.motor = 0
@@ -52,19 +54,29 @@ class PIDController():
 
 
     def SetTarget(self, data):
+        """
+        if(data == 0):        
+            self.previousError = 0.0
+            self.prevVel = [0.0] * self.rollingPts
+            self.integral = 0.0
+            self.error = 0.0
+            self.derivative = 0.0
+            self.vel = 0.0
+        """
         self.target = data
         self.ticksSinceLastTarget = 0
 
 
     def MainLoop(self, timeNow):
         self.RospyTimeNow = timeNow
+        """
         self.previousError = 0.0
         self.prevVel = [0.0] * self.rollingPts
         self.integral = 0.0
         self.error = 0.0
         self.derivative = 0.0
         self.vel = 0.0
-
+        """
         # only do the loop if we've recently recieved a target velocity message
         if self.ticksSinceLastTarget < self.timeoutTicks:
             self.__calcVelocity()
@@ -72,7 +84,13 @@ class PIDController():
             self.ticksSinceLastTarget += 1
 
             return self.motor
-
+        print "reset"
+        self.previousError = 0.0
+        self.prevVel = [0.0] * self.rollingPts
+        self.integral = 0.0
+        self.error = 0.0
+        self.derivative = 0.0
+        self.vel = 0.0
         return 0
 
 
@@ -107,7 +125,6 @@ class PIDController():
     def __appendVel(self, val):
         self.prevVel.append(val)
         del self.prevVel[0]
-
 
     def __calcRollingVel(self):
         p = array(self.prevVel)
