@@ -55,10 +55,7 @@ class SerialWheelToOdometry():
 
 
     def Process(self, data, odomFrameID="/base_link", odomParentFrameID="/odom", sendTF=False):
-        #clicksLeft = int(data[4])
         clicksLeftDelta = int(data[5])
-
-        #clicksRight = int(data[8])
         clicksRightDelata = int(data[9])
 
         self.__currentTime = rospy.Time.now()
@@ -77,8 +74,8 @@ class SerialWheelToOdometry():
             xTmp = math.cos(estimatedRotation) * estimatedDistance
             yTmp = -math.sin(estimatedRotation) * estimatedDistance
             # calculate the final position of the robot
-            self.__x += (math.cos(self.__th) * xTmp - math.sin(self.__th) * yTmp) * dt
-            self.__y += (math.sin(self.__th) * xTmp + math.cos(self.__th) * yTmp) * dt
+            self.__x += (math.cos(self.__th) * xTmp - math.sin(self.__th) * yTmp)
+            self.__y += (math.sin(self.__th) * xTmp + math.cos(self.__th) * yTmp)
 
         if (estimatedRotation != 0):
             self.__th += estimatedRotation * dt

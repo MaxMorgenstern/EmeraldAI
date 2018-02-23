@@ -100,5 +100,3 @@ class TwistToSerialWheel():
         self.__serialPublisher.publish(message)
 
         return (right, left)
-
-
