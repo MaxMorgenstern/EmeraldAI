@@ -7,6 +7,7 @@ sys.setdefaultencoding('utf-8')
 
 import multiprocessing
 import time
+import signal
 
 from EmeraldAI.Logic.Modules import Pid
 from EmeraldAI.Logic.ROS.Serial.SerialFinder import SerialFinder
@@ -21,6 +22,9 @@ from EmeraldAI.Config.HardwareConfig import *
 UseUltrasonic = HardwareConfig().GetBoolean("Sensor", "UseUltrasonic")
 UseLaser = HardwareConfig().GetBoolean("Sensor", "UseLaser")
 
+def ProcessHandler(signal, frame):
+    sys.exit(0)
+
 def Processing(port, baud):
     serialConnect = SerialConnector(port, baud)
 
@@ -30,46 +34,44 @@ def Processing(port, baud):
     wheelToOdom = SerialWheelToOdometry()
     twistToWheel = TwistToSerialWheel()
 
-    wheelDataSendZeroTimestamp = int(round(time.time() * 1000))
-    wheelDataSendZeroDelay = 100
+    try:
+        signal.signal(signal.SIGINT, ProcessHandler)
 
-    while True:
-        try:
-            line = serialConnect.Read()
-        except IOError:
-            return
+        while True:
+            try:
+                line = serialConnect.Read()
+            except IOError:
+                return
 
-        data = serialConnect.Validate(line)
+            data = serialConnect.Validate(line)
 
-        if(data is None):
-            continue
-
-        if(imuToImu.Validate(data)):
-            imuToImu.Process(data)
-            continue
-
-        if(UseUltrasonic and radarToRange.Validate(data)):
-            radarToRange.Process(data)
-            continue
-
-        if(UseLaser and laserToLaser.Validate(data)):
-            laserToLaser.Process(data)
-            continue
-
-        if(wheelToOdom.Validate(data)):
-            wheelToOdom.Process(data)
-
-            twistToWheel.ProcessTwist()
-            twistToWheel.ProcessPID(data)
-
-            rightMotorValue, leftMotorValue = twistToWheel.GetMotorInstructions()
-            currentTime = int(round(time.time() * 1000))
-            if(rightMotorValue == 0 and leftMotorValue == 0 and
-                wheelDataSendZeroTimestamp + wheelDataSendZeroDelay > currentTime):
+            if(data is None):
                 continue
 
-            wheelDataSendZeroTimestamp = currentTime
-            serialConnect.Write("{0}|{1}".format(leftMotorValue, rightMotorValue))
+            if(imuToImu.Validate(data)):
+                imuToImu.Process(data)
+                continue
+
+            if(UseUltrasonic and radarToRange.Validate(data)):
+                radarToRange.Process(data)
+                continue
+
+            if(UseLaser and laserToLaser.Validate(data)):
+                laserToLaser.Process(data)
+                continue
+
+            if(wheelToOdom.Validate(data)):
+                wheelToOdom.Process(data)
+
+                twistToWheel.ProcessTwist()
+                twistToWheel.ProcessPID(data)
+
+                rightMotorValue, leftMotorValue = twistToWheel.GetMotorInstructions()            
+                serialConnect.Write("{0}|{1}".format(leftMotorValue, rightMotorValue))
+    
+    finally:
+        print "Disconnect serial connection for", port
+        serialConnect.Disconnect()
 
 
 def mainLoop():
@@ -95,7 +97,7 @@ def mainLoop():
             if port in processList:
                 continue
             else:
-                print "Launching Process for", port
+                print "Launching process for", port
                 process = multiprocessing.Process(name=port, target=Processing, args=(port,baud,))
                 process.start()
                 processList[port] = process
@@ -113,8 +115,6 @@ if __name__=="__main__":
     try:
         mainLoop()
     except KeyboardInterrupt:
-        print "End"
+        print "End SerialToRos"
     finally:
         Pid.Remove("SerialToRos")
-
-
