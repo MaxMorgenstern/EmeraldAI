@@ -10,8 +10,11 @@ int previousInterrupt2Count = 0;
 int previousMillis1 = 0;
 int previousMillis2 = 0;
 
-const int stepsPerRevelation = 20;
-const int distanceInMMPerRevelation = 220;
+// Debouncer
+unsigned long EncoderLockDuration = 15000; // in microseconds
+
+unsigned long PreviousScan1 = 0;
+unsigned long PreviousScan2 = 0;
 
 
 // Motor 1 - Left
@@ -103,6 +106,14 @@ void SendWheelData()
 
 void EncoderRotationCount1()
 {
+    unsigned long currentMicros = micros();
+    if (currentMicros - PreviousScan1 <= EncoderLockDuration) 
+    {
+        return;
+    }
+
+    PreviousScan1 = currentMicros;
+
     if(motorDirectionIsForward1)
     {
         interrupt1Count++;
@@ -115,6 +126,14 @@ void EncoderRotationCount1()
 
 void EncoderRotationCount2()
 {
+    unsigned long currentMicros = micros();
+    if (currentMicros - PreviousScan2 <= EncoderLockDuration) 
+    {
+        return;
+    }
+
+    PreviousScan2 = currentMicros;
+    
     if(motorDirectionIsForward2)
     {
         interrupt2Count++;
