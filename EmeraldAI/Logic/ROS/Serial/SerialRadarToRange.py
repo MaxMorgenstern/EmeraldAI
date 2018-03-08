@@ -49,7 +49,7 @@ class SerialRadarToRange():
     def Process(self, data, rangeFrameID="/radar_ultrasonic", rangeParentFrameID="/radar_mount", translation=(0, 0, 0), sendTF=True):
         moduleName = data[1].lower()
         modulePosition = int(data[2])
-        moduleRange = int(data[3])
+        moduleRange = int(data[3]) # range in cm
 
         calculatedRangeFrameID = "{0}_{1}".format(rangeFrameID, moduleName)
 
