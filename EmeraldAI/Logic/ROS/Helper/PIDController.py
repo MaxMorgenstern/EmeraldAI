@@ -21,6 +21,10 @@ class PIDController():
         self.prevEncoder = 0
 
         ### get parameters ####
+        self.BaseSpeedFactor = HardwareConfig().GetFloat("Wheel.PID", "BaseSpeedFactor")
+        self.VelocityMin = HardwareConfig().GetFloat("Wheel.PID", "VelocityMin")
+        self.VelocityMax = HardwareConfig().GetFloat("Wheel.PID", "VelocityMax")
+
         self.Kp = HardwareConfig().GetFloat("Wheel.PID", "Kp")
         self.Ki = HardwareConfig().GetFloat("Wheel.PID", "Ki")
         self.Kd = HardwareConfig().GetFloat("Wheel.PID", "Kd")
@@ -69,6 +73,8 @@ class PIDController():
 
             return self.motor
 
+        self.then = self.RospyTimeNow
+        self.prevPidTime = self.RospyTimeNow
         self.__resetValues()
         return 0
 
@@ -121,12 +127,23 @@ class PIDController():
         pidDt = pidDtDuration.to_sec()
         self.prevPidTime = self.RospyTimeNow
 
+        baseSpeed = 0
+        if(self.target > 0):
+            baseSpeed = self.outMax / self.VelocityMax * self.target
+        if(self.target < 0):
+            baseSpeed = self.outMin / self.VelocityMin * self.target
+
         self.error = self.target - self.vel
         self.integral = self.integral + (self.error * pidDt)
         self.derivative = (self.error - self.previousError) / pidDt
         self.previousError = self.error
 
-        self.motor = (self.Kp * self.error) + (self.Ki * self.integral) + (self.Kd * self.derivative)
+        print self.target, " - ", baseSpeed
+
+        self.motor = self.BaseSpeedFactor * baseSpeed \
+            + (self.Kp * self.error) \
+            + (self.Ki * self.integral) \
+            + (self.Kd * self.derivative)
 
         if self.motor > self.outMax:
             self.motor = self.outMax
