@@ -7,7 +7,6 @@ from EmeraldAI.Config.HardwareConfig import *
 
 import rospy
 import os
-import math
 
 import tf_conversions as tf_conv
 
