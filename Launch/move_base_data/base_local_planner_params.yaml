@@ -1,14 +1,23 @@
 TrajectoryPlannerROS:
-  min_vel_x: 0.04
-  max_vel_x: 0.40
-  min_in_place_rotational_vel: 0.4
-  max_rotational_vel: 0.4
+  min_vel_x: 0.25 # 0.1
+  max_vel_x: 0.675 # 0.5
 
-  acc_lim_x: 0.40
-  acc_lim_y: 0.0
-  acc_lim_th: 1.5
+  max_vel_theta: 10.3
+  min_vel_theta: -10.3
+  min_in_place_vel_theta: 4.0 # 0.4
 
-  holonomic_robot: false
+  acc_lim_x: 2.5 # 2.5
+  acc_lim_y: 0.0 # 2.5
+  acc_lim_theta: 4.2 # 3.2
 
-  yaw_goal_tolerance: 0.1
-  meter_scoring: true
+  holonomic_robot: false # true
+
+  yaw_goal_tolerance: 0.15 # 0.05
+  xy_goal_tolerance: 0.3 # 0.1
+  latch_xy_goal_tolerance: false # false
+
+  # http://wiki.ros.org/base_local_planner?distro=lunar
+  pdist_scale: 0.6
+  gdist_scale: 0.8
+  meter_scoring: true # false
+

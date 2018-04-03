@@ -4,21 +4,17 @@
 #include "VL53L0X.h"
 
 // Laser
-#define XSHUT_pin4 8
-#define XSHUT_pin3 7
-#define XSHUT_pin2 6
-#define XSHUT_pin1 5
-
-//ADDRESS_DEFAULT 0b0101001 or 41
-//#define Sensor1_newAddress 41 not required address change
-#define Sensor2_newAddress 42
-#define Sensor3_newAddress 43
-#define Sensor4_newAddress 44
-
 VL53L0X Sensor1;
 VL53L0X Sensor2;
-VL53L0X Sensor3;
-VL53L0X Sensor4;
+
+const uint8_t Sensor1_xshut = 4;
+const uint8_t Sensor2_xshut = 5;
+
+const uint8_t Sensor1_address = 22;
+const uint8_t Sensor2_address = 25;
+
+const uint16_t minDistance = 30;
+const uint16_t maxDistance = 1200;
 
 
 // Servo
@@ -46,41 +42,25 @@ direction servoMovement = right;
 
 void setup()
 {
-    pinMode(XSHUT_pin1, OUTPUT);
-    pinMode(XSHUT_pin2, OUTPUT);
-    pinMode(XSHUT_pin3, OUTPUT);
-    pinMode(XSHUT_pin4, OUTPUT);
-
-    Serial.begin(115200);
+    pinMode(Sensor1_xshut, OUTPUT);
+    pinMode(Sensor2_xshut, OUTPUT);
+    digitalWrite(Sensor1_xshut, LOW);
+    digitalWrite(Sensor2_xshut, LOW);
 
     Wire.begin();
+    Serial.begin(115200);
 
-    Sensor4.setAddress(Sensor4_newAddress);
-    pinMode(XSHUT_pin3, INPUT);
-    delay(10);
-
-    Sensor3.setAddress(Sensor3_newAddress);
-    pinMode(XSHUT_pin2, INPUT);
-    delay(10);
-
-    Sensor2.setAddress(Sensor2_newAddress);
-    pinMode(XSHUT_pin1, INPUT);
-    delay(10);
-
+    pinMode(Sensor1_xshut, INPUT);
     Sensor1.init();
-    Sensor2.init();
-    Sensor3.init();
-    Sensor4.init();
-
+    Sensor1.setAddress(Sensor1_address);
     Sensor1.setTimeout(500);
-    Sensor2.setTimeout(500);
-    Sensor3.setTimeout(500);
-    Sensor4.setTimeout(500);
-
     Sensor1.startContinuous();
+  
+    pinMode(Sensor2_xshut, INPUT);
+    Sensor2.init();
+    Sensor2.setAddress(Sensor2_address);
+    Sensor2.setTimeout(500);
     Sensor2.startContinuous();
-    Sensor3.startContinuous();
-    Sensor4.startContinuous();
 
     // attach servo pin and set to initial direction
     ServoMotor.attach(servoPin, 450, 2400); // 400, 2600 to fix rotation issues
@@ -91,24 +71,24 @@ void setup()
 
 long GetRange(int id)
 {
-    if(id == 1)
+    if(id == 1 || id == 2)
     {
-        return Sensor1.readRangeContinuousMillimeters();
-    }
+        int dist = 0;
+      
+        if(id == 1)
+        {
+            dist = Sensor1.readRangeContinuousMillimeters();
+        }
+    
+        if(id == 2)
+        {
+            dist = Sensor2.readRangeContinuousMillimeters();
+        }
+        
+        if(dist < minDistance) { dist = maxDistance; }
+        if(dist > maxDistance) { dist = maxDistance; }
 
-    if(id == 2)
-    {
-        return Sensor2.readRangeContinuousMillimeters();
-    }
-
-    if(id == 2)
-    {
-        return Sensor3.readRangeContinuousMillimeters();
-    }
-
-    if(id == 2)
-    {
-        return Sensor4.readRangeContinuousMillimeters();
+        return dist;
     }
 
     return 0;
@@ -154,33 +134,30 @@ void ReadDataAndSetSpeed()
         if(data == "fast")
         {
             servoRotationAngel = servoRotationAngelFast;
-            averageScanAmount = averageScanAmountFast;
             return;
         }
 
         if(data == "medium")
         {
             servoRotationAngel = servoRotationAngelMedium;
-            averageScanAmount = averageScanAmountMedium;
             return;
         }
 
         if(data == "detail")
         {
             servoRotationAngel = servoRotationAngelDetailed;
-            averageScanAmount = averageScanAmountDetailed;
             return;
         }
     }
 }
 
-void SendData(name, position, distance)
+void SendData(String sensorName, int pos, int distance)
 {
     Serial.print("Laser");
     Serial.print("|");
-    Serial.print(name);
+    Serial.print(sensorName);
     Serial.print("|");
-    Serial.print(position);
+    Serial.print(pos);
     Serial.print("|");
     Serial.println(distance);
 }
@@ -200,12 +177,9 @@ void loop()
 
     long laserOne = GetRange(1);
     long laserTwo = GetRange(2);
-    long laserThree = GetRange(3);
-    long laserFrour = GetRange(4);
 
     SendData("One", servoPos, laserOne);
-    SendData("Two", (servoPos+90%360), laserTwo);
-    SendData("Three", (servoPos+180%360), laserThree);
-    SendData("Four", (servoPos+270%360), laserFour);
+    SendData("Two", (servoPos+180%360), laserTwo);
 }
+
 

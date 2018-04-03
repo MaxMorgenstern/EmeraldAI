@@ -55,33 +55,35 @@ class SerialWheelToOdometry():
 
 
     def Process(self, data, odomFrameID="/base_link", odomParentFrameID="/odom", sendTF=False):
-        #clicksLeft = int(data[4])
         clicksLeftDelta = int(data[5])
-
-        #clicksRight = int(data[8])
-        clicksRightDelata = int(data[9])
+        clicksRightDelta = int(data[9])
 
         self.__currentTime = rospy.Time.now()
 
-        distanceLeftDelta = clicksLeftDelta * self.__wheelDistancePerTickLeft
-        distanceRightDelata = clicksRightDelata * self.__wheelDistancePerTickRight
+        estimatedDistance = 0
+        estimatedRotation = 0
+        if(clicksLeftDelta > 0 or clicksRightDelta > 0):
 
-        estimatedDistance = (distanceRightDelata + distanceLeftDelta) / 2  / 1000 # mm to m
-        estimatedRotation = (distanceRightDelata - distanceLeftDelta) / self.__wheelBaseline
+            distanceLeftDelta = clicksLeftDelta * self.__wheelDistancePerTickLeft
+            distanceRightDelta = clicksRightDelta * self.__wheelDistancePerTickRight
 
-        dt = (self.__currentTime - self.__lastTime).to_sec()
-        self.__lastTime = self.__currentTime
+            estimatedDistance = (distanceRightDelta + distanceLeftDelta) / 2  / 1000 # mm to m
+            estimatedRotation = (distanceRightDelta - distanceLeftDelta) / self.__wheelBaseline
 
-        if (estimatedDistance != 0): 
-            # calculate distance traveled in x and y
-            xTmp = math.cos(estimatedRotation) * estimatedDistance
-            yTmp = -math.sin(estimatedRotation) * estimatedDistance
-            # calculate the final position of the robot
-            self.__x += (math.cos(self.__th) * xTmp - math.sin(self.__th) * yTmp) * dt
-            self.__y += (math.sin(self.__th) * xTmp + math.cos(self.__th) * yTmp) * dt
+            dt = (self.__currentTime - self.__lastTime).to_sec()
+            self.__lastTime = self.__currentTime
 
-        if (estimatedRotation != 0):
-            self.__th += estimatedRotation * dt
+            if (estimatedDistance != 0): 
+                # calculate distance traveled in x and y
+                xTmp = math.cos(estimatedRotation) * estimatedDistance
+                yTmp = -math.sin(estimatedRotation) * estimatedDistance
+
+                # calculate the final position of the robot
+                self.__x += (math.cos(self.__th) * xTmp - math.sin(self.__th) * yTmp)
+                self.__y += (math.sin(self.__th) * xTmp + math.cos(self.__th) * yTmp)
+
+            if (estimatedRotation != 0):
+                self.__th += estimatedRotation * dt
 
         # create the quaternion
         quaternion = Quaternion()

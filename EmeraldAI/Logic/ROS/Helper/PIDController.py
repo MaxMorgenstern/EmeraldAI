@@ -21,6 +21,10 @@ class PIDController():
         self.prevEncoder = 0
 
         ### get parameters ####
+        self.BaseSpeedFactor = HardwareConfig().GetFloat("Wheel.PID", "BaseSpeedFactor")
+        self.VelocityMin = HardwareConfig().GetFloat("Wheel.PID", "VelocityMin")
+        self.VelocityMax = HardwareConfig().GetFloat("Wheel.PID", "VelocityMax")
+
         self.Kp = HardwareConfig().GetFloat("Wheel.PID", "Kp")
         self.Ki = HardwareConfig().GetFloat("Wheel.PID", "Ki")
         self.Kd = HardwareConfig().GetFloat("Wheel.PID", "Kd")
@@ -52,19 +56,15 @@ class PIDController():
 
 
     def SetTarget(self, data):
+        if(data == 0):        
+            self.__resetValues()
+        
         self.target = data
         self.ticksSinceLastTarget = 0
 
 
     def MainLoop(self, timeNow):
         self.RospyTimeNow = timeNow
-        self.previousError = 0.0
-        self.prevVel = [0.0] * self.rollingPts
-        self.integral = 0.0
-        self.error = 0.0
-        self.derivative = 0.0
-        self.vel = 0.0
-
         # only do the loop if we've recently recieved a target velocity message
         if self.ticksSinceLastTarget < self.timeoutTicks:
             self.__calcVelocity()
@@ -73,8 +73,19 @@ class PIDController():
 
             return self.motor
 
+        self.then = self.RospyTimeNow
+        self.prevPidTime = self.RospyTimeNow
+        self.__resetValues()
         return 0
 
+
+    def __resetValues(self):
+        self.previousError = 0.0
+        self.prevVel = [0.0] * self.rollingPts
+        self.integral = 0.0
+        self.error = 0.0
+        self.derivative = 0.0
+        self.vel = 0.0
 
     def __calcVelocity(self):
         self.dt_duration = self.RospyTimeNow - self.then
@@ -103,11 +114,9 @@ class PIDController():
 
         return self.vel
 
-
     def __appendVel(self, val):
         self.prevVel.append(val)
         del self.prevVel[0]
-
 
     def __calcRollingVel(self):
         p = array(self.prevVel)
@@ -118,12 +127,23 @@ class PIDController():
         pidDt = pidDtDuration.to_sec()
         self.prevPidTime = self.RospyTimeNow
 
+        baseSpeed = 0
+        if(self.target > 0):
+            baseSpeed = self.outMax / self.VelocityMax * self.target
+        if(self.target < 0):
+            baseSpeed = self.outMin / self.VelocityMin * self.target
+
         self.error = self.target - self.vel
         self.integral = self.integral + (self.error * pidDt)
         self.derivative = (self.error - self.previousError) / pidDt
         self.previousError = self.error
 
-        self.motor = (self.Kp * self.error) + (self.Ki * self.integral) + (self.Kd * self.derivative)
+        print self.target, " - ", baseSpeed
+
+        self.motor = self.BaseSpeedFactor * baseSpeed \
+            + (self.Kp * self.error) \
+            + (self.Ki * self.integral) \
+            + (self.Kd * self.derivative)
 
         if self.motor > self.outMax:
             self.motor = self.outMax

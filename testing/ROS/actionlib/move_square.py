@@ -14,6 +14,7 @@ from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from tf.transformations import quaternion_from_euler
 from visualization_msgs.msg import Marker
 from math import radians, pi
+import os
 
 class MoveBaseSquare():
     def __init__(self):
@@ -81,14 +82,14 @@ class MoveBaseSquare():
             goal = MoveBaseGoal()
             
             # Use the map frame to define goal poses
-            goal.target_pose.header.frame_id = 'map'
+            goal.target_pose.header.frame_id = '/map'
             
             # Set the time stamp to "now"
             goal.target_pose.header.stamp = rospy.Time.now()
             
             # Set the goal pose to the i-th waypoint
             goal.target_pose.pose = waypoints[i]
-            
+
             # Start the robot moving toward the goal
             self.move(goal)
             
@@ -98,10 +99,12 @@ class MoveBaseSquare():
             # Send the goal pose to the MoveBaseAction server
             self.move_base.send_goal(goal)
             
-            # Allow 1 minute to get there
-            finished_within_time = self.move_base.wait_for_result(rospy.Duration(60)) 
+            waitingTime = 60 
 
-            print self.move_base.get_state(), GoalStatus.SUCCEEDED
+            # Allow 1 minute to get there
+            finished_within_time = self.move_base.wait_for_result(rospy.Duration(waitingTime)) 
+
+            print self.move_base.get_state()
             """
             uint8 PENDING         = 0   # The goal has yet to be processed by the action server
             uint8 ACTIVE          = 1   # The goal is currently being processed by the action server
@@ -131,6 +134,9 @@ class MoveBaseSquare():
                 state = self.move_base.get_state()
                 if state == GoalStatus.SUCCEEDED:
                     rospy.loginfo("Goal succeeded!")
+                else:
+                    rospy.loginfo("Issue while reaching goal!")
+
                     
     def init_markers(self):
         # Set up our waypoint markers
@@ -171,6 +177,7 @@ class MoveBaseSquare():
         rospy.sleep(1)
 
 if __name__ == '__main__':
+    print str(os.getpid())
     try:
         MoveBaseSquare()
     except rospy.ROSInterruptException:

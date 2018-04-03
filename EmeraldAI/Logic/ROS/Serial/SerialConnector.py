@@ -43,3 +43,7 @@ class SerialConnector():
         if(data is not None):
             self.SerialPointer.write("{0};".format(data))
             self.SerialPointer.flush()
+
+    def Disconnect(self):
+        self.SerialPointer.close()
+        time.sleep(1)

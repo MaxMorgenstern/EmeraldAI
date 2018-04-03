@@ -134,14 +134,14 @@ class WiFiFingerprinting(object):
 
     def GetLocationID(self, name):
         location = db().Fetchall("SELECT ID FROM Fingerprint_Position WHERE Name = '{0}'".format(name))
-        if len(location > 0):
+        if len(location) > 0:
             return location[0][0]
         return None
 
 
     def GetLocationName(self, id):
         location = db().Fetchall("SELECT Name FROM Fingerprint_Position WHERE ID = '{0}'".format(id))
-        if len(location > 0):
+        if len(location) > 0:
             return location[0][0]
         return None
 
