@@ -17,7 +17,7 @@ class SerialConnector():
         self.ReadTimestamp = time.time() + self.InitialTimestampDelay
 
     def Read(self):
-        # if nothing to read, sleep for 10 milliseconds and check timeout
+        # if nothing to read, sleep for x milliseconds and check timeout
         while self.SerialPointer.inWaiting() == 0:
             time.sleep(0.01)
             if(self.ReadTimestamp + 5 < time.time()):
