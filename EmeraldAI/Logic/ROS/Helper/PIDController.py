@@ -138,7 +138,9 @@ class PIDController():
         self.derivative = (self.error - self.previousError) / pidDt
         self.previousError = self.error
 
-        print self.target, " - ", baseSpeed
+        
+        # print self.target, " - ", baseSpeed
+
 
         self.motor = self.BaseSpeedFactor * baseSpeed \
             + (self.Kp * self.error) \
