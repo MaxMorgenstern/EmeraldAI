@@ -25,6 +25,7 @@ then
 			export ROS_MASTER_URI=http://$MASTER_HOSTNAME:11311
 			break
 		fi
+		sleep 5
 	done
 fi
 
