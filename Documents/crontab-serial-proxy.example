@@ -1,13 +1,17 @@
-ROS_ROOT=/opt/ros/jade/share/ros
-ROS_PACKAGE_PATH=/opt/ros/jade/share:/opt/ros/jade/stacks
-LD_LIBRARY_PATH=/opt/ros/jade/lib
-CPATH=/opt/ros/jade/include
-PATH=/opt/ros/jade/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
-ROS_DISTRO=jade
-PYTHONPATH=/opt/ros/jade/lib/python2.7/dist-packages
-PKG_CONFIG_PATH=/opt/ros/jade/lib/pkgconfig
-CMAKE_PREFIX_PATH=/opt/ros/jade
-ROS_ETC_DIR=/opt/ros/jade/etc/ros
+# Populate the variables below according to your profile
+ROS_ROOT=
+ROS_PACKAGE_PATH=
+LD_LIBRARY_PATH=
+CPATH=
+PATH=
+ROS_DISTRO=
+PYTHONPATH=
+PKG_CONFIG_PATH=
+CMAKE_PREFIX_PATH=
+ROS_ETC_DIR=
+
 SHELL=/bin/bash
-EMERALD_PATH=/<yourpath>/
-@reboot sleep 60 && . $HOME/.profile; $EMERALD_PATH/EmeraldAI/Application/_RunSerialProxy.sh >> $EMERALD_PATH/EmeraldAI/Data/Log/cronlog.log 2>&1
+
+EMERALD_PATH=/<path-to-the-emerald-installation>/
+
+@reboot sleep 10 && . $HOME/.profile; $EMERALD_PATH/EmeraldAI/Application/_RebootSerialProxy.sh >> $EMERALD_PATH/EmeraldAI/Data/Log/cronlog.log 2>&1
