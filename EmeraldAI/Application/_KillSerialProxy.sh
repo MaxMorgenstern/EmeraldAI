@@ -21,4 +21,5 @@ fi
 if [ $exitCode == 1 ] ; then
 	exit 1
 fi
+echo "No processes to kill"
 exit 0
