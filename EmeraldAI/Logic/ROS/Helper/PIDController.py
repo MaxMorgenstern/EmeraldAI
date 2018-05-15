@@ -25,6 +25,9 @@ class PIDController():
         self.VelocityMin = HardwareConfig().GetFloat("Wheel.PID", "VelocityMin")
         self.VelocityMax = HardwareConfig().GetFloat("Wheel.PID", "VelocityMax")
 
+        self.VelocityApproachMin = HardwareConfig().GetFloat("Wheel.PID", "VelocityApproachMin")
+        self.VelocityApproachValue = HardwareConfig().GetFloat("Wheel.PID", "VelocityApproachValue")
+
         self.Kp = HardwareConfig().GetFloat("Wheel.PID", "Kp")
         self.Ki = HardwareConfig().GetFloat("Wheel.PID", "Ki")
         self.Kd = HardwareConfig().GetFloat("Wheel.PID", "Kd")
@@ -127,16 +130,13 @@ class PIDController():
         pidDt = pidDtDuration.to_sec()
         self.prevPidTime = self.RospyTimeNow
 
-        VelocityApproachMin = 0.12
-        VelocityApproachValue = 0.20
-
         if(abs(self.target) > 0 
-            and abs(self.target) < VelocityApproachValue 
-            and abs(self.vel) < VelocityApproachMin):
+            and abs(self.target) < self.VelocityApproachValue 
+            and abs(self.vel) < self.VelocityApproachMin):
             if(self.target > 0):
-                self.target = VelocityApproachValue
+                self.target = self.VelocityApproachValue
             if(self.target < 0):
-                self.target = VelocityApproachValue * -1
+                self.target = self.VelocityApproachValue * -1
 
         baseSpeed = 0
         if(self.target > 0):
