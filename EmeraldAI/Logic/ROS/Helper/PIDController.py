@@ -127,6 +127,17 @@ class PIDController():
         pidDt = pidDtDuration.to_sec()
         self.prevPidTime = self.RospyTimeNow
 
+        VelocityApproachMin = 0.12
+        VelocityApproachValue = 0.20
+
+        if(abs(self.target) > 0 
+            and abs(self.target) < VelocityApproachValue 
+            and abs(self.vel) < VelocityApproachMin):
+            if(self.target > 0):
+                self.target = VelocityApproachValue
+            if(self.target < 0):
+                self.target = VelocityApproachValue * -1
+
         baseSpeed = 0
         if(self.target > 0):
             baseSpeed = self.outMax / self.VelocityMax * self.target
@@ -137,9 +148,6 @@ class PIDController():
         self.integral = self.integral + (self.error * pidDt)
         self.derivative = (self.error - self.previousError) / pidDt
         self.previousError = self.error
-
-        
-        # print self.target, " - ", baseSpeed
 
 
         self.motor = self.BaseSpeedFactor * baseSpeed \
