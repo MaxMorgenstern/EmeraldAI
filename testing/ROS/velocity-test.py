@@ -12,8 +12,8 @@ def move():
     rateInHz = 10 # in Hz
     rate = rospy.Rate(rateInHz)
 
-    minVel = 0
-    maxVel = 1
+    minVel = 0.12 
+    maxVel = 0.20
     
     currentVelocity = minVel
 
@@ -24,17 +24,38 @@ def move():
     vel_msg.angular.y = 0
     vel_msg.angular.z = 0
 
+    
+    print "Start Test"
+
     while currentVelocity < maxVel:
         vel_msg.linear.x = currentVelocity
         velocity_publisher.publish(vel_msg)
+        print "Velocity", currentVelocity
         rate.sleep()
 
-        currentVelocity += 0.001
-
+        currentVelocity += 0.0005
 
     vel_msg.linear.x = 0
     #Force the robot to stop
     velocity_publisher.publish(vel_msg)
+    
+    return
+
+
+    minVel = 0.12
+    maxVel = 0.20
+    currentVelocity = maxVel
+
+    print "Start Test"
+
+    while currentVelocity > minVel:
+        vel_msg.linear.x = currentVelocity
+        velocity_publisher.publish(vel_msg)
+        print "Velocity", currentVelocity
+        rate.sleep()
+
+        currentVelocity -= 0.001
+
 
 
 if __name__ == '__main__':
