@@ -230,6 +230,7 @@ pip-log.txt
 
 Deployment/Update.py
 Deployment/versionfile.txt
+!Deployment/*
 
 EmeraldAI/Data/SqliteDB/brain.sqlite
 EmeraldAI/Data/TrainingData/Training.csv
