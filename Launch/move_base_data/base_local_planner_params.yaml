@@ -1,14 +1,21 @@
 TrajectoryPlannerROS:
-  min_vel_x: 0.25 # 0.1
-  max_vel_x: 0.675 # 0.5
+  
+  # actual min vel 0.12 / 0.13 but needs to start with 0.20
+  min_vel_x: 0.12 # 0.1 meter/second
+  max_vel_x: 0.675 # default: 0.5 meter/second
 
-  max_vel_theta: 10.3
-  min_vel_theta: -10.3
-  min_in_place_vel_theta: 4.0 # 0.4
+  max_vel_theta: 10.3 # radians/second
+  min_vel_theta: -10.3 # radians/second
 
-  acc_lim_x: 2.5 # 2.5
-  acc_lim_y: 0.0 # 2.5
-  acc_lim_theta: 4.2 # 3.2
+  max_rotational_vel: 10.3 ## radians/second
+  min_rotational_vel: 4.3 
+  min_in_place_vel_theta: 4.3
+  min_in_place_rotational_vel: 4.3  ## radians/second
+
+  acc_lim_th: 1.5708 # radians/second^2
+  acc_lim_x: 0.2 # 2.5 meter/second^2
+  acc_lim_y: 0.0 # 2.5 meter/second^2
+  acc_lim_theta: 1.5708 # 3.2 radians/second^2
 
   holonomic_robot: false # true
 

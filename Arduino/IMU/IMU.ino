@@ -6,6 +6,9 @@
 // needs to be in inv_mpu.cpp as well
 //#define MPU9250
 #define MPU6050
+// 0 or 1 == primary IMU
+// > 1 == secondary IMU
+uint8_t imu_id = 2;
 
 
 //for identity matrix see inv_mpu documentation how this is calculated; this is overwritten by a config packet
@@ -62,7 +65,7 @@ void loop() {
         Serial.print("MPU9250|"); 
       #endif
       
-      Serial.print(np); 
+      Serial.print(imu_id); 
       Serial.print("|"); 
       
       Serial.print(mympu.ypr[0]);

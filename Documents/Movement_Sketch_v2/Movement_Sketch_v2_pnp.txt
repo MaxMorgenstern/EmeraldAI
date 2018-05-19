@@ -1,0 +1,43 @@
+*Pick And Place List
+*Company=
+*Author=
+*eMail=
+*
+*Project=Movement_Sketch_v2
+*Date=23:30:04
+*CreatedBy=Fritzing 0.9.3b.04.19.5c895d327c44a3114e5fcc9d8260daf0cbb52806
+*
+*
+*Coordinates in mm, always center of component
+*Origin 0/0=Lower left corner of PCB
+*Rotation in degree (0-360, math. pos.)
+*
+*No;Value;Package;X;Y;Rotation;Side;Name
+1;;;1.99577;-41.4307;0;Bottom;Hole4
+2;;;65.2209;-31.7988;90;Bottom;Motor 1 C
+3;;;57.6009;-31.7988;90;Bottom;Motor 1 B
+4;;;36.0109;-45.1338;0;Bottom;IR Counter
+5;;;49.9809;-31.7988;90;Bottom;Motor 1 A
+6;;;36.0109;1.85621;180;Bottom;IR Counter1
+7;9V;;71.5709;-12.7488;0;Bottom;Battery 12V
+8;;;33.4709;-41.9588;0;Bottom;Via5
+9;;;22.7748;-18.2644;0;Bottom;Via19
+10;;;38.427;-1.57522;0;Bottom;Via6
+11;;;57.6009;-11.4788;90;Bottom;Motor 2 B
+12;9V;;71.5709;-30.5288;0;Bottom;Battery 5V
+13;;;49.9809;-11.4788;90;Bottom;Motor 2 C
+14;;;65.2209;-11.4788;90;Bottom;Motor 2 A
+15;;;51.9225;-27.8895;0;Bottom;Via14
+16;;THT;57.5089;-21.7502;90;Bottom;L293D
+17;100µF;200 mil [THT, electrolytic];23.3109;-36.8788;0;Bottom;C1
+18;;;75.759;-1.76412;0;Bottom;Hole1
+19;;;74.0234;-22.0609;0;Bottom;Via4
+20;;;1.99577;-1.76412;0;Bottom;Hole2
+21;;;23.3024;-21.6388;90;Bottom;Arduino
+22;;;30.3899;-21.0345;0;Bottom;Via16
+23;;;75.759;-41.4307;0;Bottom;Hole3
+24;;;43.338;-15.6435;0;Bottom;Via18
+25;;;24.9846;-24.6267;0;Bottom;Via15
+26;;;56.3147;-29.2738;0;Bottom;Via9
+27;100µF;200 mil [THT, electrolytic];23.3109;-6.39879;0;Bottom;C2
+28;;;54.5873;-15.6032;0;Bottom;Via17

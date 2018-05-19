@@ -1,0 +1,17 @@
+# Populate the variables below according to your profile
+ROS_ROOT=
+ROS_PACKAGE_PATH=
+LD_LIBRARY_PATH=
+CPATH=
+PATH=
+ROS_DISTRO=
+PYTHONPATH=
+PKG_CONFIG_PATH=
+CMAKE_PREFIX_PATH=
+ROS_ETC_DIR=
+
+SHELL=/bin/bash
+
+EMERALD_PATH=/<path-to-the-emerald-installation>/
+
+@reboot sleep 10 && . $HOME/.profile; $EMERALD_PATH/EmeraldAI/Application/_RebootSerialProxy.sh >> $EMERALD_PATH/EmeraldAI/Data/Log/cronlog.log 2>&1

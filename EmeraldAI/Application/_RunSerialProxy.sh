@@ -1,5 +1,8 @@
 #!/bin/bash
+source $HOME/.profile
+
 directory=`dirname $0`
+
 source $directory/_Initialize.sh
 
 echo "Start SerialTFRepeater..."

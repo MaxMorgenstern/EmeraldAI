@@ -35,6 +35,8 @@ class TwistToSerialWheel():
 
         self.__wheelBaseInMM = HardwareConfig().GetInt("Wheel", "BaseWidth") # in mm
 
+        self.__inPlaceRoatation = HardwareConfig().GetBoolean("Wheel", "InPlaceRoatation")
+
         self.__currentTime = rospy.Time.now()
         self.__lastTime = rospy.Time.now()
 
@@ -67,11 +69,17 @@ class TwistToSerialWheel():
     def ProcessTwist(self):
         if (self.__ticksSinceLastTwistInstruction < self.__timeoutTicks):
             if(self.__ticksSinceLastTwistInstruction == 0):
-                # / 1000 = millimeter in meter 
+                # / 1000 = millimeter in meter
                 self.__right = 1.0 * self.__dx + self.__dr * (self.__wheelBaseInMM / 1000) / 2
-                self.__rightPidController.SetTarget(self.__right)
-
                 self.__left = 1.0 * self.__dx - self.__dr * (self.__wheelBaseInMM / 1000) / 2
+
+                if (not self.__inPlaceRoatation):
+                    if(self.__right > 0 and self.__left < 0):
+                        self.__left = 0
+                    if(self.__right < 0 and self.__left > 0):
+                        self.__right = 0
+
+                self.__rightPidController.SetTarget(self.__right)
                 self.__leftPidController.SetTarget(self.__left)
 
             self.__ticksSinceLastTwistInstruction += 1

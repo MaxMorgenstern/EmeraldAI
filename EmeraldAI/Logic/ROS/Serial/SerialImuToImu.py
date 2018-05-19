@@ -26,6 +26,7 @@ class SerialImuToImu():
         rospy.loginfo("ROS Serial Python Node '{0}'".format(uid))
 
         self.__imuPublisher = rospy.Publisher('/imu_data', Imu, queue_size=10)
+        self.__imuPublisherSecondary = rospy.Publisher('/imu_data_secondary', Imu, queue_size=10)
 
     def Validate(self, data):
         if(data is None):
@@ -37,6 +38,7 @@ class SerialImuToImu():
         return False
 
     def Process(self, data, imuFrameID="/imu_sensor", imuParentFrameID="/base_link", translation=(0, 0, 0), sendTF=False):
+        ImuID = int(data[1])
         Y = GeometryHelper.DegreeToRadian(float(data[2]))
         P = GeometryHelper.DegreeToRadian(float(data[3]))
         R = GeometryHelper.DegreeToRadian(float(data[4]))
@@ -79,8 +81,11 @@ class SerialImuToImu():
 
         rospy.loginfo(imuMessage)
 
-        self.__imuPublisher.publish(imuMessage)
-
+        if ImuID <= 1:
+            self.__imuPublisher.publish(imuMessage)
+        else:
+            self.__imuPublisherSecondary.publish(imuMessage)
+            
         if(sendTF):
             TFHelper.SendTF2Transform(
                 translation,

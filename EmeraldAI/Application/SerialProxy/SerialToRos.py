@@ -29,10 +29,16 @@ def Processing(port, baud):
     serialConnect = SerialConnector(port, baud)
 
     imuToImu = SerialImuToImu()
+    isImu = True
     radarToRange = SerialRadarToRange()
+    isRadarRange = True
     laserToLaser = SerialLaserToLaser()
+    isLaserRange = True
     wheelToOdom = SerialWheelToOdometry()
+    isWheel = True
     twistToWheel = TwistToSerialWheel()
+
+    firstRun = True
 
     try:
         signal.signal(signal.SIGINT, ProcessHandler)
@@ -48,19 +54,41 @@ def Processing(port, baud):
             if(data is None):
                 continue
 
-            if(imuToImu.Validate(data)):
+            if(firstRun):
+                if(not imuToImu.Validate(data)):
+                    isImu = False
+
+                if(UseUltrasonic and not radarToRange.Validate(data)):
+                    isRadarRange = False
+
+                if(UseLaser and not laserToLaser.Validate(data)):
+                    isLaserRange = False
+
+                if(not wheelToOdom.Validate(data)):
+                    isWheel = False
+
+                if(isImu or isRadarRange or isLaserRange or isWheel):
+                    firstRun = False
+                else:
+                    isImu = True
+                    isRadarRange = True
+                    isLaserRange = True
+                    isWheel = True
+
+
+            if(isImu and imuToImu.Validate(data)):
                 imuToImu.Process(data)
                 continue
 
-            if(UseUltrasonic and radarToRange.Validate(data)):
+            if(isRadarRange and radarToRange.Validate(data)):
                 radarToRange.Process(data)
                 continue
 
-            if(UseLaser and laserToLaser.Validate(data)):
+            if(isLaserRange and laserToLaser.Validate(data)):
                 laserToLaser.Process(data)
                 continue
 
-            if(wheelToOdom.Validate(data)):
+            if(isWheel and wheelToOdom.Validate(data)):
                 wheelToOdom.Process(data)
 
                 twistToWheel.ProcessTwist()
@@ -68,7 +96,8 @@ def Processing(port, baud):
 
                 rightMotorValue, leftMotorValue = twistToWheel.GetMotorInstructions()            
                 serialConnect.Write("{0}|{1}".format(leftMotorValue, rightMotorValue))
-    
+                continue
+
     finally:
         print "Disconnect serial connection for", port
         serialConnect.Disconnect()

@@ -1,6 +1,15 @@
 #!/bin/bash
 current_path=$(cd "$(dirname "${BASH_SOURCE[0]}")"; pwd)
 deployment_path=$(cd "$(dirname "${BASH_SOURCE[0]}")"; cd ..; cd ..; cd ..; cd Deployment; pwd )
+emerald_path=$(cd "$(dirname "${BASH_SOURCE[0]}")"; cd ..; cd ..; cd ..; pwd )
+
+backup_path=$deployment_path/Backups
+backup_filename="$(date +'%Y-%m-%d').zip"
+
+# Create backup
+echo "Create backup"
+zip -q -T -r $backup_path/$backup_filename $emerald_path/ -x *.git* $deployment_path**\*
+echo "Backup complete '$backup_filename'"
 
 # Copy Update File
 echo "Copy Update File"

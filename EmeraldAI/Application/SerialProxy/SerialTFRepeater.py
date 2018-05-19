@@ -33,7 +33,8 @@ def mainLoop():
 
     rate = rospy.Rate(rateInHz) # hz
     while not rospy.is_shutdown():
-        TFLooper().loop()
+        if not TFLooper().loop():
+            rate.sleep()
         rate.sleep()
 
 
