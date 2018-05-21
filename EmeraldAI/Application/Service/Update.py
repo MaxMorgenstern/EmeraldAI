@@ -49,10 +49,11 @@ def MoveDirectory(src_dir, dest_dir):
         shutil.move(src, dest_dir)
 
 
-if(Pid.HasPid("Update")):
+PIDName = "Update"
+if(Pid.HasPid(PIDName)):
     print "Update already running"
     exit()
-Pid.Create("Update")
+Pid.Create(PIDName)
 
 try:
     releaseUrl = 'https://api.github.com/repos/MaxMorgenstern/EmeraldAI/releases'
@@ -68,22 +69,27 @@ try:
 
     try:
         file = open(versionFilePath, 'r')
-        highestVestion = file.read()
+        localVersion = file.read()
     except Exception as e:
-        highestVestion = '0.0.0'
+        print 'Data about currently installed version missing'
+        localVersion = '0.0.0'
 
     highestVersionObject = None
+    highestVersionNumber = localVersion
+
     for d in releaseObjects:
-        currentVersion = CleanTerm(d['tag_name'])
-        if(IsVersionHigher(highestVestion, currentVersion)):
-            highestVestion = currentVersion
+        gitVersion = CleanTerm(d['tag_name'])
+        if(IsVersionHigher(highestVersionNumber, gitVersion)):
+            highestVersionNumber = gitVersion
             highestVersionObject = d
 
     if (highestVersionObject is None):
-        print 'Already up to date'
-        Pid.Remove("Update")
+        print "Already up to date. Version: '{0}'".format(localVersion)
         exit()
 
+    print "Local version '{0}' - Latest release {1}".format(localVersion, highestVersionNumber)
+
+    print "Download latest release"
 
     # download file
     response = urllib2.urlopen(highestVersionObject['tarball_url'])
@@ -93,6 +99,7 @@ try:
     file.write(data)
     file.close()
 
+    print "Extract files"
 
     # extract
     tar = tarfile.open(downloadFilename, 'r:gz')
@@ -100,6 +107,7 @@ try:
     extractedFolderName = tar.getnames()[0]
     tar.close()
 
+    print "Update files"
 
     # move into destination
     MoveDirectory(os.path.join(deploymentPath, extractedFolderName, 'EmeraldAI'), Global.EmeraldPath)
@@ -107,7 +115,7 @@ try:
 
     # update version
     file = open(versionFilePath,'w')
-    file.write(highestVestion)
+    file.write(highestVersionNumber)
     file.close()
 
 
@@ -116,4 +124,4 @@ try:
     shutil.rmtree(os.path.join(deploymentPath, extractedFolderName))
 
 finally:
-    Pid.Remove("Update")
+    Pid.Remove(PIDName)
