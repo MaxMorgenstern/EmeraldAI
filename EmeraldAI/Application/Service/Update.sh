@@ -8,7 +8,7 @@ backup_filename="$(date +'%Y-%m-%d').zip"
 
 # Create backup
 echo "Create backup"
-zip -q -T -r $backup_path/$backup_filename $emerald_path/ -x *.git* $deployment_path**\*
+zip -q -r -0 $backup_path/$backup_filename $emerald_path/ -x *.git* $deployment_path**\*
 echo "Backup complete '$backup_filename'"
 
 # Copy Update File
