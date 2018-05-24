@@ -4,8 +4,10 @@ directory=`dirname $0`
 dt=$(date +'%Y-%m-%d %H:%M:%S')
 echo "Reboot at '$dt'"
 
+echo "Kill old serial proxy"
 $directory/_KillSerialProxy.sh
 
-sleep 5
+sleep 1
 
+echo "Restart serial proxy"
 $directory/_RunSerialProxy.sh
