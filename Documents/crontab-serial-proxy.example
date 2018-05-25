@@ -14,4 +14,4 @@ SHELL=/bin/bash
 
 EMERALD_PATH=/<path-to-the-emerald-installation>/
 
-@reboot sleep 10 && . $HOME/.profile; $EMERALD_PATH/EmeraldAI/Application/_RebootSerialProxy.sh >> $EMERALD_PATH/EmeraldAI/Data/Log/cronlog.log 2>&1
+@reboot $EMERALD_PATH/EmeraldAI/Application/_Cron_UpdateAndRebootSerialProxy.sh >> $EMERALD_PATH/EmeraldAI/Data/Log/cronlog.log 2>&1

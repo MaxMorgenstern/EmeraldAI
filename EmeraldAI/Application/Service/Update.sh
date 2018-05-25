@@ -8,15 +8,15 @@ backup_filename="$(date +'%Y-%m-%d').zip"
 
 # Create backup
 echo "Create backup"
-zip -q -T -r $backup_path/$backup_filename $emerald_path/ -x *.git* $deployment_path**\*
+zip -q -r -0 $backup_path/$backup_filename $emerald_path/ -x *.git* $deployment_path**\*
 echo "Backup complete '$backup_filename'"
 
 # Copy Update File
-echo "Copy Update File"
+echo "Copy update file"
 cp "$current_path/Update.py" "$deployment_path/Update.py"
 
 # Perform Update
-echo "Perform Update"
+echo "Perform update"
 python "$deployment_path/Update.py"
 echo "Update complete"
 
