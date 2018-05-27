@@ -125,34 +125,48 @@ class PIDController():
         p = array(self.prevVel)
         self.vel = p.mean()
 
+    def __velocityToMotorSpeed(self, velocity):
+        if(velocity > 0):
+            return self.outMax / self.VelocityMax * velocity
+        if(velocity < 0):
+            return self.outMin / self.VelocityMin * velocity
+        return 0
+
     def __doPid(self):
         pidDtDuration = self.RospyTimeNow - self.prevPidTime
         pidDt = pidDtDuration.to_sec()
         self.prevPidTime = self.RospyTimeNow
 
+        if (self.target == 0):
+            self.motor = 0
+            return
+
         if(abs(self.target) > 0 
-            and abs(self.target) < self.VelocityApproachValue 
-            and abs(self.vel) < self.VelocityApproachMin):
+            and abs(self.target) < self.VelocityApproachValue  # Value we need at least to start
+            and abs(self.vel) < self.VelocityApproachMin):  # Min value able to drive
             if(self.target > 0):
                 self.target = self.VelocityApproachValue
             if(self.target < 0):
                 self.target = self.VelocityApproachValue * -1
 
-        baseSpeed = 0
-        if(self.target > 0):
-            baseSpeed = self.outMax / self.VelocityMax * self.target
-        if(self.target < 0):
-            baseSpeed = self.outMin / self.VelocityMin * self.target
+        baseSpeed = self.__velocityToMotorSpeed(self.target)
 
         self.error = self.target - self.vel
         self.integral = self.integral + (self.error * pidDt)
         self.derivative = (self.error - self.previousError) / pidDt
         self.previousError = self.error
 
+        """
         self.motor = self.BaseSpeedFactor * baseSpeed \
             + (self.Kp * self.error) \
             + (self.Ki * self.integral) \
             + (self.Kd * self.derivative)
+        """
+
+        self.motor = self.BaseSpeedFactor * baseSpeed \
+            + (self.Kp * self.__velocityToMotorSpeed(self.error)) \
+            + (self.Ki * self.__velocityToMotorSpeed(self.integral)) \
+            + (self.Kd * self.__velocityToMotorSpeed(self.derivative))
 
         if self.motor > self.outMax:
             self.motor = self.outMax
@@ -161,6 +175,3 @@ class PIDController():
         if self.motor < self.outMin:
             self.motor = self.outMin
             self.integral = self.integral - (self.error * pidDt)
-
-        if (self.target == 0):
-            self.motor = 0
