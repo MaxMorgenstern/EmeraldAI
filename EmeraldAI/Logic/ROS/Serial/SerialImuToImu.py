@@ -37,7 +37,7 @@ class SerialImuToImu():
             return True
         return False
 
-    def Process(self, data, imuFrameID="/imu_sensor", imuParentFrameID="/base_link", translation=(0, 0, 0), sendTF=False):
+    def Process(self, data, imuFrameID="imu_sensor", imuParentFrameID="base_link", translation=(0, 0, 0), sendTF=False):
         ImuID = int(data[1])
         Y = GeometryHelper.DegreeToRadian(float(data[2]))
         P = GeometryHelper.DegreeToRadian(float(data[3]))
