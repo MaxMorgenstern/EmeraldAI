@@ -31,8 +31,8 @@ class SerialRadarToRange():
 
         self.__rangeMessage = Range()
         self.__rangeMessage.radiation_type = 0
-        self.__rangeMessage.min_range = HardwareConfig().GetFloat("Ultrasonic", "RangeMin")
-        self.__rangeMessage.max_range = HardwareConfig().GetFloat("Ultrasonic", "RangeMax")
+        self.__rangeMessage.min_range = HardwareConfig().GetFloat("Ultrasonic", "RangeMin") / 100.0
+        self.__rangeMessage.max_range = HardwareConfig().GetFloat("Ultrasonic", "RangeMax") / 100.0
         self.__rangeMessage.field_of_view = HardwareConfig().GetFloat("Ultrasonic", "FieldOfView")
         self.__rangeMessage.radiation_type = 0
 
