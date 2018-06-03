@@ -40,5 +40,8 @@ obstacle_layer:
     enabled: true
     obstace_range: 1.2
     raytrace_range: 1.2
-    observation_sources: scan
-    scan: {data_type: LaserScan, topic: /radar/laser/one, makring: true, clearing: true, expected_update_rate: 0, inf_is_valid: true}
+    observation_sources: scan_one scan_two scan_three scan_four
+    scan_one: {data_type: LaserScan, topic: /radar/laser/one, makring: true, clearing: true, expected_update_rate: 0, inf_is_valid: true}
+    scan_two: {data_type: LaserScan, topic: /radar/laser/two, makring: true, clearing: true, expected_update_rate: 0, inf_is_valid: true}
+    scan_three: {data_type: LaserScan, topic: /radar/laser/three, makring: true, clearing: true, expected_update_rate: 0, inf_is_valid: true}
+    scan_four: {data_type: LaserScan, topic: /radar/laser/four, makring: true, clearing: true, expected_update_rate: 0, inf_is_valid: true}
