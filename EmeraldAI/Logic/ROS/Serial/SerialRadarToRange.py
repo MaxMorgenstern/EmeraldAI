@@ -52,7 +52,7 @@ class SerialRadarToRange():
 
         calculatedRangeFrameID = "{0}_{1}".format(rangeFrameID, moduleName)
 
-        moduleRangeInMeter = moduleRange / 100.0
+        moduleRangeInMeter = round(moduleRange / 100.0, 3)
 
         self.__rangeMessage.range = moduleRangeInMeter
         self.__rangeMessage.header.stamp = rospy.Time.now()

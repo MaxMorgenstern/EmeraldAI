@@ -55,7 +55,7 @@ class SerialLaserToLaser():
 
         calculatedLaserFrameID = "{0}_{1}".format(rangeFrameID, moduleName)
 
-        moduleRangeInMeter = moduleRange / 1000.0
+        moduleRangeInMeter = round(moduleRange / 1000.0, 3)
 
         self.__laserMessage.ranges = [moduleRangeInMeter, moduleRangeInMeter, moduleRangeInMeter]
         self.__laserMessage.header.stamp = rospy.Time.now()
