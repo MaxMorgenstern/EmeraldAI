@@ -19,16 +19,16 @@ track_unknown_space: true
 observation_sources: obstacle_layer range_layer inflation_layer
 
 plugins:
-#- {name: voxel_layer, type: "costmap_2d::VoxelLayer"} 
+#- {name: voxel_layer, type: "costmap_2d::VoxelLayer"}
 - {name: range_layer, type: "range_sensor_layer::RangeSensorLayer"}
 - {name: inflation_layer, type: "costmap_2d::InflationLayer"}
-- {name: obstacle_layer, type: "costmap_2d::ObstacleLayer"} 
+- {name: obstacle_layer, type: "costmap_2d::ObstacleLayer"}
 
 range_layer:
     ns: "/radar/range"
     topics: ["back", "front"]
-    obstacle_range: 1.75 # max distance the sensor will set obstacles - in meters
-    raytrace_range: 2 
+    obstacle_range: 1.90 # max distance the sensor will set obstacles - in meters
+    raytrace_range: 2
     no_readings_timeout: 0.0
     clear_threshold: 0.1
     mark_threshold: 0.8
@@ -40,7 +40,7 @@ inflation_layer:
 
 obstacle_layer:
     enabled: true
-    obstace_range: 1.2
+    obstacle_range: 1.15
     raytrace_range: 1.2
     observation_sources: scan_one scan_two scan_three scan_four
     scan_one: {data_type: LaserScan, topic: /radar/laser/one, makring: true, clearing: true, expected_update_rate: 0, inf_is_valid: false}
