@@ -14,6 +14,8 @@ width: 10.0
 height: 10.0
 resolution: 0.05
 
+track_unknown_space: true
+
 observation_sources: obstacle_layer range_layer inflation_layer
 
 plugins:
@@ -41,7 +43,7 @@ obstacle_layer:
     obstace_range: 1.2
     raytrace_range: 1.2
     observation_sources: scan_one scan_two scan_three scan_four
-    scan_one: {data_type: LaserScan, topic: /radar/laser/one, makring: true, clearing: true, expected_update_rate: 0, inf_is_valid: true}
-    scan_two: {data_type: LaserScan, topic: /radar/laser/two, makring: true, clearing: true, expected_update_rate: 0, inf_is_valid: true}
-    scan_three: {data_type: LaserScan, topic: /radar/laser/three, makring: true, clearing: true, expected_update_rate: 0, inf_is_valid: true}
-    scan_four: {data_type: LaserScan, topic: /radar/laser/four, makring: true, clearing: true, expected_update_rate: 0, inf_is_valid: true}
+    scan_one: {data_type: LaserScan, topic: /radar/laser/one, makring: true, clearing: true, expected_update_rate: 0, inf_is_valid: false}
+    scan_two: {data_type: LaserScan, topic: /radar/laser/two, makring: true, clearing: true, expected_update_rate: 0, inf_is_valid: false}
+    scan_three: {data_type: LaserScan, topic: /radar/laser/three, makring: true, clearing: true, expected_update_rate: 0, inf_is_valid: false}
+    scan_four: {data_type: LaserScan, topic: /radar/laser/four, makring: true, clearing: true, expected_update_rate: 0, inf_is_valid: false}

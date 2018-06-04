@@ -36,8 +36,8 @@ class SerialLaserToLaser():
         self.__laserMessage.angle_max = HardwareConfig().GetFloat("Laser.SinglePoint", "AngleMax")
         self.__laserMessage.angle_increment = HardwareConfig().GetFloat("Laser.SinglePoint", "AngleIncrement")
         self.__laserMessage.time_increment = HardwareConfig().GetFloat("Laser.SinglePoint", "TimeIncrement")
-        self.__laserMessage.range_min = HardwareConfig().GetFloat("Laser.SinglePoint", "RangeMin") / 100.0
-        self.__laserMessage.range_max = HardwareConfig().GetFloat("Laser.SinglePoint", "RangeMax") / 100.0
+        self.__laserMessage.range_min = round(HardwareConfig().GetFloat("Laser.SinglePoint", "RangeMin") / 100.0, 2)
+        self.__laserMessage.range_max = round(HardwareConfig().GetFloat("Laser.SinglePoint", "RangeMax") / 100.0, 2)
 
     def Validate(self, data):
         if(data is None):
