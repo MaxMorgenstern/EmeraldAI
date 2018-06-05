@@ -59,7 +59,7 @@ InPlaceRoatation = False
 
 [Wheel.PID]
 # Base speed factor baseSpeed * factor
-BaseSpeedFactor = 0.9
+BaseSpeedFactor = 0.8
 
 # Max and Min Velocity of the robot
 VelocityMin = -0.675
@@ -71,9 +71,9 @@ VelocityApproachValue = 0.20
 
 
 # Proportional gain to the PID controller. 
-Kp = 10
+Kp = 0.1
 # Integral gain to the PID controller. 
-Ki = 10
+Ki = 0.05
 # Derivative gain to the PID controller. 
 Kd = 0.001
 

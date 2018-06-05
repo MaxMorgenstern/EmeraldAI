@@ -31,8 +31,8 @@ class SerialRadarToRange():
 
         self.__rangeMessage = Range()
         self.__rangeMessage.radiation_type = 0
-        self.__rangeMessage.min_range = HardwareConfig().GetFloat("Ultrasonic", "RangeMin")
-        self.__rangeMessage.max_range = HardwareConfig().GetFloat("Ultrasonic", "RangeMax")
+        self.__rangeMessage.min_range = HardwareConfig().GetFloat("Ultrasonic", "RangeMin") / 100.0
+        self.__rangeMessage.max_range = HardwareConfig().GetFloat("Ultrasonic", "RangeMax") / 100.0
         self.__rangeMessage.field_of_view = HardwareConfig().GetFloat("Ultrasonic", "FieldOfView")
         self.__rangeMessage.radiation_type = 0
 
@@ -45,14 +45,14 @@ class SerialRadarToRange():
             return True
         return False
 
-    def Process(self, data, rangeFrameID="/radar_ultrasonic", rangeParentFrameID="/radar_mount", translation=(0, 0, 0), sendTF=True):
+    def Process(self, data, rangeFrameID="radar_ultrasonic", rangeParentFrameID="radar_mount", translation=(0, 0, 0), sendTF=True):
         moduleName = data[1].lower()
         modulePosition = int(data[2])
         moduleRange = int(data[3]) # range in cm
 
         calculatedRangeFrameID = "{0}_{1}".format(rangeFrameID, moduleName)
 
-        moduleRangeInMeter = moduleRange / 100.0
+        moduleRangeInMeter = round(moduleRange / 100.0, 3)
 
         self.__rangeMessage.range = moduleRangeInMeter
         self.__rangeMessage.header.stamp = rospy.Time.now()

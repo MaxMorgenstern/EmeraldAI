@@ -1,7 +1,5 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import ConfigParser
-from os.path import dirname, abspath, join
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Config.BaseConfig import BaseConfig
 
@@ -10,6 +8,4 @@ class Config(BaseConfig):
     __metaclass__ = Singleton
 
     def __init__(self):
-        config = ConfigParser.ConfigParser()
-        config.read(join(dirname(abspath(__file__)), "base.config"))
-        super(Config, self).__init__(config)
+        super(Config, self).__init__("base.config")

@@ -36,8 +36,8 @@ class SerialLaserToLaser():
         self.__laserMessage.angle_max = HardwareConfig().GetFloat("Laser.SinglePoint", "AngleMax")
         self.__laserMessage.angle_increment = HardwareConfig().GetFloat("Laser.SinglePoint", "AngleIncrement")
         self.__laserMessage.time_increment = HardwareConfig().GetFloat("Laser.SinglePoint", "TimeIncrement")
-        self.__laserMessage.range_min = HardwareConfig().GetFloat("Laser.SinglePoint", "RangeMin")
-        self.__laserMessage.range_max = HardwareConfig().GetFloat("Laser.SinglePoint", "RangeMax")
+        self.__laserMessage.range_min = round(HardwareConfig().GetFloat("Laser.SinglePoint", "RangeMin") / 100.0, 2)
+        self.__laserMessage.range_max = round(HardwareConfig().GetFloat("Laser.SinglePoint", "RangeMax") / 100.0, 2)
 
     def Validate(self, data):
         if(data is None):
@@ -48,14 +48,14 @@ class SerialLaserToLaser():
             return True
         return False
 
-    def Process(self, data, rangeFrameID="/radar_laser", rangeParentFrameID="/radar_mount", translation=(0, 0, 0), sendTF=True):
+    def Process(self, data, rangeFrameID="radar_laser", rangeParentFrameID="radar_mount", translation=(0, 0, 0), sendTF=True):
         moduleName = data[1].lower()
         modulePosition = int(data[2])
         moduleRange = int(data[3]) # range in mm
 
         calculatedLaserFrameID = "{0}_{1}".format(rangeFrameID, moduleName)
 
-        moduleRangeInMeter = moduleRange / 1000.0
+        moduleRangeInMeter = round(moduleRange / 1000.0, 3)
 
         self.__laserMessage.ranges = [moduleRangeInMeter, moduleRangeInMeter, moduleRangeInMeter]
         self.__laserMessage.header.stamp = rospy.Time.now()

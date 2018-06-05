@@ -30,8 +30,6 @@ class TFLooper():
     def loop(self):
         if not any(self.__trandformDict):
             return False
-
-        print self.__trandformDict
         
         tmpTrandformDict = dict(self.__trandformDict)
         tmpTrandformTTL = dict(self.__trandformTTL)

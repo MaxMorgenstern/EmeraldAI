@@ -54,7 +54,7 @@ class SerialWheelToOdometry():
         return False
 
 
-    def Process(self, data, odomFrameID="/base_link", odomParentFrameID="/odom", sendTF=False):
+    def Process(self, data, odomFrameID="base_link", odomParentFrameID="odom", sendTF=False):
         clicksLeftDelta = int(data[5])
         clicksRightDelta = int(data[9])
 
