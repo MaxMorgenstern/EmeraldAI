@@ -35,7 +35,7 @@ range_layer:
     clear_on_max_reading: false
 
 inflation_layer:
-    inflation_radius: 0.25
+    inflation_radius: 0.05
     cost_scaling_factor: 90.0
 
 obstacle_layer:
