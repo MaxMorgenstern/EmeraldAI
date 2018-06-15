@@ -16,6 +16,7 @@ from EmeraldAI.Logic.ROS.Serial.SerialWheelToOdometry import SerialWheelToOdomet
 from EmeraldAI.Logic.ROS.Serial.TwistToSerialWheel import TwistToSerialWheel
 from EmeraldAI.Logic.ROS.Serial.SerialRadarToRange import SerialRadarToRange
 from EmeraldAI.Logic.ROS.Serial.SerialLaserToLaser import SerialLaserToLaser
+from EmeraldAI.Logic.ROS.Serial.SerialLaserToLaser360 import SerialLaserToLaser360
 from EmeraldAI.Logic.ROS.Serial.SerialImuToImu import SerialImuToImu
 from EmeraldAI.Config.HardwareConfig import *
 
@@ -34,6 +35,8 @@ def Processing(port, baud):
     isRadarRange = True
     laserToLaser = SerialLaserToLaser()
     isLaserRange = True
+    laserToLaser360 = SerialLaserToLaser360()
+    isLaserRange360 = True
     wheelToOdom = SerialWheelToOdometry()
     isWheel = True
     twistToWheel = TwistToSerialWheel()
@@ -64,6 +67,9 @@ def Processing(port, baud):
                 if(UseLaser and not laserToLaser.Validate(data)):
                     isLaserRange = False
 
+                if(UseLaser and not laserToLaser360.Validate(data)):
+                    isLaserRange360 = False
+
                 if(not wheelToOdom.Validate(data)):
                     isWheel = False
 
@@ -73,6 +79,7 @@ def Processing(port, baud):
                     isImu = True
                     isRadarRange = True
                     isLaserRange = True
+                    isLaserRange360 = True
                     isWheel = True
 
 
@@ -86,6 +93,10 @@ def Processing(port, baud):
 
             if(isLaserRange and laserToLaser.Validate(data)):
                 laserToLaser.Process(data)
+                continue
+
+            if(isLaserRange360 and laserToLaser360.Validate(data)):
+                laserToLaser360.Process(data)
                 continue
 
             if(isWheel and wheelToOdom.Validate(data)):
