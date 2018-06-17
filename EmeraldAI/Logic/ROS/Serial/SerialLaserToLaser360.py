@@ -3,6 +3,7 @@
 from __future__ import division
 
 from EmeraldAI.Logic.Singleton import Singleton
+from EmeraldAI.Logic.ROS.Helper import GeometryHelper
 from EmeraldAI.Config.HardwareConfig import *
 
 import rospy
@@ -37,8 +38,13 @@ class SerialLaserToLaser360():
         self.__laserDictionary["one"] = {}
         self.__laserDictionary["two"] = {}
 
-        self.__laserScanStartOne = rospy.Time.now()
-        self.__laserScanStartTwo = rospy.Time.now()
+        self.__laserScanStartTime = {}
+        self.__laserScanStartTime["one"] = rospy.Time.now()
+        self.__laserScanStartTime["two"] = rospy.Time.now()
+
+        self.__laserScanStartAngle = {}
+        self.__laserScanStartAngle["one"] = None
+        self.__laserScanStartAngle["two"] = None
 
     def Validate(self, data):
         if(data is None):
@@ -55,37 +61,54 @@ class SerialLaserToLaser360():
         moduleRange = int(data[3]) # range in mm
         moduleStepInDegree = int(data[4])
 
-        maxValueCount = 360 / self.__laserScannerCount / moduleStepInDegree 
+        maxValueCount = 360 / self.__laserScannerCount / moduleStepInDegree
 
         moduleRangeInMeter = round(moduleRange / 1000.0, 3)
         if(moduleRangeInMeter >= self.__laserMessage.range_max):
             moduleRangeInMeter = float('inf')
 
-
-        self.__setLaserDict(moduleName, modulePosition, moduleRange)
+        self.__setLaserDict(moduleName, modulePosition, moduleRangeInMeter)
 
         dictReference = self.__getDict(moduleName)
         if(len(dictReference) == maxValueCount):
             calculatedLaserFrameID = "{0}_{1}".format(rangeFrameID, moduleName)
 
-            if moduleName == "one":
-                scanTime = (rospy.Time.now() - self.__laserScanStartOne).nsecs/100000000
-                self.__laserScanStartOne = rospy.Time.now()
-            if moduleName == "two":
-                scanTime = (rospy.Time.now() - self.__laserScanStartTwo).nsecs/100000000
-                self.__laserScanStartTwo = rospy.Time.now()
+            scanTime = (rospy.Time.now() - self.__laserScanStartTime[moduleName]).nsecs/100000000
+            self.__laserScanStartTime[moduleName] = rospy.Time.now()
 
-            print moduleName
-            print dictReference
+            #print moduleName
+            #print sorted(dictReference)
+            #print dictReference
 
-            self.__laserMessage.ranges = [moduleRangeInMeter, moduleRangeInMeter, moduleRangeInMeter]
+
+            if(self.__laserScanStartAngle[moduleName] > modulePosition):
+                sortedDictReference = sorted(dictReference)
+                minScanAngle = max(sorted(dictReference))
+                maxScanAngle = min(sorted(dictReference))
+            else:
+                sortedDictReference = list(reversed(sorted(dictReference)))
+                minScanAngle = min(sorted(dictReference))
+                maxScanAngle = max(sorted(dictReference))
+            
+
+            # TODO
+            #list(reversed(sorted(dictReference)))
+
+            rangeArray = []
+            for key in sortedDictReference:
+                #print key, dictReference[key]
+                rangeArray.append(dictReference[key])
+
+
+            self.__laserMessage.ranges = rangeArray
             self.__laserMessage.header.stamp = rospy.Time.now()
             self.__laserMessage.header.frame_id = calculatedLaserFrameID
 
             self.__laserMessage.time_increment = scanTime / maxValueCount
             self.__laserMessage.scan_time = scanTime
-            self.__laserMessage.angle_min = 0
-            self.__laserMessage.angle_max = 3.14159
+
+            self.__laserMessage.angle_min = GeometryHelper.DegreeToRadian(minScanAngle) # start angle
+            self.__laserMessage.angle_max = GeometryHelper.DegreeToRadian(maxScanAngle) # end angle
             self.__laserMessage.angle_increment = (self.__laserMessage.angle_max - self.__laserMessage.angle_min) / maxValueCount
 
 
@@ -95,9 +118,10 @@ class SerialLaserToLaser360():
             if moduleName == "two":
                 self.__laserPublisher360Two.publish(self.__laserMessage)
 
-
-            print "Last: ", modulePosition,  moduleRangeInMeter
-            print "Scan duration", scanTime
+            #print rangeArray
+            #print "Last: ", modulePosition,  moduleRangeInMeter
+            #print "Scan duration", scanTime
+            #print "------"
 
             self.__clearLaserDict(moduleName)
 
@@ -108,7 +132,9 @@ class SerialLaserToLaser360():
 
     def __clearLaserDict(self, name):
         self.__laserDictionary[name] = {}
+        self.__laserScanStartAngle[name] = None
 
     def __setLaserDict(self, name, position, rangeInMeter):
         self.__laserDictionary[name][position] = rangeInMeter
-
+        if(self.__laserScanStartAngle[name] is None):
+            self.__laserScanStartAngle[name] = position
