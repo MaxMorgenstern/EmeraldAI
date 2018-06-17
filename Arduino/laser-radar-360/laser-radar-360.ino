@@ -153,6 +153,7 @@ void ReadDataAndSetSpeed()
 
 void SendData(String sensorName, int pos, int distance)
 {
+    //if(pos == 360) { pos = 0; }
     Serial.print("Laser360");
     Serial.print("|");
     Serial.print(sensorName);
