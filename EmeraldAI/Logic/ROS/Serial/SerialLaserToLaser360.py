@@ -71,8 +71,6 @@ class SerialLaserToLaser360():
 
         dictReference = self.__getDict(moduleName)
         if(len(dictReference) == maxValueCount):
-            calculatedLaserFrameID = "{0}_{1}".format(rangeFrameID, moduleName)
-
             scanTime = (rospy.Time.now() - self.__laserScanStartTime[moduleName]).nsecs/100000000
             self.__laserScanStartTime[moduleName] = rospy.Time.now()
 
@@ -91,8 +89,6 @@ class SerialLaserToLaser360():
                 maxScanAngle = max(sorted(dictReference))
             
 
-            # TODO
-            #list(reversed(sorted(dictReference)))
 
             rangeArray = []
             for key in sortedDictReference:
@@ -102,7 +98,7 @@ class SerialLaserToLaser360():
 
             self.__laserMessage.ranges = rangeArray
             self.__laserMessage.header.stamp = rospy.Time.now()
-            self.__laserMessage.header.frame_id = calculatedLaserFrameID
+            self.__laserMessage.header.frame_id = rangeFrameID
 
             self.__laserMessage.time_increment = scanTime / maxValueCount
             self.__laserMessage.scan_time = scanTime
