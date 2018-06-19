@@ -55,10 +55,12 @@ class SerialLaserToLaser360():
             return True
         return False
 
-    def Process(self, data, rangeFrameID="radar_laser_360", rangeParentFrameID="radar_mount", translation=(0, 0, 0), sendTF=True):
+    def Process(self, data, rangeFrameID="radar_360_mount"):
         moduleName = data[1].lower()
         modulePosition = int(data[2])
-        moduleRange = int(data[3]) # range in mm
+        moduleRange = GeometryHelper.Cast(int, data[3]) # range in mm
+        if moduleRange is None:
+            return
         moduleStepInDegree = int(data[4])
 
         maxValueCount = 360 / self.__laserScannerCount / moduleStepInDegree
@@ -74,11 +76,6 @@ class SerialLaserToLaser360():
             scanTime = (rospy.Time.now() - self.__laserScanStartTime[moduleName]).nsecs/100000000
             self.__laserScanStartTime[moduleName] = rospy.Time.now()
 
-            #print moduleName
-            #print sorted(dictReference)
-            #print dictReference
-
-
             if(self.__laserScanStartAngle[moduleName] > modulePosition):
                 sortedDictReference = sorted(dictReference)
                 minScanAngle = max(sorted(dictReference))
@@ -87,14 +84,10 @@ class SerialLaserToLaser360():
                 sortedDictReference = list(reversed(sorted(dictReference)))
                 minScanAngle = min(sorted(dictReference))
                 maxScanAngle = max(sorted(dictReference))
-            
-
 
             rangeArray = []
             for key in sortedDictReference:
-                #print key, dictReference[key]
                 rangeArray.append(dictReference[key])
-
 
             self.__laserMessage.ranges = rangeArray
             self.__laserMessage.header.stamp = rospy.Time.now()
@@ -107,17 +100,11 @@ class SerialLaserToLaser360():
             self.__laserMessage.angle_max = GeometryHelper.DegreeToRadian(maxScanAngle) # end angle
             self.__laserMessage.angle_increment = (self.__laserMessage.angle_max - self.__laserMessage.angle_min) / maxValueCount
 
-
             rospy.loginfo(self.__laserMessage)
             if moduleName == "one":
                 self.__laserPublisher360One.publish(self.__laserMessage)
             if moduleName == "two":
                 self.__laserPublisher360Two.publish(self.__laserMessage)
-
-            #print rangeArray
-            #print "Last: ", modulePosition,  moduleRangeInMeter
-            #print "Scan duration", scanTime
-            #print "------"
 
             self.__clearLaserDict(moduleName)
 

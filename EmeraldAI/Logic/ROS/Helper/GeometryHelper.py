@@ -7,3 +7,9 @@ def RadianToDegree(rad):
 
 def DegreeToRadian(deg):
     return (deg * 71) / 4068.0
+
+def Cast(targetType, val, default=None):
+    try:
+        return targetType(val)
+    except (ValueError, TypeError):
+        return default
