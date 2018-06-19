@@ -20,10 +20,10 @@ const uint16_t maxDistance = 1200;
 // Servo
 Servo ServoMotor;
 const uint8_t servoPin = 6;
-uint8_t servoRotationAngel = 5;
-const uint8_t servoRotationAngelFast = 10;
-const uint8_t servoRotationAngelMedium = 5;
-const uint8_t servoRotationAngelDetailed = 1;
+uint8_t servoRotationAngle = 5;
+const uint8_t servoRotationAngleFast = 10;
+const uint8_t servoRotationAngleMedium = 5;
+const uint8_t servoRotationAngleDetailed = 1;
 
 const uint8_t seroRotationDurationPerAngle = 2;
 
@@ -65,7 +65,7 @@ void setup()
     // attach servo pin and set to initial direction
     ServoMotor.attach(servoPin, 450, 2400); // 400, 2600 to fix rotation issues
     ServoMotor.write(servoPos);
-    servoRotationAngel = servoRotationAngelMedium;
+    servoRotationAngle = servoRotationAngleMedium;
 }
 
 
@@ -111,11 +111,11 @@ uint8_t GetNextServoAngle()
 
     if(servoMovement == right)
     {
-        servoPos += servoRotationAngel;
+        servoPos += servoRotationAngle;
     }
     else
     {
-        servoPos -= servoRotationAngel;
+        servoPos -= servoRotationAngle;
     }
 
     if(servoPos <= 0) { servoPos = 0; }
@@ -133,19 +133,19 @@ void ReadDataAndSetSpeed()
 
         if(data == "fast")
         {
-            servoRotationAngel = servoRotationAngelFast;
+            servoRotationAngle = servoRotationAngleFast;
             return;
         }
 
         if(data == "medium")
         {
-            servoRotationAngel = servoRotationAngelMedium;
+            servoRotationAngle = servoRotationAngleMedium;
             return;
         }
 
         if(data == "detail")
         {
-            servoRotationAngel = servoRotationAngelDetailed;
+            servoRotationAngle = servoRotationAngleDetailed;
             return;
         }
     }
@@ -159,7 +159,9 @@ void SendData(String sensorName, int pos, int distance)
     Serial.print("|");
     Serial.print(pos);
     Serial.print("|");
-    Serial.println(distance);
+    Serial.print(distance);
+    Serial.print("|");
+    Serial.println(servoRotationAngle);
 }
 
 
