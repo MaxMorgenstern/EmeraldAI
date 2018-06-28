@@ -25,7 +25,7 @@ const uint8_t servoRotationAngleFast = 10;
 const uint8_t servoRotationAngleMedium = 5;
 const uint8_t servoRotationAngleDetailed = 1;
 
-const uint8_t seroRotationDurationPerAngle = 2;
+const uint8_t seroRotationDurationPerAngle = 5;
 
 enum direction {
     left,
@@ -50,22 +50,25 @@ void setup()
     Wire.begin();
     Serial.begin(115200);
 
+    int continuousVal = 0;
     pinMode(Sensor1_xshut, INPUT);
     Sensor1.init();
     Sensor1.setAddress(Sensor1_address);
     Sensor1.setTimeout(500);
-    Sensor1.startContinuous();
+    Sensor1.startContinuous(continuousVal);
   
     pinMode(Sensor2_xshut, INPUT);
     Sensor2.init();
     Sensor2.setAddress(Sensor2_address);
     Sensor2.setTimeout(500);
-    Sensor2.startContinuous();
+    Sensor2.startContinuous(continuousVal);
 
     // attach servo pin and set to initial direction
-    ServoMotor.attach(servoPin, 450, 2400); // 400, 2600 to fix rotation issues
+    ServoMotor.attach(servoPin, 400, 2600); // 400, 2600 to fix rotation issues
     ServoMotor.write(servoPos);
     servoRotationAngle = servoRotationAngleMedium;
+
+    delay(100);
 }
 
 
@@ -84,6 +87,10 @@ long GetRange(int id)
         {
             dist = Sensor2.readRangeContinuousMillimeters();
         }
+        
+        //TODO - check how often timeout
+        //Sensor1.timeoutOccurred();
+        //Sensor2.timeoutOccurred();
         
         if(dist < minDistance) { dist = maxDistance; }
         if(dist > maxDistance) { dist = maxDistance; }

@@ -8,6 +8,7 @@ from EmeraldAI.Config.HardwareConfig import *
 
 import rospy
 import os
+import time
 
 from sensor_msgs.msg import LaserScan
 
@@ -39,8 +40,8 @@ class SerialLaserToLaser360():
         self.__laserDictionary["two"] = {}
 
         self.__laserScanStartTime = {}
-        self.__laserScanStartTime["one"] = rospy.Time.now()
-        self.__laserScanStartTime["two"] = rospy.Time.now()
+        self.__laserScanStartTime["one"] = time.time()
+        self.__laserScanStartTime["two"] = time.time()
 
         self.__laserScanStartAngle = {}
         self.__laserScanStartAngle["one"] = None
@@ -73,8 +74,8 @@ class SerialLaserToLaser360():
 
         dictReference = self.__getDict(moduleName)
         if(len(dictReference) == maxValueCount):
-            scanTime = (rospy.Time.now() - self.__laserScanStartTime[moduleName]).nsecs/100000000
-            self.__laserScanStartTime[moduleName] = rospy.Time.now()
+            scanTime = time.time() - self.__laserScanStartTime[moduleName]
+            self.__laserScanStartTime[moduleName] = time.time()
 
             if(self.__laserScanStartAngle[moduleName] > modulePosition):
                 sortedDictReference = sorted(dictReference)
