@@ -73,7 +73,7 @@ def Processing(port, baud):
                 if(not wheelToOdom.Validate(data)):
                     isWheel = False
 
-                if(isImu or isRadarRange or isLaserRange or isWheel):
+                if(isImu or isRadarRange or isLaserRange or isLaserRange360 or isWheel):
                     firstRun = False
                 else:
                     isImu = True
