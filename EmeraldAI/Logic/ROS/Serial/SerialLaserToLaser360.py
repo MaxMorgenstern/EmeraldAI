@@ -78,11 +78,11 @@ class SerialLaserToLaser360():
             self.__laserScanStartTime[moduleName] = time.time()
 
             if(self.__laserScanStartAngle[moduleName] > modulePosition):
-                sortedDictReference = sorted(dictReference)
+                sortedDictReference = list(reversed(sorted(dictReference)))
                 minScanAngle = max(sorted(dictReference))
                 maxScanAngle = min(sorted(dictReference))
             else:
-                sortedDictReference = list(reversed(sorted(dictReference)))
+                sortedDictReference = sorted(dictReference)
                 minScanAngle = min(sorted(dictReference))
                 maxScanAngle = max(sorted(dictReference))
 

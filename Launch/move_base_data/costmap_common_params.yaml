@@ -42,8 +42,15 @@ obstacle_layer:
     enabled: true
     obstacle_range: 1.15
     raytrace_range: 1.2
-    observation_sources: scan_one scan_two scan_three scan_four
-    scan_one: {data_type: LaserScan, topic: /radar/laser/one, makring: true, clearing: true, expected_update_rate: 0, inf_is_valid: false}
-    scan_two: {data_type: LaserScan, topic: /radar/laser/two, makring: true, clearing: true, expected_update_rate: 0, inf_is_valid: false}
-    scan_three: {data_type: LaserScan, topic: /radar/laser/three, makring: true, clearing: true, expected_update_rate: 0, inf_is_valid: false}
-    scan_four: {data_type: LaserScan, topic: /radar/laser/four, makring: true, clearing: true, expected_update_rate: 0, inf_is_valid: false}
+
+    # Laser 360
+    observation_sources: scan_one scan_two
+    scan_one: {data_type: LaserScan, topic: /radar/laser/360/one, makring: true, clearing: true, expected_update_rate: 0, inf_is_valid: false}
+    scan_two: {data_type: LaserScan, topic: /radar/laser/360/two, makring: true, clearing: true, expected_update_rate: 0, inf_is_valid: false}
+    
+    # Laser Point
+    #observation_sources: scan_one scan_two scan_three scan_four
+    #scan_one: {data_type: LaserScan, topic: /radar/laser/one, makring: true, clearing: true, expected_update_rate: 0, inf_is_valid: false}
+    #scan_two: {data_type: LaserScan, topic: /radar/laser/two, makring: true, clearing: true, expected_update_rate: 0, inf_is_valid: false}
+    #scan_three: {data_type: LaserScan, topic: /radar/laser/three, makring: true, clearing: true, expected_update_rate: 0, inf_is_valid: false}
+    #scan_four: {data_type: LaserScan, topic: /radar/laser/four, makring: true, clearing: true, expected_update_rate: 0, inf_is_valid: false}

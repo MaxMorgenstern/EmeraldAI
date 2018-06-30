@@ -7,11 +7,11 @@
 VL53L0X Sensor1;
 VL53L0X Sensor2;
 
-const uint8_t Sensor1_xshut = 4;
-const uint8_t Sensor2_xshut = 5;
+const uint8_t Sensor1_xshut = 5;
+const uint8_t Sensor2_xshut = 4;
 
-const uint8_t Sensor1_address = 22;
-const uint8_t Sensor2_address = 25;
+const uint8_t Sensor1_address = 25;
+const uint8_t Sensor2_address = 22;
 
 const uint16_t minDistance = 30;
 const uint16_t maxDistance = 1200;
@@ -33,7 +33,7 @@ enum direction {
     right
 };
 
-uint8_t servoPos = 90;
+uint8_t servoPos = 0;
 direction servoMovement = right;
 
 // ------------------------------
@@ -188,8 +188,6 @@ void loop()
     long laserOne = GetRange(1);
     long laserTwo = GetRange(2);
 
-    SendData("One", servoPos, laserOne);
+    SendData("One", (servoPos), laserOne);
     SendData("Two", (servoPos+180%360), laserTwo);
 }
-
-
