@@ -2,9 +2,9 @@ map_type: costmap
 
 robot_base_frame: base_link
 
-footprint: [[-0.1, -0.1], [-0.1, 0.1], [0.1, 0.1], [0.1, -0.1]]
+footprint: [[-0.1, -0.05], [-0.1, 0.05], [0.1, 0.05], [0.1, -0.05]]
 
-footprint_padding: 0.1
+footprint_padding: 0.05
 
 static_map: false
 rolling_window: true
