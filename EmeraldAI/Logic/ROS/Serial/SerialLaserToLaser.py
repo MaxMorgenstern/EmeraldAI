@@ -51,7 +51,9 @@ class SerialLaserToLaser():
     def Process(self, data, rangeFrameID="radar_laser", rangeParentFrameID="radar_mount", translation=(0, 0, 0), sendTF=True):
         moduleName = data[1].lower()
         modulePosition = int(data[2])
-        moduleRange = int(data[3]) # range in mm
+        moduleRange = GeometryHelper.Cast(int, data[3]) # range in mm
+        if moduleRange is None:
+            return
 
         calculatedLaserFrameID = "{0}_{1}".format(rangeFrameID, moduleName)
 

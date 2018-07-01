@@ -24,3 +24,8 @@ echo "Update complete"
 echo "Patch updated update file"
 cp "$current_path/Update.py" "$deployment_path/Update.py"
 echo "Done!"
+
+# Clear old ros log files - wo don't check them anyway
+echo "Clear ROS Log files"
+rosclean purge -y
+

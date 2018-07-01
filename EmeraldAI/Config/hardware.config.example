@@ -31,6 +31,15 @@ RangeMax = 120
 
 
 # ----------------------
+[Laser.FullRange]
+# Range in cm
+RangeMin = 3
+RangeMax = 120
+
+LaserScannerCount = 2
+
+
+# ----------------------
 [Dimensions]
 # INTEGER VALUES - In mm
 Width = 200
