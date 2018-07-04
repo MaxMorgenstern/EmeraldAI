@@ -62,7 +62,7 @@ class SerialWheelToOdometry():
 
         estimatedDistance = 0
         estimatedRotation = 0
-        if(clicksLeftDelta > 0 or clicksRightDelta > 0):
+        if(clicksLeftDelta != 0 or clicksRightDelta != 0):
 
             distanceLeftDelta = clicksLeftDelta * self.__wheelDistancePerTickLeft
             distanceRightDelta = clicksRightDelta * self.__wheelDistancePerTickRight
