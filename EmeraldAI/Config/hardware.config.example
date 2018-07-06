@@ -37,6 +37,9 @@ RangeMin = 3
 RangeMax = 120
 
 LaserScannerCount = 2
+LaserScannerCorrectionFast = 2
+LaserScannerCorrectionMedium = 3
+LaserScannerCorrectionDetailed = 7
 
 
 # ----------------------
