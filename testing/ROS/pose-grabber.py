@@ -9,7 +9,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-from EmeraldAI.Logic.LocationProcessing.PoseGrabber import *
+from EmeraldAI.Logic.LocationProcessing.PositionGrabber import *
 
 
 """
@@ -38,7 +38,12 @@ if __name__ == '__main__':
     print "PID:", str(os.getpid())
     #subscriber()
 
-    pg = PoseGrabber()
-    print pg.GetPose()
+    pg = PositionGrabber()
+    pos = pg.GetLivePosition()
+    print pos
+    poid = pg.CreatePosition(pos)
+    print poid
+
+    print pg.GetDatabasePosition(pos, 0.10)
 
 # http://wiki.ros.org/ROS/Tutorials/WritingPublisherSubscriber(python)

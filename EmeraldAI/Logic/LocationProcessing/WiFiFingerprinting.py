@@ -131,37 +131,36 @@ class WiFiFingerprinting(object):
     def CreateLocation(self, name):
         returnID = self.GetLocationID(name)
         if (returnID is None):
-            returnID = db().Execute("INSERT INTO Fingerprint_Position ('Name') Values ('{0}')".format(name))
+            returnID = db().Execute("INSERT INTO Location_Name ('Name') Values ('{0}')".format(name))
         return returnID
 
     def GetLocationID(self, name):
-        location = db().Fetchall("SELECT ID FROM Fingerprint_Position WHERE Name = '{0}'".format(name))
+        location = db().Fetchall("SELECT ID FROM Location_Name WHERE Name = '{0}'".format(name))
         if len(location) > 0:
             return location[0][0]
         return None
 
     def GetLocationName(self, id):
-        location = db().Fetchall("SELECT Name FROM Fingerprint_Position WHERE ID = '{0}'".format(id))
+        location = db().Fetchall("SELECT Name FROM Location_Name WHERE ID = '{0}'".format(id))
         if len(location) > 0:
             return location[0][0]
         return None
 
 
     def CreateWiFi(self, wifi):
-        return db().Execute("INSERT INTO Fingerprint_WiFi ('BSSID', 'SSID') Values ('{0}','{1}');".format(wifi.BSSID, wifi.SSID))
+        return db().Execute("INSERT INTO Location_WiFi_Fingerprint ('BSSID', 'SSID') Values ('{0}','{1}');".format(wifi.BSSID, wifi.SSID))
         
     def GetWiFiID(self, bssid):
-        location = db().Fetchall("SELECT ID FROM Fingerprint_WiFi WHERE BSSID = '{0}'".format(bssid))
+        location = db().Fetchall("SELECT ID FROM Location_WiFi_Fingerprint WHERE BSSID = '{0}'".format(bssid))
         if len(location) > 0:
             return location[0][0]
         return None
 
     def GetWiFiBSSID(self, id):
-        location = db().Fetchall("SELECT BSSID FROM Fingerprint_WiFi WHERE ID = '{0}'".format(id))
+        location = db().Fetchall("SELECT BSSID FROM Location_WiFi_Fingerprint WHERE ID = '{0}'".format(id))
         if len(location) > 0:
             return location[0][0]
         return None
-
 
 
     def PredictLocation(self):
@@ -169,13 +168,13 @@ class WiFiFingerprinting(object):
         prediction = {}
 
         for wifi in wifiList:
-            query = """SELECT Fingerprint_Position_WiFi.Indicator, 
-                ABS({1}-Fingerprint_Position_WiFi.Indicator) as diff, 
-                Fingerprint_Position.ID
-            FROM Fingerprint_WiFi, Fingerprint_Position_WiFi, Fingerprint_Position
+            query = """SELECT Location_WiFi_Fingerprint_Name.Indicator, 
+                ABS({1}-Location_WiFi_Fingerprint_Name.Indicator) as diff, 
+                Location_Name.ID
+            FROM Location_WiFi_Fingerprint, Location_WiFi_Fingerprint_Name, Location_Name
             WHERE BSSID = '{0}'
-            AND Fingerprint_WiFi.ID = Fingerprint_Position_WiFi.WiFiID
-            AND Fingerprint_Position_WiFi.PositionID = Fingerprint_Position.ID
+            AND Location_WiFi_Fingerprint.ID = Location_WiFi_Fingerprint_Name.WiFiID
+            AND Location_WiFi_Fingerprint_Name.LocationID = Location_Name.ID
             ORDER BY ABS({1}-Indicator)
             LIMIT 5"""
 
@@ -197,10 +196,9 @@ class WiFiFingerprinting(object):
 
         wifientry = self.GetWiFiID(wifi.BSSID)
         if(wifientry is None):
-            query = "INSERT INTO Fingerprint_WiFi ('BSSID', 'SSID') Values ('{0}','{1}');".format(wifi.BSSID, wifi.SSID)
-            wifientry = db().Execute(query)
+            wifientry = self.CreateWiFi(wifi)
 
-        query = "INSERT INTO Fingerprint_Position_WiFi ('PositionID', 'WiFiID', 'RSSI', 'Noise', 'Indicator') VALUES ('{0}','{1}','{2}','{3}','{4}')".format(location, wifientry, wifi.RSSI, wifi.Noise, wifi.Indicator)
+        query = "INSERT INTO Location_WiFi_Fingerprint_Name ('LocationID', 'WiFiID', 'RSSI', 'Noise', 'Indicator') VALUES ('{0}','{1}','{2}','{3}','{4}')".format(location, wifientry, wifi.RSSI, wifi.Noise, wifi.Indicator)
         db().Execute(query)
 
 
