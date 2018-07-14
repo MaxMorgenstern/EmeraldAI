@@ -9,7 +9,7 @@ elif(Config().Get("Database", "ConversationDatabaseType").lower() == "mysql"):
 
 from EmeraldAI.Logic.Memory.Base import Base
 
-class Brain(Base):
+class STT(Base):
     __metaclass__ = Singleton
 
     def __init__(self):

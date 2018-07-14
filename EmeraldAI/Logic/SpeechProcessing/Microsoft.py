@@ -40,6 +40,11 @@ class Microsoft(object):
             if microphone_name == microphoneName:
                 microphoneID = i
 
+        if microphoneID is None:
+            FileLogger().Error("Microsoft Line 44: No microphone found - Exit")
+            raise Exception("Microsoft: No microphone found - Exit")
+            return
+
         self.__recognizer = sr.Recognizer()
         self.__microphone = sr.Microphone(device_index=microphoneID)
 
@@ -111,9 +116,9 @@ class Microsoft(object):
                 data = self.__recognizer.recognize_bing(
                     self.__audio, key=self.__apiKey, language=__language_4letter_cc, show_all=False)
             except sr.UnknownValueError as e:
-                FileLogger().Warn("Microsoft Line 112: Microsoft Bing Voice Recognition could not understand audio: {0}".format(e))
+                FileLogger().Warn("Microsoft Line 119: Microsoft Bing Voice Recognition could not understand audio: {0}".format(e))
             except sr.RequestError as e:
-                FileLogger().Warn("Microsoft Line 114: Could not request results from Microsoft Bing Voice Recognition service: {0}".format(e))
+                FileLogger().Warn("Microsoft Line 121: Could not request results from Microsoft Bing Voice Recognition service: {0}".format(e))
 
             return data
 

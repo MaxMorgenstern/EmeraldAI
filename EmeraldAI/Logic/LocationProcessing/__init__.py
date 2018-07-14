@@ -1,1 +1,1 @@
-__all__ = ["Hotspot", "WiFiFingerprinting"]
+__all__ = ["PositionGrabber", "WiFiFingerprinting"]

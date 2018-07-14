@@ -35,6 +35,10 @@ class SerialLaserToLaser360():
 
         self.__laserScannerCount = HardwareConfig().GetInt("Laser.FullRange", "LaserScannerCount")
 
+        self.__laserScannerCorrectionFast = HardwareConfig().GetInt("Laser.FullRange", "LaserScannerCorrectionFast")
+        self.__laserScannerCorrectionMedium = HardwareConfig().GetInt("Laser.FullRange", "LaserScannerCorrectionMedium")
+        self.__laserScannerCorrectionDetailed = HardwareConfig().GetInt("Laser.FullRange", "LaserScannerCorrectionDetailed")
+
         self.__laserDictionary = {}
         self.__laserDictionary["one"] = {}
         self.__laserDictionary["two"] = {}
@@ -64,7 +68,8 @@ class SerialLaserToLaser360():
             return
         moduleStepInDegree = int(data[4])
 
-        maxValueCount = 360 / self.__laserScannerCount / moduleStepInDegree
+        maxValueCount = 360 / self.__laserScannerCount / moduleStepInDegree + 1
+        # 36 +1
 
         moduleRangeInMeter = round(moduleRange / 1000.0, 3)
         if(moduleRangeInMeter >= self.__laserMessage.range_max):
@@ -73,14 +78,26 @@ class SerialLaserToLaser360():
         self.__setLaserDict(moduleName, modulePosition, moduleRangeInMeter)
 
         dictReference = self.__getDict(moduleName)
+
+
         if(len(dictReference) == maxValueCount):
+    
             scanTime = time.time() - self.__laserScanStartTime[moduleName]
             self.__laserScanStartTime[moduleName] = time.time()
 
             if(self.__laserScanStartAngle[moduleName] > modulePosition):
                 sortedDictReference = list(reversed(sorted(dictReference)))
-                minScanAngle = max(sorted(dictReference))
-                maxScanAngle = min(sorted(dictReference))
+
+                correction = 0
+                if(moduleStepInDegree == 1):
+                    correction = self.__laserScannerCorrectionDetailed
+                if(moduleStepInDegree == 5):
+                    correction = self.__laserScannerCorrectionMedium
+                if(moduleStepInDegree == 10):
+                    correction = self.__laserScannerCorrectionFast
+
+                minScanAngle = max(sorted(dictReference)) + moduleStepInDegree * correction
+                maxScanAngle = min(sorted(dictReference)) + moduleStepInDegree * correction
             else:
                 sortedDictReference = sorted(dictReference)
                 minScanAngle = min(sorted(dictReference))
@@ -108,6 +125,7 @@ class SerialLaserToLaser360():
                 self.__laserPublisher360Two.publish(self.__laserMessage)
 
             self.__clearLaserDict(moduleName)
+            self.__setLaserDict(moduleName, modulePosition, moduleRangeInMeter)
 
 
 
