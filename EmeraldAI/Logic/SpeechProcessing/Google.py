@@ -34,6 +34,11 @@ class Google(object):
             if microphone_name == microphoneName:
                 microphoneID = i
 
+        if microphoneID is None:
+            FileLogger().Error("Google Line 38: No microphone found - Exit")
+            raise Exception("Google: No microphone found - Exit")
+            return
+
         self.__recognizer = sr.Recognizer()
         #Represents the minimum length of silence (in seconds) that will register as the
         #end of a phrase. Can be changed.
@@ -75,11 +80,11 @@ class Google(object):
             data = self.__recognizer.recognize_google(audio,
                 key=self.__apiKey, language=self.__language_4letter_cc, show_all=False)
         except sr.UnknownValueError as e:
-            FileLogger().Warn("Google Line 75: Google Speech Recognition could not understand audio: {0}".format(e))
+            FileLogger().Warn("Google Line 83: Google Speech Recognition could not understand audio: {0}".format(e))
         except sr.RequestError as e:
-            FileLogger().Warn("Google Line 77: Could not request results from Google Speech Recognition service: {0}".format(e))
+            FileLogger().Warn("Google Line 85: Could not request results from Google Speech Recognition service: {0}".format(e))
         except Exception as e:
-            FileLogger().Warn("Google Line 81: Error on executing Google Speech Recognition service: {0}".format(e))
+            FileLogger().Warn("Google Line 87: Error on executing Google Speech Recognition service: {0}".format(e))
 
         if(len(data)>0):
             self.__asyncResultList.append(data)
