@@ -27,7 +27,6 @@ class PipelineArgs(BaseObject):
         self.ResponseRaw = None
         self.ResponseID = None
         self.ResponseFound = False
-        self.ResponseAudio = None
 
         self.Animation = None
 

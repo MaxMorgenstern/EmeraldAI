@@ -10,9 +10,9 @@
     <param name="base_link_frame" value="/base_link"/>
     <param name="world_frame" value="/odom"/>
 
-    <param name="odom0" value="/odom"/>
-    <param name="imu0" value="/imu_data"/>
-    <param name="imu1" value="/imu_data_secondary"/>
+    <param name="odom0" value="/emerald_ai/serial/odom"/>
+    <param name="imu0" value="/emerald_ai/serial/imu_data"/>
+    <param name="imu1" value="/emerald_ai/serial/imu_data_secondary"/>
                                    <!--
                                    x, y, z,
                                    roll, pitch, yaw,

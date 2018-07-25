@@ -35,7 +35,7 @@ class Base(object):
         return None
 
     def GetString(self, key, parentID = None):
-        return string(self.Get(key, parentID))
+        return str(self.Get(key, parentID))
 
     def GetInt(self, key, parentID = None):
         return int(float(self.Get(key, parentID)))

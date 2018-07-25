@@ -26,8 +26,8 @@ class SerialRadarToRange():
             print "Node already initialized: ".format(rospy.get_caller_id())
         rospy.loginfo("ROS Serial Python Node '{0}'".format(uid))
 
-        self.__rangePublisherFront = rospy.Publisher('/radar/range/front', Range, queue_size=10)
-        self.__rangePublisherBack = rospy.Publisher('/radar/range/back', Range, queue_size=10)
+        self.__rangePublisherFront = rospy.Publisher('/emerald_ai/serial/radar/range/front', Range, queue_size=10)
+        self.__rangePublisherBack = rospy.Publisher('/emerald_ai/serial/radar/range/back', Range, queue_size=10)
 
         self.__rangeMessage = Range()
         self.__rangeMessage.radiation_type = 0

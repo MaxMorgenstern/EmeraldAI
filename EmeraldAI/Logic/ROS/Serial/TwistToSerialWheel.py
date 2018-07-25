@@ -45,7 +45,7 @@ class TwistToSerialWheel():
 
         rospy.Subscriber(topic, Twist, self.__twistCallback)
 
-        self.__serialPublisher = rospy.Publisher('{0}/raw_serial'.format(topic), String, queue_size=3)
+        self.__serialPublisher = rospy.Publisher('/emerald_ai/serial{0}/raw_serial'.format(topic), String, queue_size=3)
 
 
     def __twistCallback(self, msg):

@@ -26,7 +26,7 @@ class SerialWheelToOdometry():
             print "Node already initialized: ".format(rospy.get_caller_id())
         rospy.loginfo("ROS Serial Python Node '{0}'".format(uid))
 
-        self.__odomPublisher = rospy.Publisher('/odom', Odometry, queue_size=10)
+        self.__odomPublisher = rospy.Publisher('/emerald_ai/serial/odom', Odometry, queue_size=10)
 
         self.__wheelDiameter = HardwareConfig().GetInt("Wheel", "Diameter") # in mm
         self.__wheelBaseline = HardwareConfig().GetInt("Wheel", "BaseWidth") # in mm
