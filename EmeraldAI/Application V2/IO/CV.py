@@ -54,7 +54,7 @@ def EnsureModelUpdate():
 
 
 def RunCV(camID, camType, surveillanceMode, videoStream):
-    pub = rospy.Publisher('/emerald_ai/io/vision', String, queue_size=10)
+    pub = rospy.Publisher('/emerald_ai/io/computer_vision', String, queue_size=10)
     rospy.init_node('CV_node', anonymous=True)
     rospy.Rate(10) # 10hz
 

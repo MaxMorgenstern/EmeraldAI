@@ -12,39 +12,36 @@ class Base(object):
         self.ParentID = parentID
 
 
-    def Has(self, key, parentID = None):
+    def Has(self, key, maxAge = None, parentID = None):
+        return (self.Get(key, maxAge, parentID) is not None)
+
+
+    def Get(self, key, maxAge = None, parentID = None):
         if(parentID is None):
             parentID = self.ParentID
 
-        query = """SELECT Value FROM Memory WHERE ParentID = '{0}' AND lower(Key) = '{1}'"""
-        sqlResult = db().FetchallCacheBreaker(query.format(parentID, key.lower()))
-        for r in sqlResult:
-            return True
-        return False
+        maxAgeQuery = ""
+        if(maxAge is not None):
+            maxAgeQuery = """AND Timestamp > datetime(CURRENT_TIMESTAMP, '-{0} seconds') """.format(maxAge)
 
-
-    def Get(self, key, parentID = None):
-        if(parentID is None):
-            parentID = self.ParentID
-
-        query = """SELECT Value FROM Memory WHERE ParentID = '{0}' AND lower(Key) = '{1}'"""
-        sqlResult = db().FetchallCacheBreaker(query.format(parentID, key.lower()))
+        query = """SELECT Value FROM Memory WHERE ParentID = '{0}' AND lower(Key) = '{1}' {2}"""
+        sqlResult = db().FetchallCacheBreaker(query.format(parentID, key.lower(), maxAgeQuery))
         for r in sqlResult:
             return r[0]
 
         return None
 
-    def GetString(self, key, parentID = None):
-        return str(self.Get(key, parentID))
+    def GetString(self, key, maxAge = None, parentID = None):
+        return str(self.Get(key, maxAge, parentID))
 
-    def GetInt(self, key, parentID = None):
-        return int(float(self.Get(key, parentID)))
+    def GetInt(self, key, maxAge = None, parentID = None):
+        return int(float(self.Get(key, maxAge, maxAge, parentID)))
 
-    def GetFloat(self, key, parentID = None):
-        return float(self.Get(key, parentID))
+    def GetFloat(self, key, maxAge = None, parentID = None):
+        return float(self.Get(key, maxAge, parentID))
 
-    def GetBoolean(self, key, parentID = None):
-        val = self.Get(key, parentID)
+    def GetBoolean(self, key, maxAge = None, parentID = None):
+        val = self.Get(key, maxAge, parentID)
         return val.lower() in ['true', '1']
 
 
@@ -60,7 +57,7 @@ class Base(object):
             storedId = r[0]
 
         if(storedId > 1):
-            query = "UPDATE Memory SET Key = '{1}', Value = '{2}', ParentID = '{3}' WHERE ID = {0}".format(storedId, key, value, parentID)
+            query = "UPDATE Memory SET Key = '{1}', Value = '{2}', ParentID = '{3}', Timestamp = CURRENT_TIMESTAMP WHERE ID = {0}".format(storedId, key, value, parentID)
         else:
             query = "INSERT INTO Memory (Key, Value, ParentID) VALUES ('{0}', '{1}', '{2}')".format(key, value, parentID)
 
