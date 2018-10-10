@@ -47,7 +47,12 @@ def RunSTT():
         provider = Microsoft()
 
     if(sttProvider.lower() == "wit"):
-        provider = Wit()    
+        provider = Wit()  
+
+    if(sttProvider.lower() == "watson"):
+        return  
+
+    print sttProvider.lower()
 
     while True:
         #rate.sleep()

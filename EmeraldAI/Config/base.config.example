@@ -88,6 +88,9 @@ CsvActionColumnCount = 5
 Provider = Google
 Microphone =
 
+WatsonSTTUsername = 
+WatsonSTTPassword = 
+
 
 # ----------------------
 [TextToSpeech]
@@ -203,13 +206,10 @@ RecognizePeople = True
 RecognizeWithIRCam = True
 RecognizeWithIRCamOnlyOnDarkness = False
 
-PersonTimeout = 3
+PersonLock = 3
+PersonTimeout = 10
 DarknessTimeout = 10
 
-PredictionWeightLowValue = 10
-PredictionWeightHighValue = 20
-PredictionWeightHighValueBonus = 3
-PredictionWeightBorder = 55
 
 MinSetPersonThreshold = 15
 # should equal ComputerVision.Prediction - PredictionThreshold
