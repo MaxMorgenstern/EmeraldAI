@@ -13,6 +13,7 @@ from EmeraldAI.Logic.Modules import Pid
 from EmeraldAI.Logic.SpeechProcessing.Google import *
 from EmeraldAI.Logic.SpeechProcessing.Ivona import *
 from EmeraldAI.Logic.SpeechProcessing.Microsoft import *
+from EmeraldAI.Logic.SpeechProcessing.Watson import *
 from EmeraldAI.Config.Config import *
 from EmeraldAI.Logic.Logger import *
 from EmeraldAI.Logic.Audio.SoundMixer import *
@@ -59,6 +60,9 @@ def callback(data):
 
         if(ttsProvider.lower() == "ivona"):
             data = Ivona().Speak(dataParts[1], not usePygame)
+
+        if(ttsProvider.lower() == "watson"):
+            data = Watson().Speak(dataParts[1], not usePygame)
 
 
         if usePygame:

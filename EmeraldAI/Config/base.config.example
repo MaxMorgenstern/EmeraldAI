@@ -97,7 +97,7 @@ WatsonSTTPassword =
 AudioPlayer = afplay
 #AudioPlayer = mpg123
 UsePygame = True
-Provider = Ivona
+Provider = Watson
 
 MicrosoftVoiceGender = Female
 MicrosoftVoiceName = Microsoft Server Speech Text to Speech Voice (de-DE, Hedda)
@@ -112,6 +112,9 @@ IvonaVoiceName = Hans
 IvonaAccessKey =
 IvonaSecretKey =
 
+WatsonTTSUsername = 
+WatsonTTSPassword = 
+WatsonVoiceName = 
 
 # ----------------------
 [Database]

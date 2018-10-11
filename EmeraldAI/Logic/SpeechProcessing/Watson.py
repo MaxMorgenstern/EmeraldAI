@@ -1,11 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-from __future__ import print_function
 import pyaudio
-from watson_developer_cloud import SpeechToTextV1
+from watson_developer_cloud import SpeechToTextV1, TextToSpeechV1
 from watson_developer_cloud.websocket import RecognizeCallback, AudioSource
 from threading import Thread
 from sets import Set
+from os.path import join, dirname
 
 import rospy
 from std_msgs.msg import String
@@ -16,6 +16,7 @@ except ImportError:
     from queue import Queue, Full
 
 from EmeraldAI.Logic.Singleton import Singleton
+from EmeraldAI.Logic.Modules import Global
 from EmeraldAI.Config.Config import *
 from EmeraldAI.Logic.Logger import *
 
@@ -33,8 +34,19 @@ class Watson():
 
         self.__username = Config().Get("SpeechToText", "WatsonSTTUsername")
         self.__password = Config().Get("SpeechToText", "WatsonSTTPassword")
-        self.__language = Config().Get("SpeechToText", "CountryCode4Letter")
 
+        self.__username_tts = Config().Get("TextToSpeech", "WatsonTTSUsername")
+        self.__password_tts = Config().Get("TextToSpeech", "WatsonTTSPassword")
+
+        self.__voiceName = Config().Get("TextToSpeech", "WatsonVoiceName")
+
+        self.__language_2letter_cc = Config().Get("SpeechToText", "CountryCode2Letter")
+        self.__language_4letter_cc = Config().Get("SpeechToText", "CountryCode4Letter")
+
+        self.text_to_speech = TextToSpeechV1(
+            url='https://stream.watsonplatform.net/text-to-speech/api',
+            username=self.__username_tts,
+            password=self.__password_tts)
 
         self.speech_to_text = SpeechToTextV1(
             username=self.__username,
@@ -54,6 +66,23 @@ class Watson():
             start=False
         )
         rospy.init_node('STT_watson_node', anonymous=True)
+
+
+    def Speak(self, audioString, playAudio=False):
+        if(len(audioString) == 0):
+            return
+        tmpAudioFile = os.path.join(Global.EmeraldPath, "Data", "TTS", ("Watson_" + \
+            self.__language_2letter_cc + "_" + \
+            self.CleanString(audioString) + ".mp3"))
+
+        if not os.path.isfile(tmpAudioFile):
+            with open(join(dirname(__file__), tmpAudioFile), 'wb') as audio_file:
+                response = self.text_to_speech.synthesize(audioString, accept='audio/mp3',
+                    voice=self.__voiceName).get_result()
+                audio_file.write(response.content)
+        if(playAudio):
+            os.system(self.__audioPlayer.format(tmpAudioFile))
+        return tmpAudioFile
 
 
     def Listen(self):
@@ -79,7 +108,7 @@ class Watson():
                                                       content_type='audio/l16; rate=44100',
                                                       recognize_callback=mycallback,
                                                       interim_results=True,
-                                                      model='{0}_BroadbandModel'.format(self.__language),
+                                                      model='{0}_BroadbandModel'.format(self.__language_4letter_cc),
                                                       smart_formatting=True)
 
     def pyaudio_callback(self, in_data, frame_count, time_info, status):
@@ -102,7 +131,7 @@ class MyRecognizeCallback(RecognizeCallback):
 
 
     #def on_transcription(self, transcript):
-    #    print(transcript)
+    #    FileLogger().Info(transcript)
 
     def on_connected(self):
         FileLogger().Info('Connection was successful')
@@ -117,16 +146,7 @@ class MyRecognizeCallback(RecognizeCallback):
         FileLogger().Info('Service is listening')
 
     #def on_hypothesis(self, hypothesis):
-    #    if(self.dataString != hypothesis):
-
-    #        s1 = Set(hypothesis.split())
-    #        s2 = Set(self.dataList)
-    #        t = list(s1.difference(s2))
-    #        print(t)
-    #        self.dataList.extend(t)
-
-    #        self.dataString = hypothesis
-    #        print(self.data)
+    #    FileLogger().Info(hypothesis)
 
     def on_data(self, data):
         hypothesis = data["results"][0]["alternatives"][0]["transcript"]
