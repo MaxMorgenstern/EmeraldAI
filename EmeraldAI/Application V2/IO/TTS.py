@@ -64,7 +64,6 @@ def callback(data):
         if(ttsProvider.lower() == "watson"):
             data = Watson().Speak(dataParts[1], not usePygame)
 
-
         if usePygame:
             SoundMixer().Play(data)
 

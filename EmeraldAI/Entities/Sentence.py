@@ -96,7 +96,7 @@ class Sentence(BaseObject):
 
 
     def __repr__(self):
-         return "Rating:{0}".format(self.Rating)
+         return "ID: {0} - Rating:{1}".format(self.ID, self.Rating)
 
     def __str__(self):
-         return "Rating:{0}".format(self.Rating)
+         return "ID: {0} - Rating:{1}".format(self.ID, self.Rating)

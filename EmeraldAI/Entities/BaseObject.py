@@ -9,3 +9,7 @@ class BaseObject(object):
 
     def toDict(self, prefix = ""):
     	return {(prefix+key).title():value for key, value in self.__dict__.items() if not key.startswith('__') and not callable(key)}
+
+    def appendIfNotNone(self, parent, child):
+        if child is not None:
+            parent.append(child)

@@ -43,7 +43,7 @@ def Trigger(callback):
 
     triggerData = "TRIGGER|{0}|{1}".format(GLOBAL_TriggerName, time.time())
     rospy.loginfo(triggerData)
-    GLOBAL_FaceappPublisher.publish(triggerData)
+    GLOBAL_Publisher.publish(triggerData)
 
 
 if __name__ == "__main__":

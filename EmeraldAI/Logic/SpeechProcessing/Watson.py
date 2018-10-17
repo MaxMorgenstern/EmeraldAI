@@ -152,6 +152,7 @@ class MyRecognizeCallback(RecognizeCallback):
         hypothesis = data["results"][0]["alternatives"][0]["transcript"]
 
         if (data["results"][0]["final"]):
+            rospy.loginfo("STT|{0}".format(self.dataString))
             self.__WatsonSentencePublisher.publish("STT|{0}".format(self.dataString))
 
             self.dataString = ""
@@ -162,6 +163,7 @@ class MyRecognizeCallback(RecognizeCallback):
                 s2 = Set(self.dataList)
                 t = list(s1.difference(s2))
                 for w in t:
+                    rospy.loginfo("STT|{0}".format(w))
                     self.__WatsonWordPublisher.publish("STT|{0}".format(w))
                 self.dataList.extend(t)
 
