@@ -28,17 +28,19 @@ class Base(object):
         sqlResult = db().FetchallCacheBreaker(query.format(parentID, key.lower(), maxAgeQuery))
         for r in sqlResult:
             return r[0]
-
         return None
 
     def GetString(self, key, maxAge = None, parentID = None):
-        return str(self.Get(key, maxAge, parentID))
+        val = self.Get(key, maxAge, parentID)
+        return str(val) if (val is not None) else None
 
     def GetInt(self, key, maxAge = None, parentID = None):
-        return int(float(self.Get(key, maxAge, maxAge, parentID)))
+        val = self.Get(key, maxAge, parentID)
+        return int(float(val)) if (val is not None) else None
 
     def GetFloat(self, key, maxAge = None, parentID = None):
-        return float(self.Get(key, maxAge, parentID))
+        val = self.Get(key, maxAge, parentID)
+        return float(val) if (val is not None) else None
 
     def GetBoolean(self, key, maxAge = None, parentID = None):
         val = self.Get(key, maxAge, parentID)
