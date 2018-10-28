@@ -23,6 +23,7 @@ class User(BaseObject):
         self.FirstName = None
 
         self.Birthday = None
+        self.LastSeenPrevious = None
         self.LastSeen = None
         self.LastSpokenTo = None
 
@@ -98,7 +99,7 @@ class User(BaseObject):
             return
         query = "UPDATE Person SET Name='{0}', LastName='{1}', FirstName='{2}', Birthday='{3}', LastSeen='{4}', LastSpokenTo='{5}', Gender='{6}' WHERE ID = '{7}'"
         db().Execute(query.format(self.Name, self.LastName, self.FirstName, self.Birthday, self.LastSeen, self.LastSpokenTo, self.Gender, self.DBID))
-
+        self.SaveObject()
 
     def __setUser(self, query, name):
         sqlResult = db().Fetchall(query.format(name))
@@ -109,13 +110,15 @@ class User(BaseObject):
             self.FirstName = r[3]
 
             self.Birthday = r[5]
-            self.LastSeen = r[6]
+            self.LastSeenPrevious = r[6]
+            self.LastSeen = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             self.LastSpokenTo = r[7]
             self.Gender = r[8]
 
             self.Formal = r[9].lower() == "formal"
             self.Trainer = r[10] == 1
             self.Admin = r[11] == 1
+            self.Update()
             continue
 
         self.Updated = datetime.now().strftime("%H%M")

@@ -27,5 +27,15 @@ then
 		fi
 		sleep 5
 	done
+else
+	echo "Search Master Server once..."
+	#export EMERALD_MASTER_IP=`nmap $EMERALD_IP/24 -sS -p 11311 | grep '11311/tcp open' -B3 | grep 'Nmap scan report for'| awk '{print $5}'`
+	MASTER_HOSTNAME=`nmap $EMERALD_IP/24 -p 11311 | grep '11311/tcp open' -B3 | grep 'Nmap scan report for'| awk '{print $5}'`
+	if [ "$MASTER_HOSTNAME" != "" ]
+	then    
+		export EMERALD_MASTER_IP=$MASTER_HOSTNAME
+		echo "Set Master Server: 'http://$MASTER_HOSTNAME:11311'"
+		export ROS_MASTER_URI=http://$MASTER_HOSTNAME:11311
+	fi	
 fi
 

@@ -11,11 +11,11 @@ class PredictionObject(object):
         self.PredictionResult = {}
 
         self.MaxPredictionDistance = Config().GetInt("ComputerVision.Prediction", "MaxPredictionDistance")
-        self.UnknownUserTag = Config().Get("ComputerVision", "UnknownUserTag")
+        self.__UnknownUserTag = Config().Get("ComputerVision", "UnknownUserTag")
 
     def __RemoveUnknown(self, resultDict):
         for k in resultDict.keys():
-          if k == self.UnknownUserTag:
+          if k == self.__UnknownUserTag:
             resultDict.pop(k)
         return resultDict
 
@@ -50,7 +50,7 @@ class PredictionObject(object):
         if len(self.PredictionResult) > 0:
             for key, resultSet in self.PredictionResult.iteritems():
                 maxKey = max(resultSet.iteritems(), key=operator.itemgetter(1))[0]
-                if maxKey != self.UnknownUserTag and threshold < resultSet[maxKey]:
+                if maxKey != self.__UnknownUserTag and threshold < resultSet[maxKey]:
                     return True
         return False
 

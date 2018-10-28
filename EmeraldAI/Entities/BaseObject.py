@@ -16,12 +16,17 @@ class BaseObject(object):
         if child is not None:
             parent.append(child)
 
+    def Init(self, dict):
+        vars(self).update(dict)
+
     def SaveObject(self):
         EntityMemory().Set(self.__class__.__name__, self.toJSON())
 
-    def LoadObject(self, maxAge=None):
+    # maxAge in seconds - default = 60 seconds
+    def LoadObject(self, maxAge=60):
         dataString = EntityMemory().GetString(self.__class__.__name__, maxAge)
         if dataString is None:
             return None
-        #return json.loads(dataString, object_hook=lambda d: namedtuple('X', d.keys())(*d.values()))
-        return json.loads(dataString, object_hook=type(self))
+
+        obj = type(self)()
+        obj.Init(json.loads(dataString))

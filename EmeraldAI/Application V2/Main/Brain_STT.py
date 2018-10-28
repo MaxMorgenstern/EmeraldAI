@@ -12,7 +12,6 @@ from std_msgs.msg import String
 from EmeraldAI.Pipelines.ScopeAnalyzer.AnalyzeScope import AnalyzeScope
 from EmeraldAI.Pipelines.ResponseProcessing.ProcessResponse import ProcessResponse
 from EmeraldAI.Pipelines.Trainer.Trainer import Trainer
-from EmeraldAI.Entities.User import User
 from EmeraldAI.Entities.Context import Context
 from EmeraldAI.Entities.PipelineArgs import PipelineArgs
 from EmeraldAI.Logic.Modules import Pid
@@ -100,10 +99,11 @@ class BrainSTT:
 
         trainerResult = Trainer().Process(self.Pipeline)
 
-        Context().History.append(self.Pipeline)
+        context = Context().LoadObject()
+        context.Append(self.Pipeline)
+        contect.SaveObject()
 
         print "Pipeline Args", self.Pipeline.toJSON()
-        print "Main User", User().toJSON()
         print "Trainer Result: ", trainerResult
         print "Input: ", sentence
         print "Response: ", self.Pipeline.Response

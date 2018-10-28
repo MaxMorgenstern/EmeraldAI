@@ -29,7 +29,7 @@ class ProcessResponse(object):
             responseFound = False
 
         if responseFound:
-            user = User()
+            user = User().LoadObject()
             PipelineArgs.ResponseRaw = sentence.GetSentenceString(user.Formal)
             PipelineArgs.Response = PipelineArgs.ResponseRaw
             PipelineArgs.ResponseID = sentence.ID

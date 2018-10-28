@@ -13,6 +13,7 @@ from std_msgs.msg import String
 
 from EmeraldAI.Logic.Modules import Pid
 from EmeraldAI.Config.Config import *
+from EmeraldAI.Entities.User import User
 from EmeraldAI.Logic.Memory.Brain import Brain as BrainMemory
 
 
@@ -109,7 +110,7 @@ class BrainCV:
                 secondBestResultTag != self.__UnknownUserTag and
                 secondBestResultTag == currentPerson and
                 (secondBestResultValue*0.6) >= bestResultValue):
-                self.__updateUser(secondBestResultTag)
+                self.__updateUserByCVTag(secondBestResultTag)
                 return
             self.__updateUserByCVTag(bestResultTag)
             return 
@@ -123,7 +124,7 @@ class BrainCV:
                 secondBestResultTag !=  self.__UnknownUserTag and
                 (secondBestResultValue*0.9) >= bestResultValue):
                 return
-            __updateUser(bestResultTag, True)
+            self.__updateUserByCVTag(bestResultTag, True)
             return
 
 
@@ -180,6 +181,9 @@ class BrainCV:
             return
             
         BrainMemory().Set("CV.Person.CvTag", cvTag)
+        user = User().SetUserByCVTag(cvTag)
+        user.SaveObject()
+
         if detectedPerson != cvTag: 
             timestamp = time.time()
             if reducedTimeout:

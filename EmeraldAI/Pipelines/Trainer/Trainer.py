@@ -18,11 +18,13 @@ class Trainer(object):
     def Process(self, PipelineArgs):
     	if not self.__trainData or not PipelineArgs.TrainConversation:
     		return False
-
-    	if len(Context().History) == 0:
+        
+        context = Context().LoadObject()
+    	if len(context.History) == 0:
     		return False
 
         FileLogger().Info("Trainer, Process(), Train Sentence")
-    	DialogTrainer().TrainSentence(Context().History[-1].Response, PipelineArgs.Normalized, PipelineArgs.Language, User().Name)
+        user = User().LoadObject()
+    	DialogTrainer().TrainSentence(context.History[-1].Response, PipelineArgs.Normalized, PipelineArgs.Language, user.Name)
 
     	return True

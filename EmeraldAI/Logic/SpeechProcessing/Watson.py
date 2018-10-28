@@ -128,6 +128,7 @@ class MyRecognizeCallback(RecognizeCallback):
 
         self.__WatsonSentencePublisher = rospy.Publisher('/emerald_ai/io/speech_to_text', String, queue_size=10)
         self.__WatsonWordPublisher = rospy.Publisher('/emerald_ai/io/speech_to_text/word', String, queue_size=10)
+        self.__WatsonSentencePartPublisher = rospy.Publisher('/emerald_ai/io/speech_to_text/data', String, queue_size=10)
 
 
     #def on_transcription(self, transcript):
@@ -146,7 +147,7 @@ class MyRecognizeCallback(RecognizeCallback):
         FileLogger().Info('Service is listening')
 
     #def on_hypothesis(self, hypothesis):
-    #    FileLogger().Info(hypothesis)
+    #    FileLogger().Info(hypothesis)/
 
     def on_data(self, data):
         hypothesis = data["results"][0]["alternatives"][0]["transcript"]
@@ -159,6 +160,7 @@ class MyRecognizeCallback(RecognizeCallback):
             self.dataList = []
         else:
             if(self.dataString != hypothesis):
+                self.__WatsonSentencePartPublisher.publish("STT|{0}".format(hypothesis))
                 s1 = Set(hypothesis.split())
                 s2 = Set(self.dataList)
                 t = list(s1.difference(s2))
