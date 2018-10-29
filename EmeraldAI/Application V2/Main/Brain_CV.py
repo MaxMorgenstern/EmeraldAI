@@ -30,7 +30,7 @@ class BrainCV:
         self.__RecognizeWithIRCam = Config().GetBoolean("Application.Brain", "RecognizeWithIRCam")
         self.__RecognizeWithIRCamOnlyOnDarkness = Config().GetBoolean("Application.Brain", "RecognizeWithIRCamOnlyOnDarkness")
         self.__RecognizePeople = Config().GetBoolean("Application.Brain", "RecognizePeople")
-        
+
         self.__DarknessTimeout = Config().GetInt("Application.Brain", "DarknessTimeout") # 10 seconds
         self.__PersonLock = Config().GetInt("Application.Brain", "PersonLock")
         self.__PersonTimeout = Config().GetInt("Application.Brain", "PersonTimeout")
@@ -45,7 +45,7 @@ class BrainCV:
 
     def callback(self, data):
         dataParts = data.data.split("|")
-        
+
         if dataParts[0] == "CVSURV":
             self.ProcessSurveilenceData(dataParts)
             return
@@ -90,8 +90,8 @@ class BrainCV:
 
         currentPerson = BrainMemory().GetString("CV.Person.CvTag", self.__PersonTimeout)
 
-        bestResultTag, bestResultValue = __getResult(bestResult)
-        secondBestResultTag, secondBestResultValue = __getResult(secondBestResult)
+        bestResultTag, bestResultValue = self.__getResultDetails(bestResult)
+        secondBestResultTag, secondBestResultValue = self.__getResultDetails(secondBestResult)
 
         if(bestResultTag == self.__UnknownUserTag):
 
@@ -113,7 +113,7 @@ class BrainCV:
                 self.__updateUserByCVTag(secondBestResultTag)
                 return
             self.__updateUserByCVTag(bestResultTag)
-            return 
+            return
 
         # on lucky shot
         if(luckyShot):
@@ -141,7 +141,7 @@ class BrainCV:
         animationData = "FACEMASTER|{0}".format(lookAt)
         rospy.loginfo(animationData)
         self.__FaceappPublisher.publish(animationData)
-    
+
 
     def ProcessMood(self, cameraName, id, mood):
         if not self.__RecognizePeople or self.__cancelCameraProcess(cameraName):
@@ -177,14 +177,14 @@ class BrainCV:
         detectedPerson = BrainMemory().GetString("CV.Person.CvTag", self.__PersonTimeout)
         detectionTimestamp = BrainMemory().GetString("CV.Person.FirstDetectionTimestamp")
 
-        if detectedPerson != cvTag and detectionTimestamp + self.__PersonLock > time.time():
+        if (detectedPerson != cvTag and (detectionTimestamp + self.__PersonLock) > time.time()):
             return
-            
+
         BrainMemory().Set("CV.Person.CvTag", cvTag)
         user = User().SetUserByCVTag(cvTag)
         user.SaveObject()
 
-        if detectedPerson != cvTag: 
+        if detectedPerson != cvTag:
             timestamp = time.time()
             if reducedTimeout:
                 timestamp = timestamp - self.__PersonLock

@@ -79,12 +79,19 @@ class ComputerVision(object):
             try:
                 self.__RecognizerModel = cv2.createFisherFaceRecognizer()
             except:
-                self.__RecognizerModel = cv2.face.createFisherFaceRecognizer()
+                try:
+                    self.__RecognizerModel = cv2.face.createFisherFaceRecognizer()
+                except:
+                    self.__RecognizerModel = cv2.face.FisherFaceRecognizer_create()
+
         else:
             try:
                 self.__RecognizerModel = cv2.createLBPHFaceRecognizer()
             except:
-                self.__RecognizerModel = cv2.face.createLBPHFaceRecognizer()
+                try:
+                    self.__RecognizerModel = cv2.face.createLBPHFaceRecognizer()
+                except:
+                    self.__RecognizerModel = cv2.face.LBPHFaceRecognizer_create()
 
         self.__RecognizerDictionary = {}
 
@@ -296,6 +303,8 @@ class ComputerVision(object):
         path = os.path.join(self.__DatasetBasePath, datasetName)
         try:
             self.__RecognizerModel.load(os.path.join(path, self.__ModelFile.format(imageSize)))
+            # TODO
+            # self.__RecognizerModel.read(os.path.join(path, self.__ModelFile.format(imageSize)))
             self.__RecognizerDictionary = np.load(os.path.join(path, self.__DictionaryFile.format(imageSize))).item()
             return self.__RecognizerModel, self.__RecognizerDictionary
         except Exception as e:
