@@ -24,9 +24,10 @@ class BaseObject(object):
 
     # maxAge in seconds - default = 60 seconds
     def LoadObject(self, maxAge=60):
+        obj = type(self)()
         dataString = EntityMemory().GetString(self.__class__.__name__, maxAge)
         if dataString is None:
-            return None
+            return obj
 
-        obj = type(self)()
         obj.Init(json.loads(dataString))
+        return obj
