@@ -146,7 +146,8 @@ class BrainCV:
     def ProcessMood(self, cameraName, id, mood):
         if not self.__RecognizePeople or self.__cancelCameraProcess(cameraName):
             return
-        BrainMemory().Set("CV.Person.Mood", mood)
+        moodName, moodValue = self.__getResultDetails(mood)
+        BrainMemory().Set("CV.Person.Mood", moodName)
 
 
     def ProcessGender(self, cameraName, id, gender):
@@ -175,14 +176,16 @@ class BrainCV:
 
     def __updateUserByCVTag(cvTag, reducedTimeout=False):
         detectedPerson = BrainMemory().GetString("CV.Person.CvTag", self.__PersonTimeout)
-        detectionTimestamp = BrainMemory().GetString("CV.Person.FirstDetectionTimestamp")
+        detectionTimestamp = BrainMemory().GetInt("CV.Person.FirstDetectionTimestamp")
+        if detectedPerson is None:
+            detectionTimestamp = 0
 
         if (detectedPerson != cvTag and (detectionTimestamp + self.__PersonLock) > time.time()):
             return
 
         BrainMemory().Set("CV.Person.CvTag", cvTag)
-        user = User().SetUserByCVTag(cvTag)
-        user.SaveObject()
+        User().SetUserByCVTag(cvTag)
+        User().SaveObject()
 
         if detectedPerson != cvTag:
             timestamp = time.time()
