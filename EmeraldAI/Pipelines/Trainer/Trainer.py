@@ -16,15 +16,18 @@ class Trainer(object):
         self.__trainData = Config().GetBoolean("Trainer", "Enabled") # True
 
     def Process(self, PipelineArgs):
-    	if not self.__trainData or not PipelineArgs.TrainConversation:
-    		return False
-        
+        if not self.__trainData or not PipelineArgs.TrainConversation:
+            return False
+
         context = Context().LoadObject()
-    	if len(context.History) == 0:
-    		return False
+        if len(context.History) == 0:
+            return False
 
         FileLogger().Info("Trainer, Process(), Train Sentence")
         user = User().LoadObject()
-    	DialogTrainer().TrainSentence(context.History[-1].Response, PipelineArgs.Normalized, PipelineArgs.Language, user.Name)
+        try:
+            DialogTrainer().TrainSentence(context.History[-1]["Response"], PipelineArgs.Normalized, PipelineArgs.Language, user.Name)
+        except Exception as e:
+            FileLogger().Error("Trainer, Process(), Error on training sentence: {0}".format(e))
 
-    	return True
+        return True
