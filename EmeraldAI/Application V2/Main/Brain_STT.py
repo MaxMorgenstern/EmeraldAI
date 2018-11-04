@@ -100,8 +100,8 @@ class BrainSTT:
         trainerResult = Trainer().Process(self.Pipeline)
 
         context = Context().LoadObject()
-        context.Append(self.Pipeline)
-        contect.SaveObject()
+        context.AppendHistory(self.Pipeline)
+        context.SaveObject()
 
         print "Pipeline Args", self.Pipeline.toJSON()
         print "Trainer Result: ", trainerResult
@@ -109,7 +109,7 @@ class BrainSTT:
         print "Response: ", self.Pipeline.Response
 
         self.Pipeline = None
-    
+
     def ProcessAnimation(self, animation):
         if animation is not None and len(animation) > 0:
             print animation, "TODO"
