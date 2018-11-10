@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import sys
 import os
+import subprocess
 from os.path import dirname, abspath
 sys.path.append(dirname(dirname(dirname(dirname(abspath(__file__))))))
 reload(sys)
@@ -42,6 +43,13 @@ if not os.path.exists(logConfigFile):
     with open(logConfigFile, 'wb') as filePointer:
         cp.write(filePointer)
 
+# Create hardware config file if it does not exist
+print "Check hardware.config"
+configFileHardware = os.path.join(Global.EmeraldPath, "Config", "hardware.config")
+if not os.path.exists(configFileHardware):
+    print "Copy example hardware.config"
+    exampleConfigFileHardware = os.path.join(Global.EmeraldPath, "Config", "hardware.config.example")
+    copyfile(exampleConfigFileHardware, configFileHardware)
 
 # Create config file if it does not exist
 print "Check base.config"
@@ -131,9 +139,9 @@ if(updateConfig):
 
     # Set Performance
     print "Set the processing power."
-    print "P) 'Precise' detection will be slower but more accurate. (Best for computer with more processing power)"
-    print "M) 'Medium' detection will be an avarage of both."
-    print "F) 'Fast' detection will be faster but less accurate. (Best for small computer)"
+    print "P) 'Precise' detection will be slower but more accurate. (Best for computer with more processing power - 350px)"
+    print "M) 'Medium' detection will be an avarage of both. (100px)"
+    print "F) 'Fast' detection will be faster but less accurate. (Best for small computer - 50px)"
 
     print "Please select:"
     inputData = raw_input("P/M/F: ")
@@ -157,13 +165,19 @@ with open(configFile, 'wb') as filePointer:
 
 
 print "Config setup complete"
-print "Please open the config file to update API Keys and additional settings"
+print "Opening the config files. Please update API Keys and additional settings"
 print "Path: ", configFile
+print "Path: ", configFileHardware
 
+if sys.platform.startswith('darwin'):
+    subprocess.call(('open', configFile))
+    subprocess.call(('open', configFileHardware))
+elif os.name == 'nt': # For Windows
+    os.startfile(configFile)
+    os.startfile(configFileHardware)
+elif os.name == 'posix': # For Linux, Mac, etc.
+    subprocess.call(('xdg-open', configFile))
+    subprocess.call(('xdg-open', configFileHardware))
 
-print "Do you want to populate the database"
-inputData = raw_input("Y/N: ")
-if(inputData.lower() == "y"):
-    os.system(os.path.join(Global.EmeraldPath, "Application", "Service", "Setup_Conversation.py"))
 
 print "Setup complete"
