@@ -1,1 +1,1 @@
-__all__ = ["Brain", "STT"]
+__all__ = ["Brain", "Entity","STT", "TTS"]

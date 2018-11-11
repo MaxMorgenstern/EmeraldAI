@@ -10,9 +10,7 @@ from EmeraldAI.Logic.ROS.Helper.TFLooper import TFLooper
 from EmeraldAI.Logic.Modules import Pid
 
 import rospy
-import tf2_ros as tf
 
-from geometry_msgs.msg import TransformStamped
 from tf2_msgs.msg import TFMessage
 
 nodeName = 'serial_tf_repeater'

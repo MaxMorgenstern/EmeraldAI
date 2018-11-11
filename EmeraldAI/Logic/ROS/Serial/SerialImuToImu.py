@@ -25,8 +25,8 @@ class SerialImuToImu():
             print "Node already initialized: ".format(rospy.get_caller_id())
         rospy.loginfo("ROS Serial Python Node '{0}'".format(uid))
 
-        self.__imuPublisher = rospy.Publisher('/imu_data', Imu, queue_size=10)
-        self.__imuPublisherSecondary = rospy.Publisher('/imu_data_secondary', Imu, queue_size=10)
+        self.__imuPublisher = rospy.Publisher('/emerald_ai/serial/imu_data', Imu, queue_size=10)
+        self.__imuPublisherSecondary = rospy.Publisher('/emerald_ai/serial/imu_data_secondary', Imu, queue_size=10)
 
     def Validate(self, data):
         if(data is None):

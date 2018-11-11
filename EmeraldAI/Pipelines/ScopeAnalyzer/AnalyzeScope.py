@@ -22,7 +22,7 @@ class AnalyzeScope(object):
 
         for word in PipelineArgs.WordList:
 
-            user = User()
+            user = User().LoadObject()
             if(len(word.SynonymList) > 0):
                 wordList = "'{0}'".format("', '".join(word.SynonymList))
                 sentenceList = SentenceResolver().GetSentencesByKeyword(sentenceList, wordList, word.NormalizedWord, word.Language, True, (user.Admin or user.Trainer))

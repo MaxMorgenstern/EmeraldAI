@@ -32,7 +32,8 @@ class NLPParameter(BaseObject):
         # Add Bot Parameter
         self.ParameterDictionary.update(Bot().toDict("Bot"))
         # Add User Parameter
-        self.ParameterDictionary.update(User().toDict("User"))
+        user = User().LoadObject()
+        self.ParameterDictionary.update(user.toDict("User"))
         self.ParameterDictionary["Name"] = "Unknown"
         self.ParameterDictionary["User"] = "Unknown"
         self.ParameterDictionary["Usertype"] = "User"
@@ -45,13 +46,14 @@ class NLPParameter(BaseObject):
         # Update Bot Parameter
         self.ParameterDictionary.update(Bot().toDict("Bot"))
         # Update User Parameter
-        self.ParameterDictionary.update(User().toDict("User"))
+        user = User().LoadObject()
+        self.ParameterDictionary.update(user.toDict("User"))
         self.ParameterDictionary["Name"] = User().GetName()
         self.ParameterDictionary["User"] = self.ParameterDictionary["Name"]
         userType = "User"
-        if(User().Trainer):
+        if(user.Trainer):
             userType = "Trainer"
-        if(User().Admin):
+        if(user.Admin):
             userType = "Admin"
         self.ParameterDictionary["Usertype"] = userType
         return self.ParameterDictionary
@@ -71,7 +73,8 @@ class NLPParameter(BaseObject):
         # Add Bot Parameter
         self.ParameterDictionary.update(Bot().toDict("Bot"))
         # Add User Parameter
-        self.ParameterDictionary.update(User().toDict("User"))
+        user = User().LoadObject()
+        self.ParameterDictionary.update(user.toDict("User"))
         self.ParameterDictionary["Name"] = "Unknown"
         self.ParameterDictionary["User"] = "Unknown"
 

@@ -20,10 +20,13 @@ class Context(BaseObject):
 
         self.Queue = None   # Queue with (Tasks/Actions) to do next
 
-        self.User = User()  # User reference
+        self.User = User().LoadObject()  # User reference
         self.Bot = Bot()    # Bot Reference
 
         self.Location = None
         self.Mode = "Live" # Live or Training ...
 
         self.History = [] # list of historical pipeline args
+
+    def AppendHistory(self, data):
+        self.History.append(data)

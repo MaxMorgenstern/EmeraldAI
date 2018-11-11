@@ -88,13 +88,16 @@ CsvActionColumnCount = 5
 Provider = Google
 Microphone =
 
+WatsonSTTUsername = 
+WatsonSTTPassword = 
+
 
 # ----------------------
 [TextToSpeech]
 AudioPlayer = afplay
 #AudioPlayer = mpg123
 UsePygame = True
-Provider = Ivona
+Provider = Watson
 
 MicrosoftVoiceGender = Female
 MicrosoftVoiceName = Microsoft Server Speech Text to Speech Voice (de-DE, Hedda)
@@ -109,6 +112,9 @@ IvonaVoiceName = Hans
 IvonaAccessKey =
 IvonaSecretKey =
 
+WatsonTTSUsername = 
+WatsonTTSPassword = 
+WatsonVoiceName = 
 
 # ----------------------
 [Database]
@@ -203,13 +209,10 @@ RecognizePeople = True
 RecognizeWithIRCam = True
 RecognizeWithIRCamOnlyOnDarkness = False
 
-PersonTimeout = 3
+PersonLock = 3
+PersonTimeout = 10
 DarknessTimeout = 10
 
-PredictionWeightLowValue = 10
-PredictionWeightHighValue = 20
-PredictionWeightHighValueBonus = 3
-PredictionWeightBorder = 55
 
 MinSetPersonThreshold = 15
 # should equal ComputerVision.Prediction - PredictionThreshold

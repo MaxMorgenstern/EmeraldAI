@@ -22,14 +22,14 @@ class ProcessResponse(object):
 
     def Process(self, PipelineArgs):
         sentence = PipelineArgs.GetRandomSentenceWithHighestValue()
-        FileLogger().Info("ProcessResponse, Process(), Sentence: ID:{0}".format(sentence))
+        FileLogger().Info("ProcessResponse, Process(), Sentence: {0}".format(sentence))
 
         responseFound = True
         if sentence is None or sentence.Rating < self.__sentenceRatingThreshold:
             responseFound = False
 
         if responseFound:
-            user = User()
+            user = User().LoadObject()
             PipelineArgs.ResponseRaw = sentence.GetSentenceString(user.Formal)
             PipelineArgs.Response = PipelineArgs.ResponseRaw
             PipelineArgs.ResponseID = sentence.ID

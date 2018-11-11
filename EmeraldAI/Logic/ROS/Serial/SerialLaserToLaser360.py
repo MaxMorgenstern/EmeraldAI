@@ -26,8 +26,8 @@ class SerialLaserToLaser360():
             print "Node already initialized: ".format(rospy.get_caller_id())
         rospy.loginfo("ROS Serial Python Node '{0}'".format(uid))
 
-        self.__laserPublisher360One = rospy.Publisher('/radar/laser/360/one', LaserScan, queue_size=20)
-        self.__laserPublisher360Two = rospy.Publisher('/radar/laser/360/two', LaserScan, queue_size=20)
+        self.__laserPublisher360One = rospy.Publisher('/emerald_ai/serial/radar/laser/360/one', LaserScan, queue_size=20)
+        self.__laserPublisher360Two = rospy.Publisher('/emerald_ai/serial/radar/laser/360/two', LaserScan, queue_size=20)
 
         self.__laserMessage = LaserScan()
         self.__laserMessage.range_min = round(HardwareConfig().GetFloat("Laser.FullRange", "RangeMin") / 100.0, 2)

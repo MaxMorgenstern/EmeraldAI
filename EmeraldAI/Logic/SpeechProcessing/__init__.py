@@ -1,1 +1,1 @@
-__all__ = ["Google", "Microsoft"]
+__all__ = ["Google", "Ivona", "Microsoft", "Watson", "Wit"]

@@ -26,10 +26,10 @@ class SerialLaserToLaser():
             print "Node already initialized: ".format(rospy.get_caller_id())
         rospy.loginfo("ROS Serial Python Node '{0}'".format(uid))
 
-        self.__laserPublisherOne = rospy.Publisher('/radar/laser/one', LaserScan, queue_size=20)
-        self.__laserPublisherTwo = rospy.Publisher('/radar/laser/two', LaserScan, queue_size=20)
-        self.__laserPublisherThree = rospy.Publisher('/radar/laser/three', LaserScan, queue_size=20)
-        self.__laserPublisherFour = rospy.Publisher('/radar/laser/four', LaserScan, queue_size=20)
+        self.__laserPublisherOne = rospy.Publisher('/emerald_ai/serial/radar/laser/one', LaserScan, queue_size=20)
+        self.__laserPublisherTwo = rospy.Publisher('/emerald_ai/serial/radar/laser/two', LaserScan, queue_size=20)
+        self.__laserPublisherThree = rospy.Publisher('/emerald_ai/serial/radar/laser/three', LaserScan, queue_size=20)
+        self.__laserPublisherFour = rospy.Publisher('/emerald_ai/serial/radar/laser/four', LaserScan, queue_size=20)
 
         self.__laserMessage = LaserScan()
         self.__laserMessage.angle_min = HardwareConfig().GetFloat("Laser.SinglePoint", "AngleMin")
