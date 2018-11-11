@@ -112,7 +112,6 @@ try:
     # move into destination
     MoveDirectory(os.path.join(deploymentPath, extractedFolderName, 'EmeraldAI'), Global.EmeraldPath)
 
-
     # update version
     file = open(versionFilePath,'w')
     file.write(highestVersionNumber)
