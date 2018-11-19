@@ -27,6 +27,8 @@ class BrainCV:
 
         self.__FaceappPublisher = rospy.Publisher('/emerald_ai/app/face', String, queue_size=10)
 
+        self.__PersonPublisher = rospy.Publisher('/emerald_ai/io/person', String, queue_size=10)
+
         self.__RecognizeWithIRCam = Config().GetBoolean("Application.Brain", "RecognizeWithIRCam")
         self.__RecognizeWithIRCamOnlyOnDarkness = Config().GetBoolean("Application.Brain", "RecognizeWithIRCamOnlyOnDarkness")
         self.__RecognizePeople = Config().GetBoolean("Application.Brain", "RecognizePeople")
@@ -186,6 +188,10 @@ class BrainCV:
         BrainMemory().Set("CV.Person.CvTag", cvTag)
         User().SetUserByCVTag(cvTag)
         User().SaveObject()
+
+        personData = "PERSON|{0}".format(cvTag)
+        rospy.loginfo(personData)
+        self.__PersonPublisher.publish(personData)
 
         if detectedPerson != cvTag:
             timestamp = time.time()
