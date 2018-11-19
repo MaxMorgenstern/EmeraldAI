@@ -34,6 +34,8 @@ class BrainSTT:
         rospy.Subscriber("/emerald_ai/io/speech_to_text", String, self.sentenceCallback)
         rospy.Subscriber("/emerald_ai/io/speech_to_text/word", String, self.wordCallback)
 
+        self.__FaceappPublisher = rospy.Publisher('/emerald_ai/app/face', String, queue_size=10)
+
         self.__ResponsePublisher = rospy.Publisher('/emerald_ai/io/text_to_speech', String, queue_size=10)
 
         self.Pipeline = None
@@ -110,9 +112,13 @@ class BrainSTT:
 
         self.Pipeline = None
 
+
     def ProcessAnimation(self, animation):
         if animation is not None and len(animation) > 0:
             print animation, "TODO"
+            animationData = "FACEMASTER|{0}".format(lookAt)
+            rospy.loginfo(animationData)
+            self.__FaceappPublisher.publish(animationData)
 
 
 ##### MAIN #####
