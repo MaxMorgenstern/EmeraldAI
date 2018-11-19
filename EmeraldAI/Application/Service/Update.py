@@ -41,6 +41,24 @@ def MoveDirectory(src_dir, dest_dir):
                 os.remove(dest)
         shutil.move(src, dest_dir)
 
+def GetFileList(dirPath):
+    fileList = []
+    for root, dirs, files in os.walk(dirPath):
+        # skip "." files and folder
+        files = [f for f in files if not f[0] == '.']
+        dirs[:] = [d for d in dirs if not d[0] == '.']
+
+        for filename in files:
+            fileList.append(os.path.join(root, filename).replace(dirPath, '/'))
+
+    return fileList
+
+def Purge(basePath, fileList):
+    for file in fileList:
+        fullPath = os.path.normpath(os.path.join(basePath, "."+file))
+        print "Delete:", fullPath
+        os.remove(fullPath)
+
 
 PIDName = "Update"
 if(Pid.HasPid(PIDName)):
@@ -99,6 +117,22 @@ try:
     tar.extractall(deploymentPath)
     extractedFolderName = tar.getnames()[0]
     tar.close()
+
+    print "Remove deprecated files"
+
+    sourceFileList = GetFileList(os.path.join(deploymentPath, extractedFolderName, 'EmeraldAI'))
+    targetFileList = GetFileList(Global.EmeraldPath)
+    diffList =  list(set(targetFileList) - set(sourceFileList))
+    diffList = [x for x in diffList if not x.endswith('.pyc')
+        and not x.endswith('.mdl')
+        and not x.endswith('.npy')
+        and not x.endswith('.mp3')
+        and not x.endswith('.config')
+        and not x.endswith('.sqlite')
+        and not x.endswith('.log')
+        and not x.startswith('/Data/ComputerVisionData')]
+
+    Purge(Global.EmeraldPath, diffList)
 
     print "Update files"
 
