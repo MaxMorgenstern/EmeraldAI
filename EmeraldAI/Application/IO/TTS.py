@@ -70,6 +70,11 @@ def callback(data):
         FileLogger().Info("TTS, callback(), Audio: {0}".format(data))
         GLOBAL_FileNamePublisher.publish("TTS|{0}".format(data))
 
+        user = User().LoadObject()
+        if(user.GetName() is not None):
+            user.LastSpokenTo = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            user.Update()
+
     except Exception as e:
         FileLogger().Error("TTS, callback(), Error on processing TTS data: {0}".format(e))
 
