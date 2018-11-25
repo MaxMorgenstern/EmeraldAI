@@ -68,6 +68,12 @@ class User(BaseObject):
         self.Name = name
         self.__setUser("SELECT * FROM Person WHERE Name = '{0}'", name)
 
+    def UpdateSpokenTo(self):
+        self.LastSpokenTo = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    def UpdateSeen(self):
+        self.LastSeen = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
     def Reset(self):
         self.CVTag = Config().Get("DEFAULT", "UnknownUserTag")
 
