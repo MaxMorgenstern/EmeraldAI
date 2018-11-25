@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import sys
 import time
+from datetime import datetime
 from os.path import dirname, abspath
 sys.path.append(dirname(dirname(dirname(dirname(abspath(__file__))))))
 reload(sys)
@@ -48,19 +49,17 @@ class BrainActionTrigger:
         dataParts = data.data.split("|")
         if (dataParts[0] == "PERSON" and dataParts[1] != self.__UnknownUserTag):
 
-            # TODO - check if we saw the user today
-            print dataParts
             User().SetUserByCVTag(dataParts[1])
-            print User()
-            #user.LastSpokenTo
-            #datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-            response = ProcessTrigger().ProcessCategory("Greeting")
+            # Greeting
+            if (User().LastSpokenTo is None or 
+                datetime.strptime(User().LastSpokenTo, "%Y-%m-%d %H:%M:%S").date() < datetime.today().date()):
 
-            lastAudioTimestamp = BrainMemory().GetString("Brain.Trigger.AudioTimestamp", 20)
-            if(lastAudioTimestamp is None and len(response) > 1):
-                FileLogger().Info("TTS, callback(), Audio: {0}".format(response))
-                self.__ResponsePublisher.publish("TTS|{0}".format(response))
+                response = ProcessTrigger().ProcessCategory("Greeting")
+                lastAudioTimestamp = BrainMemory().GetString("Brain.Trigger.AudioTimestamp", 20)
+                if(lastAudioTimestamp is None and len(response) > 1):
+                    FileLogger().Info("TTS, callback(), Audio: {0}".format(response))
+                    self.__ResponsePublisher.publish("TTS|{0}".format(response))
 
 
 
