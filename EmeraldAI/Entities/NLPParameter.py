@@ -6,6 +6,8 @@ from EmeraldAI.Entities.Bot import Bot
 from datetime import datetime
 from EmeraldAI.Entities.User import User
 
+# TODO - rename to something like context parameter
+
 class NLPParameter(BaseObject):
     __metaclass__ = Singleton
     # This class is a singleton as we only need one instance across the whole project
@@ -50,7 +52,7 @@ class NLPParameter(BaseObject):
         # Update User Parameter
         user = User().LoadObject()
         self.ParameterDictionary.update(user.toDict("User"))
-        self.ParameterDictionary["Name"] = User().GetName()
+        self.ParameterDictionary["Name"] = user.GetName()
         self.ParameterDictionary["User"] = self.ParameterDictionary["Name"]
         userType = "User"
         if(user.Trainer):
