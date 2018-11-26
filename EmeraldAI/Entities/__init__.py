@@ -1,1 +1,1 @@
-__all__ = ["BaseObject", "Bot", "Context", "Hotspot", "NLPParameter", "PipelineArgs", "PredictionObject", "Sentence", "User", "Word"]
+__all__ = ["BaseObject", "Bot", "Hotspot", "NLPParameter", "PipelineArgs", "PredictionObject", "Sentence", "User", "Word"]

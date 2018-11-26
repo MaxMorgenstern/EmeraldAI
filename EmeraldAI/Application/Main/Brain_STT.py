@@ -12,7 +12,7 @@ from std_msgs.msg import String
 from EmeraldAI.Pipelines.ScopeAnalyzer.AnalyzeScope import AnalyzeScope
 from EmeraldAI.Pipelines.ResponseProcessing.ProcessResponse import ProcessResponse
 from EmeraldAI.Pipelines.Trainer.Trainer import Trainer
-from EmeraldAI.Entities.Context import Context
+from EmeraldAI.Entities.NLPParameter import NLPParameter
 from EmeraldAI.Entities.PipelineArgs import PipelineArgs
 from EmeraldAI.Logic.Modules import Pid
 from EmeraldAI.Config.Config import *
@@ -101,9 +101,9 @@ class BrainSTT:
 
         trainerResult = Trainer().Process(self.Pipeline)
 
-        context = Context().LoadObject()
-        context.AppendHistory(self.Pipeline)
-        context.SaveObject()
+        nlpParameter = NLPParameter().LoadObject()
+        nlpParameter.AppendHistory(self.Pipeline)
+        nlpParameter.SaveObject()
 
         print "Pipeline Args", self.Pipeline.toJSON()
         print "Trainer Result: ", trainerResult

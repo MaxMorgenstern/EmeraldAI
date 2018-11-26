@@ -38,6 +38,8 @@ class NLPParameter(BaseObject):
         self.ParameterDictionary["User"] = "Unknown"
         self.ParameterDictionary["Usertype"] = "User"
 
+        self.History = [] # list of historical pipeline args
+
 
     def GetParameterDictionary(self):
         self.ParameterDictionary["Time"] = datetime.now().strftime("%H%M")
@@ -103,3 +105,6 @@ class NLPParameter(BaseObject):
         if "Result" in self.ParameterDictionary:
             self.ParameterDictionary.pop("Result")
         self.Updated = datetime.now()
+
+    def AppendHistory(self, data):
+        self.History.append(data)
