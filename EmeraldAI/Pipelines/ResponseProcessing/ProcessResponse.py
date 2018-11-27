@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 from EmeraldAI.Logic.Singleton import Singleton
-from EmeraldAI.Entities.NLPParameter import NLPParameter
+from EmeraldAI.Entities.ContextParameter import ContextParameter
 from EmeraldAI.Logic.NLP import NLP
 from EmeraldAI.Entities.User import User
 from EmeraldAI.Config.Config import *
@@ -38,6 +38,8 @@ class ProcessResponse(object):
             PipelineArgs.BasewordTrimmedInput = NLP.TrimBasewords(PipelineArgs)
             PipelineArgs.FullyTrimmedInput = NLP.TrimStopwords(PipelineArgs.BasewordTrimmedInput, PipelineArgs.Language)
 
+            contextParameter = ContextParameter().LoadObject(240)
+
             sentenceAction = sentence.GetAction()
             if sentenceAction != None and len(sentenceAction["Module"]) > 0:
                 FileLogger().Info("ProcessResponse, Process(), Call Action: {0}, {1}, {2}".format(sentenceAction["Module"], sentenceAction["Class"], sentenceAction["Function"]))
@@ -48,10 +50,11 @@ class ProcessResponse(object):
                     PipelineArgs.ResponseRaw = None
                     PipelineArgs.Error.append("ProcessResponse - Action Error")
                 else:
-                    NLPParameter().SetInput(actionResult["Input"])
-                    NLPParameter().SetResult(actionResult["Result"])
+                    contextParameter.SetInput(actionResult["Input"])
+                    contextParameter.SetResult(actionResult["Result"])
+                    contextParameter.SaveObject()
 
-            nlpParameterDict = NLPParameter().GetParameterDictionary()
+            nlpParameterDict = contextParameter.GetParameterDictionary()
 
             keywords = re.findall(r"\{(.*?)\}", PipelineArgs.Response)
             for keyword in keywords:
@@ -64,7 +67,7 @@ class ProcessResponse(object):
                     PipelineArgs.Response = PipelineArgs.Response.replace("{{{0}}}".format(keyword.lower()), "")
                     FileLogger().Error("ProcessResponse Line 63: Parameter missing: '{0}'".format(keyword))
 
-            NLPParameter().UnsetInputAndResult()
+            contextParameter.UnsetInputAndResult()
 
         elif not responseFound and self.__aliceAsFallback:
             PipelineArgs.Response  = self.__alice.GetResponse(PipelineArgs.Input)

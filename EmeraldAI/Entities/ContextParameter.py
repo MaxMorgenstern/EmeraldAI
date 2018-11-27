@@ -8,7 +8,7 @@ from EmeraldAI.Entities.User import User
 
 # TODO - rename to something like context parameter
 
-class NLPParameter(BaseObject):
+class ContextParameter(BaseObject):
     __metaclass__ = Singleton
     # This class is a singleton as we only need one instance across the whole project
 
@@ -27,29 +27,17 @@ class NLPParameter(BaseObject):
         self.Created = datetime.now()
         self.Updated = datetime.now()
 
-        self.ParameterDictionary["Time"] = datetime.now().strftime("%H%M")
-        self.ParameterDictionary["Day"] = datetime.today().strftime("%A")
+        self.__UpdateTime()
         self.ParameterDictionary["Category"] = "Greeting"
 
         # Add Bot Parameter
         self.ParameterDictionary.update(Bot().toDict("Bot"))
         # Add User Parameter
-        user = User().LoadObject()
-        self.ParameterDictionary.update(user.toDict("User"))
-        self.ParameterDictionary["Name"] = "Unknown"
-        self.ParameterDictionary["User"] = "Unknown"
-        self.ParameterDictionary["Usertype"] = "User"
+        self.__UpdateUser()
 
         self.History = [] # list of historical pipeline args
 
-
-    def GetParameterDictionary(self):
-        self.ParameterDictionary["Time"] = datetime.now().strftime("%H%M")
-        self.ParameterDictionary["Day"] = datetime.today().strftime("%A")
-
-        # Update Bot Parameter
-        self.ParameterDictionary.update(Bot().toDict("Bot"))
-        # Update User Parameter
+    def __UpdateUser(self):
         user = User().LoadObject()
         self.ParameterDictionary.update(user.toDict("User"))
         self.ParameterDictionary["Name"] = user.GetName()
@@ -60,8 +48,21 @@ class NLPParameter(BaseObject):
         if(user.Admin):
             userType = "Admin"
         self.ParameterDictionary["Usertype"] = userType
-        return self.ParameterDictionary
 
+    def __UpdateTime(self):
+        self.ParameterDictionary["Time"] = datetime.now().strftime("%H%M")
+        self.ParameterDictionary["Day"] = datetime.today().strftime("%A")
+
+
+    def GetParameterDictionary(self):
+        self.__UpdateTime()
+
+        # Update Bot Parameter
+        self.ParameterDictionary.update(Bot().toDict("Bot"))
+        # Update User Parameter
+        self.__UpdateUser()
+
+        return self.ParameterDictionary
 
     def UpdateParameter(self, key, value):
         self.ParameterDictionary[key] = value
@@ -72,15 +73,14 @@ class NLPParameter(BaseObject):
         self.Created = datetime.now()
         self.Updated = datetime.now()
 
+        self.__UpdateTime()
+
         self.ParameterDictionary = {}
 
         # Add Bot Parameter
         self.ParameterDictionary.update(Bot().toDict("Bot"))
         # Add User Parameter
-        user = User().LoadObject()
-        self.ParameterDictionary.update(user.toDict("User"))
-        self.ParameterDictionary["Name"] = "Unknown"
-        self.ParameterDictionary["User"] = "Unknown"
+        self.__UpdateUser()
 
         self.Input = None
         self.Result = None

@@ -3,7 +3,7 @@
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Logic.NLP.SentenceResolver import SentenceResolver
 from EmeraldAI.Entities.User import User
-from EmeraldAI.Entities.NLPParameter import NLPParameter
+from EmeraldAI.Entities.ContextParameter import ContextParameter
 from EmeraldAI.Config.Config import *
 
 import random
@@ -21,11 +21,13 @@ class ProcessTrigger(object):
             language = self.__DefaultLanguage
 
         user = User().LoadObject()
-        # TODO - add language to user... 
+        # TODO - add language to user...
 
         sentenceList = SentenceResolver().GetSentenceByCategory(category, language, (user.Admin or user.Trainer))
 
-        nlpParameterDict = NLPParameter().GetParameterDictionary()
+        contextParameter = ContextParameter().LoadObject(240)
+        nlpParameterDict = contextParameter.GetParameterDictionary()
+
         calculationResult = SentenceResolver().CalculateRequirement(sentenceList, nlpParameterDict)
         sentenceList = calculationResult["sentenceList"]
 
