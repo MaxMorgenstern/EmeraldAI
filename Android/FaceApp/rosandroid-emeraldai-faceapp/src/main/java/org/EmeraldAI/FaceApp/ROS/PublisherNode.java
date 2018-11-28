@@ -41,7 +41,7 @@ public class PublisherNode extends AbstractNodeMain implements NodeMain {
 
     @Override
     public void onStart(ConnectedNode connectedNode) {
-        brainPublisher = connectedNode.newPublisher(GraphName.of("to_brain"), std_msgs.String._TYPE);
+        brainPublisher = connectedNode.newPublisher(GraphName.of("/emerald_ai/ping"), std_msgs.String._TYPE);
 
         final Publisher<std_msgs.String> pingPublisher = connectedNode.newPublisher(GraphName.of("ping"), std_msgs.String._TYPE);
 

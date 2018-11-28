@@ -18,6 +18,8 @@ from EmeraldAI.Config.Config import *
 from EmeraldAI.Logic.Logger import *
 from EmeraldAI.Logic.Audio.SoundMixer import *
 from EmeraldAI.Logic.Memory.TTS import TTS as TTSMemory
+from EmeraldAI.Entities.User import User
+
 
 GLOBAL_FileNamePublisher = None
 
@@ -69,6 +71,11 @@ def callback(data):
 
         FileLogger().Info("TTS, callback(), Audio: {0}".format(data))
         GLOBAL_FileNamePublisher.publish("TTS|{0}".format(data))
+
+        user = User().LoadObject()
+        if(user.GetName() is not None):
+            user.UpdateSpokenTo()
+            user.Update()
 
     except Exception as e:
         FileLogger().Error("TTS, callback(), Error on processing TTS data: {0}".format(e))

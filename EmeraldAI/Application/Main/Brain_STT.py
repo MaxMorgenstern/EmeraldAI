@@ -12,7 +12,7 @@ from std_msgs.msg import String
 from EmeraldAI.Pipelines.ScopeAnalyzer.AnalyzeScope import AnalyzeScope
 from EmeraldAI.Pipelines.ResponseProcessing.ProcessResponse import ProcessResponse
 from EmeraldAI.Pipelines.Trainer.Trainer import Trainer
-from EmeraldAI.Entities.Context import Context
+from EmeraldAI.Entities.ContextParameter import ContextParameter
 from EmeraldAI.Entities.PipelineArgs import PipelineArgs
 from EmeraldAI.Logic.Modules import Pid
 from EmeraldAI.Config.Config import *
@@ -33,6 +33,8 @@ class BrainSTT:
 
         rospy.Subscriber("/emerald_ai/io/speech_to_text", String, self.sentenceCallback)
         rospy.Subscriber("/emerald_ai/io/speech_to_text/word", String, self.wordCallback)
+
+        self.__FaceappPublisher = rospy.Publisher('/emerald_ai/app/face', String, queue_size=10)
 
         self.__ResponsePublisher = rospy.Publisher('/emerald_ai/io/text_to_speech', String, queue_size=10)
 
@@ -99,9 +101,9 @@ class BrainSTT:
 
         trainerResult = Trainer().Process(self.Pipeline)
 
-        context = Context().LoadObject()
-        context.AppendHistory(self.Pipeline)
-        context.SaveObject()
+        contextParameter = ContextParameter().LoadObject(240)
+        contextParameter.AppendHistory(self.Pipeline)
+        contextParameter.SaveObject()
 
         print "Pipeline Args", self.Pipeline.toJSON()
         print "Trainer Result: ", trainerResult
@@ -110,9 +112,13 @@ class BrainSTT:
 
         self.Pipeline = None
 
+
     def ProcessAnimation(self, animation):
         if animation is not None and len(animation) > 0:
             print animation, "TODO"
+            animationData = "FACEMASTER|{0}".format(lookAt)
+            rospy.loginfo(animationData)
+            self.__FaceappPublisher.publish(animationData)
 
 
 ##### MAIN #####

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Logic.NLP.SentenceResolver import SentenceResolver
-from EmeraldAI.Entities.NLPParameter import NLPParameter
+from EmeraldAI.Entities.ContextParameter import ContextParameter
 from EmeraldAI.Entities.User import User
 from EmeraldAI.Config.Config import *
 from EmeraldAI.Logic.Logger import *
@@ -31,7 +31,10 @@ class AnalyzeScope(object):
             wordParameterList += list(set(word.ParameterList) - set(wordParameterList))
 
         sentenceList = SentenceResolver().GetSentencesByParameter(sentenceList, wordParameterList, PipelineArgs.Language, (user.Admin or user.Trainer))
-        NLPParameter().UpdateParameter("Wordtype", wordParameterList)
+
+        contextParameter = ContextParameter().LoadObject(240)
+        contextParameter.UpdateParameter("Wordtype", wordParameterList)
+        contextParameter.SaveObject()
 
         if self.__RemoveStopwordOnlySentences:
             sentenceList = SentenceResolver().RemoveStopwordOnlySentences(sentenceList)
