@@ -16,7 +16,7 @@ class ProcessTrigger(object):
         self.__DefaultLanguage = Config().Get("DEFAULT", "Language")
 
 
-    def Process(self, category, language=None):
+    def ProcessCategory(self, category, language=None):
         if language is None:
             language = self.__DefaultLanguage
 
