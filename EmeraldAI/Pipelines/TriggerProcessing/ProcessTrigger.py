@@ -26,9 +26,9 @@ class ProcessTrigger(object):
         sentenceList = SentenceResolver().GetSentenceByCategory(category, language, (user.Admin or user.Trainer))
 
         contextParameter = ContextParameter().LoadObject(240)
-        nlpParameterDict = contextParameter.GetParameterDictionary()
+        contextParameterDict = contextParameter.GetParameterDictionary()
 
-        calculationResult = SentenceResolver().CalculateRequirement(sentenceList, nlpParameterDict)
+        calculationResult = SentenceResolver().CalculateRequirement(sentenceList, contextParameterDict)
         sentenceList = calculationResult["sentenceList"]
 
         responseID = random.choice(sentenceList.keys())
@@ -37,8 +37,8 @@ class ProcessTrigger(object):
 
         keywords = re.findall(r"\{(.*?)\}", responseString)
         for keyword in keywords:
-            if keyword.title() in nlpParameterDict:
-                replaceword = nlpParameterDict[keyword.title()]
+            if keyword.title() in contextParameterDict:
+                replaceword = contextParameterDict[keyword.title()]
                 if replaceword is None or replaceword == "Unknown":
                     replaceword = ""
                 responseString = responseString.replace("{{{0}}}".format(keyword.lower()), str(replaceword))
