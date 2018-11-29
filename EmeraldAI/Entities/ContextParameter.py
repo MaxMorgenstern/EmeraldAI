@@ -44,12 +44,7 @@ class ContextParameter(BaseObject):
         self.ParameterDictionary.update(user.toDict("User"))
         self.ParameterDictionary["Name"] = user.GetName()
         self.ParameterDictionary["User"] = self.ParameterDictionary["Name"]
-        userType = "User"
-        if(user.Trainer):
-            userType = "Trainer"
-        if(user.Admin):
-            userType = "Admin"
-        self.ParameterDictionary["Usertype"] = userType
+        self.ParameterDictionary["Usertype"] = user.GetUserType()
 
     def __UpdateTime(self):
         self.ParameterDictionary["Time"] = datetime.now().strftime("%H%M")

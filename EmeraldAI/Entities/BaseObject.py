@@ -12,7 +12,7 @@ class BaseObject(object):
     
     def toJSONDefault(self, value):
         if isinstance(value, datetime.date):
-            return dict(year=value.year, month=value.month, day=value.day)
+            return dict(year=value.year, month=value.month, day=value.day, hour=value.hour, minute=value.minute, second=value.second)
         else:
             return value.__dict__
 
