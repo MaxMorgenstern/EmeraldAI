@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import sys
-import time
 from datetime import datetime
 from os.path import dirname, abspath
 sys.path.append(dirname(dirname(dirname(dirname(abspath(__file__))))))
@@ -31,7 +30,7 @@ class BrainActionTrigger:
         self.__ResponsePublisher = rospy.Publisher('/emerald_ai/io/text_to_speech', String, queue_size=10)
 
     	# in order to check if someone says something
-        rospy.Subscriber("/emerald_ai/io/speech_to_text/word", String, self.ioCallback)
+        #rospy.Subscriber("/emerald_ai/io/speech_to_text/word", String, self.ioCallback)
 
     	# in order to check if someone is present
         rospy.Subscriber("/emerald_ai/io/person", String, self.personCallback)
@@ -39,10 +38,10 @@ class BrainActionTrigger:
         rospy.spin()
 
 
-    def ioCallback(self, data):
-        dataParts = data.data.split("|")
-        if dataParts[0] == "STT":
-            BrainMemory().Set("Brain.Trigger.AudioTimestamp", time.time())
+    #def ioCallback(self, data):
+    #    dataParts = data.data.split("|")
+    #    if dataParts[0] == "STT":
+    #        BrainMemory().Set("Brain.Trigger.AudioTimestamp", time.time())
 
 
     def personCallback(self, data):
@@ -56,11 +55,16 @@ class BrainActionTrigger:
                 datetime.strptime(User().LastSpokenTo, "%Y-%m-%d %H:%M:%S").date() < datetime.today().date()):
 
                 response = ProcessTrigger().ProcessCategory("Greeting")
-                lastAudioTimestamp = BrainMemory().GetString("Brain.Trigger.AudioTimestamp", 20)
+                lastAudioTimestamp = BrainMemory().GetString("Brain.AudioTimestamp", 20)
                 if(lastAudioTimestamp is None and len(response) > 1):
                     FileLogger().Info("TTS, callback(), Audio: {0}".format(response))
                     self.__ResponsePublisher.publish("TTS|{0}".format(response))
 
+    def triggerCallback(self, data):
+        dataParts = data.data.split("|")
+        if dataParts[0] == "FACEAPP":
+            state = dataParts[1] # == ON / OFF
+            #ProcessSpeech("TRIGGER_FACEAPP_{0}".format(state))
 
 
 if __name__ == "__main__":

@@ -41,7 +41,7 @@ def RunTrigger():
 def Trigger(callback):
     global GLOBAL_Publisher, GLOBAL_TriggerName
 
-    triggerData = "TRIGGER|{0}|{1}".format(GLOBAL_TriggerName, time.time())
+    triggerData = "TRIGGER|{0}|{1}".format(GLOBAL_TriggerName, rospy.Time.now().to_sec())
     rospy.loginfo(triggerData)
     GLOBAL_Publisher.publish(triggerData)
 

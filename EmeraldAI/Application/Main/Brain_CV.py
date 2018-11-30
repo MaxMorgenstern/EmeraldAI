@@ -19,9 +19,9 @@ from EmeraldAI.Logic.Memory.Brain import Brain as BrainMemory
 
 class BrainCV:
     def __init__(self):
-        BrainMemory().Set("Brain.CV.Start", time.time())
-
         rospy.init_node('emerald_brain_cv_node', anonymous=True)
+        
+        BrainMemory().Set("Brain.CV.Start", rospy.Time.now().to_sec())
 
         rospy.Subscriber("/emerald_ai/io/computer_vision", String, self.callback)
 
@@ -161,7 +161,7 @@ class BrainCV:
     def ProcessDarkness(self, cameraName, value):
         if(cameraName == "IR"):
             return
-        BrainMemory().Set("CV.DarknessTimestamp", time.time())
+        BrainMemory().Set("CV.DarknessTimestamp", rospy.Time.now().to_sec())
         BrainMemory().Set("CV.DarknessValue", value)
 
 
@@ -182,7 +182,7 @@ class BrainCV:
         if detectedPerson is None:
             detectionTimestamp = 0
 
-        if (detectedPerson != cvTag and (detectionTimestamp + self.__PersonLock) > time.time()):
+        if (detectedPerson != cvTag and (detectionTimestamp + self.__PersonLock) > rospy.Time.now().to_sec()):
             return
 
         BrainMemory().Set("CV.Person.CvTag", cvTag)
@@ -194,7 +194,7 @@ class BrainCV:
         self.__PersonPublisher.publish(personData)
 
         if detectedPerson != cvTag:
-            timestamp = time.time()
+            timestamp = rospy.Time.now().to_sec()
             if reducedTimeout:
                 timestamp = timestamp - self.__PersonLock
             BrainMemory().Set("CV.Person.FirstDetectionTimestamp", timestamp)
