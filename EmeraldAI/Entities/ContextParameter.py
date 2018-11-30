@@ -6,8 +6,6 @@ from EmeraldAI.Entities.Bot import Bot
 from datetime import datetime
 from EmeraldAI.Entities.User import User
 
-# TODO - rename to something like context parameter
-
 class ContextParameter(BaseObject):
     __metaclass__ = Singleton
     # This class is a singleton as we only need one instance across the whole project
@@ -27,6 +25,7 @@ class ContextParameter(BaseObject):
         self.Created = datetime.now()
         self.Updated = datetime.now()
 
+        self.ParameterDictionary = {}
         self.__UpdateTime()
         self.ParameterDictionary["Category"] = "Greeting"
 
@@ -37,17 +36,15 @@ class ContextParameter(BaseObject):
 
         self.History = [] # list of historical pipeline args
 
+        self.ActionInput = None
+        self.ActionResult = None
+
     def __UpdateUser(self):
         user = User().LoadObject()
         self.ParameterDictionary.update(user.toDict("User"))
         self.ParameterDictionary["Name"] = user.GetName()
         self.ParameterDictionary["User"] = self.ParameterDictionary["Name"]
-        userType = "User"
-        if(user.Trainer):
-            userType = "Trainer"
-        if(user.Admin):
-            userType = "Admin"
-        self.ParameterDictionary["Usertype"] = userType
+        self.ParameterDictionary["Usertype"] = user.GetUserType()
 
     def __UpdateTime(self):
         self.ParameterDictionary["Time"] = datetime.now().strftime("%H%M")
@@ -73,6 +70,7 @@ class ContextParameter(BaseObject):
         self.Created = datetime.now()
         self.Updated = datetime.now()
 
+        self.ParameterDictionary = {}
         self.__UpdateTime()
 
         self.ParameterDictionary = {}

@@ -2,12 +2,19 @@
 # -*- coding: utf-8 -*-
 
 import json
+import datetime
 
 from EmeraldAI.Logic.Memory.Entity import Entity as EntityMemory
 
 class BaseObject(object):
     def toJSON(self):
-        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+        return json.dumps(self, default=self.toJSONDefault, sort_keys=True, indent=4)
+    
+    def toJSONDefault(self, value):
+        if isinstance(value, datetime.date):
+            return dict(year=value.year, month=value.month, day=value.day, hour=value.hour, minute=value.minute, second=value.second)
+        else:
+            return value.__dict__
 
     def toDict(self, prefix = ""):
         return {(prefix+key).title():value for key, value in self.__dict__.items() if not key.startswith('__') and not callable(key)}

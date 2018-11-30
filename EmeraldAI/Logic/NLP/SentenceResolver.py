@@ -30,6 +30,24 @@ class SentenceResolver(object):
         self.__MinNonStopwordSentences = Config().GetFloat("SentenceResolver", "MinNonStopwordSentences") #1
 
 
+    def GetSentenceByCategory(self, category, language, isTrainer):
+        sentenceDictionary = {}
+        query = """SELECT cs.ID
+            FROM Conversation_Category as cc , Conversation_Sentence_Category_Has as csch,  Conversation_Sentence as cs
+            WHERE cc.Name = '{0}'
+            AND cc.ID = csch.CategoryID
+            AND csch.SentenceID = cs.ID
+            AND cs.Approved >= {1}
+            AND cs.Language = '{2}'
+            AND cs.Disabled = 0
+            """
+        trainer = 0 if isTrainer else 1
+        sqlResult = db().Fetchall(query.format(category, trainer, language))
+        for r in sqlResult:
+            sentenceDictionary[r[0]] = Sentence(r[0],  0, category, False)
+        return sentenceDictionary
+
+
     def GetSentencesByKeyword(self, sentenceList, word, baseWord, language, isSynonym, isTrainer):
         query = """SELECT DISTINCT Conversation_Sentence_Keyword.SentenceID, Conversation_Keyword.Stopword,
                 Conversation_Sentence_Keyword.Priority, Conversation_Keyword.Priority, Conversation_Keyword.Normalized

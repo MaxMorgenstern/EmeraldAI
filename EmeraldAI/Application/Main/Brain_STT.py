@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import sys
+import time
 from os.path import dirname, abspath
 sys.path.append(dirname(dirname(dirname(dirname(abspath(__file__))))))
 reload(sys)
@@ -70,6 +71,7 @@ class BrainSTT:
         if self.Pipeline.HasWord(word):
             return
 
+        BrainMemory().Set("Brain.AudioTimestamp", rospy.Time.now().to_sec())
         word = Word(word)
         self.Pipeline.AddWord(word)
 
@@ -87,6 +89,8 @@ class BrainSTT:
         if self.Pipeline is None:
             self.Pipeline = PipelineArgs()
 
+        BrainMemory().Set("Brain.AudioTimestamp", rospy.Time.now().to_sec())
+        
         self.Pipeline.AddSentence(sentence)
 
         self.Pipeline = AnalyzeScope().Process(self.Pipeline)
@@ -116,7 +120,7 @@ class BrainSTT:
     def ProcessAnimation(self, animation):
         if animation is not None and len(animation) > 0:
             print animation, "TODO"
-            animationData = "FACEMASTER|{0}".format(lookAt)
+            animationData = "FACEMASTER|{0}".format(animation)
             rospy.loginfo(animationData)
             self.__FaceappPublisher.publish(animationData)
 

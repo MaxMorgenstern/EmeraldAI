@@ -37,6 +37,14 @@ class User(BaseObject):
 
         self.Updated = None
 
+    def GetUserType(self):
+        userType = "User"
+        if(user.Trainer):
+            userType = "Trainer"
+        if(user.Admin):
+            userType = "Admin"
+        return userType
+
     def GetCVTag(self):
         return self.CVTag
 
@@ -96,10 +104,12 @@ class User(BaseObject):
 
         self.Updated = None
 
+    # TODO
     def Create(self):
         query = "TODO"
         db().Execute(query)
 
+    # TODO - update all fields
     def Update(self):
         if self.DBID < 1:
             return
