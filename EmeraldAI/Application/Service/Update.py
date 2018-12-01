@@ -42,6 +42,8 @@ def MoveDirectory(src_dir, dest_dir):
         shutil.move(src, dest_dir)
 
 def GetFileList(dirPath):
+    if (not dirPath.endswith("/")):
+        dirPath += "/"
     fileList = []
     for root, dirs, files in os.walk(dirPath):
         # skip "." files and folder
