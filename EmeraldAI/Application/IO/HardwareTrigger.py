@@ -21,6 +21,8 @@ class HardwareTrigger:
         rospy.Rate(10) # 10hz
 
         pygame.init()
+        pygame.display.set_mode((200,200))
+
         
         self.__GPIOInputChannel = Config().GetInt("Trigger", "GPIOPin")
         self.__GPIOTriggerName = gpioTiggerName
@@ -30,28 +32,41 @@ class HardwareTrigger:
         GPIO = GPIOProxy(None, (self.__GPIOInputChannel))
         GPIO.add_event_detect(self.__GPIOInputChannel, GPIO.RISING, self.GPIOTrigger, 100)
 
-    
-        # TODO: Keyboard Trigger
-        # TODO: STT Keyword Trigger - snowboy
 
-        print "Keypress..."
         while 1:
-            """
-            if(pygame.key.get_pressed()[pygame.K_ESCAPE]):
-                print "Up pressed"
-            pygame.event.pump()
-            """
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    print "Quit"
+                #if event.type == pygame.QUIT: sys.exit()
+                #if event.type == pygame.KEYDOWN and event.dict['key'] == 27: sys.exit()
+                
+                if event.type == pygame.KEYDOWN:
+                    #print event.key, event.unicode
 
-        #rospy.spin()
+                    # Enter
+                    if event.key == 13:
+                        self.SendTrigger("KEY", "ENTER")
+                        continue
+
+                    # Space
+                    if event.key == 32:
+                        self.SendTrigger("KEY", "SPACE")
+                        continue
+
+                    # Esc
+                    if event.key == 27:
+                        self.SendTrigger("KEY", "ESC")
+                        continue
+
+                    self.SendTrigger("KEY", event.key)
+
+
+    def SendTrigger(self, name, pressId):
+        triggerData = "TRIGGER|{0}|{1}|{2}".format(name, pressId, rospy.Time.now().to_sec())
+        rospy.loginfo(triggerData)
+        self.__Publisher.publish(triggerData)
 
 
     def GPIOTrigger(callback):
-        triggerData = "TRIGGER|{0}|{1}".format(self.__GPIOTriggerName, rospy.Time.now().to_sec())
-        rospy.loginfo(triggerData)
-        self.__Publisher.publish(triggerData)
+        self.SendTrigger(self.__GPIOTriggerName, self.__GPIOInputChannel)
 
 
 
