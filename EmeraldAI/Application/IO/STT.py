@@ -23,15 +23,17 @@ def InitSettings():
 
 def callback(data):
     dataParts = data.data.split("|")
-    # TODO - check timestamp
-    if(dataParts[1] is "STT"):
-        STTMemory().Set("TriggerTimestamp", time.time())
+    if(dataParts[0] is "TRIGGER"):
+        triggerType = Config().GetBoolean("Application.SpeechToText", "TriggerType") # KEY
+        triggerKey = Config().GetBoolean("Application.SpeechToText", "TriggerKey") # ENTER
+        if(dataParts[1] is triggerType and dataParts[2] is triggerKey):
+            STTMemory().Set("TriggerTimestamp", time.time())
 
 
 def RunSTT():
     pub = rospy.Publisher('/emerald_ai/io/speech_to_text', String, queue_size=10)
 
-    rospy.Subscriber("trigger", String, callback)
+    rospy.Subscriber("/emerald_ai/io/hardware_trigger", String, callback)
 
     rospy.init_node('STT_node', anonymous=True)
     rospy.Rate(10) # 10hz

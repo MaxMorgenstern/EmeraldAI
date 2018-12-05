@@ -39,7 +39,6 @@ class HardwareTrigger:
                 #if event.type == pygame.KEYDOWN and event.dict['key'] == 27: sys.exit()
                 
                 if event.type == pygame.KEYDOWN:
-                    #print event.key, event.unicode
 
                     # Enter
                     if event.key == 13:
