@@ -222,6 +222,12 @@ SetPersonThreshold = 150
 [Application.SpeechToText]
 Trigger=True
 TriggerTime=1000
+# TriggerType=GPIO
+TriggerType=KEY
+#TriggerKey=SPACE
+#TriggerKey=QUIT
+#TriggerKey=22
+TriggerKey=ENTER
 
 
 # ----------------------
