@@ -7,6 +7,7 @@ import json
 import tarfile
 import shutil
 from os.path import dirname, abspath
+from distutils.version import StrictVersion
 # Path to run in deployment folder
 sys.path.append(dirname(dirname(abspath(__file__))))
 # Path to run in service folder
@@ -25,15 +26,7 @@ def CleanTerm(term):
     return term
 
 def IsVersionHigher(old, current):
-    oldVersion = old.split('.')
-    currentVersion = current.split('.')
-    if(int(currentVersion[0]) > int(oldVersion[0])):
-        return True
-    if(int(currentVersion[1]) > int(oldVersion[1])):
-        return True
-    if(int(currentVersion[2]) > int(oldVersion[2])):
-        return True
-    return False
+   return (StrictVersion(current) > StrictVersion(old))
 
 def MoveDirectory(src_dir, dest_dir):
     fileList = os.listdir(src_dir)
