@@ -63,13 +63,14 @@ class SentenceResolver(object):
             stopwordFactor = self.__stopwordFactor if r[1] == 1 else 1
             isStopword = True if r[1] == 1 else False
             synonymFactor = self.__synonymFactor if isSynonym else 1
+            synonymTag = "(* {1})".format(baseWord) if isSynonym else ""
 
             if r[0] in sentenceList:
                 sentenceList[r[0]].AddKeyword((r[3] + synonymFactor * stopwordFactor * r[2]), r[4], isStopword)
             else:
                 sentenceList[r[0]] = Sentence(r[0], (r[3] + synonymFactor * stopwordFactor * r[2]), r[4], isStopword)
 
-            sentenceList[r[0]].AddBaseword(baseWord)
+            sentenceList[r[0]].AddBaseword("{0}{1}".format(r[4], synonymTag))
 
         return sentenceList
 
