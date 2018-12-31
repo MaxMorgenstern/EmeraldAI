@@ -25,12 +25,12 @@ class Word(BaseObject):
 
         self.SynonymList = []
         self.SynonymList = self.__addToWordList(self.NormalizedWord, self.SynonymList, self.Language)
-        
+
         synonyms = Thesaurus().GetSynonyms(self.Word)
         for synonym in synonyms:
             if synonym[0]:
                 self.SynonymList = self.__addToWordList(synonym[0], self.SynonymList, self.Language)
-            else:
+            elif synonym[1]:
                 self.SynonymList = self.__addToWordList(synonym[1], self.SynonymList, self.Language)
 
         self.SynonymList.remove(self.NormalizedWord)
@@ -41,7 +41,7 @@ class Word(BaseObject):
     def Equals(self, comparison):
         if comparison == self.Word:
             return True
-        
+
         if NLP.Normalize(comparison, self.Language) == self.NormalizedWord:
             return True
 
