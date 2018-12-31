@@ -39,9 +39,9 @@ class User(BaseObject):
 
     def GetUserType(self):
         userType = "User"
-        if(user.Trainer):
+        if(self.Trainer):
             userType = "Trainer"
-        if(user.Admin):
+        if(self.Admin):
             userType = "Admin"
         return userType
 
