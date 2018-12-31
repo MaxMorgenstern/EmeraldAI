@@ -32,7 +32,8 @@ class Sentence(BaseObject):
         self.SetsCategory = []
 
     def AddBaseword(self, Baseword):
-        self.BasewordList.append(Baseword)
+        if Baseword not in self.BasewordList:
+            self.BasewordList.append(Baseword)
 
     def AddKeyword(self, Rating, Keyword, IsStopword=True):
         self.Rating += Rating
