@@ -68,10 +68,10 @@ if(Pid.HasPid(PIDName)):
     exit()
 Pid.Create(PIDName)
 
+# beta test
+beta = False
+
 try:
-    releaseUrl = 'https://api.github.com/repos/MaxMorgenstern/EmeraldAI/releases'
-    response = urllib2.urlopen(releaseUrl)
-    releaseObjects = json.loads(response.read())
 
     deploymentPath = os.path.join(Global.RootPath, 'Deployment')
     Global.EnsureDirectoryExists(deploymentPath)
@@ -79,35 +79,66 @@ try:
 
     downloadFilename = os.path.join(deploymentPath, 'currentVersion.tar.gz')
 
+    if beta:
 
-    try:
-        file = open(versionFilePath, 'r')
-        localVersion = file.read()
-    except Exception as e:
-        print 'Data about currently installed version missing'
-        localVersion = '0.0.0'
+        betaUrl = 'https://api.github.com/repos/MaxMorgenstern/EmeraldAI/branches'
+        response = urllib2.urlopen(betaUrl)
+        releaseObjects = json.loads(response.read())
 
-    highestVersionObject = None
-    highestVersionNumber = localVersion
+        betaBranch = None
+        for d in releaseObjects:
+            if d['name'] != 'master':
+                betaBranch = d['name']
 
-    for d in releaseObjects:
-        gitVersion = CleanTerm(d['tag_name'])
-        if(IsVersionHigher(highestVersionNumber, gitVersion)):
-            highestVersionNumber = gitVersion
-            highestVersionObject = d
+        if betaBranch is None:
+            print "Can not find recent beta branch"
+            exit()
 
-    if (highestVersionObject is None):
-        print "Already up to date. Version: '{0}'".format(localVersion)
-        exit()
+        tarballUrl = 'https://github.com/MaxMorgenstern/EmeraldAI/tarball/{0}'.format(betaBranch)
 
-    print "Local version '{0}' - Latest release {1}".format(localVersion, highestVersionNumber)
+        print "Found beta branch '{0}'".format(betaBranch)
 
-    print "Download latest release"
+        print "Download latest beta version"
+
+        response = urllib2.urlopen(tarballUrl)
+        data = response.read()
+
+
+    else:
+
+        releaseUrl = 'https://api.github.com/repos/MaxMorgenstern/EmeraldAI/releases'
+        response = urllib2.urlopen(releaseUrl)
+        releaseObjects = json.loads(response.read())
+
+        try:
+            file = open(versionFilePath, 'r')
+            localVersion = file.read()
+        except Exception as e:
+            print 'Data about currently installed version missing'
+            localVersion = '0.0.0'
+
+        highestVersionObject = None
+        highestVersionNumber = localVersion
+
+        for d in releaseObjects:
+            gitVersion = CleanTerm(d['tag_name'])
+            if(IsVersionHigher(highestVersionNumber, gitVersion)):
+                highestVersionNumber = gitVersion
+                highestVersionObject = d
+
+        if (highestVersionObject is None):
+            print "Already up to date. Version: '{0}'".format(localVersion)
+            exit()
+
+        print "Local version '{0}' - Latest release {1}".format(localVersion, highestVersionNumber)
+
+        print "Download latest release"
+
+        response = urllib2.urlopen(highestVersionObject['tarball_url'])
+        data = response.read()
+
 
     # download file
-    response = urllib2.urlopen(highestVersionObject['tarball_url'])
-    data = response.read()
-
     file = open(downloadFilename, 'w')
     file.write(data)
     file.close()
