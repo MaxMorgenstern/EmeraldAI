@@ -11,6 +11,8 @@ FormalFormOfAddressFemale = Frau {0}
 UnknownUserTag = Unknown
 NotKnownDataTag = NotKnown
 
+Beta = False
+
 
 # ----------------------
 [Bot]
@@ -88,8 +90,8 @@ CsvActionColumnCount = 5
 Provider = Google
 Microphone =
 
-WatsonSTTUsername = 
-WatsonSTTPassword = 
+WatsonSTTUsername =
+WatsonSTTPassword =
 
 
 # ----------------------
@@ -112,9 +114,9 @@ IvonaVoiceName = Hans
 IvonaAccessKey =
 IvonaSecretKey =
 
-WatsonTTSUsername = 
-WatsonTTSPassword = 
-WatsonVoiceName = 
+WatsonTTSUsername =
+WatsonTTSPassword =
+WatsonVoiceName =
 
 # ----------------------
 [Database]

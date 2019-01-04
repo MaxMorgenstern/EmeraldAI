@@ -17,6 +17,7 @@ sys.setdefaultencoding('utf-8')
 
 from EmeraldAI.Logic.Modules import Global
 from EmeraldAI.Logic.Modules import Pid
+from EmeraldAI.Config.Config import *
 
 def CleanTerm(term):
     term = term.replace('-alpha', '')
@@ -68,8 +69,6 @@ if(Pid.HasPid(PIDName)):
     exit()
 Pid.Create(PIDName)
 
-# beta test
-beta = False
 
 try:
 
@@ -79,7 +78,8 @@ try:
 
     downloadFilename = os.path.join(deploymentPath, 'currentVersion.tar.gz')
 
-    if beta:
+    if Config().GetBoolean("DEFAULT", "Beta"): # Default False
+        highestVersionNumber = 'beta'
 
         betaUrl = 'https://api.github.com/repos/MaxMorgenstern/EmeraldAI/branches'
         response = urllib2.urlopen(betaUrl)
