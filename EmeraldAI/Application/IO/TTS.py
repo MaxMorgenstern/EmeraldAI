@@ -30,7 +30,7 @@ def InitSettings():
 
 def RunTTS():
     global GLOBAL_FileNamePublisher
-    
+
     rospy.init_node('TTS_node', anonymous=True)
 
     rospy.Subscriber("/emerald_ai/io/text_to_speech", String, callback)
@@ -54,6 +54,10 @@ def callback(data):
     FileLogger().Info("TTS, callback(), Provider: {0}".format(ttsProvider))
 
     try:
+        if usePygame and data == "TRIGGER_STOP_AUDIO":
+            SoundMixer().Stop()
+            return
+
         if(ttsProvider.lower() == "google"):
             data = Google().Speak(dataParts[1], not usePygame)
 
