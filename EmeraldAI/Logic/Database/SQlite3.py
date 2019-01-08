@@ -1,6 +1,5 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-#import sqlite3 as lite
 from cachetools import cached
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Logic.Modules import Global
@@ -16,9 +15,6 @@ class SQlite3(object):
         self.__Database = self.GetDB(Config().Get("Database", "SQliteDatabase"))
 
     def GetDB(self, database):
-        #con = lite.connect(os.path.join(Global.EmeraldPath, "Data", "SqliteDB", database.rstrip(".sqlite") + ".sqlite"), check_same_thread=False)
-        #con.text_factory = str
-        #return con
         return Worker(os.path.join(Global.EmeraldPath, "Data", "SqliteDB", database.rstrip(".sqlite") + ".sqlite"))
 
     @cached(cache={})
@@ -27,26 +23,7 @@ class SQlite3(object):
 
     def ExecuteDB(self, db, sql, args=None):
         db.execute(sql, args)
-
         return db.getLastrowid()
-
-        """
-        try:
-            cur = db.cursor()
-            if args:
-                cur.execute(sql, args)
-            else:
-                cur.execute(sql)
-            db.commit()
-            return cur.lastrowid
-        except lite.IntegrityError as e:
-            if(not str(e).lower().startswith("unique")):
-                FileLogger().Error("SQlite3 Line 37: IntegrityError: {0}".format(e))
-            return None
-        except lite.OperationalError as e:
-            FileLogger().Error("SQlite3 Line 40: OperationError: {0}".format(e))
-            return None
-        """
 
     @cached(cache={})
     def Fetchall(self, sql, args=None):
@@ -57,22 +34,6 @@ class SQlite3(object):
 
     def FetchallDB(self, db, sql, args=None):
         return db.execute(sql, args)
-
-
-        """
-        try:
-            cur = db.cursor()
-            if args:
-                cur.execute(sql, args)
-            else:
-                cur.execute(sql)
-            rows = cur.fetchall()
-        except Exception as e:
-            FileLogger().Error("SQlite3 Line 59: {0}".format(e))
-            return []
-        return rows
-        """
-
 
     def Disconnect(self):
         self.DisconnectDB(self.__Database)
@@ -102,12 +63,11 @@ class SQlite3(object):
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-
-"""Thread safe sqlite3 interface."""
-
 #__author__ = "Shawn Lee"
 #__email__ = "dashawn@gmail.com"
 #__license__ = "MIT"
+#
+# Thread safe sqlite3 interface.
 
 import sqlite3
 import threading
@@ -184,7 +144,6 @@ class Worker(threading.Thread):
 
     def _query_results(self, token):
         try:
-            # Wait until the select query has executed
             self._select_events.setdefault(token, threading.Event())
             self._select_events[token].wait()
             return self._results[token]
@@ -205,4 +164,3 @@ class Worker(threading.Thread):
 
     def getLastrowid(self):
         return self._sqlite3_cursor.lastrowid
-
