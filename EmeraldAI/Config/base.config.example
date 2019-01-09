@@ -143,6 +143,7 @@ CameraType = STD
 #CameraType = IR -- infrared
 
 SurveillanceMode = False
+AlwaysRecordFace = False
 
 Modules = Person,Mood,Gender
 
