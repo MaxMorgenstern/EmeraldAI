@@ -293,7 +293,11 @@ class ComputerVision(object):
         self.__RecognizerDictionary = labelDict
 
         path = os.path.join(self.__DatasetBasePath, datasetName)
-        self.__RecognizerModel.save(os.path.join(path, self.__ModelFile.format(imageSize)))
+        try:
+            self.__RecognizerModel.save(os.path.join(path, self.__ModelFile.format(imageSize)))
+        except:
+            self.__RecognizerModel.write(os.path.join(path, self.__ModelFile.format(imageSize)))
+
         np.save(os.path.join(path, self.__DictionaryFile.format(imageSize)), labelDict)
 
 
@@ -302,9 +306,11 @@ class ComputerVision(object):
             imageSize = "{0}x{1}".format(self.__ResizeWidth, self.__ResizeHeight)
         path = os.path.join(self.__DatasetBasePath, datasetName)
         try:
-            self.__RecognizerModel.load(os.path.join(path, self.__ModelFile.format(imageSize)))
-            # TODO
-            # self.__RecognizerModel.read(os.path.join(path, self.__ModelFile.format(imageSize)))
+            try:
+                self.__RecognizerModel.load(os.path.join(path, self.__ModelFile.format(imageSize)))
+            except: 
+                self.__RecognizerModel.read(os.path.join(path, self.__ModelFile.format(imageSize)))
+
             self.__RecognizerDictionary = np.load(os.path.join(path, self.__DictionaryFile.format(imageSize))).item()
             return self.__RecognizerModel, self.__RecognizerDictionary
         except Exception as e:
