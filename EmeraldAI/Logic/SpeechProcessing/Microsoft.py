@@ -33,25 +33,6 @@ class Microsoft(object):
         self.__language_4letter_cc = Config().Get("TextToSpeech", "CountryCode4Letter")
         self.__audioPlayer = Config().Get("TextToSpeech", "AudioPlayer") + " '{0}'"
 
-
-        microphoneID = None
-        microphoneName = Config().Get("SpeechToText", "Microphone")
-        for i, microphone_name in enumerate(sr.Microphone().list_microphone_names()):
-            if microphone_name == microphoneName:
-                microphoneID = i
-
-        if microphoneID is None:
-            FileLogger().Error("Microsoft Line 44: No microphone found - Exit")
-            raise Exception("Microsoft: No microphone found - Exit")
-            return
-
-        self.__recognizer = sr.Recognizer()
-        self.__microphone = sr.Microphone(device_index=microphoneID)
-
-        with self.__microphone as source:
-            self.__recognizer.dynamic_energy_threshold = True
-            self.__recognizer.adjust_for_ambient_noise(source)
-
         self.__voiceGender = Config().Get("TextToSpeech", "MicrosoftVoiceGender")
         self.__voiceName = Config().Get("TextToSpeech", "MicrosoftVoiceName")
         self.__apiKey = Config().Get("TextToSpeech", "MicrosoftAPIKey")
@@ -70,6 +51,23 @@ class Microsoft(object):
         conn.close()
 
         self.__accesstoken = data.decode("UTF-8")
+
+        self.__microphoneID = None
+        microphoneName = Config().Get("SpeechToText", "Microphone")
+        for i, microphone_name in enumerate(sr.Microphone().list_microphone_names()):
+            if microphone_name == microphoneName:
+                self.__microphoneID = i
+
+        if self.__microphoneID is None:
+            FileLogger().Error("Microsoft Line 44: No microphone found - skip listen initialisation")
+            return
+
+        self.__recognizer = sr.Recognizer()
+        self.__microphone = sr.Microphone(device_index=self.__microphoneID)
+
+        with self.__microphone as source:
+            self.__recognizer.dynamic_energy_threshold = True
+            self.__recognizer.adjust_for_ambient_noise(source)
 
 
     def Speak(self, audioString, playAudio=False):
@@ -108,6 +106,10 @@ class Microsoft(object):
 
 
     def Listen(self):
+        if self.__microphoneID is None:
+            raise Exception("Microsoft: No microphone found - Exit")
+            return
+
         with self.__microphone as source:
             self.__audio = self.__recognizer.listen(source)
 

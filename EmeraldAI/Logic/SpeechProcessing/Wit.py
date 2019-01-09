@@ -12,19 +12,19 @@ class Wit(object):
     __apiKey = None
 
     def __init__(self):
-        microphoneID = None
+        self.__microphoneID = None
         microphoneName = Config().Get("SpeechToText", "Microphone")
         for i, microphone_name in enumerate(sr.Microphone().list_microphone_names()):
             if microphone_name == microphoneName:
-                microphoneID = i
+                self.__microphoneID = i
 
-        if microphoneID is None:
+        if self.__microphoneID is None:
             FileLogger().Error("Wit Line 22: No microphone found - Exit")
             raise Exception("Wit: No microphone found - Exit")
             return
 
         self.__recognizer = sr.Recognizer()
-        self.__microphone = sr.Microphone(device_index=microphoneID)
+        self.__microphone = sr.Microphone(device_index=self.__microphoneID)
 
         with self.__microphone as source:
             self.__recognizer.dynamic_energy_threshold = True
@@ -36,6 +36,10 @@ class Wit(object):
 
 
     def Listen(self):
+        if self.__microphoneID is None:
+            raise Exception("Wit: No microphone found - Exit")
+            return
+
         with self.__microphone as source:
             self.__audio = self.__recognizer.listen(source)
 
