@@ -20,7 +20,7 @@ from EmeraldAI.Logic.Memory.Brain import Brain as BrainMemory
 class BrainCV:
     def __init__(self):
         rospy.init_node('emerald_brain_cv_node', anonymous=True)
-        
+
         BrainMemory().Set("Brain.CV.Start", rospy.Time.now().to_sec())
 
         rospy.Subscriber("/emerald_ai/io/computer_vision", String, self.callback)
@@ -176,7 +176,7 @@ class BrainCV:
         return resultTag, resultValue
 
 
-    def __updateUserByCVTag(cvTag, reducedTimeout=False):
+    def __updateUserByCVTag(self, cvTag, reducedTimeout=False):
         detectedPerson = BrainMemory().GetString("CV.Person.CvTag", self.__PersonTimeout)
         detectionTimestamp = BrainMemory().GetInt("CV.Person.FirstDetectionTimestamp")
         if detectedPerson is None:
