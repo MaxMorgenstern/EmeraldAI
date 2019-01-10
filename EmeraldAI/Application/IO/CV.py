@@ -74,6 +74,8 @@ def RunCV(camID, camType, surveillanceMode, videoStream):
         camera.set(3, Config().GetInt("ComputerVision", "CameraWidth"))
         camera.set(4, Config().GetInt("ComputerVision", "CameraHeight"))
 
+    alwaysRecordFace = Config().GetBoolean("ComputerVision", "AlwaysRecordFace")
+
     cropBodyImage = Config().GetBoolean("ComputerVision", "CropBodyImage")
     intervalBetweenImages = Config().GetInt("ComputerVision", "IntervalBetweenImages")
     bodyDetectionInterval = Config().GetInt("ComputerVision", "BodyDetectionInterval")
@@ -209,7 +211,7 @@ def RunCV(camID, camType, surveillanceMode, videoStream):
 
 
         # Take Images
-        if(takeImage and clockFace <= (time.time()-intervalBetweenImages) and cv.TakeImage(image, "Person", rawFaceData, grayscale=True, prefix=bestResultName)):
+        if((alwaysRecordFace or takeImage) and clockFace <= (time.time()-intervalBetweenImages) and cv.TakeImage(image, "Person", rawFaceData, grayscale=True, prefix=bestResultName)):
             clockFace = time.time()
 
 

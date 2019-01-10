@@ -17,7 +17,6 @@ from EmeraldAI.Entities.ContextParameter import ContextParameter
 from EmeraldAI.Entities.PipelineArgs import PipelineArgs
 from EmeraldAI.Logic.Modules import Pid
 from EmeraldAI.Config.Config import *
-from EmeraldAI.Logic.Audio.SoundMixer import *
 from EmeraldAI.Logic.Memory.Brain import Brain as BrainMemory
 from EmeraldAI.Entities.Word import Word
 from EmeraldAI.Logic.Logger import *
@@ -84,13 +83,13 @@ class BrainSTT:
         stopwordList = Config().GetList("Bot", "StoppwordList")
         if(sentence in stopwordList):
             cancelSpeech = True
-            SoundMixer().Stop()
+            self.__ResponsePublisher.publish("TTS|TRIGGER_STOP_AUDIO")
 
         if self.Pipeline is None:
             self.Pipeline = PipelineArgs()
 
         BrainMemory().Set("Brain.AudioTimestamp", rospy.Time.now().to_sec())
-        
+
         self.Pipeline.AddSentence(sentence)
 
         self.Pipeline = AnalyzeScope().Process(self.Pipeline)

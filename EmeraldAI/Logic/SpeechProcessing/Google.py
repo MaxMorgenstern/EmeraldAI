@@ -28,15 +28,18 @@ class Google(object):
 
         self.__asyncInit = False
 
-        microphoneID = None
+        self.__apiKey = Config().Get("TextToSpeech", "GoogleAPIKey")
+        if(len(self.__apiKey) == 0):
+            self.__apiKey = None
+
+        self.__microphoneID = None
         microphoneName = Config().Get("SpeechToText", "Microphone")
         for i, microphone_name in enumerate(sr.Microphone().list_microphone_names()):
             if microphone_name == microphoneName:
-                microphoneID = i
+                self.__microphoneID = i
 
-        if microphoneID is None:
-            FileLogger().Error("Google Line 38: No microphone found - Exit")
-            raise Exception("Google: No microphone found - Exit")
+        if self.__microphoneID is None:
+            FileLogger().Error("Google Line 38: No microphone found - skip listen initialisation")
             return
 
         self.__recognizer = sr.Recognizer()
@@ -47,15 +50,11 @@ class Google(object):
         self.__recognizer.pause_threshold = 0.5
         self.__recognizer.operation_timeout = 3
 
-        self.__microphone = sr.Microphone(device_index=microphoneID)
+        self.__microphone = sr.Microphone(device_index=self.__microphoneID)
 
         with self.__microphone as source:
             self.__recognizer.dynamic_energy_threshold = True
             self.__recognizer.adjust_for_ambient_noise(source)
-
-        self.__apiKey = Config().Get("TextToSpeech", "GoogleAPIKey")
-        if(len(self.__apiKey) == 0):
-            self.__apiKey = None
 
 
     def Speak(self, audioString, playAudio=False):
@@ -75,6 +74,10 @@ class Google(object):
 
 
     def AsyncCallback(self, recognizer, audio):
+        if self.__microphoneID is None:
+            raise Exception("Google: No microphone found - Exit")
+            return
+
         data = ""
         try:
             data = self.__recognizer.recognize_google(audio,
@@ -90,6 +93,10 @@ class Google(object):
             self.__asyncResultList.append(data)
 
     def ListenAsync(self):
+        if self.__microphoneID is None:
+            raise Exception("Google: No microphone found - Exit")
+            return
+
         if not self.__asyncInit:
             self.__recognizer.listen_in_background(self.__microphone, self.AsyncCallback)
             self.__asyncInit = True
@@ -100,6 +107,10 @@ class Google(object):
 
 
     def Listen(self):
+        if self.__microphoneID is None:
+            raise Exception("Google: No microphone found - Exit")
+            return
+
         with self.__microphone as source:
             self.__audio = self.__recognizer.listen(source)
 
