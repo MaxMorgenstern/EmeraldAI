@@ -27,6 +27,8 @@ def CleanTerm(term):
     return term
 
 def IsVersionHigher(old, current):
+    if old == 'beta':
+        return True
     return (StrictVersion(current) > StrictVersion(old))
 
 def MoveDirectory(src_dir, dest_dir):
