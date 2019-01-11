@@ -6,6 +6,7 @@ from watson_developer_cloud.websocket import RecognizeCallback, AudioSource
 from threading import Thread
 from sets import Set
 from os.path import join, dirname
+import re
 
 import rospy
 from std_msgs.msg import String
@@ -101,6 +102,10 @@ class Watson():
             self.stream.stop_stream()
             self.stream.close()
             self.audio.terminate()
+
+    def CleanString(self, string):
+        data = re.sub(r'\W+', '', string)
+        return (data[:75] + '_TRIMMED') if len(data) > 75 else data
 
     def recognize_using_weboscket(self, *args):
         mycallback = MyRecognizeCallback()
