@@ -12,44 +12,44 @@ class BaseConfig(object):
         config.read(join(dirname(abspath(__file__)), configName))
         self.__config = config
 
-        configFallback = ConfigParser.ConfigParser()
-        configFallback.read(join(dirname(abspath(__file__)), "{0}.example".format(configName)))
-        self.__configFallback = configFallback
+        defaultConfig = ConfigParser.ConfigParser()
+        defaultConfig.read(join(dirname(abspath(__file__)), "{0}.default".format(configName)))
+        self.__defaultConfig = defaultConfig
 
 
-    def Get(self, section, parameter, fallback=True):
+    def Get(self, section, parameter, useDefault=True):
         if self.__config.has_option(section, parameter):
             return self.__config.get(section, parameter)
-        if fallback:
-            return self.__configFallback.get(section, parameter)
+        if useDefault:
+            return self.__defaultConfig.get(section, parameter)
         raise Exception("Emerald Config: No option '{0}' in section: '{1}'".format(parameter, section))
 
-    def GetInt(self, section, parameter, fallback=True):
+    def GetInt(self, section, parameter, useDefault=True):
         if self.__config.has_option(section, parameter):
             return self.__config.getint(section, parameter)
-        if fallback:
-            return self.__configFallback.getint(section, parameter)
+        if useDefault:
+            return self.__defaultConfig.getint(section, parameter)
         raise Exception("Emerald Config: No option '{0}' in section: '{1}'".format(parameter, section))
 
-    def GetFloat(self, section, parameter, fallback=True):
+    def GetFloat(self, section, parameter, useDefault=True):
         if self.__config.has_option(section, parameter):
             return self.__config.getfloat(section, parameter)
-        if fallback:
-            return self.__configFallback.getfloat(section, parameter)
+        if useDefault:
+            return self.__defaultConfig.getfloat(section, parameter)
         raise Exception("Emerald Config: No option '{0}' in section: '{1}'".format(parameter, section))
 
-    def GetBoolean(self, section, parameter, fallback=True):
+    def GetBoolean(self, section, parameter, useDefault=True):
         if self.__config.has_option(section, parameter):
             return self.__config.getboolean(section, parameter)
-        if fallback:
-            return self.__configFallback.getboolean(section, parameter)
+        if useDefault:
+            return self.__defaultConfig.getboolean(section, parameter)
         raise Exception("Emerald Config: No option '{0}' in section: '{1}'".format(parameter, section))
 
-    def GetList(self, section, parameter, fallback=True):
+    def GetList(self, section, parameter, useDefault=True):
         if self.__config.has_option(section, parameter):
             return self.__config.get(section, parameter).split(",")
-        if fallback:
-            return self.__configFallback.get(section, parameter).split(",")
+        if useDefault:
+            return self.__defaultConfig.get(section, parameter).split(",")
         raise Exception("Emerald Config: No option '{0}' in section: '{1}'".format(parameter, section))
 
 
