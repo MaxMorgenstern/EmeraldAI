@@ -7,6 +7,7 @@ killall -9 rosmaster
 
 echo "Kill Speech..."
 $directory/KillBrain_STT.sh
+$directory/KillBrain_TTS.sh
 $directory/KillSTT.sh
 $directory/KillTTS.sh
 
