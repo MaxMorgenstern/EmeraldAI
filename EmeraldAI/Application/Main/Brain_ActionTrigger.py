@@ -29,8 +29,11 @@ class BrainActionTrigger:
 
         self.__ResponsePublisher = rospy.Publisher('/emerald_ai/io/text_to_speech', String, queue_size=10)
 
-    	# in order to check if someone is present
-        rospy.Subscriber("/emerald_ai/io/person", String, self.personCallback)
+    	# in order to check if someone we know is present
+        rospy.Subscriber("/emerald_ai/io/person", String, self.knownPersonCallback)
+
+    	# in order to check if a intruder
+        # rospy.Subscriber("/emerald_ai/io/computer_vision", String, self.unknownPersonCallback)
 
         # checks the app status - it sends the status change if turned on/off
         rospy.Subscriber("/emerald_ai/app/status", String, self.appCallback)
@@ -38,7 +41,7 @@ class BrainActionTrigger:
         rospy.spin()
 
 
-    def personCallback(self, data):
+    def knownPersonCallback(self, data):
         dataParts = data.data.split("|")
         if (dataParts[0] == "PERSON" and dataParts[1] != self.__UnknownUserTag):
 
@@ -51,9 +54,8 @@ class BrainActionTrigger:
                 response = ProcessTrigger().ProcessCategory("Greeting")
                 lastAudioTimestamp = BrainMemory().GetString("Brain.AudioTimestamp", 20)
                 if(lastAudioTimestamp is None and len(response) > 1):
-                    FileLogger().Info("ActionTrigger, personCallback(): {0}".format(response))
+                    FileLogger().Info("ActionTrigger, knownPersonCallback(): {0}".format(response))
                     self.__ResponsePublisher.publish("TTS|{0}".format(response))
-
 
     def appCallback(self, data):
         dataParts = data.data.split("|")
