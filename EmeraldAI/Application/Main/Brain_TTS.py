@@ -16,6 +16,8 @@ from EmeraldAI.Logic.Modules import Pid
 from EmeraldAI.Config.Config import *
 from EmeraldAI.Logic.Audio.SoundMixer import *
 from EmeraldAI.Logic.Memory.Brain import Brain as BrainMemory
+from EmeraldAI.Logic.Logger import *
+
 
 class BrainTTS:
     def __init__(self):
@@ -33,15 +35,20 @@ class BrainTTS:
 
         if dataParts[0] != "TTS":
             return
-        
-        audio = MP3(dataParts[1])
-        BrainMemory().Set("TTS.Until", (rospy.Time.now().to_sec() + int(round(audio.info.length))))
+        try:
+            audio = MP3(dataParts[1])
+            BrainMemory().Set("TTS.Until", (rospy.Time.now().to_sec() + int(round(audio.info.length))))
+        except Exception as e:
+            FileLogger().Warn("Brain TTS, playAudio() - Error on getting audio duration: {0}".format(e))
 
-        if self.__usePygame:
-            SoundMixer().Play(dataParts[1])
-            return
-        
-        os.system(self.__audioPlayer.format(dataParts[1]))
+        try:
+            if self.__usePygame:
+                SoundMixer().Play(dataParts[1])
+                return
+            
+            os.system(self.__audioPlayer.format(dataParts[1]))
+        except Exception as e:
+            FileLogger().Warn("Brain TTS, playAudio() - Error on playing audio: {0}".format(e))
 
 
 ##### MAIN #####

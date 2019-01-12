@@ -61,7 +61,7 @@ class BrainActionTrigger:
         dataParts = data.data.split("|")
         if dataParts[0] == "FACEAPP":
             response = "TRIGGER_FACEAPP_{0}".format(dataParts[1]) # == ON / OFF
-            FileLogger().Info("ActionTrigger, triggerCallback(): {0}".format(response))
+            FileLogger().Info("ActionTrigger, appCallback(): {0}".format(response))
             self.__SpeechTriggerPublisher.publish("STT|{0}".format(response))
 
 

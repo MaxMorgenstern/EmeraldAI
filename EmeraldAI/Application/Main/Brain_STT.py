@@ -99,7 +99,7 @@ class BrainSTT:
             self.ProcessAnimation(self.Pipeline.Animation)
             if(self.Pipeline.ResponseFound):
 
-                FileLogger().Info("TTS, callback(), Audio: {0}".format(self.Pipeline.Response))
+                FileLogger().Info("Brain STT, ProcessSpeech(): {0}".format(self.Pipeline.Response))
                 self.__ResponsePublisher.publish("TTS|{0}".format(self.Pipeline.Response))
 
         trainerResult = Trainer().Process(self.Pipeline)
