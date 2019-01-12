@@ -43,6 +43,7 @@ class Watson():
 
         self.__language_2letter_cc = Config().Get("SpeechToText", "CountryCode2Letter")
         self.__language_4letter_cc = Config().Get("SpeechToText", "CountryCode4Letter")
+        self.__audioPlayer = Config().Get("TextToSpeech", "AudioPlayer") + " '{0}'"
 
         self.text_to_speech = TextToSpeechV1(
             url='https://stream.watsonplatform.net/text-to-speech/api',
