@@ -3,6 +3,7 @@
 import sys
 import os
 import time
+from mutagen.mp3 import MP3
 from os.path import dirname, abspath
 sys.path.append(dirname(dirname(dirname(dirname(abspath(__file__))))))
 reload(sys)
@@ -33,10 +34,8 @@ class BrainTTS:
         if dataParts[0] != "TTS":
             return
         
-        # TODO
-        audioDuration = 0
-
-        BrainMemory().Set("TTS.Until", (rospy.Time.now().to_sec() + audioDuration))
+        audio = MP3(dataParts[1])
+        BrainMemory().Set("TTS.Until", (rospy.Time.now().to_sec() + int(round(audio.info.length))))
 
         if self.__usePygame:
             SoundMixer().Play(dataParts[1])
