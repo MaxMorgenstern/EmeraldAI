@@ -11,7 +11,7 @@ import rospy
 from std_msgs.msg import String
 
 from EmeraldAI.Logic.Modules import Pid
-from EmeraldAI.Config.Config import *
+from EmeraldAI.Config.Config import Config
 from EmeraldAI.Logic.GPIO.GPIOProxy import GPIOProxy
 
 
@@ -64,7 +64,7 @@ class HardwareTrigger:
         self.__Publisher.publish(triggerData)
 
 
-    def GPIOTrigger(callback):
+    def GPIOTrigger(self, callback):
         self.SendTrigger(self.__GPIOTriggerName, self.__GPIOInputChannel)
 
 
