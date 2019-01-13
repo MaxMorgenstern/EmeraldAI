@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from EmeraldAI.Entities.BaseObject import BaseObject
 from EmeraldAI.Logic.Singleton import Singleton
-from EmeraldAI.Config.Config import *
+from EmeraldAI.Config.Config import Config
 
 # TODO - add more parameters
 

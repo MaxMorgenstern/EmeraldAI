@@ -11,8 +11,8 @@ import codecs
 
 from EmeraldAI.Logic.Modules import Global
 from EmeraldAI.Logic.Modules import Excel
-from EmeraldAI.Config.Config import *
-from EmeraldAI.Logic.Trainer.DialogTrainer import *
+from EmeraldAI.Config.Config import Config
+from EmeraldAI.Logic.Trainer.DialogTrainer import DialogTrainer
 
 def read(filename):
     return codecs.open(filename, encoding='utf-8').read()

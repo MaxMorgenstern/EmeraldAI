@@ -4,7 +4,7 @@ from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Logic.NLP.SentenceResolver import SentenceResolver
 from EmeraldAI.Entities.User import User
 from EmeraldAI.Entities.ContextParameter import ContextParameter
-from EmeraldAI.Config.Config import *
+from EmeraldAI.Config.Config import Config
 
 import random
 import re

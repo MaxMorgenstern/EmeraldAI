@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 from EmeraldAI.Entities.BaseObject import BaseObject
-from EmeraldAI.Config.Config import *
+from EmeraldAI.Config.Config import Config
 if(Config().Get("Database", "ConversationDatabaseType").lower() == "sqlite"):
     from EmeraldAI.Logic.Database.SQlite3 import SQlite3 as db
 elif(Config().Get("Database", "ConversationDatabaseType").lower() == "mysql"):

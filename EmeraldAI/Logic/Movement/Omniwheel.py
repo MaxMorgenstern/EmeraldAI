@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import math
 from EmeraldAI.Logic.Singleton import Singleton
-from EmeraldAI.Config.Config import *
+from EmeraldAI.Config.Config import Config
 
 class Omniwheel(object):
     __metaclass__ = Singleton

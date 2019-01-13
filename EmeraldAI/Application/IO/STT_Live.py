@@ -6,9 +6,9 @@ sys.path.append(dirname(dirname(dirname(dirname(abspath(__file__))))))
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-from EmeraldAI.Logic.SpeechProcessing.Watson import *
+from EmeraldAI.Logic.SpeechProcessing.Watson import Watson
 from EmeraldAI.Logic.Modules import Pid
-from EmeraldAI.Config.Config import *
+from EmeraldAI.Config.Config import Config
 
 def RunSTT():
     sttProvider = Config().Get("SpeechToText", "Provider")

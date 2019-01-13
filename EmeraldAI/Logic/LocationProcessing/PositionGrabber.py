@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 import rospy
-
 from nav_msgs.msg import Odometry
+
 from EmeraldAI.Logic.Singleton import Singleton
-from EmeraldAI.Config.Config import *
+from EmeraldAI.Config.Config import Config
 if(Config().Get("Database", "WiFiFingerprintDatabaseType").lower() == "sqlite"):
     from EmeraldAI.Logic.Database.SQlite3 import SQlite3 as db
 elif(Config().Get("Database", "WiFiFingerprintDatabaseType").lower() == "mysql"):

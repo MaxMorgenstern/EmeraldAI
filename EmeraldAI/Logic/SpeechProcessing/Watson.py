@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import pyaudio
+import os
 from watson_developer_cloud import SpeechToTextV1, TextToSpeechV1
 from watson_developer_cloud.websocket import RecognizeCallback, AudioSource
 from threading import Thread
@@ -18,8 +19,8 @@ except ImportError:
 
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Logic.Modules import Global
-from EmeraldAI.Config.Config import *
-from EmeraldAI.Logic.Logger import *
+from EmeraldAI.Config.Config import Config
+from EmeraldAI.Logic.Logger import FileLogger
 
 class Watson():
     __metaclass__ = Singleton

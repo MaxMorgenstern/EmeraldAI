@@ -11,7 +11,7 @@ import rospy
 from std_msgs.msg import String
 
 from EmeraldAI.Logic.Modules import Pid
-from EmeraldAI.Config.Config import *
+from EmeraldAI.Config.Config import Config
 
 def RunMovement():
 

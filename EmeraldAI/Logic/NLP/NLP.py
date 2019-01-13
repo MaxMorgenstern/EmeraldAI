@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import re
 from EmeraldAI.Logic.Modules import Global
-from EmeraldAI.Config.Config import *
+from EmeraldAI.Config.Config import Config
 if(Config().Get("Database", "NLPDatabaseType").lower() == "sqlite"):
     from EmeraldAI.Logic.Database.SQlite3 import SQlite3 as db
 elif(Config().Get("Database", "NLPDatabaseType").lower() == "mysql"):

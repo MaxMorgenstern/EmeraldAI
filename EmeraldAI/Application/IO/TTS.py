@@ -10,13 +10,13 @@ import rospy
 from std_msgs.msg import String
 
 from EmeraldAI.Logic.Modules import Pid
-from EmeraldAI.Logic.SpeechProcessing.Google import *
-from EmeraldAI.Logic.SpeechProcessing.Ivona import *
-from EmeraldAI.Logic.SpeechProcessing.Microsoft import *
-from EmeraldAI.Logic.SpeechProcessing.Watson import *
-from EmeraldAI.Config.Config import *
-from EmeraldAI.Logic.Logger import *
-from EmeraldAI.Logic.Audio.SoundMixer import *
+from EmeraldAI.Logic.SpeechProcessing.Google import Google
+from EmeraldAI.Logic.SpeechProcessing.Ivona import Ivona
+from EmeraldAI.Logic.SpeechProcessing.Microsoft import Microsoft
+from EmeraldAI.Logic.SpeechProcessing.Watson import Watson
+from EmeraldAI.Config.Config import Config
+from EmeraldAI.Logic.Logger import FileLogger
+from EmeraldAI.Logic.Audio.SoundMixer import SoundMixer
 from EmeraldAI.Logic.Memory.TTS import TTS as TTSMemory
 from EmeraldAI.Entities.User import User
 

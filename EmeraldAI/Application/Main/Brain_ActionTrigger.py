@@ -11,8 +11,8 @@ import rospy
 from std_msgs.msg import String
 
 from EmeraldAI.Logic.Modules import Pid
-from EmeraldAI.Config.Config import *
-from EmeraldAI.Logic.Logger import *
+from EmeraldAI.Config.Config import Config
+from EmeraldAI.Logic.Logger import FileLogger
 from EmeraldAI.Logic.Memory.Brain import Brain as BrainMemory
 from EmeraldAI.Pipelines.TriggerProcessing.ProcessTrigger import ProcessTrigger
 from EmeraldAI.Entities.User import User

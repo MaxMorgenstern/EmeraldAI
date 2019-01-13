@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from EmeraldAI.Entities.BaseObject import BaseObject
 from EmeraldAI.Logic.NLP import NLP
-from EmeraldAI.Logic.NLP.Thesaurus import *
+from EmeraldAI.Logic.NLP.Thesaurus import Thesaurus
 from EmeraldAI.Logic.NLP import Parameterizer
 
 

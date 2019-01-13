@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 import tf2_ros as tf
 import rospy
-
 from geometry_msgs.msg import TransformStamped
 
 from EmeraldAI.Logic.Singleton import Singleton

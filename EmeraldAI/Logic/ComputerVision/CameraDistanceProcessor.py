@@ -1,10 +1,10 @@
 import cv2
-from numpy import *
+from numpy import abs, median, interp
 import math
 
 from EmeraldAI.Logic.Singleton import Singleton
 
-def CameraDistanceProcessor(object)
+def CameraDistanceProcessor(object):
     __metaclass__ = Singleton
 
     def __init__(self, camID):

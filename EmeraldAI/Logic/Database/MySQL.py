@@ -3,7 +3,7 @@
 import mysql.connector
 from cachetools import cached
 from EmeraldAI.Logic.Singleton import Singleton
-from EmeraldAI.Config.Config import *
+from EmeraldAI.Config.Config import Config
 
 
 class MySQL(object):
@@ -39,7 +39,7 @@ class MySQL(object):
 
     def FetchallDB(self, db, sql, index=None):
         result = []
-        for row in execute(db, sql).fetchall():
+        for row in self.ExecuteDB(db, sql).fetchall():
             if index is not None:
                 row = row[index]
             result.append(row)

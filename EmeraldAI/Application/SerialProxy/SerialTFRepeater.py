@@ -10,7 +10,6 @@ from EmeraldAI.Logic.ROS.Helper.TFLooper import TFLooper
 from EmeraldAI.Logic.Modules import Pid
 
 import rospy
-
 from tf2_msgs.msg import TFMessage
 
 nodeName = 'serial_tf_repeater'

@@ -16,10 +16,10 @@ from EmeraldAI.Pipelines.Trainer.Trainer import Trainer
 from EmeraldAI.Entities.ContextParameter import ContextParameter
 from EmeraldAI.Entities.PipelineArgs import PipelineArgs
 from EmeraldAI.Logic.Modules import Pid
-from EmeraldAI.Config.Config import *
+from EmeraldAI.Config.Config import Config
 from EmeraldAI.Logic.Memory.Brain import Brain as BrainMemory
 from EmeraldAI.Entities.Word import Word
-from EmeraldAI.Logic.Logger import *
+from EmeraldAI.Logic.Logger import FileLogger
 
 class BrainSTT:
     def __init__(self):

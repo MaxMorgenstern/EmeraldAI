@@ -12,7 +12,7 @@ import rospy
 from std_msgs.msg import String
 
 from EmeraldAI.Logic.Modules import Pid
-from EmeraldAI.Config.Config import *
+from EmeraldAI.Config.Config import Config
 from EmeraldAI.Entities.User import User
 from EmeraldAI.Logic.Memory.Brain import Brain as BrainMemory
 
@@ -150,6 +150,7 @@ class BrainCV:
             return
         moodName, moodValue = self.__getResultDetails(mood)
         BrainMemory().Set("CV.Person.Mood", moodName)
+        BrainMemory().Set("CV.Person.Mood.Value", moodValue)
 
 
     def ProcessGender(self, cameraName, id, gender):

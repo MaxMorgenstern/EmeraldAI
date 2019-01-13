@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import operator
-from EmeraldAI.Config.Config import *
+from EmeraldAI.Config.Config import Config
 
 class PredictionObject(object):
     def __init__(self, name, model, dictionary):

@@ -45,7 +45,7 @@ requests.packages.urllib3.disable_warnings()
 
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Logic.Modules import Global
-from EmeraldAI.Config.Config import *
+from EmeraldAI.Config.Config import Config
 
 
 class Ivona(object):

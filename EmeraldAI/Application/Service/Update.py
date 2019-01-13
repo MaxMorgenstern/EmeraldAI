@@ -17,7 +17,7 @@ sys.setdefaultencoding('utf-8')
 
 from EmeraldAI.Logic.Modules import Global
 from EmeraldAI.Logic.Modules import Pid
-from EmeraldAI.Config.Config import *
+from EmeraldAI.Config.Config import Config
 
 def CleanTerm(term):
     term = term.replace('-alpha', '')

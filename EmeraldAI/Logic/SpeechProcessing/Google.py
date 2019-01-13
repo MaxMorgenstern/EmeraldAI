@@ -6,8 +6,8 @@ import re
 from gtts import gTTS
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Logic.Modules import Global
-from EmeraldAI.Config.Config import *
-from EmeraldAI.Logic.Logger import *
+from EmeraldAI.Config.Config import Config
+from EmeraldAI.Logic.Logger import FileLogger
 
 
 class Google(object):
@@ -76,7 +76,6 @@ class Google(object):
     def AsyncCallback(self, recognizer, audio):
         if self.__microphoneID is None:
             raise Exception("Google: No microphone found - Exit")
-            return
 
         data = ""
         try:
@@ -95,7 +94,7 @@ class Google(object):
     def ListenAsync(self):
         if self.__microphoneID is None:
             raise Exception("Google: No microphone found - Exit")
-            return
+
 
         if not self.__asyncInit:
             self.__recognizer.listen_in_background(self.__microphone, self.AsyncCallback)
@@ -109,7 +108,6 @@ class Google(object):
     def Listen(self):
         if self.__microphoneID is None:
             raise Exception("Google: No microphone found - Exit")
-            return
 
         with self.__microphone as source:
             self.__audio = self.__recognizer.listen(source)

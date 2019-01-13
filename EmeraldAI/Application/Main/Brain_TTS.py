@@ -13,10 +13,10 @@ import rospy
 from std_msgs.msg import String
 
 from EmeraldAI.Logic.Modules import Pid
-from EmeraldAI.Config.Config import *
-from EmeraldAI.Logic.Audio.SoundMixer import *
+from EmeraldAI.Config.Config import Config
+from EmeraldAI.Logic.Audio.SoundMixer import SoundMixer
 from EmeraldAI.Logic.Memory.Brain import Brain as BrainMemory
-from EmeraldAI.Logic.Logger import *
+from EmeraldAI.Logic.Logger import FileLogger
 
 
 class BrainTTS:
