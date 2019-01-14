@@ -135,7 +135,6 @@ def RunCV(camID, camType, surveillanceMode, videoStream):
         if (lumaValue < lumaThreshold):
             lumaData = "{0}|DARKNESS|{1}|{2}".format(cvInstanceType, camType, lumaValue)
             #print lumaData
-            rospy.loginfo(lumaData)
             pub.publish(lumaData)
             time.sleep(1)
             continue
@@ -179,7 +178,6 @@ def RunCV(camID, camType, surveillanceMode, videoStream):
                         predictionData = "{0}|GENDER|{1}|{2}|{3}".format(cvInstanceType, camType, key, bestResult)
 
                     #print predictionData
-                    rospy.loginfo(predictionData)
                     pub.publish(predictionData)
 
 
@@ -205,7 +203,6 @@ def RunCV(camID, camType, surveillanceMode, videoStream):
 
             positionData = "{0}|POSITION|{1}|{2}|{3}|{4}".format(cvInstanceType, camType, faceID, posX, posY)
             #print positionData
-            rospy.loginfo(positionData)
             pub.publish(positionData)
             faceID += 1
 

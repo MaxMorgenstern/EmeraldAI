@@ -15,6 +15,7 @@ from EmeraldAI.Logic.Modules import Pid
 from EmeraldAI.Config.Config import Config
 from EmeraldAI.Entities.User import User
 from EmeraldAI.Logic.Memory.Brain import Brain as BrainMemory
+from EmeraldAI.Logic.Logger import FileLogger
 
 
 class BrainCV:
@@ -141,7 +142,7 @@ class BrainCV:
             lookAt = xPos
 
         animationData = "FACEMASTER|{0}".format(lookAt)
-        rospy.loginfo(animationData)
+        FileLogger().Info(animationData)
         self.__FaceappPublisher.publish(animationData)
 
 
@@ -191,7 +192,7 @@ class BrainCV:
         User().SaveObject()
 
         personData = "PERSON|{0}".format(cvTag)
-        rospy.loginfo(personData)
+        FileLogger().Info(personData)
         self.__PersonPublisher.publish(personData)
 
         if detectedPerson != cvTag:
