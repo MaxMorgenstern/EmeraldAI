@@ -29,6 +29,7 @@ class BrainTTS:
 
         rospy.Subscriber("/emerald_ai/io/text_to_speech/file", String, self.playAudio)
     
+        rospy.spin()
 
     def playAudio(self, data):
         dataParts = data.data.split("|")
