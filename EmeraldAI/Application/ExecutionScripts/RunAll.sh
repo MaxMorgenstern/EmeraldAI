@@ -8,8 +8,6 @@ mate-terminal --tab --title='roscore' -e 'bash -c "sleep 1s && roscore ; bash"'
 echo "Launch Speech..."
 mate-terminal --tab --title='Brain STT' --working-directory=$SCRIPTPATH -e 'bash -c "sleep 5s && ./RunBrain_STT.sh ; bash"'
 
-mate-terminal --tab --title='Brain TTS' --working-directory=$SCRIPTPATH -e 'bash -c "sleep 5s && ./RunBrain_TTS.sh ; bash"'
-
 mate-terminal --tab --title='STT' --working-directory=$SCRIPTPATH -e 'bash -c "sleep 5s && ./RunSTT.sh ; bash"'
 
 mate-terminal --tab --title='TTS' --working-directory=$SCRIPTPATH -e 'bash -c "sleep 5s && ./RunTTS.sh ; bash"'
