@@ -45,8 +45,7 @@ class Wit(object):
 
             data = ""
             try:
-                data = self.__recognizer.recognize_wit(
-                    self.__audio, key=self.__apiKey, language=self.__language_4letter_cc, show_all=False)
+                data = self.__recognizer.recognize_wit(self.__audio, key=self.__apiKey, show_all=False)
             except sr.UnknownValueError as e:
                 FileLogger().Warn("Wit.ai Line 47: Could not understand audio: {0}".format(e))
             except sr.RequestError as e:
