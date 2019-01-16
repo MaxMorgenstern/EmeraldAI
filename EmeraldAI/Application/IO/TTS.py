@@ -76,7 +76,8 @@ def callback(data):
 
         try:
             audio = MP3(data)
-            TTSMemory().Set("TTS.Until", (rospy.Time.now().to_sec() + int(round(audio.info.length))))
+            delay = Config().GetInt("TextToSpeech", "IntermediateAudioDelay") 
+            TTSMemory().Set("TTS.Until", (rospy.Time.now().to_sec() + int(round(audio.info.length)) + delay))
         except Exception as e:
             FileLogger().Warn("TTS, callback() - Error on getting audio duration: {0}".format(e))
 

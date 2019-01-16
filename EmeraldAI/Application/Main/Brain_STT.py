@@ -18,6 +18,7 @@ from EmeraldAI.Entities.PipelineArgs import PipelineArgs
 from EmeraldAI.Logic.Modules import Pid
 from EmeraldAI.Config.Config import Config
 from EmeraldAI.Logic.Memory.Brain import Brain as BrainMemory
+from EmeraldAI.Logic.Memory.TTS import TTS as TTSMemory
 from EmeraldAI.Entities.Word import Word
 from EmeraldAI.Logic.Logger import FileLogger
 
@@ -61,7 +62,7 @@ class BrainSTT:
     ##### STT #####
 
     def ProcessWord(self, word):
-        if(not BrainMemory().GetBoolean("Listen")):
+        if(not BrainMemory().GetBoolean("Listen") or self.__TTSActive()):
             return
 
         if self.Pipeline is None:
@@ -76,7 +77,7 @@ class BrainSTT:
 
 
     def ProcessSpeech(self, sentence):
-        if(not BrainMemory().GetBoolean("Listen")):
+        if(not BrainMemory().GetBoolean("Listen") or self.__TTSActive()):
             return
 
         cancelSpeech = False
@@ -122,6 +123,13 @@ class BrainSTT:
             animationData = "FACEMASTER|{0}".format(animation)
             rospy.loginfo(animationData)
             self.__FaceappPublisher.publish(animationData)
+
+
+    def __TTSActive(self):
+        storedTimestamp = TTSMemory().GetFloat("TTS.Until")
+        if(storedTimestamp >= rospy.Time.now().to_sec()):
+            return True
+        return False
 
 
 ##### MAIN #####
