@@ -23,6 +23,13 @@ class BrainActionTrigger:
 
         self.__UnknownUserTag = Config().Get("Application.Brain", "UnknownUserTag")
 
+        self.__CheckActive = Config().GetBoolean("ComputerVision.Intruder", "CheckActive")
+        self.__CVSURVOnly = Config().GetBoolean("ComputerVision.Intruder", "CVSURVOnly")
+        self.__TimeFrom = Config().GetInt("ComputerVision.Intruder", "TimeFrom")
+        self.__TimeTo = Config().GetInt("ComputerVision.Intruder", "TimeTo")
+        self.__Delay = Config().GetInt("ComputerVision.Intruder", "Delay")
+        self.__IFTTTWebhook = Config().Get("ComputerVision.Intruder", "IFTTTWebhook")
+
         rospy.init_node('emerald_brain_actiontrigger_node', anonymous=True)
 
     	self.__SpeechTriggerPublisher = rospy.Publisher('/emerald_ai/io/speech_to_text', String, queue_size=10)
@@ -33,7 +40,7 @@ class BrainActionTrigger:
         rospy.Subscriber("/emerald_ai/io/person", String, self.knownPersonCallback)
 
     	# in order to check if a intruder
-        # rospy.Subscriber("/emerald_ai/io/computer_vision", String, self.unknownPersonCallback)
+        rospy.Subscriber("/emerald_ai/io/computer_vision", String, self.unknownPersonCallback)
 
         # checks the app status - it sends the status change if turned on/off
         rospy.Subscriber("/emerald_ai/app/status", String, self.appCallback)
@@ -56,6 +63,36 @@ class BrainActionTrigger:
                 if(lastAudioTimestamp is None and len(response) > 1):
                     FileLogger().Info("ActionTrigger, knownPersonCallback(): {0}".format(response))
                     self.__ResponsePublisher.publish("TTS|{0}".format(response))
+
+
+    def unknownPersonCallback(self, data):
+        if (not self.__CheckActive):
+            return
+
+        if(not self.__inBetweenTime(self.__TimeFrom, self.__TimeTo, datetime.now().hour)):
+            return
+
+        dataParts = data.data.split("|")
+
+        if (dataParts[0] == "CV" and self.__CVSURVOnly):
+            return
+
+        # TODO - detect for self.__Delay amount of seconds
+        # trigger action
+        # trigger ifttt
+
+
+
+        
+        # (cvInstanceType (CV / CVSURV), CVType (POSITION / DARKNESS), cameraType (STD / IR), ...)
+    
+    def __inBetweenTime(self, fromHour, toHour, current):
+        if fromHour < toHour:
+            return current >= fromHour and current <= toHour
+        else: #Over midnight
+            return current >= fromHour or current <= toHour         
+
+
 
     def appCallback(self, data):
         dataParts = data.data.split("|")

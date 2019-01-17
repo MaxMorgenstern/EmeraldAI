@@ -191,7 +191,7 @@ TimeTo = 5
 # we need to detect a person for this long without recognition - in seconds
 Delay = 10
 
-IFTTTWebhook = 
+IFTTTIntruderWebhook = 
 
 
 # ----------------------
