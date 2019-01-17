@@ -71,7 +71,7 @@ class BrainCV:
             self.ProcessPerson(dataParts[2], dataParts[3], dataParts[4], dataParts[5], (dataParts[6]=="True"), (dataParts[7]=="True"), (dataParts[8]=="True"))
 
         if dataParts[1] == "POSITION":
-            # (cameraName, cameraId, xPos, yPos)
+            # (cameraName, id, xPos, yPos)
             self.ProcessPosition(dataParts[2], dataParts[3], dataParts[4], dataParts[5])
 
         if dataParts[1] == "MOOD":
@@ -131,8 +131,8 @@ class BrainCV:
             return
 
 
-    def ProcessPosition(self, cameraName, cameraId, xPos, yPos):
-        if(int(cameraId) > 0 or self.__cancelCameraProcess(cameraName)):
+    def ProcessPosition(self, cameraName, id, xPos, yPos):
+        if(int(id) > 0 or self.__cancelCameraProcess(cameraName)):
             return
 
         lookAt = "center"

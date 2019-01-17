@@ -120,6 +120,7 @@ WatsonTTSUsername =
 WatsonTTSPassword =
 WatsonVoiceName =
 
+
 # ----------------------
 [Database]
 NLPDatabaseType = sqlite
@@ -177,6 +178,20 @@ MaxPredictionDistance = 75
 
 PredictionTimeout = 3
 PredictionThreshold = 150
+
+
+# ----------------------
+[ComputerVision.Intruder]
+CheckActive = True
+CVSURVOnly = False
+
+TimeFrom = 20
+TimeTo = 5
+
+# we need to detect a person for this long without recognition - in seconds
+Delay = 10
+
+IFTTTWebhook = 
 
 
 # ----------------------
