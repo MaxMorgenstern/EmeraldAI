@@ -62,6 +62,8 @@ class ProcessResponse(object):
                     replaceword = contextParameterDict[keyword.title()]
                     if replaceword is None or replaceword == "Unknown":
                         replaceword = ""
+                    else:
+                        replaceword = "'{0}'".format(replaceword)
                     PipelineArgs.Response = PipelineArgs.Response.replace("{{{0}}}".format(keyword.lower()), str(replaceword))
                 else:
                     PipelineArgs.Response = PipelineArgs.Response.replace("{{{0}}}".format(keyword.lower()), "")
