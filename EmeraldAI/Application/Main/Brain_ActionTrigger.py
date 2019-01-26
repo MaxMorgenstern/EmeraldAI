@@ -68,18 +68,25 @@ class BrainActionTrigger:
     def unknownPersonCallback(self, data):
         if (not self.__CheckActive):
             return
-
+        
         if(not self.__inBetweenTime(self.__TimeFrom, self.__TimeTo, datetime.now().hour)):
             return
-
+        
         dataParts = data.data.split("|")
 
         if (dataParts[0] == "CV" and self.__CVSURVOnly):
             return
 
-        # TODO - detect for self.__Delay amount of seconds
-        # trigger action
-        # trigger ifttt
+        timestamp = BrainMemory().GetInt("Brain.Trigger.UnknownPerson.Timestamp", self.__Delay * 3)
+        if (timestamp is None):
+            BrainMemory().Set("Brain.Trigger.UnknownPerson.Timestamp", rospy.Time.now().to_sec())
+            return
+
+        if(rospy.Time.now().to_sec() - timestamp > self.__Delay):
+            print "trigger"
+
+            # trigger action
+            # trigger ifttt
 
 
 
