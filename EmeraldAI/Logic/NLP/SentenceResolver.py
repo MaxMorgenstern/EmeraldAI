@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Entities.Sentence import Sentence
-from EmeraldAI.Config.Config import *
-from EmeraldAI.Logic.Logger import *
+from EmeraldAI.Config.Config import Config
+from EmeraldAI.Logic.Logger import FileLogger
 if(Config().Get("Database", "ConversationDatabaseType").lower() == "sqlite"):
     from EmeraldAI.Logic.Database.SQlite3 import SQlite3 as db
 elif(Config().Get("Database", "ConversationDatabaseType").lower() == "mysql"):
@@ -223,6 +223,6 @@ class SentenceResolver(object):
 
         stopwordSentences = [node for node in sentenceList.values() if node.OnlyStopwords]
         if(len(sentenceList) - minNonStopwordSentences >= stopwordSentences):
-            for d in list(set(deleteList)):
+            for d in list(set(stopwordSentences)):
                 del sentenceList[d.ID]
         return sentenceList

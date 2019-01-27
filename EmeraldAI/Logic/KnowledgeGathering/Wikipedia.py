@@ -3,8 +3,8 @@
 import wikipedia
 import re
 from EmeraldAI.Logic.Singleton import Singleton
-from EmeraldAI.Config.Config import *
-from EmeraldAI.Logic.Logger import *
+from EmeraldAI.Config.Config import Config
+from EmeraldAI.Logic.Logger import FileLogger
 
 class Wikipedia(object):
     __metaclass__ = Singleton

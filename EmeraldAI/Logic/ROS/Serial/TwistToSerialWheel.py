@@ -3,7 +3,7 @@
 from __future__ import division
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Logic.ROS.Helper.PIDController import PIDController
-from EmeraldAI.Config.HardwareConfig import *
+from EmeraldAI.Config.HardwareConfig import HardwareConfig
 
 import rospy
 import os
@@ -24,7 +24,7 @@ class TwistToSerialWheel():
             print "Initialize: serial_converter_{0}".format(uid)
             rospy.init_node("serial_converter_{0}".format(uid), log_level=rospy.WARN)
         except:
-            print "Node already initialized: ".format(rospy.get_caller_id())
+            print "Node already initialized: {0}".format(rospy.get_caller_id())
         rospy.loginfo("ROS Serial Python Node '{0}'".format(uid))
         
         self.__left = 0
@@ -87,10 +87,10 @@ class TwistToSerialWheel():
 
     def ProcessPID(self, data):
         clicksLeft = int(data[4])
-        clicksLeftDelta = int(data[5])
+        # clicksLeftDelta = int(data[5])
 
         clicksRight = int(data[8])
-        clicksRightDelata = int(data[9])
+        # clicksRightDelata = int(data[9])
 
         self.__rightPidController.SetWheel(clicksRight)
         self.__leftPidController.SetWheel(clicksLeft)

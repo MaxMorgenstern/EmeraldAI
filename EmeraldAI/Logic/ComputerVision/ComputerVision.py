@@ -7,10 +7,10 @@ import numpy as np
 import platform
 import time
 import operator
-from EmeraldAI.Config.Config import *
+from EmeraldAI.Config.Config import Config
 from EmeraldAI.Logic.Modules import Global
 from EmeraldAI.Logic.Singleton import Singleton
-from EmeraldAI.Logic.Logger import *
+from EmeraldAI.Logic.Logger import FileLogger
 from EmeraldAI.Logic.Modules import Hashing
 
 class DetectionSettings(object):
@@ -151,7 +151,7 @@ class ComputerVision(object):
 
                             trainingLabels.append(labelID)
                         except IOError, (errno, strerror):
-                            FileLogger().Error("ComputerVision: IO Exception: {0}".format(strerror))
+                            FileLogger().Error("ComputerVision: IO Exception: {0}{1}".format(errno, strerror))
                         except Exception as e:
                             FileLogger().Error("ComputerVision: Exception: {0}".format(e))
         return trainingData, np.asarray(trainingLabels), trainingLabelsDict

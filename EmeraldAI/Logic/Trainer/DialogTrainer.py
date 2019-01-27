@@ -3,9 +3,9 @@
 import itertools
 
 from EmeraldAI.Logic.NLP import NLP
-from EmeraldAI.Config.Config import *
+from EmeraldAI.Config.Config import Config
 from EmeraldAI.Logic.Singleton import Singleton
-from EmeraldAI.Logic.Logger import *
+from EmeraldAI.Logic.Logger import FileLogger
 
 if(Config().Get("Database", "ConversationDatabaseType").lower() == "sqlite"):
     from EmeraldAI.Logic.Database.SQlite3 import SQlite3 as db

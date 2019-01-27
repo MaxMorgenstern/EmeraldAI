@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 from numpy import array
-from EmeraldAI.Config.HardwareConfig import *
+from EmeraldAI.Config.HardwareConfig import HardwareConfig
 
 class PIDController():
 

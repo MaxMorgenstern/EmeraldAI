@@ -1,7 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import sys
+import os
 from os.path import dirname, abspath
+from mutagen.mp3 import MP3
 sys.path.append(dirname(dirname(dirname(dirname(abspath(__file__))))))
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -10,13 +12,13 @@ import rospy
 from std_msgs.msg import String
 
 from EmeraldAI.Logic.Modules import Pid
-from EmeraldAI.Logic.SpeechProcessing.Google import *
-from EmeraldAI.Logic.SpeechProcessing.Ivona import *
-from EmeraldAI.Logic.SpeechProcessing.Microsoft import *
-from EmeraldAI.Logic.SpeechProcessing.Watson import *
-from EmeraldAI.Config.Config import *
-from EmeraldAI.Logic.Logger import *
-from EmeraldAI.Logic.Audio.SoundMixer import *
+from EmeraldAI.Logic.SpeechProcessing.Google import Google
+from EmeraldAI.Logic.SpeechProcessing.Ivona import Ivona
+from EmeraldAI.Logic.SpeechProcessing.Microsoft import Microsoft
+from EmeraldAI.Logic.SpeechProcessing.Watson import Watson
+from EmeraldAI.Config.Config import Config
+from EmeraldAI.Logic.Logger import FileLogger
+from EmeraldAI.Logic.Audio.SoundMixer import SoundMixer
 from EmeraldAI.Logic.Memory.TTS import TTS as TTSMemory
 from EmeraldAI.Entities.User import User
 
@@ -26,6 +28,7 @@ GLOBAL_FileNamePublisher = None
 def InitSettings():
     TTSMemory().Set("TTSProvider", Config().Get("TextToSpeech", "Provider"))
     TTSMemory().Set("UsePygame", Config().Get("TextToSpeech", "UsePygame"))
+            
 
 
 def RunTTS():
@@ -59,21 +62,34 @@ def callback(data):
             return
 
         if(ttsProvider.lower() == "google"):
-            data = Google().Speak(dataParts[1], not usePygame)
+            data = Google().Speak(dataParts[1])
 
         if(ttsProvider.lower() == "microsoft"):
-            data = Microsoft().Speak(dataParts[1], not usePygame)
+            data = Microsoft().Speak(dataParts[1])
 
         if(ttsProvider.lower() == "ivona"):
-            data = Ivona().Speak(dataParts[1], not usePygame)
+            data = Ivona().Speak(dataParts[1])
 
         if(ttsProvider.lower() == "watson"):
-            data = Watson().Speak(dataParts[1], not usePygame)
+            data = Watson().Speak(dataParts[1])
+
+
+        try:
+            audio = MP3(data)
+            delay = Config().GetInt("TextToSpeech", "IntermediateAudioDelay") 
+            TTSMemory().Set("TTS.Until", (rospy.Time.now().to_sec() + int(round(audio.info.length)) + delay))
+        except Exception as e:
+            FileLogger().Warn("TTS, callback() - Error on getting audio duration: {0}".format(e))
+
 
         if usePygame:
             SoundMixer().Play(data)
+        else:
+            audioPlayer = Config().Get("TextToSpeech", "AudioPlayer") + " '{0}'"
+            os.system(audioPlayer.format(data))
 
-        FileLogger().Info("TTS, callback(), Audio: {0}".format(data))
+
+        FileLogger().Info("TTS, callback(), Play Audio: {0}".format(data))
         GLOBAL_FileNamePublisher.publish("TTS|{0}".format(data))
 
         user = User().LoadObject()

@@ -10,12 +10,13 @@ sys.setdefaultencoding('utf-8')
 import rospy
 from std_msgs.msg import String
 
-from EmeraldAI.Logic.SpeechProcessing.Google import *
-from EmeraldAI.Logic.SpeechProcessing.Microsoft import *
-from EmeraldAI.Logic.SpeechProcessing.Wit import *
+from EmeraldAI.Logic.SpeechProcessing.Google import Google
+from EmeraldAI.Logic.SpeechProcessing.Microsoft import Microsoft
+from EmeraldAI.Logic.SpeechProcessing.Wit import Wit
 from EmeraldAI.Logic.Modules import Pid
 from EmeraldAI.Logic.Memory.STT import STT as STTMemory
-from EmeraldAI.Config.Config import *
+from EmeraldAI.Config.Config import Config
+from EmeraldAI.Logic.Logger import FileLogger
 
 def InitSettings():
     STTMemory().Set("TriggerTimestamp", time.time())

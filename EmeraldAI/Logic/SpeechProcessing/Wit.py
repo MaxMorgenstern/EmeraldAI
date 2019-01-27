@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 import speech_recognition as sr
 from EmeraldAI.Logic.Singleton import Singleton
-from EmeraldAI.Config.Config import *
-from EmeraldAI.Logic.Logger import *
+from EmeraldAI.Config.Config import Config
+from EmeraldAI.Logic.Logger import FileLogger
 
 
 class Wit(object):
@@ -12,6 +12,8 @@ class Wit(object):
     __apiKey = None
 
     def __init__(self):
+        self.__language_4letter_cc = Config().Get("TextToSpeech", "CountryCode4Letter")
+        
         self.__microphoneID = None
         microphoneName = Config().Get("SpeechToText", "Microphone")
         for i, microphone_name in enumerate(sr.Microphone().list_microphone_names()):
@@ -21,7 +23,6 @@ class Wit(object):
         if self.__microphoneID is None:
             FileLogger().Error("Wit Line 22: No microphone found - Exit")
             raise Exception("Wit: No microphone found - Exit")
-            return
 
         self.__recognizer = sr.Recognizer()
         self.__microphone = sr.Microphone(device_index=self.__microphoneID)
@@ -38,15 +39,13 @@ class Wit(object):
     def Listen(self):
         if self.__microphoneID is None:
             raise Exception("Wit: No microphone found - Exit")
-            return
 
         with self.__microphone as source:
             self.__audio = self.__recognizer.listen(source)
 
             data = ""
             try:
-                data = self.__recognizer.recognize_wit(
-                    self.__audio, key=self.__apiKey, language=self.__language_4letter_cc, show_all=False)
+                data = self.__recognizer.recognize_wit(self.__audio, key=self.__apiKey, show_all=False)
             except sr.UnknownValueError as e:
                 FileLogger().Warn("Wit.ai Line 47: Could not understand audio: {0}".format(e))
             except sr.RequestError as e:

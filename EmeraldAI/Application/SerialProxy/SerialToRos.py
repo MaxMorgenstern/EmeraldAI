@@ -18,7 +18,7 @@ from EmeraldAI.Logic.ROS.Serial.SerialRadarToRange import SerialRadarToRange
 from EmeraldAI.Logic.ROS.Serial.SerialLaserToLaser import SerialLaserToLaser
 from EmeraldAI.Logic.ROS.Serial.SerialLaserToLaser360 import SerialLaserToLaser360
 from EmeraldAI.Logic.ROS.Serial.SerialImuToImu import SerialImuToImu
-from EmeraldAI.Config.HardwareConfig import *
+from EmeraldAI.Config.HardwareConfig import HardwareConfig
 
 UseUltrasonic = HardwareConfig().GetBoolean("Sensor", "UseUltrasonic")
 UseLaser = HardwareConfig().GetBoolean("Sensor", "UseLaser")

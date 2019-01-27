@@ -6,8 +6,8 @@ import os
 import re
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Logic.Modules import Global
-from EmeraldAI.Config.Config import *
-from EmeraldAI.Logic.Logger import *
+from EmeraldAI.Config.Config import Config
+from EmeraldAI.Logic.Logger import FileLogger
 
 
 class Microsoft(object):
@@ -108,7 +108,6 @@ class Microsoft(object):
     def Listen(self):
         if self.__microphoneID is None:
             raise Exception("Microsoft: No microphone found - Exit")
-            return
 
         with self.__microphone as source:
             self.__audio = self.__recognizer.listen(source)
@@ -116,7 +115,7 @@ class Microsoft(object):
             data = ""
             try:
                 data = self.__recognizer.recognize_bing(
-                    self.__audio, key=self.__apiKey, language=__language_4letter_cc, show_all=False)
+                    self.__audio, key=self.__apiKey, language=self.__language_4letter_cc, show_all=False)
             except sr.UnknownValueError as e:
                 FileLogger().Warn("Microsoft Line 119: Microsoft Bing Voice Recognition could not understand audio: {0}".format(e))
             except sr.RequestError as e:

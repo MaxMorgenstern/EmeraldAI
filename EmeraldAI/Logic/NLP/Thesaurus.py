@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 from cachetools import cached
-from EmeraldAI.Config.Config import *
+from EmeraldAI.Config.Config import Config
 from EmeraldAI.Logic.Singleton import Singleton
 
 if(Config().Get("Database", "ThesaurusDatabaseType").lower() == "sqlite"):
@@ -21,7 +21,7 @@ class Thesaurus(object):
 
     @cached(cache={})
     def GetSynonymsAndCategory(self, word):
-        self.__executePragma();
+        self.__executePragma()
         query = """SELECT term.normalized_word, term.word, category.category_name
             FROM Thesaurus_Term term, Thesaurus_Category_Link category_link, Thesaurus_Category category
             WHERE term.synset_id IN (
@@ -51,7 +51,7 @@ class Thesaurus(object):
 
     @cached(cache={})
     def GetSynonyms(self, word):
-        self.__executePragma();
+        self.__executePragma()
         query = """SELECT term.normalized_word, term.word
             FROM Thesaurus_Term term
             WHERE term.synset_id IN (
@@ -77,7 +77,7 @@ class Thesaurus(object):
 
     @cached(cache={})
     def GetCategory(self, word):
-        self.__executePragma();
+        self.__executePragma()
         query = """SELECT category.category_name
             FROM Thesaurus_Category_Link category_link, Thesaurus_Category category
             WHERE category_link.synset_id IN (

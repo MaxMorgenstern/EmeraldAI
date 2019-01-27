@@ -22,7 +22,7 @@ class SerialImuToImu():
             print "Initialize: serial_converter_{0}".format(uid)
             rospy.init_node("serial_converter_{0}".format(uid), log_level=rospy.WARN)
         except:
-            print "Node already initialized: ".format(rospy.get_caller_id())
+            print "Node already initialized: {0}".format(rospy.get_caller_id())
         rospy.loginfo("ROS Serial Python Node '{0}'".format(uid))
 
         self.__imuPublisher = rospy.Publisher('/emerald_ai/serial/imu_data', Imu, queue_size=10)
@@ -52,9 +52,9 @@ class SerialImuToImu():
         AccelZ = float(data[10])
 
         # TODO
-        MagnetX = float(data[11])
-        MagnetY = float(data[12])
-        MagnetZ = float(data[13])
+        # MagnetX = float(data[11])
+        # MagnetY = float(data[12])
+        # MagnetZ = float(data[13])
 
 
         imuMessage = Imu()

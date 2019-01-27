@@ -4,8 +4,8 @@ from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Logic.NLP.SentenceResolver import SentenceResolver
 from EmeraldAI.Entities.ContextParameter import ContextParameter
 from EmeraldAI.Entities.User import User
-from EmeraldAI.Config.Config import *
-from EmeraldAI.Logic.Logger import *
+from EmeraldAI.Config.Config import Config
+from EmeraldAI.Logic.Logger import FileLogger
 
 class AnalyzeScope(object):
     __metaclass__ = Singleton

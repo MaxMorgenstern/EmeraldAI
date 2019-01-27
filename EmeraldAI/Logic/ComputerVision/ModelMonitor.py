@@ -8,7 +8,7 @@ from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Logic.Modules import Global
 from EmeraldAI.Logic.Modules import Hashing
 from EmeraldAI.Logic.ComputerVision.ComputerVision import ComputerVision
-from EmeraldAI.Logic.Logger import *
+from EmeraldAI.Logic.Logger import FileLogger
 
 class ModelMonitor(object):
     __metaclass__ = Singleton

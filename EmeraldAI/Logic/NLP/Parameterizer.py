@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 from EmeraldAI.Logic.NLP import NLP
-from EmeraldAI.Config.Config import *
+from EmeraldAI.Config.Config import Config
 from EmeraldAI.Logic.KnowledgeGathering.Math import Math
 
 if(Config().Get("Database", "ConversationDatabaseType").lower() == "sqlite"):

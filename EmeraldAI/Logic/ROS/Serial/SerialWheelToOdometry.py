@@ -3,7 +3,7 @@
 from __future__ import division
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Logic.ROS.Helper import TFHelper
-from EmeraldAI.Config.HardwareConfig import *
+from EmeraldAI.Config.HardwareConfig import HardwareConfig
 
 import rospy
 import os
@@ -23,7 +23,7 @@ class SerialWheelToOdometry():
             print "Initialize: serial_converter_{0}".format(uid)
             rospy.init_node("serial_converter_{0}".format(uid), log_level=rospy.WARN)
         except:
-            print "Node already initialized: ".format(rospy.get_caller_id())
+            print "Node already initialized: {0}".format(rospy.get_caller_id())
         rospy.loginfo("ROS Serial Python Node '{0}'".format(uid))
 
         self.__odomPublisher = rospy.Publisher('/emerald_ai/serial/odom', Odometry, queue_size=10)

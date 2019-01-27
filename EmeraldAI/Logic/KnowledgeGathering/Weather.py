@@ -3,7 +3,7 @@
 import pyowm
 from datetime import datetime
 from EmeraldAI.Logic.Singleton import Singleton
-from EmeraldAI.Config.Config import *
+from EmeraldAI.Config.Config import Config
 
 
 class Weather(object):

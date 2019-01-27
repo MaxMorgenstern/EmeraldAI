@@ -12,15 +12,16 @@ import rospy
 from std_msgs.msg import String
 
 from EmeraldAI.Logic.Modules import Pid
-from EmeraldAI.Config.Config import *
+from EmeraldAI.Config.Config import Config
 from EmeraldAI.Entities.User import User
 from EmeraldAI.Logic.Memory.Brain import Brain as BrainMemory
+from EmeraldAI.Logic.Logger import FileLogger
 
 
 class BrainCV:
     def __init__(self):
         rospy.init_node('emerald_brain_cv_node', anonymous=True)
-        
+
         BrainMemory().Set("Brain.CV.Start", rospy.Time.now().to_sec())
 
         rospy.Subscriber("/emerald_ai/io/computer_vision", String, self.callback)
@@ -66,28 +67,28 @@ class BrainCV:
 
     def ProcessCVData(self, dataParts):
         if dataParts[1] == "PERSON":
-            # (cameraName, id, bestResult, secondBestResult, thresholdReached, timeoutReached, luckyShot)
+            # (cameraType, id, bestResult, secondBestResult, thresholdReached, timeoutReached, luckyShot)
             self.ProcessPerson(dataParts[2], dataParts[3], dataParts[4], dataParts[5], (dataParts[6]=="True"), (dataParts[7]=="True"), (dataParts[8]=="True"))
 
         if dataParts[1] == "POSITION":
-            # (cameraName, cameraId, xPos, yPos)
+            # (cameraType, id, xPos, yPos)
             self.ProcessPosition(dataParts[2], dataParts[3], dataParts[4], dataParts[5])
 
         if dataParts[1] == "MOOD":
-            # (cameraName, id, mood)
+            # (cameraType, id, mood)
             self.ProcessMood(dataParts[2], dataParts[3], dataParts[4])
 
         if dataParts[1] == "GENDER":
-            # (cameraName, id, gender)
+            # (cameraType, id, gender)
             self.ProcessGender(dataParts[2], dataParts[3], dataParts[4])
 
         if dataParts[1] == "DARKNESS":
-            # (cameraName, value)
+            # (cameraType, value)
             self.ProcessDarkness(dataParts[2], dataParts[3])
 
 
-    def ProcessPerson(self, cameraName, id, bestResult, secondBestResult, thresholdReached, timeoutReached, luckyShot):
-        if not self.__RecognizePeople or self.__cancelCameraProcess(cameraName):
+    def ProcessPerson(self, cameraType, id, bestResult, secondBestResult, thresholdReached, timeoutReached, luckyShot):
+        if not self.__RecognizePeople or self.__cancelCameraProcess(cameraType):
             return
 
         currentPerson = BrainMemory().GetString("CV.Person.CvTag", self.__PersonTimeout)
@@ -130,8 +131,8 @@ class BrainCV:
             return
 
 
-    def ProcessPosition(self, cameraName, cameraId, xPos, yPos):
-        if(int(cameraId) > 0 or self.__cancelCameraProcess(cameraName)):
+    def ProcessPosition(self, cameraType, id, xPos, yPos):
+        if(int(id) > 0 or self.__cancelCameraProcess(cameraType)):
             return
 
         lookAt = "center"
@@ -141,25 +142,26 @@ class BrainCV:
             lookAt = xPos
 
         animationData = "FACEMASTER|{0}".format(lookAt)
-        rospy.loginfo(animationData)
+        FileLogger().Info(animationData)
         self.__FaceappPublisher.publish(animationData)
 
 
-    def ProcessMood(self, cameraName, id, mood):
-        if not self.__RecognizePeople or self.__cancelCameraProcess(cameraName):
+    def ProcessMood(self, cameraType, id, mood):
+        if not self.__RecognizePeople or self.__cancelCameraProcess(cameraType):
             return
         moodName, moodValue = self.__getResultDetails(mood)
         BrainMemory().Set("CV.Person.Mood", moodName)
+        BrainMemory().Set("CV.Person.Mood.Value", moodValue)
 
 
-    def ProcessGender(self, cameraName, id, gender):
-        if not self.__RecognizePeople or self.__cancelCameraProcess(cameraName):
+    def ProcessGender(self, cameraType, id, gender):
+        if not self.__RecognizePeople or self.__cancelCameraProcess(cameraType):
             return
         BrainMemory().Set("CV.Person.Gender", gender)
 
 
-    def ProcessDarkness(self, cameraName, value):
-        if(cameraName == "IR"):
+    def ProcessDarkness(self, cameraType, value):
+        if(cameraType == "IR"):
             return
         BrainMemory().Set("CV.DarknessTimestamp", rospy.Time.now().to_sec())
         BrainMemory().Set("CV.DarknessValue", value)
@@ -176,7 +178,7 @@ class BrainCV:
         return resultTag, resultValue
 
 
-    def __updateUserByCVTag(cvTag, reducedTimeout=False):
+    def __updateUserByCVTag(self, cvTag, reducedTimeout=False):
         detectedPerson = BrainMemory().GetString("CV.Person.CvTag", self.__PersonTimeout)
         detectionTimestamp = BrainMemory().GetInt("CV.Person.FirstDetectionTimestamp")
         if detectedPerson is None:
@@ -190,7 +192,7 @@ class BrainCV:
         User().SaveObject()
 
         personData = "PERSON|{0}".format(cvTag)
-        rospy.loginfo(personData)
+        FileLogger().Info(personData)
         self.__PersonPublisher.publish(personData)
 
         if detectedPerson != cvTag:
@@ -200,8 +202,8 @@ class BrainCV:
             BrainMemory().Set("CV.Person.FirstDetectionTimestamp", timestamp)
 
 
-    def __cancelCameraProcess(self, cameraName):
-        if(cameraName == "IR"):
+    def __cancelCameraProcess(self, cameraType):
+        if(cameraType == "IR"):
             if(not self.__RecognizeWithIRCam):
                 return True
             darknessTimestamp = BrainMemory().GetFloat("CV.DarknessTimestamp", self.__DarknessTimeout)

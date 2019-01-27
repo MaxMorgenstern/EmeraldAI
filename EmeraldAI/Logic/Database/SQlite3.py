@@ -1,10 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+import os
 from cachetools import cached
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Logic.Modules import Global
-from EmeraldAI.Config.Config import *
-from EmeraldAI.Logic.Logger import *
+from EmeraldAI.Config.Config import Config
+from EmeraldAI.Logic.Logger import FileLogger
 
 class SQlite3(object):
     __metaclass__ = Singleton

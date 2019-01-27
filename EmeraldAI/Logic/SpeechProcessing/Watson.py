@@ -1,11 +1,13 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import pyaudio
+import os
 from watson_developer_cloud import SpeechToTextV1, TextToSpeechV1
 from watson_developer_cloud.websocket import RecognizeCallback, AudioSource
 from threading import Thread
 from sets import Set
 from os.path import join, dirname
+import re
 
 import rospy
 from std_msgs.msg import String
@@ -17,8 +19,8 @@ except ImportError:
 
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Logic.Modules import Global
-from EmeraldAI.Config.Config import *
-from EmeraldAI.Logic.Logger import *
+from EmeraldAI.Config.Config import Config
+from EmeraldAI.Logic.Logger import FileLogger
 
 class Watson():
     __metaclass__ = Singleton
@@ -42,6 +44,7 @@ class Watson():
 
         self.__language_2letter_cc = Config().Get("SpeechToText", "CountryCode2Letter")
         self.__language_4letter_cc = Config().Get("SpeechToText", "CountryCode4Letter")
+        self.__audioPlayer = Config().Get("TextToSpeech", "AudioPlayer") + " '{0}'"
 
         self.text_to_speech = TextToSpeechV1(
             url='https://stream.watsonplatform.net/text-to-speech/api',
@@ -101,6 +104,10 @@ class Watson():
             self.stream.stop_stream()
             self.stream.close()
             self.audio.terminate()
+
+    def CleanString(self, string):
+        data = re.sub(r'\W+', '', string)
+        return (data[:75] + '_TRIMMED') if len(data) > 75 else data
 
     def recognize_using_weboscket(self, *args):
         mycallback = MyRecognizeCallback()

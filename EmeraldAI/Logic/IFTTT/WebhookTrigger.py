@@ -3,7 +3,7 @@
 
 import requests
 from EmeraldAI.Logic.Singleton import Singleton
-from EmeraldAI.Config.Config import *
+from EmeraldAI.Config.Config import Config
 
 
 class IFTTT(object):

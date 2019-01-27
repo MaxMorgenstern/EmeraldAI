@@ -101,6 +101,8 @@ AudioPlayer = afplay
 UsePygame = True
 Provider = Watson
 
+IntermediateAudioDelay = 2
+
 MicrosoftVoiceGender = Female
 MicrosoftVoiceName = Microsoft Server Speech Text to Speech Voice (de-DE, Hedda)
 MicrosoftAPIKey =
@@ -117,6 +119,7 @@ IvonaSecretKey =
 WatsonTTSUsername =
 WatsonTTSPassword =
 WatsonVoiceName =
+
 
 # ----------------------
 [Database]
@@ -175,6 +178,20 @@ MaxPredictionDistance = 75
 
 PredictionTimeout = 3
 PredictionThreshold = 150
+
+
+# ----------------------
+[ComputerVision.Intruder]
+CheckActive = True
+CVSURVOnly = False
+
+TimeFrom = 20
+TimeTo = 5
+
+# we need to detect a person for this long without recognition - in seconds
+Delay = 10
+
+IFTTTIntruderWebhook = 
 
 
 # ----------------------

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import importlib
-from EmeraldAI.Logic.Logger import *
+from EmeraldAI.Logic.Logger import FileLogger
 
 def CreateClass(moduleName, className):
     module = importlib.import_module(moduleName)

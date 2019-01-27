@@ -6,10 +6,10 @@ sys.path.append(dirname(dirname(dirname(dirname(abspath(__file__))))))
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-from EmeraldAI.Config.Config import *
+from EmeraldAI.Config.Config import Config
 from EmeraldAI.Logic.ComputerVision.ModelMonitor import ModelMonitor
 from EmeraldAI.Logic.Modules import Pid
-from EmeraldAI.Logic.Logger import *
+from EmeraldAI.Logic.Logger import FileLogger
 
 
 def EnsureModelUpdate():

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Logic.KnowledgeGathering.Wikipedia import Wikipedia as wiki
-from EmeraldAI.Config.Config import *
+from EmeraldAI.Config.Config import Config
 
 class WikipediaAction(object):
     __metaclass__ = Singleton

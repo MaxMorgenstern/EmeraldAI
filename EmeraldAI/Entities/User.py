@@ -4,7 +4,7 @@ from EmeraldAI.Entities.BaseObject import BaseObject
 from EmeraldAI.Logic.Singleton import Singleton
 from datetime import datetime
 
-from EmeraldAI.Config.Config import *
+from EmeraldAI.Config.Config import Config
 if(Config().Get("Database", "UserDatabaseType").lower() == "sqlite"):
     from EmeraldAI.Logic.Database.SQlite3 import SQlite3 as db
 elif(Config().Get("Database", "UserDatabaseType").lower() == "mysql"):
@@ -21,6 +21,7 @@ class User(BaseObject):
         self.Name = Config().Get("DEFAULT", "UnknownUserTag")
         self.LastName = None
         self.FirstName = None
+        self.FullName = None
 
         self.Birthday = None
         self.LastSeenPrevious = None
@@ -28,6 +29,7 @@ class User(BaseObject):
         self.LastSpokenTo = None
 
         self.Gender = "male"
+        self.NameTitle = ""
 
         self.Properties = []
 
@@ -89,12 +91,14 @@ class User(BaseObject):
         self.Name = Config().Get("DEFAULT", "UnknownUserTag")
         self.LastName = None
         self.FirstName = None
+        self.FullName = None
 
         self.Birthday = None
         self.LastSeen = None
         self.LastSpokenTo = None
 
         self.Gender = "male"
+        self.NameTitle = ""
 
         self.Properties = []
 
@@ -124,12 +128,18 @@ class User(BaseObject):
             self.Name = r[1]
             self.LastName = r[2]
             self.FirstName = r[3]
+            self.FullName = "{0} {1}".format(r[3], r[2])
 
             self.Birthday = r[5]
             self.LastSeenPrevious = r[6]
             self.LastSeen = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             self.LastSpokenTo = r[7]
+
             self.Gender = r[8]
+            if self.Gender.lower() == "female":
+                self.NameTitle =  Config().Get("DEFAULT", "FormalFormOfAddressFemale").format("")
+            else:
+                self.NameTitle = Config().Get("DEFAULT", "FormalFormOfAddressMale").format("")
 
             self.Formal = r[9].lower() == "formal"
             self.Trainer = r[10] == 1

@@ -1,11 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 from EmeraldAI.Logic.Singleton import Singleton
-from EmeraldAI.Config.Config import *
+from EmeraldAI.Config.Config import Config
 from EmeraldAI.Entities.User import User
-from EmeraldAI.Logic.Trainer.DialogTrainer import *
-from EmeraldAI.Entities.Context import Context
-from EmeraldAI.Logic.Logger import *
+from EmeraldAI.Logic.Trainer.DialogTrainer import DialogTrainer
+from EmeraldAI.Entities.ContextParameter import ContextParameter
+from EmeraldAI.Logic.Logger import FileLogger
 
 
 class Trainer(object):
@@ -19,7 +19,7 @@ class Trainer(object):
         if not self.__trainData or not PipelineArgs.TrainConversation:
             return False
 
-        context = Context().LoadObject()
+        context = ContextParameter().LoadObject()
         if len(context.History) == 0:
             return False
 

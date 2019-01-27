@@ -4,10 +4,10 @@ from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Entities.ContextParameter import ContextParameter
 from EmeraldAI.Logic.NLP import NLP
 from EmeraldAI.Entities.User import User
-from EmeraldAI.Config.Config import *
-from EmeraldAI.Logic.NLP.AliceBot import *
+from EmeraldAI.Config.Config import Config
+from EmeraldAI.Logic.NLP.AliceBot import AliceBot
 from EmeraldAI.Logic.Modules import Action
-from EmeraldAI.Logic.Logger import *
+from EmeraldAI.Logic.Logger import FileLogger
 import re
 
 class ProcessResponse(object):
@@ -62,6 +62,8 @@ class ProcessResponse(object):
                     replaceword = contextParameterDict[keyword.title()]
                     if replaceword is None or replaceword == "Unknown":
                         replaceword = ""
+                    else:
+                        replaceword = "'{0}'".format(replaceword)
                     PipelineArgs.Response = PipelineArgs.Response.replace("{{{0}}}".format(keyword.lower()), str(replaceword))
                 else:
                     PipelineArgs.Response = PipelineArgs.Response.replace("{{{0}}}".format(keyword.lower()), "")

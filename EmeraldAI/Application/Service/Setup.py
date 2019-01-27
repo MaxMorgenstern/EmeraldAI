@@ -35,7 +35,7 @@ if not os.path.exists(logConfigFile):
     logdir = os.path.join(Global.EmeraldPath, "Data", "Log")
     print "Copy example logging.config and set log path to '{0}'".format(logdir)
 
-    exampleLogConfigFile = os.path.join(Global.EmeraldPath, "Config", "logging.config.example")
+    exampleLogConfigFile = os.path.join(Global.EmeraldPath, "Config", "logging.config.default")
     copyfile(exampleLogConfigFile, logConfigFile)
 
     cp.read(logConfigFile)
@@ -48,7 +48,7 @@ print "Check hardware.config"
 configFileHardware = os.path.join(Global.EmeraldPath, "Config", "hardware.config")
 if not os.path.exists(configFileHardware):
     print "Copy example hardware.config"
-    exampleConfigFileHardware = os.path.join(Global.EmeraldPath, "Config", "hardware.config.example")
+    exampleConfigFileHardware = os.path.join(Global.EmeraldPath, "Config", "hardware.config.default")
     copyfile(exampleConfigFileHardware, configFileHardware)
 
 # Create config file if it does not exist
@@ -57,7 +57,7 @@ updateConfig = False
 configFile = os.path.join(Global.EmeraldPath, "Config", "base.config")
 if not os.path.exists(configFile):
     print "Copy example base.config"
-    exampleConfigFile = os.path.join(Global.EmeraldPath, "Config", "base.config.example")
+    exampleConfigFile = os.path.join(Global.EmeraldPath, "Config", "base.config.default")
     copyfile(exampleConfigFile, configFile)
     updateConfig = True
 else:
