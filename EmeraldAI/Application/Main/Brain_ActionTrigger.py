@@ -66,15 +66,18 @@ class BrainActionTrigger:
 
 
     def unknownPersonCallback(self, data):
-        if (not self.__CheckActive):
-            return
-        
-        if(not self.__inBetweenTime(self.__TimeFrom, self.__TimeTo, datetime.now().hour)):
+        if(not self.__CheckActive 
+            or not self.__inBetweenTime(self.__TimeFrom, self.__TimeTo, datetime.now().hour)):
             return
         
         dataParts = data.data.split("|")
 
         if (dataParts[0] == "CV" and self.__CVSURVOnly):
+            return
+
+        # No valid user within 5 Minutes
+        user = User().LoadObject(300)
+        if(user.GetName() is not None):
             return
 
         timestamp = BrainMemory().GetInt("Brain.Trigger.UnknownPerson.Timestamp", self.__Delay * 3)
@@ -88,10 +91,6 @@ class BrainActionTrigger:
             # trigger action
             # trigger ifttt
 
-
-
-        
-        # (cvInstanceType (CV / CVSURV), CVType (POSITION / DARKNESS), cameraType (STD / IR), ...)
     
     def __inBetweenTime(self, fromHour, toHour, current):
         if fromHour < toHour:
