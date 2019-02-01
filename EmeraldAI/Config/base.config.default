@@ -185,8 +185,14 @@ PredictionThreshold = 150
 CheckActive = True
 CVSURVOnly = False
 
-TimeFrom = 20
-TimeTo = 5
+TimeFromMon = 20, 5
+TimeFromTue = 20, 5
+TimeFromWed = 20, 5
+TimeFromThu = 20, 5
+TimeFromFri = 20, 4
+TimeFromSat = 0, 24
+TimeFromSun = 0, 30
+
 
 # we need to detect a person for this long without recognition - in seconds
 Delay = 10
