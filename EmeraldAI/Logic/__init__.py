@@ -3,6 +3,7 @@ import Audio
 import ComputerVision
 import Database
 import GPIO
+import Helper
 import KnowledgeGathering
 import LocationProcessing
 import Memory

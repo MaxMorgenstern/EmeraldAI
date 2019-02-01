@@ -9,13 +9,13 @@ from EmeraldAI.Config.Config import Config
 class TimeTable(object):
 
     def __init__(self, name):
-        self.__Timetable = []
+        self.__Timetable = {}
 
         days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
         
         for day in days:
             conf = Config().GetList("ComputerVision.Intruder", "TimeFrom{0}".format(day))
-            self.__Timetable[day] = [conf[0], conf[1]]
+            self.__Timetable[day] = [int(conf[0]), int(conf[1])]
 
 
     def IsActive(self):
@@ -46,6 +46,6 @@ class TimeTable(object):
 
     def __inBetweenTime(self, fromHour, toHour, current):
         if fromHour < toHour:
-            return current >= fromHour and current <= toHour
+            return current >= fromHour and current < toHour
         else: #Over midnight
-            return current >= fromHour or current <= toHour         
+            return current >= fromHour or current < toHour         
