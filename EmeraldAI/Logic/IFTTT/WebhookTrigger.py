@@ -6,7 +6,7 @@ from EmeraldAI.Logic.Singleton import Singleton
 from EmeraldAI.Config.Config import Config
 
 
-class IFTTT(object):
+class WebhookTrigger(object):
     __metaclass__ = Singleton
 
     def __init__(self):
@@ -14,6 +14,8 @@ class IFTTT(object):
 
 
     def TriggerWebhook(self, event, value1=None, value2=None, value3=None):
+        if (not self.__apiKey.strip()):
+            return
         url = 'https://maker.ifttt.com/trigger/{e}/with/key/{k}/'.format(e=event, k=self.__apiKey)
         payload = {'value1': value1, 'value2': value2, 'value3': value3}
         return requests.post(url, data=payload)

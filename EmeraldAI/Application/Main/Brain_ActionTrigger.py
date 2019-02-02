@@ -17,17 +17,20 @@ from EmeraldAI.Logic.Memory.Brain import Brain as BrainMemory
 from EmeraldAI.Pipelines.TriggerProcessing.ProcessTrigger import ProcessTrigger
 from EmeraldAI.Logic.Helper import TimeTable
 from EmeraldAI.Entities.User import User
+from EmeraldAI.Logic.IFTTT import WebhookTrigger
 
 
 class BrainActionTrigger:
     def __init__(self):    	
-
         self.__UnknownUserTag = Config().Get("Application.Brain", "UnknownUserTag")
 
         self.__CheckActive = Config().GetBoolean("ComputerVision.Intruder", "CheckActive")
         self.__CVSURVOnly = Config().GetBoolean("ComputerVision.Intruder", "CVSURVOnly")
         self.__Delay = Config().GetInt("ComputerVision.Intruder", "Delay")
-        self.__IFTTTWebhook = Config().Get("ComputerVision.Intruder", "IFTTTWebhook")
+
+        self.__IFTTTGreeting = Config().Get("IFTTT.Event", "IFTTTGreeting")
+        self.__IFTTTIntruder = Config().Get("IFTTT.Event", "IFTTTIntruder")
+        self.__IFTTTWebhook = WebhookTrigger.WebhookTrigger()
 
         self.__TimeTable = TimeTable.TimeTable("ComputerVision.Intruder")
 
@@ -64,11 +67,11 @@ class BrainActionTrigger:
                 if(lastAudioTimestamp is None and len(response) > 1):
                     FileLogger().Info("ActionTrigger, knownPersonCallback(): {0}".format(response))
                     self.__ResponsePublisher.publish("TTS|{0}".format(response))
+                    self.__IFTTTWebhook.TriggerWebhook(self.__IFTTTGreeting, User().FullName, response)
 
 
     def unknownPersonCallback(self, data):
-        if(not self.__CheckActive 
-            or not self.__TimeTable.IsActive()):
+        if(not self.__CheckActive or not self.__TimeTable.IsActive()):
             return
         
         dataParts = data.data.split("|")
@@ -90,7 +93,9 @@ class BrainActionTrigger:
             print "trigger"
 
             # trigger action
+            
             # trigger ifttt
+            self.__IFTTTWebhook.TriggerWebhook(self.__IFTTTIntruder)
 
 
 

@@ -197,9 +197,6 @@ TimeFromSun = 0, 30
 # we need to detect a person for this long without recognition - in seconds
 Delay = 10
 
-IFTTTIntruderWebhook = 
-
-
 # ----------------------
 [Trigger]
 GPIOPin = 3
@@ -254,6 +251,16 @@ TriggerType=KEY
 #TriggerKey=QUIT
 #TriggerKey=22
 TriggerKey=ENTER
+
+# ----------------------
+#     IFTTT TRIGGER
+# ----------------------
+[IFTTT]
+APIKey = 
+
+[IFTTT.Event]
+IFTTTGreeting = Greeting
+IFTTTIntruder = Intruder
 
 
 # ----------------------

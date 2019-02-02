@@ -4,6 +4,7 @@ import ComputerVision
 import Database
 import GPIO
 import Helper
+import IFTTT
 import KnowledgeGathering
 import LocationProcessing
 import Memory
