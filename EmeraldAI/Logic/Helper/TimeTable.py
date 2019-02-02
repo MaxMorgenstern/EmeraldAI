@@ -14,7 +14,7 @@ class TimeTable(object):
         days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
         
         for day in days:
-            conf = Config().GetList("ComputerVision.Intruder", "TimeFrom{0}".format(day))
+            conf = Config().GetList(name, "TimeFrom{0}".format(day))
             self.__Timetable[day] = [int(conf[0]), int(conf[1])]
 
 
