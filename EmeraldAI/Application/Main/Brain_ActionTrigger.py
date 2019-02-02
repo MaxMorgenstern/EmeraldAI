@@ -15,6 +15,7 @@ from EmeraldAI.Config.Config import Config
 from EmeraldAI.Logic.Logger import FileLogger
 from EmeraldAI.Logic.Memory.Brain import Brain as BrainMemory
 from EmeraldAI.Pipelines.TriggerProcessing.ProcessTrigger import ProcessTrigger
+from EmeraldAI.Logic.Helper import TimeTable
 from EmeraldAI.Entities.User import User
 
 
@@ -25,10 +26,10 @@ class BrainActionTrigger:
 
         self.__CheckActive = Config().GetBoolean("ComputerVision.Intruder", "CheckActive")
         self.__CVSURVOnly = Config().GetBoolean("ComputerVision.Intruder", "CVSURVOnly")
-        self.__TimeFrom = Config().GetInt("ComputerVision.Intruder", "TimeFrom")
-        self.__TimeTo = Config().GetInt("ComputerVision.Intruder", "TimeTo")
         self.__Delay = Config().GetInt("ComputerVision.Intruder", "Delay")
         self.__IFTTTWebhook = Config().Get("ComputerVision.Intruder", "IFTTTWebhook")
+
+        self.__TimeTable = TimeTable.TimeTable("ComputerVision.Intruder")
 
         rospy.init_node('emerald_brain_actiontrigger_node', anonymous=True)
 
@@ -67,7 +68,7 @@ class BrainActionTrigger:
 
     def unknownPersonCallback(self, data):
         if(not self.__CheckActive 
-            or not self.__inBetweenTime(self.__TimeFrom, self.__TimeTo, datetime.now().hour)):
+            or not self.__TimeTable.IsActive()):
             return
         
         dataParts = data.data.split("|")
@@ -90,13 +91,6 @@ class BrainActionTrigger:
 
             # trigger action
             # trigger ifttt
-
-    
-    def __inBetweenTime(self, fromHour, toHour, current):
-        if fromHour < toHour:
-            return current >= fromHour and current <= toHour
-        else: #Over midnight
-            return current >= fromHour or current <= toHour         
 
 
 
