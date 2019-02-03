@@ -90,13 +90,12 @@ class BrainActionTrigger:
             return
 
         if(rospy.Time.now().to_sec() - timestamp > self.__Delay):
-            print "trigger"
-
-            # trigger action
             
-            # trigger ifttt
-            self.__IFTTTWebhook.TriggerWebhook(self.__IFTTTIntruder)
-
+            response = ProcessTrigger().ProcessCategory("Intruder")
+            if(len(response) > 1):
+                FileLogger().Info("ActionTrigger, unknownPersonCallback(): {0}".format(response))
+                self.__ResponsePublisher.publish("TTS|{0}".format(response))
+                self.__IFTTTWebhook.TriggerWebhook(self.__IFTTTIntruder)
 
 
     def appCallback(self, data):
