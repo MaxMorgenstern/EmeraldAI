@@ -33,6 +33,8 @@ class ProcessTrigger(object):
 
         responseID = random.choice(sentenceList.keys())
 
+        # TODO - check for action
+
         responseString = sentenceList[responseID].GetSentenceString(user.Formal)
 
         keywords = re.findall(r"\{(.*?)\}", responseString)
