@@ -1,5 +1,5 @@
 [DEFAULT]
-my_log_dir = /Users/root/EmeraldAI/EmeraldAI/Data/Log/
+my_log_dir = /EmeraldAI/Data/Log/
 
 [loggers]
 keys = root,ConsoleLogger,FileLogger

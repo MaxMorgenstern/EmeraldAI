@@ -43,6 +43,16 @@ if not os.path.exists(logConfigFile):
     with open(logConfigFile, 'wb') as filePointer:
         cp.write(filePointer)
 
+
+# Check logfile and create if it does not exist
+cp.read(logConfigFile)
+logfile = cp.get("DEFAULT", "my_log_dir") + "logfile.log"
+if not os.path.exists(logfile):
+    print "Create logfile.log"
+    f = open(logfile, "w+")
+    f.close()
+
+
 # Create hardware config file if it does not exist
 print "Check hardware.config"
 configFileHardware = os.path.join(Global.EmeraldPath, "Config", "hardware.config")
@@ -166,9 +176,10 @@ with open(configFile, 'wb') as filePointer:
 
 
 print "Config setup complete"
-print "Opening the config files. Please update API Keys and additional settings"
+print "Opening the config files. Please update API Keys and additional settings."
 print "Path: ", configFile
 print "Path: ", configFileHardware
+print "Path: ", logConfigFile
 
 dump = raw_input("Press enter to confirm")
 
