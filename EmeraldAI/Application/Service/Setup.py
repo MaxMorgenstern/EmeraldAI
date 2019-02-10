@@ -90,7 +90,7 @@ if(updateConfig):
 
     # ComputerVision
     # Set CameraID
-    print "Please set your camera"
+    print "Please set your camera. Keep the Cam-window selected on pressing the key"
     print "y: Set camera"
     print "n: Next camera"
     print "q: quit process"
@@ -132,6 +132,7 @@ if(updateConfig):
             if(timestamp + 20 < time.time()):
                 print "Camera detection Timeout"
                 runCamDetection = False
+    cv2.destroyWindow("Camera {0}".format(camID))
     cv2.destroyAllWindows()
     print "Set camera #{0} as primary.".format(camID)
     cp.set("ComputerVision", "CameraID", camID)
@@ -169,6 +170,8 @@ print "Opening the config files. Please update API Keys and additional settings"
 print "Path: ", configFile
 print "Path: ", configFileHardware
 
+dump = raw_input("Press enter to confirm")
+
 if sys.platform.startswith('darwin'):
     subprocess.call(('open', configFile))
     subprocess.call(('open', configFileHardware))
@@ -181,3 +184,5 @@ elif os.name == 'posix': # For Linux, Mac, etc.
 
 
 print "Setup complete"
+
+time.sleep(2) 
