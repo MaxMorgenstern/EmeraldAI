@@ -85,7 +85,7 @@ class BrainActionTrigger:
 
         # No valid user within 5 Minutes
         user = User().LoadObject(300)
-        if(user.GetName() is not None):
+        if(user.GetName() is not None and user.GetName().lower() != "unknown"):
             return
 
         timestamp = BrainMemory().GetInt("Brain.Trigger.UnknownPerson.Timestamp", self.__Delay * 3)
