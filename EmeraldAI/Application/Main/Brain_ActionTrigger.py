@@ -40,6 +40,8 @@ class BrainActionTrigger:
 
         self.__ResponsePublisher = rospy.Publisher('/emerald_ai/io/text_to_speech', String, queue_size=10)
 
+        self.__TriggerPublisher = rospy.Publisher('/emerald_ai/alert/trigger', String, queue_size=10)
+
     	# in order to check if someone we know is present
         rospy.Subscriber("/emerald_ai/io/person", String, self.knownPersonCallback)
 
@@ -69,6 +71,8 @@ class BrainActionTrigger:
                     self.__ResponsePublisher.publish("TTS|{0}".format(response))
                     self.__IFTTTWebhook.TriggerWebhook(self.__IFTTTGreeting, User().FullName, response)
 
+                    self.__TriggerPublisher.publish("TRIGGER|Info|Greeting")
+
 
     def unknownPersonCallback(self, data):
         if(not self.__CheckActive or not self.__TimeTable.IsActive()):
@@ -96,6 +100,8 @@ class BrainActionTrigger:
                 FileLogger().Info("ActionTrigger, unknownPersonCallback(): {0}".format(response))
                 self.__ResponsePublisher.publish("TTS|{0}".format(response))
                 self.__IFTTTWebhook.TriggerWebhook(self.__IFTTTIntruder)
+
+                self.__TriggerPublisher.publish("TRIGGER|Warning|Intruder")
 
 
     def appCallback(self, data):
