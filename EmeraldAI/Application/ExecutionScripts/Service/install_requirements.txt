@@ -13,6 +13,7 @@ watson-developer-cloud
 wikipedia
 numpy
 matplotlib
+mutagen
 ipython
 ipython-genutils
 jupyter

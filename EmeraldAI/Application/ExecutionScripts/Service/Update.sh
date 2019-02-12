@@ -29,3 +29,12 @@ echo "Done!"
 echo "Clear ROS Log files"
 rosclean purge -y
 
+# Ask if the user wants to update requirements
+echo "Update requirements? (y/n)"
+echo "This option be skipped in 10 seconds..."
+read -t 10 update
+if [ "$update" = "y" ]
+then
+    echo "Install requirements via pip"
+    pip install --user -r $application_path/ExecutionScripts/Service/install_requirements.txt
+fi

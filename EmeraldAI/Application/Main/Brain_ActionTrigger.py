@@ -15,26 +15,32 @@ from EmeraldAI.Config.Config import Config
 from EmeraldAI.Logic.Logger import FileLogger
 from EmeraldAI.Logic.Memory.Brain import Brain as BrainMemory
 from EmeraldAI.Pipelines.TriggerProcessing.ProcessTrigger import ProcessTrigger
+from EmeraldAI.Logic.Helper import TimeTable
 from EmeraldAI.Entities.User import User
+from EmeraldAI.Logic.IFTTT import WebhookTrigger
 
 
 class BrainActionTrigger:
     def __init__(self):    	
-
         self.__UnknownUserTag = Config().Get("Application.Brain", "UnknownUserTag")
 
         self.__CheckActive = Config().GetBoolean("ComputerVision.Intruder", "CheckActive")
         self.__CVSURVOnly = Config().GetBoolean("ComputerVision.Intruder", "CVSURVOnly")
-        self.__TimeFrom = Config().GetInt("ComputerVision.Intruder", "TimeFrom")
-        self.__TimeTo = Config().GetInt("ComputerVision.Intruder", "TimeTo")
         self.__Delay = Config().GetInt("ComputerVision.Intruder", "Delay")
-        self.__IFTTTWebhook = Config().Get("ComputerVision.Intruder", "IFTTTWebhook")
+
+        self.__IFTTTGreeting = Config().Get("IFTTT.Event", "IFTTTGreeting")
+        self.__IFTTTIntruder = Config().Get("IFTTT.Event", "IFTTTIntruder")
+        self.__IFTTTWebhook = WebhookTrigger.WebhookTrigger()
+
+        self.__TimeTable = TimeTable.TimeTable("ComputerVision.Intruder")
 
         rospy.init_node('emerald_brain_actiontrigger_node', anonymous=True)
 
     	self.__SpeechTriggerPublisher = rospy.Publisher('/emerald_ai/io/speech_to_text', String, queue_size=10)
 
         self.__ResponsePublisher = rospy.Publisher('/emerald_ai/io/text_to_speech', String, queue_size=10)
+
+        self.__TriggerPublisher = rospy.Publisher('/emerald_ai/alert/trigger', String, queue_size=10)
 
     	# in order to check if someone we know is present
         rospy.Subscriber("/emerald_ai/io/person", String, self.knownPersonCallback)
@@ -63,18 +69,23 @@ class BrainActionTrigger:
                 if(lastAudioTimestamp is None and len(response) > 1):
                     FileLogger().Info("ActionTrigger, knownPersonCallback(): {0}".format(response))
                     self.__ResponsePublisher.publish("TTS|{0}".format(response))
+                    self.__IFTTTWebhook.TriggerWebhook(self.__IFTTTGreeting, User().FullName, response)
+
+                    self.__TriggerPublisher.publish("TRIGGER|Info|Greeting")
 
 
     def unknownPersonCallback(self, data):
-        if (not self.__CheckActive):
-            return
-        
-        if(not self.__inBetweenTime(self.__TimeFrom, self.__TimeTo, datetime.now().hour)):
+        if(not self.__CheckActive or not self.__TimeTable.IsActive()):
             return
         
         dataParts = data.data.split("|")
 
         if (dataParts[0] == "CV" and self.__CVSURVOnly):
+            return
+
+        # No valid user within 5 Minutes
+        user = User().LoadObject(300)
+        if(user.GetName() is not None and user.GetName().lower() != "unknown"):
             return
 
         timestamp = BrainMemory().GetInt("Brain.Trigger.UnknownPerson.Timestamp", self.__Delay * 3)
@@ -83,22 +94,14 @@ class BrainActionTrigger:
             return
 
         if(rospy.Time.now().to_sec() - timestamp > self.__Delay):
-            print "trigger"
+            
+            response = ProcessTrigger().ProcessCategory("Intruder")
+            if(len(response) > 1):
+                FileLogger().Info("ActionTrigger, unknownPersonCallback(): {0}".format(response))
+                self.__ResponsePublisher.publish("TTS|{0}".format(response))
+                self.__IFTTTWebhook.TriggerWebhook(self.__IFTTTIntruder)
 
-            # trigger action
-            # trigger ifttt
-
-
-
-        
-        # (cvInstanceType (CV / CVSURV), CVType (POSITION / DARKNESS), cameraType (STD / IR), ...)
-    
-    def __inBetweenTime(self, fromHour, toHour, current):
-        if fromHour < toHour:
-            return current >= fromHour and current <= toHour
-        else: #Over midnight
-            return current >= fromHour or current <= toHour         
-
+                self.__TriggerPublisher.publish("TRIGGER|Warning|Intruder")
 
 
     def appCallback(self, data):
