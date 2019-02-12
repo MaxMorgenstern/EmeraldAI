@@ -38,7 +38,7 @@ class DialogTrainer(object):
         isStopword = 0
         if NLP.IsStopword(Word, Language):
             isStopword = 1
-        query = "INSERT INTO Conversation_Keyword ('Keyword', 'Normalized', 'Language', 'Stopword') Values ('{0}', '{1}', '{2}', '{3}')".format(Word, NLP.Normalize(Word, Language), Language, isStopword)
+        query = "INSERT or IGNORE INTO Conversation_Keyword ('Keyword', 'Normalized', 'Language', 'Stopword') Values ('{0}', '{1}', '{2}', '{3}')".format(Word, NLP.Normalize(Word, Language), Language, isStopword)
         keywordID = db().Execute(query)
         if(keywordID is None):
             query = "SELECT ID FROM Conversation_Keyword WHERE Normalized = '{0}'".format(NLP.Normalize(Word, Language))
@@ -46,7 +46,7 @@ class DialogTrainer(object):
         return keywordID
 
     def SaveRequirement(self, Name):
-        query = "INSERT INTO Conversation_Requirement ('Name') Values ('{0}')".format(Name)
+        query = "INSERT or IGNORE INTO Conversation_Requirement ('Name') Values ('{0}')".format(Name)
         requirementID = db().Execute(query)
         if(requirementID is None):
             query = "SELECT ID FROM Conversation_Requirement WHERE Name = '{0}'".format(Name)
@@ -54,7 +54,7 @@ class DialogTrainer(object):
         return requirementID
 
     def SaveCategory(self, Name):
-        query = "INSERT INTO Conversation_Category ('Name') Values ('{0}')".format(Name)
+        query = "INSERT or IGNORE INTO Conversation_Category ('Name') Values ('{0}')".format(Name)
         categoryID = db().Execute(query)
         if(categoryID is None):
             query = "SELECT ID FROM Conversation_Category WHERE Name = '{0}'".format(Name)
@@ -62,13 +62,13 @@ class DialogTrainer(object):
         return categoryID
 
     def SaveAction(self, Name, Module, Class, Function, Language, ErrorSentence):
-        query = "INSERT INTO Conversation_Action ('Name', 'Module', 'Class', 'Function') Values ('{0}', '{1}', '{2}', '{3}')".format(Name, Module, Class, Function)
+        query = "INSERT or IGNORE INTO Conversation_Action ('Name', 'Module', 'Class', 'Function') Values ('{0}', '{1}', '{2}', '{3}')".format(Name, Module, Class, Function)
         actionID = db().Execute(query)
         if(actionID is None):
             query = "SELECT ID FROM Conversation_Action WHERE Name = '{0}'".format(Name)
             actionID = db().Fetchall(query)[0][0]
 
-        query = "INSERT INTO Conversation_Action_Error (ActionID, Sentence, Language) Values ('{0}', '{1}', '{2}')"
+        query = "INSERT or IGNORE INTO Conversation_Action_Error (ActionID, Sentence, Language) Values ('{0}', '{1}', '{2}')"
         db().Execute(query.format(actionID, ErrorSentence, Language))
         return actionID
 
@@ -82,7 +82,7 @@ class DialogTrainer(object):
         return keywordList
 
     def SaveSentence(self, Sentence, Language, UserName, Animation = None, Approved = 0):
-        query = "INSERT INTO Conversation_Sentence ('Sentence', 'Language', 'Source', 'Approved', 'Animation') Values ('{0}', '{1}', '{2}', '{3}', '{4}')".format(Sentence, Language, UserName, Approved, Animation)
+        query = "INSERT or IGNORE INTO Conversation_Sentence ('Sentence', 'Language', 'Source', 'Approved', 'Animation') Values ('{0}', '{1}', '{2}', '{3}', '{4}')".format(Sentence, Language, UserName, Approved, Animation)
         sentenceID = db().Execute(query)
         if(sentenceID is None):
             query = "SELECT ID FROM Conversation_Sentence WHERE Sentence = '{0}'".format(Sentence)
@@ -95,7 +95,7 @@ class DialogTrainer(object):
                 keywordID = keyword
             else:
                 keywordID = self.SaveKeyword(keyword, Language)
-            query = "INSERT INTO Conversation_Sentence_Keyword ('KeywordID', 'SentenceID') Values ('{0}', '{1}')".format(keywordID, SentenceID)
+            query = "INSERT or IGNORE INTO Conversation_Sentence_Keyword ('KeywordID', 'SentenceID') Values ('{0}', '{1}')".format(keywordID, SentenceID)
             db().Execute(query)
 
 
@@ -128,9 +128,9 @@ class DialogTrainer(object):
             requirementID = self.SaveRequirement(requirement.Name)
             # Link requirement - sentence
             if(requirement.Comparison is None):
-                query = "INSERT INTO Conversation_Sentence_Requirement ('SentenceID', 'RequirementID', 'Value') Values ('{0}', '{1}', '{2}')".format(sentenceID, requirementID, requirement.Value)
+                query = "INSERT or IGNORE INTO Conversation_Sentence_Requirement ('SentenceID', 'RequirementID', 'Value') Values ('{0}', '{1}', '{2}')".format(sentenceID, requirementID, requirement.Value)
             else:
-                query = "INSERT INTO Conversation_Sentence_Requirement ('SentenceID', 'RequirementID', 'Comparison', 'Value') Values ('{0}', '{1}', '{2}', '{3}')".format(sentenceID, requirementID, requirement.Comparison, requirement.Value)
+                query = "INSERT or IGNORE INTO Conversation_Sentence_Requirement ('SentenceID', 'RequirementID', 'Comparison', 'Value') Values ('{0}', '{1}', '{2}', '{3}')".format(sentenceID, requirementID, requirement.Comparison, requirement.Value)
             db().Execute(query)
 
 
@@ -139,7 +139,7 @@ class DialogTrainer(object):
                 # create category if it does not exist - or get ID
                 categoryID = self.SaveCategory(category)
                 # Link category - sentence
-                query = "INSERT INTO Conversation_Sentence_Category_Has ('SentenceID', 'CategoryID') Values ('{0}', '{1}')".format(sentenceID, categoryID)
+                query = "INSERT or IGNORE INTO Conversation_Sentence_Category_Has ('SentenceID', 'CategoryID') Values ('{0}', '{1}')".format(sentenceID, categoryID)
                 db().Execute(query)
 
 
@@ -148,7 +148,7 @@ class DialogTrainer(object):
                 # create set category if it does not exist - or get ID
                 categoryID = self.SaveCategory(category)
                 # Link set category - sentence
-                query = "INSERT INTO Conversation_Sentence_Category_Set ('SentenceID', 'CategoryID') Values ('{0}', '{1}')".format(sentenceID, categoryID)
+                query = "INSERT or IGNORE INTO Conversation_Sentence_Category_Set ('SentenceID', 'CategoryID') Values ('{0}', '{1}')".format(sentenceID, categoryID)
                 db().Execute(query)
 
 
@@ -157,7 +157,7 @@ class DialogTrainer(object):
             query = "SELECT ID FROM Conversation_Action WHERE Name = '{0}'".format(ActionName)
             actionIDRow = db().Fetchall(query)
             if len(actionIDRow) > 0:
-                query = "INSERT INTO Conversation_Sentence_Action ('SentenceID', 'ActionID') Values ('{0}', '{1}')".format(sentenceID, actionIDRow[0][0])
+                query = "INSERT or IGNORE INTO Conversation_Sentence_Action ('SentenceID', 'ActionID') Values ('{0}', '{1}')".format(sentenceID, actionIDRow[0][0])
                 db().Execute(query)
 
         FileLogger().Info("DialogTrainer: Full sentence trained: {0}".format(Sentence))

@@ -43,6 +43,16 @@ if not os.path.exists(logConfigFile):
     with open(logConfigFile, 'wb') as filePointer:
         cp.write(filePointer)
 
+
+# Check logfile and create if it does not exist
+cp.read(logConfigFile)
+logfile = cp.get("DEFAULT", "my_log_dir") + "logfile.log"
+if not os.path.exists(logfile):
+    print "Create logfile.log"
+    f = open(logfile, "w+")
+    f.close()
+
+
 # Create hardware config file if it does not exist
 print "Check hardware.config"
 configFileHardware = os.path.join(Global.EmeraldPath, "Config", "hardware.config")
@@ -90,7 +100,7 @@ if(updateConfig):
 
     # ComputerVision
     # Set CameraID
-    print "Please set your camera"
+    print "Please set your camera. Keep the Cam-window selected on pressing the key"
     print "y: Set camera"
     print "n: Next camera"
     print "q: quit process"
@@ -132,6 +142,7 @@ if(updateConfig):
             if(timestamp + 20 < time.time()):
                 print "Camera detection Timeout"
                 runCamDetection = False
+    cv2.destroyWindow("Camera {0}".format(camID))
     cv2.destroyAllWindows()
     print "Set camera #{0} as primary.".format(camID)
     cp.set("ComputerVision", "CameraID", camID)
@@ -165,9 +176,12 @@ with open(configFile, 'wb') as filePointer:
 
 
 print "Config setup complete"
-print "Opening the config files. Please update API Keys and additional settings"
+print "Opening the config files. Please update API Keys and additional settings."
 print "Path: ", configFile
 print "Path: ", configFileHardware
+print "Path: ", logConfigFile
+
+dump = raw_input("Press enter to confirm")
 
 if sys.platform.startswith('darwin'):
     subprocess.call(('open', configFile))
@@ -181,3 +195,5 @@ elif os.name == 'posix': # For Linux, Mac, etc.
 
 
 print "Setup complete"
+
+time.sleep(2) 
