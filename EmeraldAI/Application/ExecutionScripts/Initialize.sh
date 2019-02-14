@@ -17,7 +17,7 @@ then
 	do
 		echo "Search Master Server..."
 		#export EMERALD_MASTER_IP=`nmap $EMERALD_IP/24 -sS -p 11311 | grep '11311/tcp open' -B3 | grep 'Nmap scan report for'| awk '{print $5}'`
-		MASTER_HOSTNAME=`nmap $EMERALD_IP/24 -p 11311 | grep '11311/tcp open' -B3 | grep 'Nmap scan report for' | awk '{print $5}' | head -n 1`
+		MASTER_HOSTNAME=`nmap $EMERALD_IP/24 -n -p 11311 | grep '11311/tcp open' -B3 | grep 'Nmap scan report for' | awk '{print $5}' | head -n 1`
 		if [ "$MASTER_HOSTNAME" != "" ]
 		then
 			export EMERALD_MASTER_IP=$MASTER_HOSTNAME
@@ -30,7 +30,7 @@ then
 else
 	echo "Search Master Server once..."
 	#export EMERALD_MASTER_IP=`nmap $EMERALD_IP/24 -sS -p 11311 | grep '11311/tcp open' -B3 | grep 'Nmap scan report for'| awk '{print $5}'`
-	MASTER_HOSTNAME=`nmap $EMERALD_IP/24 -p 11311 | grep '11311/tcp open' -B3 | grep 'Nmap scan report for' | awk '{print $5}' | head -n 1`
+	MASTER_HOSTNAME=`nmap $EMERALD_IP/24 -n -p 11311 | grep '11311/tcp open' -B3 | grep 'Nmap scan report for' | awk '{print $5}' | head -n 1`
 	if [ "$MASTER_HOSTNAME" != "" ]
 	then
 		export EMERALD_MASTER_IP=$MASTER_HOSTNAME

@@ -94,7 +94,6 @@ class BrainActionTrigger:
             return
 
         if(rospy.Time.now().to_sec() - timestamp > self.__Delay):
-            
             response = ProcessTrigger().ProcessCategory("Intruder")
             if(len(response) > 1):
                 FileLogger().Info("ActionTrigger, unknownPersonCallback(): {0}".format(response))
