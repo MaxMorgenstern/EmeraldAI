@@ -26,6 +26,8 @@ class User(BaseObject):
         self.FirstName = None
         self.FullName = None
 
+        self.CVTag = None
+
         self.Birthday = None
         self.LastSeenPrevious = None
         self.LastSeen = None
@@ -92,17 +94,17 @@ class User(BaseObject):
     def Reset(self):
         self.__reset()
 
-    # TODO
     def Create(self):
-        query = "TODO"
-        db().Execute(query)
+        query = """INSERT INTO Person(Name, LastName, FirstName, CVTag, Birthday, LastSeen, LastSpokenTo, Gender, Language) 
+        VALUES ('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}');"""
+        db().Execute(query.format(self.Name, self.LastName, self.FirstName, self.CVTag, self.Birthday, self.LastSeen, self.LastSpokenTo, self.Gender, self.Language))
 
     # TODO - update all fields
     def Update(self):
         if self.DBID < 1:
             return
-        query = "UPDATE Person SET Name='{0}', LastName='{1}', FirstName='{2}', Birthday='{3}', LastSeen='{4}', LastSpokenTo='{5}', Gender='{6}' WHERE ID = '{7}'"
-        db().Execute(query.format(self.Name, self.LastName, self.FirstName, self.Birthday, self.LastSeen, self.LastSpokenTo, self.Gender, self.DBID))
+        query = "UPDATE Person SET Name='{0}', LastName='{1}', FirstName='{2}', CVTag='{3}', Birthday='{4}', LastSeen='{5}', LastSpokenTo='{6}', Gender='{7}', Language='{8}' WHERE ID = '{9}'"
+        db().Execute(query.format(self.Name, self.LastName, self.FirstName, self.CVTag, self.Birthday, self.LastSeen, self.LastSpokenTo, self.Gender, self.Language, self.DBID))
         self.SaveObject()
 
     def __setUser(self, query, name):
@@ -113,6 +115,8 @@ class User(BaseObject):
             self.LastName = r[2]
             self.FirstName = r[3]
             self.FullName = "{0} {1}".format(r[3], r[2])
+            
+            self.CVTag = r[4]
 
             self.Birthday = r[5]
             self.LastSeenPrevious = r[6]
