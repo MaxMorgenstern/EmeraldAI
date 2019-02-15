@@ -99,7 +99,6 @@ class User(BaseObject):
         VALUES ('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}');"""
         db().Execute(query.format(self.Name, self.LastName, self.FirstName, self.CVTag, self.Birthday, self.LastSeen, self.LastSpokenTo, self.Gender, self.Language))
 
-    # TODO - update all fields
     def Update(self):
         if self.DBID < 1:
             return
