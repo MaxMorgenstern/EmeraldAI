@@ -15,6 +15,9 @@ class User(BaseObject):
     # This class is a singleton as we only need one instance across the whole project, the currently active user
 
     def __init__(self):
+        self.__reset()
+    
+    def __reset(self):
         self.CVTag = Config().Get("DEFAULT", "UnknownUserTag")
 
         self.DBID = -1
@@ -36,6 +39,8 @@ class User(BaseObject):
         self.Formal = True
         self.Trainer = False
         self.Admin = False
+
+        self.Language = Config().Get("DEFAULT", "Language")
 
         self.Updated = None
 
@@ -85,28 +90,7 @@ class User(BaseObject):
         self.LastSeen = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     def Reset(self):
-        self.CVTag = Config().Get("DEFAULT", "UnknownUserTag")
-
-        self.DBID = -1
-        self.Name = Config().Get("DEFAULT", "UnknownUserTag")
-        self.LastName = None
-        self.FirstName = None
-        self.FullName = None
-
-        self.Birthday = None
-        self.LastSeen = None
-        self.LastSpokenTo = None
-
-        self.Gender = "male"
-        self.NameTitle = ""
-
-        self.Properties = []
-
-        self.Formal = True
-        self.Trainer = False
-        self.Admin = False
-
-        self.Updated = None
+        self.__reset()
 
     # TODO
     def Create(self):
@@ -144,6 +128,9 @@ class User(BaseObject):
             self.Formal = r[9].lower() == "formal"
             self.Trainer = r[10] == 1
             self.Admin = r[11] == 1
+
+            self.Language = r[12]
+
             self.Update()
             continue
 

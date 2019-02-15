@@ -131,6 +131,7 @@ Rank  Bot Property  Value
 
 
 DELETE FROM Conversation_Action;
+DELETE FROM Conversation_Action_Error;
 DELETE FROM Conversation_Category;
 DELETE FROM Conversation_Keyword;
 DELETE FROM Conversation_Requirement;
@@ -140,6 +141,10 @@ DELETE FROM Conversation_Sentence_Category_Has;
 DELETE FROM Conversation_Sentence_Category_Set;
 DELETE FROM Conversation_Sentence_Keyword;
 DELETE FROM Conversation_Sentence_Requirement;
+DELETE FROM Location_Map_Position;
+DELETE FROM Location_Name;
+DELETE FROM Location_WiFi_Fingerprint;
+DELETE FROM Location_WiFi_Fingerprint_Name;
 ...
 
 
