@@ -101,7 +101,7 @@ AudioPlayer = afplay
 UsePygame = True
 Provider = Watson
 
-IntermediateAudioDelay = 2
+IntermediateAudioDelay = 3
 
 MicrosoftVoiceGender = Female
 MicrosoftVoiceName = Microsoft Server Speech Text to Speech Voice (de-DE, Hedda)
