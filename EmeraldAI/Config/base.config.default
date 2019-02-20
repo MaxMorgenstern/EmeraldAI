@@ -83,6 +83,7 @@ AliceAsFallback = True
 Enabled = True
 CsvColumnCount = 7
 CsvActionColumnCount = 5
+CsvInteractionColumnCount = 6
 
 
 # ----------------------

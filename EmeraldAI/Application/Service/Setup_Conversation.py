@@ -24,12 +24,15 @@ print "Start conversation setup for language {0}...".format(language.upper())
 print "Convert Excel Sheet to CSV..."
 
 xslPath = os.path.join(Global.EmeraldPath, "Data", "TrainingData", "{0}_Training.xlsx".format(language.upper()))
-csvPath = os.path.join(Global.EmeraldPath, "Data", "TrainingData", "Training.csv")
 
+csvPath = os.path.join(Global.EmeraldPath, "Data", "TrainingData", "Training.csv")
 Excel.ToCsv(xslPath, csvPath)
 
 csvActionPath = os.path.join(Global.EmeraldPath, "Data", "TrainingData", "Training_Action.csv")
 Excel.ToCsv(xslPath, csvActionPath, 1)
+
+csvInteractionPath = os.path.join(Global.EmeraldPath, "Data", "TrainingData", "Training_Interaction.csv")
+Excel.ToCsv(xslPath, csvInteractionPath, 2)
 
 trainer = DialogTrainer()
 
@@ -40,5 +43,9 @@ trainer.TrainActionCSV(actionData, language)
 print "Train Basic sentences..."
 conversationData = read(csvPath)
 trainer.TrainCSV(conversationData, language)
+
+print "Train Basic interactions..."
+interactionData = read(csvInteractionPath)
+trainer.TrainInteractionCSV(interactionData, language)
 
 print "Conversation setup completed"
