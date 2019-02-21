@@ -261,3 +261,4 @@ Android/FaceApp/rosandroid-emeraldai-faceapp/src/main/assets/*.gif
 .DS_Store
 EmeraldAI/Data/TrainingData/Training_Action.csv
 .vscode/settings.json
+EmeraldAI/Data/TrainingData/Training_Interaction.csv
