@@ -169,7 +169,10 @@ class DialogTrainer(object):
                 query = "INSERT or IGNORE INTO Conversation_Sentence_Action ('SentenceID', 'ActionID') Values ('{0}', '{1}')".format(sentenceID, actionIDRow[0][0])
                 db().Execute(query)
 
-        # TODO - if(InteractionID is not None):
+
+        if(InteractionID is not None):
+            query = "INSERT or IGNORE INTO Conversation_Interaction_Sentence ('InteractionID', 'SentenceID') Values ('{0}', '{1}')".format(InteractionID, sentenceID)
+            db().Execute(query)
 
 
         FileLogger().Info("DialogTrainer: Full sentence trained: {0}".format(Sentence))
