@@ -38,6 +38,10 @@ class AnalyzeScope(object):
         if self.__RemoveStopwordOnlySentences:
             sentenceList = SentenceResolver().RemoveStopwordOnlySentences(sentenceList)
 
+        # TODO - check for Interaction
+        # if interaction in context, add priority +++
+        # if interaction sentence but not in context, add priority +
+
         if self.__RemoveBeforeRequirementCalculation:
             sentenceList = SentenceResolver().RemoveLowPrioritySentences(sentenceList)
 
