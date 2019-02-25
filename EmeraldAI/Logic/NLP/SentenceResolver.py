@@ -101,6 +101,10 @@ class SentenceResolver(object):
                 sentenceList[r[0]] = Sentence(r[0], (self.__parameterFactor * r[2] * self.__parameterFactorNoKeyword), word)
 
         return sentenceList
+    
+    def GetSentenceByInteraction(self, sentenceList, interaction, language, isTrainer):
+        # TODO 
+        return sentenceList
 
     def AddActionBonus(self, sentenceList):
         query = """SELECT Conversation_Action.ID
