@@ -31,6 +31,8 @@ class Sentence(BaseObject):
         self.HasCategory = []
         self.SetsCategory = []
 
+        self.InteractionName = None
+
     def AddBaseword(self, Baseword):
         if Baseword not in self.BasewordList:
             self.BasewordList.append(Baseword)

@@ -38,12 +38,10 @@ class AnalyzeScope(object):
         if self.__RemoveStopwordOnlySentences:
             sentenceList = SentenceResolver().RemoveStopwordOnlySentences(sentenceList)
 
-        # TODO - check for Interaction
-        # if interaction in context, add priority +++
-        # if interaction sentence but not in context, add priority +
         if contextParameter.InteractionName is not None:
             sentenceList = SentenceResolver().GetSentenceByInteraction(sentenceList, contextParameter.InteractionName, PipelineArgs.Language, (user.Admin or user.Trainer))
-
+        else:
+            SentenceResolver().AddInteractionBonus(sentenceList)
 
         if self.__RemoveBeforeRequirementCalculation:
             sentenceList = SentenceResolver().RemoveLowPrioritySentences(sentenceList)
