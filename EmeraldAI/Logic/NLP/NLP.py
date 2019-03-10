@@ -36,10 +36,10 @@ def WordSegmentation(input, extended=False):
 
     if not extended:
         segmentationRegex = re.compile(
-            "[A-Z]{2,}(?![a-z])|[A-Z][a-z]+(?=[A-Z])|[\'\wÄÖÜäöüß\-]+", flags=re.UNICODE)
+            r"[A-Z]{2,}(?![a-z])|[A-Z][a-z]+(?=[A-Z])|[\'\wÄÖÜäöüß\-]+", flags=re.UNICODE)
     else:
         segmentationRegex = re.compile(
-            "[A-Z]{2,}(?![a-z])|[A-Z][a-z]+(?=[A-Z])|[\'\wÄÖÜäöüß\-\{\}]+", flags=re.UNICODE)
+            r"[A-Z]{2,}(?![a-z])|[A-Z][a-z]+(?=[A-Z])|[\'\wÄÖÜäöüß\-\{\}]+", flags=re.UNICODE)
 
     return segmentationRegex.findall(input)
 

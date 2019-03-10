@@ -138,6 +138,7 @@ class SentenceResolver(object):
 
         for sentenceID, value in sentenceList.iteritems():
             sqlResult = db().Fetchall(query.format(sentenceID))
+            # TODO - better check if there is a result
             for r in sqlResult:
                 sentenceList[sentenceID].AddPriority(self.__ActionBonus)
         return sentenceList
