@@ -103,7 +103,6 @@ class SentenceResolver(object):
 
         return sentenceList
     
-    # TODO - test
     def GetSentenceByInteraction(self, sentenceList, interaction, language, isTrainer):
         query = """SELECT Conversation_Sentence.ID
             FROM Conversation_Interaction, Conversation_Interaction_Sentence, Conversation_Sentence
@@ -123,7 +122,6 @@ class SentenceResolver(object):
 
         return sentenceList
 
-    # TODO - test
     def AddInteractionBonus(self, sentenceList):
         for sentenceID, value in sentenceList.iteritems():
             if sentenceList[sentenceID].InteractionName is not None:
