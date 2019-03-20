@@ -43,6 +43,15 @@ class AnalyzeScope(object):
         else:
             SentenceResolver().AddInteractionBonus(sentenceList)
 
+
+        for sentenceID, value in sentenceList.iteritems():
+            if sentenceList[sentenceID].HasInteraction():
+                for word in PipelineArgs.WordList:
+                    for parameter in word.ParameterList:
+                        interactionName = "{0}{1}".format(sentenceList[sentenceID].InteractionName, parameter)
+                        contextParameter.InteractionData[interactionName] = word.Word
+
+
         if self.__RemoveBeforeRequirementCalculation:
             sentenceList = SentenceResolver().RemoveLowPrioritySentences(sentenceList)
 
