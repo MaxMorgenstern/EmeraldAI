@@ -44,7 +44,7 @@ class AnalyzeScope(object):
             SentenceResolver().AddInteractionBonus(sentenceList)
 
 
-        for sentenceID, value in sentenceList.iteritems():
+        for sentenceID in sentenceList.iterkeys():
             if sentenceList[sentenceID].HasInteraction():
                 for word in PipelineArgs.WordList:
                     for parameter in word.ParameterList:
