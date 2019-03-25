@@ -1,7 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import dateparser
+from datetime import date
 from datetime import datetime
+from datetime import timedelta
+import dateparser
 from dateparser.search import search_dates
 
 from EmeraldAI.Logic.Singleton import Singleton
@@ -32,3 +34,23 @@ class DateUtil(object):
             returnDate += resultDelta
         return returnDate
 
+    def isDate(self, input):
+        return True
+
+    def isTime(self, input):
+        return True
+
+
+    def SameDay(self, dt):
+        now =  datetime.now()
+        return now.date() == dt.date()
+
+    def InRange(self, dt, range=1):
+        x = dt.time()
+        now =  datetime.now()
+        start = (now - timedelta(minutes=range)).time()
+        end = (now + timedelta(minutes=range)).time()
+        if start <= end:
+            return start <= x <= end
+        else:
+            return start <= x or x <= end
