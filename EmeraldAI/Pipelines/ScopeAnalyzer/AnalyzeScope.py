@@ -50,6 +50,10 @@ class AnalyzeScope(object):
                     for parameter in word.ParameterList:
                         interactionName = "{0}{1}".format(sentenceList[sentenceID].InteractionName, parameter)
                         contextParameter.InteractionData[interactionName] = word.Word
+        
+                for parameter in PipelineArgs.GetInputSentenceParameter():
+                    interactionName = "{0}{1}".format(sentenceList[sentenceID].InteractionName, parameter)
+                    contextParameter.InteractionData[interactionName] = word.Word
 
 
         if self.__RemoveBeforeRequirementCalculation:
