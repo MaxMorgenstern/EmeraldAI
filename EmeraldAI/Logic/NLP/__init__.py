@@ -1,1 +1,1 @@
-__all__ = ["AliceBot", "NLP", "Parameterizer", "SentenceResolver", "Thesaurus"]
+__all__ = ["AliceBot", "DateUtil", "NLP", "Parameterizer", "SentenceResolver", "Thesaurus"]

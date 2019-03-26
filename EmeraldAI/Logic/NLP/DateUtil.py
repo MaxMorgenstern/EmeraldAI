@@ -15,7 +15,7 @@ class DateUtil(object):
     def __init__(self):
         self.t = ""
 
-    def parse(self, input, languageList = ['de']):
+    def Parse(self, input, languageList = ['de']):
         parseResult = dateparser.parse(input, languages=languageList, 
             settings={'PREFER_DATES_FROM': 'future', 'PREFER_DAY_OF_MONTH': 'first'})
         
@@ -34,13 +34,13 @@ class DateUtil(object):
             returnDate += resultDelta
         return returnDate
 
-    def isDate(self, input):
+    def IsDate(self, input):
         if(self.IsInRange(input)) return True
         if(!self.IsSameDay(input)) return True
         if(self.IsSameDay(input) and self.IsFlatTime(input)) return True
         return False
 
-    def isTime(self, input):
+    def IsTime(self, input):
         if(self.IsSameDay(input) or self.IsFlatTime(input)) return True
         return False
 
