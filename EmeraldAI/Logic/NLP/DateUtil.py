@@ -35,18 +35,22 @@ class DateUtil(object):
         return returnDate
 
     def IsDate(self, input):
-        if(self.IsInRange(input)) return True
-        if(!self.IsSameDay(input)) return True
-        if(self.IsSameDay(input) and self.IsFlatTime(input)) return True
+        if(self.IsInRange(input)): 
+            return True
+        if(not self.IsSameDay(input)): 
+            return True
+        if(self.IsSameDay(input) and self.IsFlatTime(input)):
+            return True
         return False
 
     def IsTime(self, input):
-        if(self.IsSameDay(input) or self.IsFlatTime(input)) return True
+        if(self.IsSameDay(input) or self.IsFlatTime(input)):
+            return True
         return False
 
 
     def IsSameDay(self, dt):
-        now =  datetime.now()
+        now = datetime.now()
         return now.date() == dt.date()
 
     def IsInRange(self, dt, range=1):
