@@ -23,6 +23,9 @@ Weekday = "weekday"
 Language = "language"
 Curseword = "curseword"
 
+Time = "time"
+Date = "date"
+
 #####
 
 def IsFirstname(word):
@@ -55,16 +58,17 @@ def IsBotname(word):
         return Botname
     return Empty
 
-
 def IsTime(sentence, language='de'):
     parsedValue = DateUtil().Parse(input, [language])
-    if (parsedValue is None) return False
-    return DateUtil().IsTime(parsedValue)
+    if (parsedValue is not None and DateUtil().IsTime(parsedValue)):
+        return Time
+    return Empty
 
 def IsDate(sentence, language='de'):
     parsedValue = DateUtil().Parse(input, [language])
-    if (parsedValue is None) return False
-    return DateUtil().IsDate(parsedValue)
+    if (parsedValue is not None and DateUtil().IsDate(parsedValue)):
+        return Date
+    return Empty
 
 
 # TODO
