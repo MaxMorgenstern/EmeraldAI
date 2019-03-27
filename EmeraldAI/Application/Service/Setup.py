@@ -3,18 +3,23 @@
 import sys
 import os
 import subprocess
+import speech_recognition as sr
+import ConfigParser
+import cv2
+import time
+import stat
+import shutil
 from os.path import dirname, abspath
 sys.path.append(dirname(dirname(dirname(dirname(abspath(__file__))))))
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-import speech_recognition as sr
-from shutil import copyfile
-import ConfigParser
-import cv2
-import time
-
 from EmeraldAI.Logic.Modules import Global
+
+def copyfile(source, target):
+    shutil.copyfile(source, target)
+    st = os.stat(source)
+    os.chown(target, st[stat.ST_UID], st[stat.ST_GID])
 
 print "Start config setup..."
 cp = ConfigParser.ConfigParser()
