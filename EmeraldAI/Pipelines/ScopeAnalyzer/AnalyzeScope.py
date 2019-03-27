@@ -44,15 +44,19 @@ class AnalyzeScope(object):
             SentenceResolver().AddInteractionBonus(sentenceList)
 
 
+        sentenceParameterList = None
         for sentenceID in sentenceList.iterkeys():
             if sentenceList[sentenceID].HasInteraction():
                 for word in PipelineArgs.WordList:
                     for parameter in word.ParameterList:
                         interactionName = "{0}{1}".format(sentenceList[sentenceID].InteractionName, parameter)
                         contextParameter.InteractionData[interactionName] = word.Word
-        
-                for parameter in PipelineArgs.GetInputSentenceParameter():
-                    interactionName = "{0}{1}".format(sentenceList[sentenceID].InteractionName, parameter)
+                
+                if sentenceParameterList is None:
+                    sentenceParameterList = PipelineArgs.GetInputSentenceParameter()
+
+                for sentenceParameter in sentenceParameterList:
+                    interactionName = "{0}{1}".format(sentenceList[sentenceID].InteractionName, sentenceParameter)
                     contextParameter.InteractionData[interactionName] = word.Word
 
 
