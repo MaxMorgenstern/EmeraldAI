@@ -45,8 +45,8 @@ if not os.path.exists(logConfigFile):
 
     cp.read(logConfigFile)
     cp.set("DEFAULT", "my_log_dir", logdir+"/")
-    with open(logConfigFile, 'wb') as filePointer:
-        cp.write(filePointer)
+    with open(logConfigFile, 'wb') as filePointerLogConfig:
+        cp.write(filePointerLogConfig)
 
 
 # Check logfile and create if it does not exist
@@ -176,8 +176,8 @@ if(updateConfig):
     cp.set("ComputerVision", "DetectionSettings", detectonSetting)
 
 
-with open(configFile, 'wb') as filePointer:
-    cp.write(filePointer)
+with open(configFile, 'wb') as filePointerConfig:
+    cp.write(filePointerConfig)
 
 
 print "Config setup complete"
@@ -190,13 +190,13 @@ dump = raw_input("Press enter to confirm")
 
 if sys.platform.startswith('darwin'):
     subprocess.call(('open', configFile))
-    subprocess.call(('open', configFileHardware))
+    #subprocess.call(('open', configFileHardware))
 elif os.name == 'nt': # For Windows
     os.startfile(configFile)
-    os.startfile(configFileHardware)
+    #os.startfile(configFileHardware)
 elif os.name == 'posix': # For Linux, Mac, etc.
     subprocess.call(('xdg-open', configFile))
-    subprocess.call(('xdg-open', configFileHardware))
+    #subprocess.call(('xdg-open', configFileHardware))
 
 
 print "Setup complete"
