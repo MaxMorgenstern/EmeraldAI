@@ -22,7 +22,6 @@ def copyfile(source, target):
     os.chown(target, st[stat.ST_UID], st[stat.ST_GID])
 
 print "Start config setup..."
-cp = ConfigParser.ConfigParser()
 
 # Create log config file if it does not exist
 print "Check Database"
@@ -42,7 +41,8 @@ if not os.path.exists(logConfigFile):
 
     exampleLogConfigFile = os.path.join(Global.EmeraldPath, "Config", "logging.config.default")
     copyfile(exampleLogConfigFile, logConfigFile)
-
+    
+    cp = ConfigParser.ConfigParser()
     cp.read(logConfigFile)
     cp.set("DEFAULT", "my_log_dir", logdir+"/")
     with open(logConfigFile, 'wb') as filePointerLogConfig:
@@ -50,6 +50,7 @@ if not os.path.exists(logConfigFile):
 
 
 # Check logfile and create if it does not exist
+cp = ConfigParser.ConfigParser()
 cp.read(logConfigFile)
 logfile = cp.get("DEFAULT", "my_log_dir") + "logfile.log"
 if not os.path.exists(logfile):
@@ -84,6 +85,7 @@ else:
 # TODO - which system are we on Brain? CV? TTS? - setup for specific system
 
 if(updateConfig):
+    cp = ConfigParser.ConfigParser()
     cp.read(configFile)
 
     # Speech To Text
@@ -175,9 +177,8 @@ if(updateConfig):
     cp.set("ComputerVision", "ImageSizeHeight", imageSize)
     cp.set("ComputerVision", "DetectionSettings", detectonSetting)
 
-
-with open(configFile, 'wb') as filePointerConfig:
-    cp.write(filePointerConfig)
+    with open(configFile, 'wb') as filePointerConfig:
+        cp.write(filePointerConfig)
 
 
 print "Config setup complete"
@@ -186,17 +187,18 @@ print "Path: ", configFile
 print "Path: ", configFileHardware
 print "Path: ", logConfigFile
 
-dump = raw_input("Press enter to confirm")
-
-if sys.platform.startswith('darwin'):
-    subprocess.call(('open', configFile))
-    #subprocess.call(('open', configFileHardware))
-elif os.name == 'nt': # For Windows
-    os.startfile(configFile)
-    #os.startfile(configFileHardware)
-elif os.name == 'posix': # For Linux, Mac, etc.
-    subprocess.call(('xdg-open', configFile))
-    #subprocess.call(('xdg-open', configFileHardware))
+print "Open config file now?"
+inputData = raw_input("Y/N: ")
+if(inputData.lower() == "y"):
+    if sys.platform.startswith('darwin'):
+        subprocess.call(('open', configFile))
+        #subprocess.call(('open', configFileHardware))
+    elif os.name == 'nt': # For Windows
+        os.startfile(configFile)
+        #os.startfile(configFileHardware)
+    elif os.name == 'posix': # For Linux, Mac, etc.
+        subprocess.call(('xdg-open', configFile))
+        #subprocess.call(('xdg-open', configFileHardware))
 
 
 print "Setup complete"
