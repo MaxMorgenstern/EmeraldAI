@@ -180,7 +180,7 @@ class DialogTrainer(object):
 
 
     def TrainActionCSV(self, data, language):
-        for key, group in itertools.groupby(data, self.__groupSeparator):
+        for _, group in itertools.groupby(data, self.__groupSeparator):
             line = ''.join(str(e) for e in group)
             line = line.strip()
             if (len(line) > 1):
@@ -207,7 +207,7 @@ class DialogTrainer(object):
 
     def TrainCSV(self, data, language):
         qlist = []
-        for key, group in itertools.groupby(data, self.__groupSeparator):
+        for _, group in itertools.groupby(data, self.__groupSeparator):
             line = ''.join(str(e) for e in group)
             line = line.strip()
             if (len(line) > 2):
@@ -261,7 +261,7 @@ class DialogTrainer(object):
     def TrainInteractionCSV(self, data, language):
         qlist = []
         interactionID = None
-        for key, group in itertools.groupby(data, self.__groupSeparator):
+        for _, group in itertools.groupby(data, self.__groupSeparator):
             line = ''.join(str(e) for e in group)
             line = line.strip()
             if (len(line) > 2):

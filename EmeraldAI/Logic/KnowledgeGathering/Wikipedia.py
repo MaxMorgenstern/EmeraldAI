@@ -23,7 +23,7 @@ class Wikipedia(object):
                 FileLogger().Error("Wikipedia Line 22: DisambiguationError: {0}".format(e))
                 if fallback:
                     topics = wikipedia.search(e.options[0])
-                    for i, topic in enumerate(topics):
+                    for _, topic in enumerate(topics):
                         summary = wikipedia.summary(topic)
                         break
 
@@ -31,7 +31,7 @@ class Wikipedia(object):
                 return None
 
             if(trimBrackets):
-                summary = re.sub("[\(\[].*?[\)\]][,.;\s]", "", summary)
+                summary = re.sub(r"[\(\[].*?[\)\]][,.;\s]", "", summary)
             return summary
         except Exception as e:
             FileLogger().Error("Wikipedia Line 36: Exception: {0}".format(e))
@@ -45,7 +45,7 @@ class Wikipedia(object):
         except:
             if fallback:
                 topics = wikipedia.search(term)
-                for i, topic in enumerate(topics):
+                for _, topic in enumerate(topics):
                     page = wikipedia.WikipediaPage(topic)
                     break
 

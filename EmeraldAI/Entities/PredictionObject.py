@@ -48,7 +48,7 @@ class PredictionObject(object):
 
     def ThresholdReached(self, threshold):
         if len(self.PredictionResult) > 0:
-            for key, resultSet in self.PredictionResult.iteritems():
+            for _, resultSet in self.PredictionResult.iteritems():
                 maxKey = max(resultSet.iteritems(), key=operator.itemgetter(1))[0]
                 if maxKey != self.__UnknownUserTag and threshold < resultSet[maxKey]:
                     return True

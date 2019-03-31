@@ -11,7 +11,7 @@ class SerialFinder():
 
     def Find(self):
         proc = subprocess.Popen([self._command], stdout=subprocess.PIPE, shell=True)
-        (out, err) = proc.communicate()
+        (out, _) = proc.communicate()
 
         if len(out) < 2:
             return []
@@ -23,7 +23,7 @@ class SerialFinder():
 
     def __split(self, data):
         lines = []
-        for key, group in itertools.groupby(data, self.__groupSeparator):
+        for _, group in itertools.groupby(data, self.__groupSeparator):
             line = ''.join(str(e) for e in group)
             line = line.strip()
             if (len(line) > 1):
