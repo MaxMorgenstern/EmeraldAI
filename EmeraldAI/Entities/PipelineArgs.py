@@ -5,6 +5,7 @@ import operator
 from EmeraldAI.Entities.BaseObject import BaseObject
 from EmeraldAI.Logic.NLP import NLP
 from EmeraldAI.Entities.Word import Word
+from EmeraldAI.Logic.NLP import Parameterizer
 
 
 class PipelineArgs(BaseObject):
@@ -90,3 +91,9 @@ class PipelineArgs(BaseObject):
         if(result != None):
             return random.choice(result)
         return None
+
+    def GetInputSentenceParameter(self):
+        tmpParameterList = []
+        self.appendIfNotNone(tmpParameterList, Parameterizer.IsDate(self.Input))
+        self.appendIfNotNone(tmpParameterList, Parameterizer.IsTime(self.Input))
+        return tmpParameterList

@@ -30,6 +30,7 @@ class DialogTrainer(object):
     def __init__(self):
         self.__csvColCount = Config().GetInt("Trainer", "CsvColumnCount")
         self.__csvActionColCount = Config().GetInt("Trainer", "CsvActionColumnCount")
+        self.__csvInteractionColCount = Config().GetInt("Trainer", "CsvInteractionColumnCount")
 
     def __groupSeparator(self, line):
         return line=='\n'
@@ -98,6 +99,14 @@ class DialogTrainer(object):
             query = "INSERT or IGNORE INTO Conversation_Sentence_Keyword ('KeywordID', 'SentenceID') Values ('{0}', '{1}')".format(keywordID, SentenceID)
             db().Execute(query)
 
+    def SaveInteraction(self, Name):
+        query = "INSERT or IGNORE INTO Conversation_Interaction ('Name') Values ('{0}')".format(Name)
+        categoryID = db().Execute(query)
+        if(categoryID is None):
+            query = "SELECT ID FROM Conversation_Interaction WHERE Name = '{0}'".format(Name)
+            categoryID = db().Fetchall(query)[0][0]
+        return categoryID
+
 
     def TrainSentence(self, OutputSentence, ResponseSentence, Language, UserName):
         # Train Keywords of both sentences
@@ -113,7 +122,7 @@ class DialogTrainer(object):
         FileLogger().Info("DialogTrainer: User sentence trained: {0}".format(ResponseSentence))
 
 
-    def TrainFullSentence(self, Sentence, Language, KeywordList, RequirementObjectList, HasCategoryList, SetCategoryList, ActionName, Animation):
+    def TrainFullSentence(self, Sentence, Language, KeywordList, RequirementObjectList, HasCategoryList, SetCategoryList, ActionName, Animation, InteractionID=None):
         # Train Keywords of sentence
         self.SaveKeywordsFromSentence(Sentence, Language)
 
@@ -159,6 +168,12 @@ class DialogTrainer(object):
             if len(actionIDRow) > 0:
                 query = "INSERT or IGNORE INTO Conversation_Sentence_Action ('SentenceID', 'ActionID') Values ('{0}', '{1}')".format(sentenceID, actionIDRow[0][0])
                 db().Execute(query)
+
+
+        if(InteractionID is not None):
+            query = "INSERT or IGNORE INTO Conversation_Interaction_Sentence ('InteractionID', 'SentenceID') Values ('{0}', '{1}')".format(InteractionID, sentenceID)
+            db().Execute(query)
+
 
         FileLogger().Info("DialogTrainer: Full sentence trained: {0}".format(Sentence))
         return True
@@ -242,3 +257,49 @@ class DialogTrainer(object):
 
                         self.TrainFullSentence(sent, language, qlist, requirementObjectList, hasCategoryList, setCategoryList, act, anim)
 
+
+    def TrainInteractionCSV(self, data, language):
+        qlist = []
+        interactionID = None
+        for key, group in itertools.groupby(data, self.__groupSeparator):
+            line = ''.join(str(e) for e in group)
+            line = line.strip()
+            if (len(line) > 2):
+
+                # on empty line reset
+                if(line == (";" * (self.__csvInteractionColCount - 1))):
+                    qlist = []
+                    interactionID = None
+                    continue
+
+                splitLine = line.split(";")
+                if(len(splitLine) == self.__csvInteractionColCount):
+                    qa = splitLine[0]   # Question or Answer
+                    req = splitLine[1]  # Requirement
+                    sent = splitLine[2].replace("'", "") # Sentence (Informat)
+                    name = splitLine[3]  # Name
+                    act = splitLine[4]  # Action
+                    anim = splitLine[5]  # Animation
+
+                    # Question
+                    if(qa == "Q"):
+                        qlist += list(set(self.SaveKeywordsFromSentence(sent, language)) - set(qlist))
+                        interactionID = self.SaveInteraction(name)
+
+                    # Response
+                    if(qa == "A"):
+                        requirementObjectList = []
+                        for r in req.split("|"):
+                            if(len(r) > 2):
+                                temp = r.split(":")
+
+                                rName = temp[0]
+                                if (temp[1][0:2] not in self.__comparisonValues):
+                                    rComparison = None
+                                    rValue = temp[1]
+                                else:
+                                    rComparison = temp[1][0:2]
+                                    rValue = temp[1][2:]
+                                requirementObjectList.append(Requirement(rName, rComparison, rValue))
+
+                        self.TrainFullSentence(sent, language, qlist, requirementObjectList, [], [], act, anim, interactionID)

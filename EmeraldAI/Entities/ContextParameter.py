@@ -21,6 +21,9 @@ class ContextParameter(BaseObject):
     ActionInput = None
     ActionResult = None
 
+    InteractionName = None
+    InteractionData = {}
+
     def __init__(self):
         self.Created = datetime.now()
         self.Updated = datetime.now()
@@ -38,6 +41,9 @@ class ContextParameter(BaseObject):
 
         self.ActionInput = None
         self.ActionResult = None
+    
+        self.InteractionName = None
+        self.InteractionData = {}
 
     def __UpdateUser(self):
         user = User().LoadObject()
@@ -50,6 +56,9 @@ class ContextParameter(BaseObject):
         self.ParameterDictionary["Time"] = datetime.now().strftime("%H%M")
         self.ParameterDictionary["Day"] = datetime.today().strftime("%A")
 
+    def __UpdateInteraction(self):
+        if(self.InteractionName is not None):
+            self.ParameterDictionary.update(self.InteractionData)
 
     def GetParameterDictionary(self):
         self.__UpdateTime()
@@ -58,6 +67,7 @@ class ContextParameter(BaseObject):
         self.ParameterDictionary.update(Bot().toDict("Bot"))
         # Update User Parameter
         self.__UpdateUser()
+        self.__UpdateInteraction()
 
         return self.ParameterDictionary
 
@@ -65,6 +75,9 @@ class ContextParameter(BaseObject):
         self.ParameterDictionary[key] = value
         self.Updated = datetime.now()
 
+    def ResetInteraction(self):
+        self.InteractionName = None
+        self.InteractionData = {}
 
     def Reset(self):
         self.Created = datetime.now()
@@ -79,6 +92,7 @@ class ContextParameter(BaseObject):
         self.ParameterDictionary.update(Bot().toDict("Bot"))
         # Add User Parameter
         self.__UpdateUser()
+        self.__UpdateInteraction()
 
         self.Input = None
         self.Result = None

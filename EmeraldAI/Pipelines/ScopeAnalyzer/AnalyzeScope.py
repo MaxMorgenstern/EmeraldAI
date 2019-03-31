@@ -38,6 +38,28 @@ class AnalyzeScope(object):
         if self.__RemoveStopwordOnlySentences:
             sentenceList = SentenceResolver().RemoveStopwordOnlySentences(sentenceList)
 
+        if contextParameter.InteractionName is not None:
+            sentenceList = SentenceResolver().GetSentenceByInteraction(sentenceList, contextParameter.InteractionName, PipelineArgs.Language, (user.Admin or user.Trainer))
+        else:
+            SentenceResolver().AddInteractionBonus(sentenceList)
+
+
+        sentenceParameterList = None
+        for sentenceID in sentenceList.iterkeys():
+            if sentenceList[sentenceID].HasInteraction():
+                for word in PipelineArgs.WordList:
+                    for parameter in word.ParameterList:
+                        interactionName = "{0}{1}".format(sentenceList[sentenceID].InteractionName, parameter)
+                        contextParameter.InteractionData[interactionName] = word.Word
+                
+                if sentenceParameterList is None:
+                    sentenceParameterList = PipelineArgs.GetInputSentenceParameter()
+
+                for sentenceParameter in sentenceParameterList:
+                    interactionName = "{0}{1}".format(sentenceList[sentenceID].InteractionName, sentenceParameter)
+                    contextParameter.InteractionData[interactionName] = word.Word
+
+
         if self.__RemoveBeforeRequirementCalculation:
             sentenceList = SentenceResolver().RemoveLowPrioritySentences(sentenceList)
 

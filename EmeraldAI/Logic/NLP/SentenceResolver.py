@@ -23,6 +23,7 @@ class SentenceResolver(object):
         self.__categoryBonus = Config().GetFloat("SentenceResolver", "CategoryBonus") #1
         self.__RequirementBonus = Config().GetFloat("SentenceResolver", "RequirementBonus") #1
         self.__ActionBonus = Config().GetFloat("SentenceResolver", "ActionBonus") #1.5
+        self.__InteractionBonus = Config().GetFloat("SentenceResolver", "InteractionBonus") #1.75
 
         self.__MinSentenceCountForRemoval = Config().GetFloat("SentenceResolver", "MinSentenceCountForRemoval") #5
         self.__RemoveSentenceBelowThreshold = Config().GetFloat("SentenceResolver", "RemoveSentenceBelowThreshold") #1.5
@@ -101,6 +102,31 @@ class SentenceResolver(object):
                 sentenceList[r[0]] = Sentence(r[0], (self.__parameterFactor * r[2] * self.__parameterFactorNoKeyword), word)
 
         return sentenceList
+    
+    def GetSentenceByInteraction(self, sentenceList, interaction, language, isTrainer):
+        query = """SELECT Conversation_Sentence.ID
+            FROM Conversation_Interaction, Conversation_Interaction_Sentence, Conversation_Sentence
+            WHERE Conversation_Interaction.Name = '{0}'
+            AND Conversation_Interaction.ID = Conversation_Interaction_Sentence.InteractionID
+            AND Conversation_Sentence.ID = Conversation_Interaction_Sentence.SentenceID
+            AND Conversation_Sentence.Approved >= {1}
+            AND Conversation_Sentence.Disabled = 0
+            AND Conversation_Sentence.Language = '{2}'"""
+        trainer = 0 if isTrainer else 1
+
+        sqlResult = db().Fetchall(query.format(interaction, trainer, language))
+        for r in sqlResult:
+            sentenceList[r[0]] = Sentence(r[0],  0, interaction, False)
+            sentenceList[r[0]].InteractionName = interaction
+            sentenceList[r[0]].AddPriority(self.__InteractionBonus)
+
+        return sentenceList
+
+    def AddInteractionBonus(self, sentenceList):
+        for sentenceID in sentenceList.iterkeys():
+            if sentenceList[sentenceID].InteractionName is not None:
+                sentenceList[sentenceID].AddPriority(self.__InteractionBonus)
+        return sentenceList
 
     def AddActionBonus(self, sentenceList):
         query = """SELECT Conversation_Action.ID
@@ -108,8 +134,9 @@ class SentenceResolver(object):
             WHERE Conversation_Sentence_Action.ActionID = Conversation_Action.ID
             AND Conversation_Sentence_Action.SentenceID = '{0}' LIMIT 1"""
 
-        for sentenceID, value in sentenceList.iteritems():
+        for sentenceID in sentenceList.iterkeys():
             sqlResult = db().Fetchall(query.format(sentenceID))
+            # TODO - better check if there is a result
             for r in sqlResult:
                 sentenceList[sentenceID].AddPriority(self.__ActionBonus)
         return sentenceList
@@ -117,7 +144,7 @@ class SentenceResolver(object):
 
     def AddSentencePriority(self, sentenceList):
         query = """SELECT Priority FROM Conversation_Sentence WHERE ID = '{0}'"""
-        for sentenceID, value in sentenceList.iteritems():
+        for sentenceID in sentenceList.iterkeys():
             sqlResult = db().Fetchall(query.format(sentenceID))
             for r in sqlResult:
                 if not sentenceList[sentenceID].OnlyStopwords:
@@ -136,7 +163,7 @@ class SentenceResolver(object):
                 Conversation_Sentence_Requirement.Comparison
             """
         deleteList = []
-        for sentenceID, value in sentenceList.iteritems():
+        for sentenceID in sentenceList.iterkeys():
             sqlResult = db().Fetchall(query.format(sentenceID))
             for r in sqlResult:
                 requirementName = r[2].title()
@@ -183,7 +210,7 @@ class SentenceResolver(object):
             WHERE Conversation_Category.ID = {0}.CategoryID
             AND {0}.SentenceID = '{1}'"""
 
-        for sentenceID, value in sentenceList.iteritems():
+        for sentenceID in sentenceList.iterkeys():
             sqlResult = db().Fetchall(query.format("Conversation_Sentence_Category_Has", sentenceID))
             for r in sqlResult:
                 sentenceList[sentenceID].HasCategory.append(r[0])

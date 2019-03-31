@@ -65,6 +65,7 @@ ParameterStopwordThreshold = 1.5
 CategoryBonus = 1
 RequirementBonus = 1
 ActionBonus = 1.5
+InteractionBonus = 1.75
 
 MinSentenceCountForRemoval = 5
 RemoveSentenceBelowThreshold = 1.5
@@ -83,6 +84,7 @@ AliceAsFallback = True
 Enabled = True
 CsvColumnCount = 7
 CsvActionColumnCount = 5
+CsvInteractionColumnCount = 6
 
 
 # ----------------------
@@ -101,7 +103,7 @@ AudioPlayer = afplay
 UsePygame = True
 Provider = Watson
 
-IntermediateAudioDelay = 2
+IntermediateAudioDelay = 3
 
 MicrosoftVoiceGender = Female
 MicrosoftVoiceName = Microsoft Server Speech Text to Speech Voice (de-DE, Hedda)

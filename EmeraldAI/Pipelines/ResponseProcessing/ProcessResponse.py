@@ -40,6 +40,9 @@ class ProcessResponse(object):
 
             contextParameter = ContextParameter().LoadObject(240)
 
+            if sentence.HasInteraction():
+                contextParameter.InteractionName = sentence.InteractionName
+
             sentenceAction = sentence.GetAction()
             if sentenceAction != None and len(sentenceAction["Module"]) > 0:
                 FileLogger().Info("ProcessResponse, Process(), Call Action: {0}, {1}, {2}".format(sentenceAction["Module"], sentenceAction["Class"], sentenceAction["Function"]))

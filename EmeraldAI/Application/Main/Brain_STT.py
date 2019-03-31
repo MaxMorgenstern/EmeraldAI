@@ -110,6 +110,7 @@ class BrainSTT:
         contextParameter.SaveObject()
 
         print "Pipeline Args", self.Pipeline.toJSON()
+        print "Context Parameter", contextParameter.toJSON()
         print "Trainer Result: ", trainerResult
         print "Input: ", sentence
         print "Response: ", self.Pipeline.Response

@@ -31,6 +31,9 @@ class Sentence(BaseObject):
         self.HasCategory = []
         self.SetsCategory = []
 
+        self.InteractionName = None
+        self.HasInteraction()
+
     def AddBaseword(self, Baseword):
         if Baseword not in self.BasewordList:
             self.BasewordList.append(Baseword)
@@ -81,6 +84,16 @@ class Sentence(BaseObject):
                 return data
         return None
 
+    def HasInteraction(self):
+        query = """SELECT Conversation_Interaction.Name
+            FROM Conversation_Interaction, Conversation_Interaction_Sentence
+            WHERE Conversation_Interaction_Sentence.SentenceID = '{0}'
+            AND Conversation_Interaction.ID = Conversation_Interaction_Sentence.InteractionID"""
+        sqlResult = db().Fetchall(query.format(self.ID))
+        for r in sqlResult:
+            self.InteractionName = r[0]
+            return True
+        return False
 
     def __formalOrOther(self, data, formal):
         if formal:
