@@ -31,7 +31,7 @@ def callback(data):
             STTMemory().Set("TriggerTimestamp", time.time())
 
 
-def RunSTT():
+def RunSTT(printData):
     pub = rospy.Publisher('/emerald_ai/io/speech_to_text', String, queue_size=10)
 
     rospy.Subscriber("/emerald_ai/io/hardware_trigger", String, callback)
@@ -66,10 +66,12 @@ def RunSTT():
         data = provider.Listen()
 
         if(len(data) == 0):
-            print "None"
+            if(printData):
+                print "None"
             continue
-
-        print "We got:", data
+            
+        if(printData):
+            print "We got:", data
 
         FileLogger().Info("STT, RunSTT(), Input Data: {0}".format(data))
 
@@ -83,9 +85,15 @@ if __name__ == "__main__":
         sys.exit()
     Pid.Create("STT")
 
+    printData = False
+    if len(sys.argv) > 1:
+        for arg in sys.argv:
+            if (arg.lower().startswith("-output")):
+                printData = True
+
     try:
         InitSettings()
-        RunSTT()
+        RunSTT(printData)
     except KeyboardInterrupt:
         print "End"
     finally:
