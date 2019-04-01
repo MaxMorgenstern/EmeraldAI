@@ -50,16 +50,3 @@ class BaseLogger(Logger):
     def __init__(self):
         logging.config.fileConfig(os.path.join(Global.EmeraldPath, "Config", "logging.config"))
         self.logger = logging.getLogger("root")
-
-
-"""
-TODO
-
-Config:
-[handler_rotateFileHandler]
-class=handlers.RotatingFileHandler
-level=DEBUG
-formatter=simpleFormatter
-args=('rotated.log', 'a', 100000, 1, 'utf8')
-
-"""

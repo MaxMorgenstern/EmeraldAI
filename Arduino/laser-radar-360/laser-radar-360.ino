@@ -88,10 +88,6 @@ long GetRange(int id)
             dist = Sensor2.readRangeContinuousMillimeters();
         }
         
-        //TODO - check how often timeout
-        //Sensor1.timeoutOccurred();
-        //Sensor2.timeoutOccurred();
-        
         if(dist < minDistance) { dist = maxDistance; }
         if(dist > maxDistance) { dist = maxDistance; }
 

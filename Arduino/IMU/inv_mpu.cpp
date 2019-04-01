@@ -155,7 +155,6 @@ struct hw_s {
 
 /* When entering motion interrupt mode, the driver keeps track of the
  * previous state so that it can be restored at a later time.
- * TODO: This is tacky. Fix it.
  */
 struct motion_int_cache_s {
     unsigned short gyro_fsr;
@@ -168,7 +167,6 @@ struct motion_int_cache_s {
 };
 
 /* Cached chip configuration data.
- * TODO: A lot of these can be handled with a bitmask.
  */
 struct chip_cfg_s {
     /* Matches gyro_cfg >> 3 & 0x03 */
@@ -2403,7 +2401,6 @@ static int setup_compass(void)
     }
 
     if (akm_addr > 0x0F) {
-        /* TODO: Handle this case in all compass-related functions. */
 #ifdef MPU_DEBUG
         Serial.println("Compass not found.");
 #endif
@@ -2621,7 +2618,6 @@ int mpu_lp_motion_interrupt(unsigned short thresh, unsigned char time,
         unsigned char thresh_hw;
 
 #if defined MPU6050
-        /* TODO: Make these const/#defines. */
         /* 1LSb = 32mg. */
         if (thresh > 8160)
             thresh_hw = 255;
