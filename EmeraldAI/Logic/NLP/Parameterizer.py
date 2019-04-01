@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 from EmeraldAI.Logic.NLP import NLP
-from EmeraldAI.Logic.NLP import DateUtil
+from EmeraldAI.Logic.NLP.DateUtil import DateUtil
 from EmeraldAI.Config.Config import Config
 from EmeraldAI.Logic.KnowledgeGathering.Math import Math
 
@@ -58,15 +58,20 @@ def IsBotname(word):
         return Botname
     return Empty
 
+def ParseToDate(sentence, language='de'):
+    return DateUtil().Parse(sentence, [language])
+
 def IsTime(sentence, language='de'):
-    parsedValue = DateUtil().Parse(input, [language])
-    if (parsedValue is not None and DateUtil().IsTime(parsedValue)):
+    if isinstance(sentence, basestring):
+        sentence = ParseToDate(sentence, [language])
+    if (sentence is not None and DateUtil().IsTime(sentence)):
         return Time
     return Empty
 
 def IsDate(sentence, language='de'):
-    parsedValue = DateUtil().Parse(input, [language])
-    if (parsedValue is not None and DateUtil().IsDate(parsedValue)):
+    if isinstance(sentence, basestring):
+        sentence = ParseToDate(sentence, [language])
+    if (sentence is not None and DateUtil().IsDate(sentence)):
         return Date
     return Empty
 

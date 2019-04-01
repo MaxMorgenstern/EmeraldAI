@@ -94,6 +94,7 @@ class PipelineArgs(BaseObject):
 
     def GetInputSentenceParameter(self):
         tmpParameterList = []
-        self.appendIfNotNone(tmpParameterList, Parameterizer.IsDate(self.Input))
-        self.appendIfNotNone(tmpParameterList, Parameterizer.IsTime(self.Input))
+        parsedData = Parameterizer.ParseToDate(self.Input, self.Language)
+        self.appendIfNotNone(tmpParameterList, Parameterizer.IsDate(parsedData))
+        self.appendIfNotNone(tmpParameterList, Parameterizer.IsTime(parsedData))
         return tmpParameterList
