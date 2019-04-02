@@ -94,6 +94,7 @@ class PipelineArgs(BaseObject):
 
     def GetInputSentenceParameter(self):
         tmpParameterList = []
+        # TODO This is pretty slow on a pi
         parsedData = Parameterizer.ParseToDate(self.Input, self.Language)
         self.appendIfNotNone(tmpParameterList, Parameterizer.IsDate(parsedData))
         self.appendIfNotNone(tmpParameterList, Parameterizer.IsTime(parsedData))
