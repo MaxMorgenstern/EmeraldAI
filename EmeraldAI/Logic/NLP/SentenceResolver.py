@@ -30,6 +30,7 @@ class SentenceResolver(object):
 
         self.__MinNonStopwordSentences = Config().GetFloat("SentenceResolver", "MinNonStopwordSentences") #1
 
+        self.__NoneTag = "None"
 
     def GetSentenceByCategory(self, category, language, isTrainer):
         sentenceDictionary = {}
@@ -166,9 +167,9 @@ class SentenceResolver(object):
             sqlResult = db().Fetchall(query.format(sentenceID))
             for r in sqlResult:
                 requirementName = r[2].title()
-
-                if requirementName not in parameterList:
-                    FileLogger().Error("SentenceResolver Line 126: Requirement missing in parameter list: {0}".format(requirementName))
+                
+                if requirementName not in parameterList and r[1].lower() != self.__NoneTag.lower()::
+                    FileLogger().Error("SentenceResolver Line 171: Requirement missing in parameter list: {0}".format(requirementName))
                     deleteList.append(sentenceID)
                     continue
 
@@ -181,6 +182,13 @@ class SentenceResolver(object):
                         sentenceList[sentenceID].AddPriority(self.__RequirementBonus)
                     continue
                 else:
+                    if r[1].lower() == self.__NoneTag.lower():
+                        if r[0] == "eq" and requirementName in parameterList and parameterList[requirementName] is not None):
+                            deleteList.append(sentenceID)
+                        if r[0] == "neq" and not (requirementName in parameterList and parameterList[requirementName] is not None):
+                            deleteList.append(sentenceID)
+                        continue
+
                     if r[0] == "lt" and not parameterList[requirementName] < r[1]:
                         deleteList.append(sentenceID)
                     if r[0] == "le" and not parameterList[requirementName] <= r[1]:

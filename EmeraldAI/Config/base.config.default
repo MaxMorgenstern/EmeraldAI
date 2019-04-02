@@ -65,7 +65,7 @@ ParameterStopwordThreshold = 1.5
 CategoryBonus = 1
 RequirementBonus = 1
 ActionBonus = 1.5
-InteractionBonus = 1.75
+InteractionBonus = 1.9
 
 MinSentenceCountForRemoval = 5
 RemoveSentenceBelowThreshold = 1.5
