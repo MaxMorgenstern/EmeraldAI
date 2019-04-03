@@ -168,7 +168,7 @@ class SentenceResolver(object):
             for r in sqlResult:
                 requirementName = r[2].title()
                 
-                if requirementName not in parameterList and r[1].lower() != self.__NoneTag.lower()::
+                if requirementName not in parameterList and r[1].lower() != self.__NoneTag.lower():
                     FileLogger().Error("SentenceResolver Line 171: Requirement missing in parameter list: {0}".format(requirementName))
                     deleteList.append(sentenceID)
                     continue
@@ -183,9 +183,9 @@ class SentenceResolver(object):
                     continue
                 else:
                     if r[1].lower() == self.__NoneTag.lower():
-                        if r[0] == "eq" and requirementName in parameterList and parameterList[requirementName] is not None):
+                        if (r[0] == "eq" and (requirementName in parameterList and parameterList[requirementName] is not None)):
                             deleteList.append(sentenceID)
-                        if r[0] == "neq" and not (requirementName in parameterList and parameterList[requirementName] is not None):
+                        if (r[0] == "neq" and not (requirementName in parameterList and parameterList[requirementName] is not None)):
                             deleteList.append(sentenceID)
                         continue
 
