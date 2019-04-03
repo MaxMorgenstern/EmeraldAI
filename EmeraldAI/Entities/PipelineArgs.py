@@ -46,7 +46,7 @@ class PipelineArgs(BaseObject):
 
         wordSegments = NLP.WordSegmentation(sentence)       
         for word in wordSegments:
-
+            word = word.strip()
             if self.HasWord(word, True):
                 continue
             w = Word(word)
