@@ -73,6 +73,7 @@ class ProcessResponse(object):
                     FileLogger().Error("ProcessResponse Line 63: Parameter missing: '{0}'".format(keyword))
 
             contextParameter.UnsetInputAndResult()
+            contextParameter.SaveObject()
 
         elif not responseFound and self.__aliceAsFallback:
             PipelineArgs.Response  = self.__alice.GetResponse(PipelineArgs.Input)

@@ -59,6 +59,7 @@ class AnalyzeScope(object):
                     interactionName = "{0}{1}".format(sentenceList[sentenceID].InteractionName, sentenceParameter)
                     contextParameter.InteractionData[interactionName] = word.Word
 
+        contextParameter.SaveObject()
 
         if self.__RemoveBeforeRequirementCalculation:
             sentenceList = SentenceResolver().RemoveLowPrioritySentences(sentenceList)
