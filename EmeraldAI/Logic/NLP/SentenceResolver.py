@@ -105,7 +105,7 @@ class SentenceResolver(object):
         return sentenceList
     
     def GetSentenceByInteraction(self, sentenceList, interaction, language, isTrainer):
-        query = """SELECT Conversation_Sentence.ID
+        query = """SELECT Conversation_Sentence.ID, Conversation_Sentence.Priority
             FROM Conversation_Interaction, Conversation_Interaction_Sentence, Conversation_Sentence
             WHERE Conversation_Interaction.Name = '{0}'
             AND Conversation_Interaction.ID = Conversation_Interaction_Sentence.InteractionID
@@ -117,7 +117,7 @@ class SentenceResolver(object):
 
         sqlResult = db().Fetchall(query.format(interaction, trainer, language))
         for r in sqlResult:
-            sentenceList[r[0]] = Sentence(r[0],  0, interaction, False)
+            sentenceList[r[0]] = Sentence(r[0],  r[1], interaction, False)
             sentenceList[r[0]].InteractionName = interaction
             sentenceList[r[0]].AddPriority(self.__InteractionBonus)
 
