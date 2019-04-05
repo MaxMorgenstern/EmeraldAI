@@ -185,25 +185,33 @@ class SentenceResolver(object):
                     if r[1].lower() == self.__NoneTag.lower():
                         if (r[0] == "eq" and (requirementName in parameterList and parameterList[requirementName] is not None)):
                             deleteList.append(sentenceID)
+                            continue
                         if (r[0] == "neq" and not (requirementName in parameterList and parameterList[requirementName] is not None)):
                             deleteList.append(sentenceID)
+                            continue
+                        sentenceList[sentenceID].AddPriority(self.__RequirementBonus)
                         continue
-
                     if r[0] == "lt" and not parameterList[requirementName] < r[1]:
                         deleteList.append(sentenceID)
+                        continue
                     if r[0] == "le" and not parameterList[requirementName] <= r[1]:
                         deleteList.append(sentenceID)
+                        continue
                     if r[0] == "eq" and not parameterList[requirementName] == r[1]:
                         deleteList.append(sentenceID)
+                        continue
                     if r[0] == "neq" and not parameterList[requirementName] != r[1]:
                         deleteList.append(sentenceID)
+                        continue
                     if r[0] == "ge" and not parameterList[requirementName] >= r[1]:
                         deleteList.append(sentenceID)
+                        continue
                     if r[0] == "gt" and not parameterList[requirementName] > r[1]:
                         deleteList.append(sentenceID)
-                    else:
-                        sentenceList[sentenceID].AddPriority(self.__RequirementBonus)
-                    continue
+                        continue
+
+                    sentenceList[sentenceID].AddPriority(self.__RequirementBonus)
+                    
         if delete:
             for d in list(set(deleteList)):
                 del sentenceList[d]

@@ -50,14 +50,14 @@ class AnalyzeScope(object):
                 for word in PipelineArgs.WordList:
                     for parameter in word.ParameterList:
                         interactionName = "{0}{1}".format(sentenceList[sentenceID].InteractionName, parameter)
-                        contextParameter.InteractionData[interactionName] = word.Word
+                        contextParameter.InteractionData[interactionName.title()] = word.Word
                 
                 if sentenceParameterList is None:
                     sentenceParameterList = PipelineArgs.GetInputSentenceParameter()
 
                 for sentenceParameter in sentenceParameterList:
                     interactionName = "{0}{1}".format(sentenceList[sentenceID].InteractionName, sentenceParameter)
-                    contextParameter.InteractionData[interactionName] = word.Word
+                    contextParameter.InteractionData[interactionName.title()] = word.Word
 
         contextParameter.SaveObject()
 
