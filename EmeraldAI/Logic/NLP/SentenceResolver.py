@@ -186,7 +186,7 @@ class SentenceResolver(object):
                         if (r[0] == "eq" and (requirementName in parameterList and parameterList[requirementName] is not None)):
                             deleteList.append(sentenceID)
                             continue
-                        if (r[0] == "neq" and not (requirementName in parameterList and parameterList[requirementName] is not None)):
+                        if (r[0] == "ne" and not (requirementName in parameterList and parameterList[requirementName] is not None)):
                             deleteList.append(sentenceID)
                             continue
                         sentenceList[sentenceID].AddPriority(self.__RequirementBonus)
@@ -200,7 +200,7 @@ class SentenceResolver(object):
                     if r[0] == "eq" and not parameterList[requirementName] == r[1]:
                         deleteList.append(sentenceID)
                         continue
-                    if r[0] == "neq" and not parameterList[requirementName] != r[1]:
+                    if r[0] == "ne" and not parameterList[requirementName] != r[1]:
                         deleteList.append(sentenceID)
                         continue
                     if r[0] == "ge" and not parameterList[requirementName] >= r[1]:
