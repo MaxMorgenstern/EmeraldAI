@@ -25,7 +25,7 @@ class Requirement(object):
 class DialogTrainer(object):
     __metaclass__ = Singleton
 
-    __comparisonValues = ["lt", "gt", "le", "eq", "ge"]
+    __comparisonValues = ["lt", "gt", "le", "eq", "ne", "ge"]
 
     def __init__(self):
         self.__csvColCount = Config().GetInt("Trainer", "CsvColumnCount")
