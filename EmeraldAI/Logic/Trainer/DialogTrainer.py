@@ -77,7 +77,6 @@ class DialogTrainer(object):
         keywordList = []
         wordSegments = NLP.WordSegmentation(Sentence, True)
         for word in wordSegments:
-            word = word[0].strip()
             keywordID = self.SaveKeyword(word, Language)
             if keywordID not in keywordList:
                 keywordList.append(keywordID)

@@ -39,7 +39,8 @@ def WordSegmentation(input, extended=False):
             r"((?:\b[^\s]+\b)(?:(?<=\.\w).)?)", flags=re.UNICODE)
     else:
         segmentationRegex = re.compile(
-            r"((?:\{)?(\b[^\s]+\b)(?:(?<=\.\w).)?(\})?)", flags=re.UNICODE)
+            r"((?:\{)?(?:\b[^\s]+\b)(?:(?<=\.\w).)?(?:\})?)", flags=re.UNICODE)
+
 
     return segmentationRegex.findall(input)
 
