@@ -43,7 +43,6 @@ class AnalyzeScope(object):
         else:
             SentenceResolver().AddInteractionBonus(sentenceList)
 
-
         sentenceParameterList = None
         for sentenceID in sentenceList.iterkeys():
             if sentenceList[sentenceID].HasInteraction():
@@ -57,7 +56,7 @@ class AnalyzeScope(object):
 
                 for sentenceParameter in sentenceParameterList:
                     interactionName = "{0}{1}".format(sentenceList[sentenceID].InteractionName, sentenceParameter)
-                    contextParameter.InteractionData[interactionName.title()] = PipelineArgs.GetInputSentenceParameter()
+                    contextParameter.InteractionData[interactionName.title()] = PipelineArgs.GetParsedStentenceData()
 
         contextParameter.SaveObject()
 

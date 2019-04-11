@@ -32,7 +32,7 @@ class PipelineArgs(BaseObject):
         self.ResponseID = None
         self.ResponseFound = False
 
-        self.ParsedSentenceData = None
+        self.ParsedSentenceDate = None
 
         self.Animation = None
 
@@ -96,12 +96,12 @@ class PipelineArgs(BaseObject):
     def GetInputSentenceParameter(self):
         tmpParameterList = []
         # TODO This is pretty slow on a pi
-        self.ParsedSentenceData = Parameterizer.ParseToDate(self.Input, self.Language)
-        self.appendIfNotNone(tmpParameterList, Parameterizer.IsDate(self.ParsedSentenceData))
-        self.appendIfNotNone(tmpParameterList, Parameterizer.IsTime(self.ParsedSentenceData))
+        self.ParsedSentenceDate = Parameterizer.ParseToDate(self.Input, self.Language)
+        self.appendIfNotNone(tmpParameterList, Parameterizer.IsDate(self.ParsedSentenceDate))
+        self.appendIfNotNone(tmpParameterList, Parameterizer.IsTime(self.ParsedSentenceDate))
         return tmpParameterList
 
     def GetParsedStentenceData(self):
-        if self.ParsedSentenceData is None:
+        if self.ParsedSentenceDate is None:
             self.GetInputSentenceParameter()
-        self.ParsedSentenceData
+        return self.ParsedSentenceDate
