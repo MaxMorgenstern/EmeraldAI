@@ -56,7 +56,15 @@ class AnalyzeScope(object):
 
                 for sentenceParameter in sentenceParameterList:
                     interactionName = "{0}{1}".format(sentenceList[sentenceID].InteractionName, sentenceParameter)
-                    contextParameter.InteractionData[interactionName.title()] = PipelineArgs.GetParsedStentenceData()
+                    
+                    dateObject = PipelineArgs.GetParsedStentenceDate()
+                    formatter = "%d.%m.%Y H:%M:%S"
+                    if sentenceParameter is "date":
+                        formatter = "%d.%m.%Y"
+                    if sentenceParameter is "time":
+                        formatter = "%H:%M:%S"
+
+                    contextParameter.InteractionData[interactionName.title()] = dateObject.strftime(formatter)
 
         contextParameter.SaveObject()
 
