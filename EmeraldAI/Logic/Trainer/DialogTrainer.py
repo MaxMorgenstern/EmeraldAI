@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import itertools
+import time
 
 from EmeraldAI.Logic.NLP import NLP
 from EmeraldAI.Config.Config import Config
@@ -203,7 +204,7 @@ class DialogTrainer(object):
                         continue
 
                     self.SaveAction(name, moduleName, className, functionName, language, errorSentence)
-
+        time.sleep(6)
 
     def TrainCSV(self, data, language):
         qlist = []
@@ -256,7 +257,7 @@ class DialogTrainer(object):
                             setCategoryList.append(s)
 
                         self.TrainFullSentence(sent, language, qlist, requirementObjectList, hasCategoryList, setCategoryList, act, anim)
-
+        time.sleep(6)
 
     def TrainInteractionCSV(self, data, language):
         qlist = []
@@ -303,3 +304,4 @@ class DialogTrainer(object):
                                 requirementObjectList.append(Requirement(rName, rComparison, rValue))
 
                         self.TrainFullSentence(sent, language, qlist, requirementObjectList, [], [], act, anim, interactionID)
+        time.sleep(6)
