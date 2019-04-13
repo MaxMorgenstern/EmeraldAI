@@ -101,7 +101,7 @@ class PipelineArgs(BaseObject):
         self.appendIfNotNone(tmpParameterList, Parameterizer.IsTime(self.ParsedSentenceDate))
         return tmpParameterList
 
-    def GetParsedStentenceData(self):
+    def GetParsedStentenceDate(self):
         if self.ParsedSentenceDate is None:
             self.GetInputSentenceParameter()
         return self.ParsedSentenceDate
