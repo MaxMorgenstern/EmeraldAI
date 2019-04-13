@@ -62,7 +62,7 @@ class AnalyzeScope(object):
                     if sentenceParameter is "date":
                         formatter = "%d.%m.%Y"
                     if sentenceParameter is "time":
-                        formatter = "%H:%M:%S"
+                        formatter = "%H:%M"
 
                     contextParameter.InteractionData[interactionName.title()] = dateObject.strftime(formatter)
 
