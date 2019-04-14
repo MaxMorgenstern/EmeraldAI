@@ -57,6 +57,8 @@ class ProcessResponse(object):
                     contextParameter.SetResult(actionResult["Result"])
                     contextParameter.SaveObject()
 
+                contextParameter.ResetInteraction()
+
             contextParameterDict = contextParameter.GetParameterDictionary()
 
             keywords = re.findall(r"\{(.*?)\}", PipelineArgs.Response)

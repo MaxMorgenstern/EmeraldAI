@@ -68,7 +68,10 @@ class Watson():
             stream_callback=self.pyaudio_callback,
             start=False
         )
-        rospy.init_node('STT_watson_node', anonymous=True)
+        try:
+            rospy.init_node('STT_watson_node', anonymous=True)
+        except:
+            FileLogger().Info('already initialized')
 
 
     def Speak(self, audioString, playAudio=False):
