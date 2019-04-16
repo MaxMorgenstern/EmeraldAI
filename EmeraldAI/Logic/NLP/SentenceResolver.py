@@ -30,6 +30,7 @@ class SentenceResolver(object):
 
         self.__MinNonStopwordSentences = Config().GetFloat("SentenceResolver", "MinNonStopwordSentences") #1
 
+        self.__NoneTag = "None"
 
     def GetSentenceByCategory(self, category, language, isTrainer):
         sentenceDictionary = {}
@@ -104,7 +105,7 @@ class SentenceResolver(object):
         return sentenceList
     
     def GetSentenceByInteraction(self, sentenceList, interaction, language, isTrainer):
-        query = """SELECT Conversation_Sentence.ID
+        query = """SELECT Conversation_Sentence.ID, Conversation_Sentence.Priority
             FROM Conversation_Interaction, Conversation_Interaction_Sentence, Conversation_Sentence
             WHERE Conversation_Interaction.Name = '{0}'
             AND Conversation_Interaction.ID = Conversation_Interaction_Sentence.InteractionID
@@ -116,7 +117,7 @@ class SentenceResolver(object):
 
         sqlResult = db().Fetchall(query.format(interaction, trainer, language))
         for r in sqlResult:
-            sentenceList[r[0]] = Sentence(r[0],  0, interaction, False)
+            sentenceList[r[0]] = Sentence(r[0],  r[1], interaction, False)
             sentenceList[r[0]].InteractionName = interaction
             sentenceList[r[0]].AddPriority(self.__InteractionBonus)
 
@@ -136,8 +137,7 @@ class SentenceResolver(object):
 
         for sentenceID in sentenceList.iterkeys():
             sqlResult = db().Fetchall(query.format(sentenceID))
-            # TODO - better check if there is a result
-            for r in sqlResult:
+            for _ in sqlResult:
                 sentenceList[sentenceID].AddPriority(self.__ActionBonus)
         return sentenceList
 
@@ -167,9 +167,9 @@ class SentenceResolver(object):
             sqlResult = db().Fetchall(query.format(sentenceID))
             for r in sqlResult:
                 requirementName = r[2].title()
-
-                if requirementName not in parameterList:
-                    FileLogger().Error("SentenceResolver Line 126: Requirement missing in parameter list: {0}".format(requirementName))
+                
+                if requirementName not in parameterList and r[1].lower() != self.__NoneTag.lower():
+                    FileLogger().Error("SentenceResolver Line 171: Requirement missing in parameter list: {0}".format(requirementName))
                     deleteList.append(sentenceID)
                     continue
 
@@ -182,21 +182,36 @@ class SentenceResolver(object):
                         sentenceList[sentenceID].AddPriority(self.__RequirementBonus)
                     continue
                 else:
+                    if r[1].lower() == self.__NoneTag.lower():
+                        if (r[0] == "eq" and (requirementName in parameterList and parameterList[requirementName] is not None)):
+                            deleteList.append(sentenceID)
+                            continue
+                        if (r[0] == "ne" and not (requirementName in parameterList and parameterList[requirementName] is not None)):
+                            deleteList.append(sentenceID)
+                            continue
+                        sentenceList[sentenceID].AddPriority(self.__RequirementBonus)
+                        continue
                     if r[0] == "lt" and not parameterList[requirementName] < r[1]:
                         deleteList.append(sentenceID)
+                        continue
                     if r[0] == "le" and not parameterList[requirementName] <= r[1]:
                         deleteList.append(sentenceID)
+                        continue
                     if r[0] == "eq" and not parameterList[requirementName] == r[1]:
                         deleteList.append(sentenceID)
-                    if r[0] == "neq" and not parameterList[requirementName] != r[1]:
+                        continue
+                    if r[0] == "ne" and not parameterList[requirementName] != r[1]:
                         deleteList.append(sentenceID)
+                        continue
                     if r[0] == "ge" and not parameterList[requirementName] >= r[1]:
                         deleteList.append(sentenceID)
+                        continue
                     if r[0] == "gt" and not parameterList[requirementName] > r[1]:
                         deleteList.append(sentenceID)
-                    else:
-                        sentenceList[sentenceID].AddPriority(self.__RequirementBonus)
-                    continue
+                        continue
+
+                    sentenceList[sentenceID].AddPriority(self.__RequirementBonus)
+                    
         if delete:
             for d in list(set(deleteList)):
                 del sentenceList[d]

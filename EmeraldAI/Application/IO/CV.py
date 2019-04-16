@@ -108,7 +108,7 @@ def RunCV(camID, camType, surveillanceMode, videoStream):
         while not camera.isOpened():
             print "Waiting for camera"
             time.sleep(1)
-        ret, image = camera.read()
+        _, image = camera.read()
 
     imageHeight, imageWidth = image.shape[:2]
 
@@ -119,7 +119,7 @@ def RunCV(camID, camType, surveillanceMode, videoStream):
         if videoStream is not None:
             image = stream.read()
         else:
-            ret, image = camera.read()
+            _, image = camera.read()
 
         if(image is None):
             print "Skip image"
@@ -158,7 +158,7 @@ def RunCV(camID, camType, surveillanceMode, videoStream):
             thresholdReached = predictionObject.ThresholdReached(predictionThreshold)
             if len(predictionObject.PredictionResult) > 0 and (thresholdReached or timeoutReached or luckyShot):
 
-                 for key, face in predictionObject.PredictionResult.iteritems():
+                 for key, _ in predictionObject.PredictionResult.iteritems():
                     bestResult = predictionObject.GetBestPredictionResult(key, 0)
 
                     if (predictionObject.Name == "Person"):

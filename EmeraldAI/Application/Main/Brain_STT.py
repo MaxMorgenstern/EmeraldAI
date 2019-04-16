@@ -41,6 +41,8 @@ class BrainSTT:
 
         self.Pipeline = None
 
+        self.ProcessSpeech("INIT_ROBOT")
+        
         rospy.spin()
 
 
@@ -109,9 +111,9 @@ class BrainSTT:
         contextParameter.AppendHistory(self.Pipeline)
         contextParameter.SaveObject()
 
-        print "Pipeline Args", self.Pipeline.toJSON()
-        print "Context Parameter", contextParameter.toJSON()
-        print "Trainer Result: ", trainerResult
+        #print "Pipeline Args", self.Pipeline.toJSON()
+        #print "Context Parameter", contextParameter.toJSON()
+        #print "Trainer Result: ", trainerResult
         print "Input: ", sentence
         print "Response: ", self.Pipeline.Response
 

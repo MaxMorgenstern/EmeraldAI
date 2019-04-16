@@ -32,6 +32,8 @@ class PipelineArgs(BaseObject):
         self.ResponseID = None
         self.ResponseFound = False
 
+        self.ParsedSentenceDate = None
+
         self.Animation = None
 
         self.TrainConversation = True
@@ -46,7 +48,6 @@ class PipelineArgs(BaseObject):
 
         wordSegments = NLP.WordSegmentation(sentence)       
         for word in wordSegments:
-
             if self.HasWord(word, True):
                 continue
             w = Word(word)
@@ -94,6 +95,13 @@ class PipelineArgs(BaseObject):
 
     def GetInputSentenceParameter(self):
         tmpParameterList = []
-        self.appendIfNotNone(tmpParameterList, Parameterizer.IsDate(self.Input))
-        self.appendIfNotNone(tmpParameterList, Parameterizer.IsTime(self.Input))
+        # TODO This is pretty slow on a pi
+        self.ParsedSentenceDate = Parameterizer.ParseToDate(self.Input, self.Language)
+        self.appendIfNotNone(tmpParameterList, Parameterizer.IsDate(self.ParsedSentenceDate))
+        self.appendIfNotNone(tmpParameterList, Parameterizer.IsTime(self.ParsedSentenceDate))
         return tmpParameterList
+
+    def GetParsedStentenceDate(self):
+        if self.ParsedSentenceDate is None:
+            self.GetInputSentenceParameter()
+        return self.ParsedSentenceDate

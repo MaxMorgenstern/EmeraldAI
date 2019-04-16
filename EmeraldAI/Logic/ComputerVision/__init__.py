@@ -1,1 +1,1 @@
-__all__ = ["ComputerVision", "ModelMonitor"]
+__all__ = ["CameraDistanceProcessor", "ComputerVision", "ModelMonitor"]

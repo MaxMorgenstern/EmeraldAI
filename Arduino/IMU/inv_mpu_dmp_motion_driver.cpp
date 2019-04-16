@@ -982,9 +982,6 @@ int dmp_enable_feature(unsigned short mask)
 {
     unsigned char tmp[10];
 
-    /* TODO: All of these settings can probably be integrated into the default
-     * DMP image.
-     */
     /* Set integration scale factor. */
     tmp[0] = (unsigned char)((GYRO_SF >> 24) & 0xFF);
     tmp[1] = (unsigned char)((GYRO_SF >> 16) & 0xFF);
@@ -1260,9 +1257,6 @@ int dmp_read_fifo(short *gyro, short *accel, long *quat,
     unsigned char ii = 0;
     int errCode;
 
-    /* TODO: sensors[0] only changes when dmp_enable_feature is called. We can
-     * cache this value and save some cycles.
-     */
     sensors[0] = 0;
 
     /* Get a packet. */

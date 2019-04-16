@@ -43,22 +43,30 @@ class AnalyzeScope(object):
         else:
             SentenceResolver().AddInteractionBonus(sentenceList)
 
-
         sentenceParameterList = None
         for sentenceID in sentenceList.iterkeys():
             if sentenceList[sentenceID].HasInteraction():
                 for word in PipelineArgs.WordList:
                     for parameter in word.ParameterList:
                         interactionName = "{0}{1}".format(sentenceList[sentenceID].InteractionName, parameter)
-                        contextParameter.InteractionData[interactionName] = word.Word
+                        contextParameter.InteractionData[interactionName.title()] = word.Word
                 
                 if sentenceParameterList is None:
                     sentenceParameterList = PipelineArgs.GetInputSentenceParameter()
 
                 for sentenceParameter in sentenceParameterList:
                     interactionName = "{0}{1}".format(sentenceList[sentenceID].InteractionName, sentenceParameter)
-                    contextParameter.InteractionData[interactionName] = word.Word
+                    
+                    dateObject = PipelineArgs.GetParsedStentenceDate()
+                    formatter = "%d.%m.%Y H:%M:%S"
+                    if sentenceParameter is "date":
+                        formatter = "%d.%m.%Y"
+                    if sentenceParameter is "time":
+                        formatter = "%H:%M"
 
+                    contextParameter.InteractionData[interactionName.title()] = dateObject.strftime(formatter)
+
+        contextParameter.SaveObject()
 
         if self.__RemoveBeforeRequirementCalculation:
             sentenceList = SentenceResolver().RemoveLowPrioritySentences(sentenceList)

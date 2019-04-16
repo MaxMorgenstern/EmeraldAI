@@ -13,7 +13,7 @@ def GetDirHash(directory):
         return -1
 
     try:
-        for root, dirs, files in os.walk(directory):
+        for root, _, files in os.walk(directory):
             for names in files:
                 filepath = os.path.join(root,names)
                 try:
@@ -41,6 +41,6 @@ def GenHash(seed=None, length=5, useDigits=False):
     base = string.ascii_letters+string.digits if useDigits else string.ascii_letters
     random.seed(seed)
     hash_value = ""
-    for i in range(length):
+    for _ in range(length):
         hash_value += random.choice(base)
     return hash_value

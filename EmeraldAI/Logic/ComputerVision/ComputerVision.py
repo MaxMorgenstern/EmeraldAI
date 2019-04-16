@@ -128,7 +128,7 @@ class ComputerVision(object):
         trainingLabels = []
         trainingLabelsDict = {}
 
-        for dirname, dirnames, filenames in os.walk(os.path.join(self.__DatasetBasePath, datasetName)):
+        for dirname, dirnames, _ in os.walk(os.path.join(self.__DatasetBasePath, datasetName)):
             for subdirname in dirnames:
                 if imageSize != None and not subdirname.startswith(imageSize):
                     continue
@@ -158,16 +158,16 @@ class ComputerVision(object):
 
     def __getHighestImageID(self, datasetName, imageType):
         maxImgNum = 0
-        for root, dirs, filenames in os.walk(os.path.join(self.__DatasetBasePath, datasetName, imageType)):
+        for _, _, filenames in os.walk(os.path.join(self.__DatasetBasePath, datasetName, imageType)):
             for f in filenames:
-                tmpNum = re.findall('\d+|$', f)[0]
+                tmpNum = re.findall(r'\d+|$', f)[0]
                 if(len(tmpNum) > 0 and int(tmpNum) > maxImgNum):
                     maxImgNum = int(tmpNum)
         return int(maxImgNum)
 
     def __thresholdReached(self, threshold):
         if len(self.__PredictStreamResult) > 0:
-            for key, resultSet in self.__PredictStreamResult.iteritems():
+            for _, resultSet in self.__PredictStreamResult.iteritems():
                 maxKey = max(resultSet.iteritems(), key=operator.itemgetter(1))[0]
                 if maxKey != self.__UnknownUserTag and threshold < resultSet[maxKey]:
                     return True
@@ -200,7 +200,7 @@ class ComputerVision(object):
             amount = self.__ImageLimit
         amount += 2 # add one for 'Disabled' folder and one for eventual hidden file
 
-        for dirname, dirnames, filenames in os.walk(os.path.join(self.__DatasetBasePath, datasetName)):
+        for dirname, dirnames, _ in os.walk(os.path.join(self.__DatasetBasePath, datasetName)):
             for subdirname in dirnames:
                 if subdirname == self.__DisabledFileFolder:
                     continue

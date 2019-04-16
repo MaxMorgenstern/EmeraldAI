@@ -4,7 +4,7 @@ emerald_path=$(cd "$(dirname "${BASH_SOURCE[0]}")"; cd ..; cd ..; cd ..; cd ..; 
 deployment_temp_path=$(cd "$(dirname "${BASH_SOURCE[0]}")"; cd ..; cd ..; cd ..; cd ..; cd Deployment; pwd )
 
 backup_path=$deployment_temp_path/Backups
-backup_filename="$(date +'%Y-%m-%d').zip"
+backup_filename="$(date +'%Y-%m-%d %H:%M:%S').zip"
 
 # Create backup
 echo "Create backup"

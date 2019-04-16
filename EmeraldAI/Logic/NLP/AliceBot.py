@@ -24,7 +24,7 @@ class AliceBot(object):
         if os.path.isfile(self.__brainPath):
             self.kernel.bootstrap(self.__brainPath)
         else:
-            for root, dirs, filenames in os.walk(self.__AIMLPath):
+            for _, _, filenames in os.walk(self.__AIMLPath):
                 for f in filenames:
                     if(not f.startswith('.') and f.endswith('.aiml')):
                         self.kernel.bootstrap(learnFiles=os.path.join(self.__AIMLPath, f))

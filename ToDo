@@ -196,6 +196,9 @@ sudo apt-get install portaudio19-dev
 pip install pyaudio -U --user
 
 
+
+rostopic pub /emerald_ai/io/speech_to_text --once std_msgs/String "STT|mach ein update"
+
 rostopic pub /to_brain --once std_msgs/String "STT|Gute Nacht"
 rostopic pub /to_brain --once std_msgs/String "CV|PERSON|0|0|('Unknown', 2716)|('Max', 700)|False|True"
 rostopic pub /to_brain --once std_msgs/String "CV|PERSON|0|0|('Unknown', 2716)|()|False|True"

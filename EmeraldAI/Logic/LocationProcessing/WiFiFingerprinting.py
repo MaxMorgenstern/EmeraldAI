@@ -36,7 +36,7 @@ class WiFiFingerprinting(object):
     # This needs to be calles separately as the Onion Omega2 is a linux wihout iwlist option
     def GetWiFiListOnionOmega2(self):
         proc = subprocess.Popen([self.__OnionOmega2Call], stdout=subprocess.PIPE, shell=True)
-        (out, err) = proc.communicate()
+        (out, _) = proc.communicate()
 
         returnList = []
 
@@ -49,14 +49,14 @@ class WiFiFingerprinting(object):
 
     def GetWiFiListWindows(self):
         proc = subprocess.Popen([self.__windowsCall], stdout=subprocess.PIPE, shell=True)
-        (out, err) = proc.communicate()
+        (out, _) = proc.communicate()
 
         returnList = []
 
         ssid = None
         bssid = None
         signal = None
-        for key, group in itertools.groupby(out, self.__groupSeparator):
+        for _, group in itertools.groupby(out, self.__groupSeparator):
             line = ''.join(str(e) for e in group)
             line = line.strip()
             if(len(line) > 2):
@@ -82,14 +82,14 @@ class WiFiFingerprinting(object):
 
     def GetWiFiListLinux(self):
         proc = subprocess.Popen([self.__linuxCall], stdout=subprocess.PIPE, shell=True)
-        (out, err) = proc.communicate()
+        (out, _) = proc.communicate()
 
         returnList = []
 
         ssid = None
         bssid = None
         signal = None
-        for key, group in itertools.groupby(out, self.__groupSeparator):
+        for _, group in itertools.groupby(out, self.__groupSeparator):
             line = ''.join(str(e) for e in group)
             line = line.strip()
             if(len(line) > 2):
@@ -117,7 +117,7 @@ class WiFiFingerprinting(object):
 
     def GetWiFiListOSX(self):
         proc = subprocess.Popen([self.__osxCall], stdout=subprocess.PIPE, shell=True)
-        (out, err) = proc.communicate()
+        (out, _) = proc.communicate()
 
         returnList = []
         if len(out) > 1:
