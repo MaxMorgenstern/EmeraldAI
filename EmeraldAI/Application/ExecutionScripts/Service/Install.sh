@@ -17,6 +17,7 @@ apt-get install portaudio19-dev -y
 apt-get install ros-kinetic-rosserial-python -y
 apt-get install nmap -y
 apt-get install flac -y
+apt-get install python-pip -y
 
 # pip installs need to run after apt-get installs due to references
 echo "Install requirements via pip"
