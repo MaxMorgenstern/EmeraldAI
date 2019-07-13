@@ -84,6 +84,9 @@ def RunCV(camID, camType, surveillanceMode, videoStream):
     showCameraImage = Config().GetBoolean("ComputerVision", "ShowCameraImage")
     unknownUserTag = Config().Get("ComputerVision", "UnknownUserTag")
 
+    detectionSettings = Config().Get("ComputerVision", "DetectionSettings")
+    print "Detection Settings: " + detectionSettings
+
     cv = ComputerVision()
 
     predictionObjectList = []
@@ -114,6 +117,7 @@ def RunCV(camID, camType, surveillanceMode, videoStream):
 
     bodyDetectionTimestamp = time.time()
 
+    skipImageCounter = 0
     while True:
         #rate.sleep()
         if videoStream is not None:
@@ -122,7 +126,10 @@ def RunCV(camID, camType, surveillanceMode, videoStream):
             _, image = camera.read()
 
         if(image is None):
-            print "Skip image"
+            skipImageCounter += 1
+            if(skipImageCounter > 50):
+                print "Skip image"
+                skipImageCounter = 0
             continue
 
         if (showCameraImage):
