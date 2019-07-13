@@ -127,7 +127,7 @@ def RunCV(camID, camType, surveillanceMode, videoStream):
 
         if(image is None):
             skipImageCounter += 1
-            if(skipImageCounter > 50):
+            if(skipImageCounter > 250):
                 print "Skip image"
                 skipImageCounter = 0
             continue
