@@ -92,8 +92,8 @@ CsvInteractionColumnCount = 6
 Provider = Google
 Microphone =
 
-WatsonSTTUsername =
-WatsonSTTPassword =
+WatsonSTTAPIKey =
+WatsonSTTUrl =
 
 
 # ----------------------
@@ -118,8 +118,8 @@ IvonaVoiceName = Hans
 IvonaAccessKey =
 IvonaSecretKey =
 
-WatsonTTSUsername =
-WatsonTTSPassword =
+WatsonTTSAPIKey =
+WatsonTTSUrl =
 WatsonVoiceName =
 
 
