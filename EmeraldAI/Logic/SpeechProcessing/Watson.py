@@ -49,10 +49,12 @@ class Watson():
         self.text_to_speech = TextToSpeechV1(
             url=self.__url_tts,
             iam_apikey=self.__apikey_tts)
+        self.text_to_speech.set_default_headers({'x-watson-learning-opt-out': "true"})
 
         self.speech_to_text = SpeechToTextV1(
             url=self.__url_stt,
             iam_apikey=self.__apikey_stt)
+        self.speech_to_text.set_default_headers({'x-watson-learning-opt-out': "true"})
 
         self.audio = pyaudio.PyAudio()
 
