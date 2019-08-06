@@ -61,7 +61,7 @@ class BrainActionTrigger:
             User().SetUserByCVTag(dataParts[1])
 
             # Greeting
-            if (User().LastSpokenTo is None or 
+            if (User().LastSpokenTo is None or User().LastSpokenTo == "None" or User().LastSpokenTo == "" or 
                 datetime.strptime(User().LastSpokenTo, "%Y-%m-%d %H:%M:%S").date() < datetime.today().date()):
 
                 response = ProcessTrigger().ProcessCategory("Greeting")
