@@ -60,10 +60,13 @@ def GetFileList(dirPath):
 
 def Purge(basePath, fileList):
     for file in fileList:
-        fullPath = os.path.normpath(os.path.join(basePath, "."+file))
-        print "Delete:", fullPath
-        os.remove(fullPath)
-
+        try:
+            fullPath = os.path.normpath(os.path.join(basePath, "."+file))
+            print "Delete:", fullPath
+            os.remove(fullPath)
+        except:
+            print "Deletion failed:", fullPath
+            
 
 PIDName = "Update"
 if(Pid.HasPid(PIDName)):
