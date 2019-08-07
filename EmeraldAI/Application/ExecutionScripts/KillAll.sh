@@ -16,3 +16,6 @@ $directory/KillCV.sh
 
 echo "Kill Serial Proxy..."
 $directory/KillSerialProxy.sh
+
+echo "Kill Trigger..."
+$directory/KillBrain_Trigger.sh

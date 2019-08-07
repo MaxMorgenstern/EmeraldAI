@@ -58,6 +58,14 @@ class BrainActionTrigger:
         dataParts = data.data.split("|")
         if (dataParts[0] == "PERSON" and dataParts[1] != self.__UnknownUserTag):
 
+            # Check what we got on the last call
+            # if dataParts[1] eq prevDetection:
+            #   go for it
+            #   prevDetection = None
+            # else:
+            #   prevDetection = dataParts[1]
+            #   skip callback
+
             User().SetUserByCVTag(dataParts[1])
 
             # Greeting

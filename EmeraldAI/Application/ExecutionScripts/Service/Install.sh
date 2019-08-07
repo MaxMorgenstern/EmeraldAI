@@ -1,36 +1,17 @@
 #!/bin/bash
 directory=`dirname $0`
 
-if [ "$EUID" -ne 0 ]
-  then echo "Please run as root so we can install dependencies."
+if [ "$EUID" -eq 0 ]
+  then echo "Please do not run this script root initially. We will ask for sudo password in a second."
   exit
 fi
 
-echo "Update apt-get"
-apt-get update
-
-echo "Install requirements via apt-get"
-apt-get install python-opencv -y
-apt-get install pyaudio -y
-apt-get install pocketsphinx -y
-apt-get install portaudio19-dev -y
-apt-get install ros-kinetic-rosserial-python -y
-apt-get install nmap -y
-apt-get install flac -y
-apt-get install python-pip -y
+sudo -s source $directory/Install_sudo.sh
 
 # pip installs need to run after apt-get installs due to references
 echo "Install requirements via pip"
 pip install --user -r install_requirements.txt
 
-echo "Trigger Setup"
-python $directory/../../Service/Setup.py
-
-echo "Trigger Conversation Setup"
-python $directory/../../Service/Setup_Conversation.py
-
-echo "Build CV Model"
-python $directory/../../Service/CVModelRebuilder.py
+sudo -s source $directory/Install_sudo2.sh
 
 echo "Done!"
-
