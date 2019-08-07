@@ -69,6 +69,10 @@ class BrainActionTrigger:
             User().SetUserByCVTag(dataParts[1])
 
             # Greeting
+            # try:
+            # try parsing dattime
+            # except ValueError:
+            # no valid time is set... so the following if statemant can be passed
             if (User().LastSpokenTo is None or User().LastSpokenTo == "None" or User().LastSpokenTo == "" or 
                 datetime.strptime(User().LastSpokenTo, "%Y-%m-%d %H:%M:%S").date() < datetime.today().date()):
 
