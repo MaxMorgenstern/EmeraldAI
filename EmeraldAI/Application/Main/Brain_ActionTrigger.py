@@ -75,7 +75,6 @@ class BrainActionTrigger:
                 initGreeting = False
                 try:
                     lastSpokenToDate = datetime.strptime(User().LastSpokenTo, "%Y-%m-%d %H:%M:%S")
-                    print lastSpokenToDate
                     initGreeting = (lastSpokenToDate.today().date() < datetime.today().date())
                 except ValueError:
                     initGreeting = True
@@ -83,13 +82,14 @@ class BrainActionTrigger:
                 if (initGreeting):
                     response = ProcessTrigger().ProcessCategory("Greeting")
                     lastAudioTimestamp = BrainMemory().GetString("Brain.AudioTimestamp", 20)
-                    print "lastAudioTimestamp", lastAudioTimestamp, response
-                    if(lastAudioTimestamp is None and len(response) > 1):
+                    lastTriggerTimestamp = BrainMemory().GetString("Brain.TriggerTimestamp", 20)
+                    if(lastAudioTimestamp is None and lastTriggerTimestamp is None and len(response) > 1):
                         FileLogger().Info("ActionTrigger, knownPersonCallback(): {0}".format(response))
                         self.__ResponsePublisher.publish("TTS|{0}".format(response))
                         self.__IFTTTWebhook.TriggerWebhook(self.__IFTTTGreeting, User().FullName, response)
     
                         self.__TriggerPublisher.publish("TRIGGER|Info|Greeting")
+                        BrainMemory().Set("Brain.TriggerTimestamp", rospy.Time.now().to_sec())
 
 
     def unknownPersonCallback(self, data):
