@@ -51,6 +51,10 @@ class BrainActionTrigger:
         # checks the app status - it sends the status change if turned on/off
         rospy.Subscriber("/emerald_ai/app/status", String, self.appCallback)
 
+        self.__MinTriggered = 2
+        self.__TriggeredCounter = 1
+        self.__LastTriggerPerson = ""
+
         rospy.spin()
 
 
@@ -58,32 +62,34 @@ class BrainActionTrigger:
         dataParts = data.data.split("|")
         if (dataParts[0] == "PERSON" and dataParts[1] != self.__UnknownUserTag):
 
-            # Check what we got on the last call
-            # if dataParts[1] eq prevDetection:
-            #   go for it
-            #   prevDetection = None
-            # else:
-            #   prevDetection = dataParts[1]
-            #   skip callback
+            if(self.__LastTriggerPerson == dataParts[1]):
+                self.__TriggeredCounter += 1
+            else:
+                self.__TriggeredCounter = 1
+                self.__LastTriggerPerson = dataParts[1]
 
-            User().SetUserByCVTag(dataParts[1])
+            if(self.__TriggeredCounter >= self.__MinTriggered):
+                User().SetUserByCVTag(dataParts[1])
 
-            # Greeting
-            # try:
-            # try parsing dattime
-            # except ValueError:
-            # no valid time is set... so the following if statemant can be passed
-            if (User().LastSpokenTo is None or User().LastSpokenTo == "None" or User().LastSpokenTo == "" or 
-                datetime.strptime(User().LastSpokenTo, "%Y-%m-%d %H:%M:%S").date() < datetime.today().date()):
+                # Greeting
+                initGreeting = False
+                try:
+                    lastSpokenToDate = datetime.strptime(User().LastSpokenTo, "%Y-%m-%d %H:%M:%S")
+                    print lastSpokenToDate
+                    initGreeting = (lastSpokenToDate.today().date() < datetime.today().date())
+                except ValueError:
+                    initGreeting = True
 
-                response = ProcessTrigger().ProcessCategory("Greeting")
-                lastAudioTimestamp = BrainMemory().GetString("Brain.AudioTimestamp", 20)
-                if(lastAudioTimestamp is None and len(response) > 1):
-                    FileLogger().Info("ActionTrigger, knownPersonCallback(): {0}".format(response))
-                    self.__ResponsePublisher.publish("TTS|{0}".format(response))
-                    self.__IFTTTWebhook.TriggerWebhook(self.__IFTTTGreeting, User().FullName, response)
-
-                    self.__TriggerPublisher.publish("TRIGGER|Info|Greeting")
+                if (initGreeting):
+                    response = ProcessTrigger().ProcessCategory("Greeting")
+                    lastAudioTimestamp = BrainMemory().GetString("Brain.AudioTimestamp", 20)
+                    print "lastAudioTimestamp", lastAudioTimestamp, response
+                    if(lastAudioTimestamp is None and len(response) > 1):
+                        FileLogger().Info("ActionTrigger, knownPersonCallback(): {0}".format(response))
+                        self.__ResponsePublisher.publish("TTS|{0}".format(response))
+                        self.__IFTTTWebhook.TriggerWebhook(self.__IFTTTGreeting, User().FullName, response)
+    
+                        self.__TriggerPublisher.publish("TRIGGER|Info|Greeting")
 
 
     def unknownPersonCallback(self, data):

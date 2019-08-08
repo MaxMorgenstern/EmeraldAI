@@ -36,6 +36,10 @@ class ProcessTrigger(object):
         calculationResult = SentenceResolver().CalculateRequirement(sentenceList, contextParameterDict)
         sentenceList = calculationResult["sentenceList"]
 
+	if(len(sentenceList) == 0):
+            FileLogger().Warn("ProcessTrigger, ProcessCategory(), No Sentences found!")
+            return ""
+
         responseID = random.choice(sentenceList.keys())
         sentence = sentenceList[responseID]
         FileLogger().Info("ProcessTrigger, ProcessCategory(), Sentence: {0}".format(sentence))
