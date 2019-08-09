@@ -107,7 +107,7 @@ class User(BaseObject):
         self.SaveObject()
 
     def __setUser(self, query, name):
-        sqlResult = db().Fetchall(query.format(name))
+        sqlResult = db().FetchallCacheBreaker(query.format(name))
         for r in sqlResult:
             self.DBID = r[0]
             self.Name = r[1]

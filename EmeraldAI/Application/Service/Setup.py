@@ -55,9 +55,8 @@ cp.read(logConfigFile)
 logfile = cp.get("DEFAULT", "my_log_dir") + "logfile.log"
 if not os.path.exists(logfile):
     print "Create logfile.log"
-    f = open(logfile, "w+")
-    f.close()
-
+    emptyLog = cp.get("DEFAULT", "my_log_dir") + "logfile.log.default"
+    copyfile(emptyLog, logfile)
 
 # Create hardware config file if it does not exist
 print "Check hardware.config"

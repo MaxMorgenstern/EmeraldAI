@@ -34,11 +34,11 @@ class Watson():
         self.CHANNELS = 1
         self.RATE = 44100
 
-        self.__username = Config().Get("SpeechToText", "WatsonSTTUsername")
-        self.__password = Config().Get("SpeechToText", "WatsonSTTPassword")
+        self.__apikey_stt = Config().Get("SpeechToText", "WatsonSTTAPIKey")
+        self.__url_stt = Config().Get("SpeechToText", "WatsonSTTUrl")
 
-        self.__username_tts = Config().Get("TextToSpeech", "WatsonTTSUsername")
-        self.__password_tts = Config().Get("TextToSpeech", "WatsonTTSPassword")
+        self.__apikey_tts = Config().Get("TextToSpeech", "WatsonTTSAPIKey")
+        self.__url_tts = Config().Get("TextToSpeech", "WatsonTTSUrl")
 
         self.__voiceName = Config().Get("TextToSpeech", "WatsonVoiceName")
 
@@ -47,14 +47,14 @@ class Watson():
         self.__audioPlayer = Config().Get("TextToSpeech", "AudioPlayer") + " '{0}'"
 
         self.text_to_speech = TextToSpeechV1(
-            url='https://stream.watsonplatform.net/text-to-speech/api',
-            username=self.__username_tts,
-            password=self.__password_tts)
+            url=self.__url_tts,
+            iam_apikey=self.__apikey_tts)
+        self.text_to_speech.set_default_headers({'x-watson-learning-opt-out': "true"})
 
         self.speech_to_text = SpeechToTextV1(
-            username=self.__username,
-            password=self.__password,
-            url='https://stream.watsonplatform.net/speech-to-text/api')
+            url=self.__url_stt,
+            iam_apikey=self.__apikey_stt)
+        self.speech_to_text.set_default_headers({'x-watson-learning-opt-out': "true"})
 
         self.audio = pyaudio.PyAudio()
 

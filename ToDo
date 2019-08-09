@@ -1,30 +1,18 @@
 Just a messy list with things to do
 
-- add "emerald_ai" namespace to all internally published topics (like to_brain)
-
-- !!! Initial Conversation on User detection !!!
-- check is an observer pattern should be used or if we can trigger by watching ROS nodes
-
 - Add Unit Tests
 
 - clean unused thesaurus fields - add language tag
 - thesaurus_DE to custom file so we can use more languages
 
-- add notes to classes and modules - description
-
-- test http://cmusphinx.sourceforge.net/
-
 - add formal <-> informal sentence converter
 
 - multi language support without config change
-
-- update user last seen and last spoken to
 
 - more testing with profiles
 	python -m cProfile -s cumtime script.py
 
 - remove singleton from user class + create shared user class for use in CV
-- or add a user instance to context
 
 - Handle Wildcard Parameter (*) in Q
 - Set Category
@@ -151,36 +139,6 @@ DELETE FROM Location_WiFi_Fingerprint_Name;
 
 
 
-
-Modules that need to be installed:
-via pip:
-cachetools
-SpeechRecognition
-pyowm 					# Open weather
-wikipedia
-numpy
-scipy
-	matplotlib
-	ipython
-	jupyter
-	pandas
-	sympy
-	nose
-sklearn
-future
-pyaudio
-gtts
-aiml
-pocketsphinx
-
-
-
-cv2 					# Computer Vision
-sudo apt-get install python-opencv
-
-pyaudio
-
-
 add iwlist to sudo "vi sudoers"
 or
 sudo visudo
@@ -189,11 +147,6 @@ add:
 save:
 	Strg+X ; Y ; Enter
 
-
-
-
-sudo apt-get install portaudio19-dev
-pip install pyaudio -U --user
 
 
 
@@ -233,26 +186,6 @@ Clients:
 export ROS_MASTER_URI=http://url:11311
 - http://wiki.ros.org/ROS/Tutorials/MultipleMachines
 
-
-
-- possible PI alternatives:
-https://www.pine64.org/
-https://www.amazon.com/NVIDIA-Jetson-TK1-Development-Kit/dp/B00L7AWOEC
-https://www.amazon.com/ODROID-XU4-Single-Board-Computer-Gigabit/dp/B0163GEA64
-https://www.amazon.de/ASUS-Computer-Tinker-Board-2GB/dp/B01N35PQ9U
-	https://www.amazon.co.uk/Step-Down-Step-down-Power-Module/dp/B00ENE55SQ
-
-https://www.crowdsupply.com/husarion/core2
-
-
-
-cam alternative:
-http://www.ebay.de/itm/Microsoft-Xbox-360-original-KINECT-SENSOR-LEISTE-SCHWARZ-Controller-/222538161623?epid=1404729520&hash=item33d04eddd7:g:g8sAAOSwlMFZOCPG
-
-
-
-Ultrasonic Map:
-http://wiki.ros.org/range_sensor_layer
 
 
 
