@@ -19,13 +19,14 @@ class ProcessTrigger(object):
         self.__DefaultLanguage = Config().Get("DEFAULT", "Language")
 
 
-    def ProcessCategory(self, category):
+    def ProcessCategory(self, category, user = None):
         FileLogger().Info("ProcessTrigger, ProcessCategory(), Category: {0}".format(category))
 
-        user = User().LoadObject()
+        if(user is None):
+            user = User().LoadObject()
 
         language = self.__DefaultLanguage
-        if user.Language is not None:
+        if (user.Language is not None and user.Language != "None"):
             language = user.Language
 
         sentenceList = SentenceResolver().GetSentenceByCategory(category, language, (user.Admin or user.Trainer))

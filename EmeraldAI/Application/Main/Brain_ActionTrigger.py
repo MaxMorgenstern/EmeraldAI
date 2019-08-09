@@ -75,12 +75,12 @@ class BrainActionTrigger:
                 initGreeting = False
                 try:
                     lastSpokenToDate = datetime.strptime(User().LastSpokenTo, "%Y-%m-%d %H:%M:%S")
-                    initGreeting = (lastSpokenToDate.today().date() < datetime.today().date())
-                except ValueError:
+                    initGreeting = (lastSpokenToDate.date() < datetime.today().date())
+                except:
                     initGreeting = True
 
                 if (initGreeting):
-                    response = ProcessTrigger().ProcessCategory("Greeting")
+                    response = ProcessTrigger().ProcessCategory("Greeting", User())
                     lastAudioTimestamp = BrainMemory().GetString("Brain.AudioTimestamp", 20)
                     lastTriggerTimestamp = BrainMemory().GetString("Brain.TriggerTimestamp", 20)
                     if(lastAudioTimestamp is None and lastTriggerTimestamp is None and len(response) > 1):
