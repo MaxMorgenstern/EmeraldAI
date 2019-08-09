@@ -1,6 +1,4 @@
 #!/bin/bash
-directory=`dirname $0`
-
 if [ "$EUID" -ne 0 ]
   then echo "Please run as root so we can install dependencies."
   exit
