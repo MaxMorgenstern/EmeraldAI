@@ -176,7 +176,7 @@ class SentenceResolver(object):
                 if r[0] is None:
                     if type(parameterList[requirementName]) == list and r[1].lower() not in parameterList[requirementName]:
                         deleteList.append(sentenceID)
-                    elif type(parameterList[requirementName]) == str and parameterList[requirementName].lower() != r[1].lower():
+                    elif (type(parameterList[requirementName]) == str or type(parameterList[requirementName]) == unicode) and parameterList[requirementName].lower() != r[1].lower():
                         deleteList.append(sentenceID)
                     else:
                         sentenceList[sentenceID].AddPriority(self.__RequirementBonus)
