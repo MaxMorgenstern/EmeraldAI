@@ -14,7 +14,7 @@ SpeechRecognition==3.8.1
 future==0.16.0
 watson-developer-cloud==2.3.1
 wikipedia==1.4.0
-numpy==1.14.3
+numpy==1.22.0
 matplotlib==1.5.1
 mutagen==1.42.0
 ipython==5.8.0
